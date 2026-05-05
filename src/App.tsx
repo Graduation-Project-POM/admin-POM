@@ -1,122 +1,68 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import type { UserRole } from './types';
+import { useState } from 'react';
+import { Page } from './components/common/Page';
+import { DashboardLayout } from './components/layout/Dashboard';
+
+const USER_DATA = {
+  ADMIN: { name: 'Admin User', email: 'admin@pmo.ps' },
+  TRAINER: { name: 'Trainer Ahmad', email: 'ahmad@pmo.ps' },
+  STUDENT: { name: 'Student Sara', email: 'sara@pmo.ps' },
+};
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [role, setRole] = useState<UserRole>('ADMIN');
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <Router>
 
-      <div className="ticks"></div>
+      <DashboardLayout 
+        role={role} 
+        userName={USER_DATA[role].name} 
+        userEmail={USER_DATA[role].email}
+      >
+        <Routes>
+          {/* Admin Routes */}
+          <Route path="/dashboard" element={<Page title="Admin Dashboard" />} />
+          <Route path="/admin/users" element={<Page title="User Management" />} />
+          <Route path="/admin/approvals" element={<Page title="Pending Approvals" />} />
+          <Route path="/admin/announcements" element={<Page title="Announcements" />} />
+          <Route path="/admin/groups" element={<Page title="Training Groups" />} />
+          <Route path="/contests" element={<Page title="Olympiad Contests" />} />
+          <Route path="/problems" element={<Page title="Problem Bank" />} />
+          <Route path="/admin/reports" element={<Page title="System Reports" />} />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          {/* Trainer Routes */}
+          <Route path="/trainer/dashboard" element={<Page title="Trainer Dashboard" />} />
+          <Route path="/groups" element={<Page title="My Training Groups" />} />
+          <Route path="/contests" element={<Page title="My Contests" />} />
+          <Route path="/problems" element={<Page title="Problem Management" />} />
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+          {/* Student Routes */}
+          <Route path="/student/dashboard" element={<Page title="Student Dashboard" />} />
+          <Route path="/groups" element={<Page title="My Groups" />} />
+          <Route path="/contests" element={<Page title="Active Contests" />} />
+          <Route path="/student/practice" element={<Page title="Practice Arena" />} />
+
+          {/* Shared Routes */}
+          <Route path="/settings" element={<Page title="Account Settings" />} />
+          <Route path="/profile" element={<Page title="User Profile" />} />
+
+          {/* Default Route redirects to role-specific dashboard */}
+          <Route 
+            path="/" 
+            element={
+              <Navigate 
+                to={role === 'ADMIN' ? '/admin/dashboard' : role === 'TRAINER' ? '/trainer/dashboard' : '/student/dashboard'} 
+                replace 
+              />
+            } 
+          />
+          {/* Catch-all redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+       </DashboardLayout>
+     </Router>
   )
-}
-
-export default App
+} 
+export default App;
