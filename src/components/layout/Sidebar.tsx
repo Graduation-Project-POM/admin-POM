@@ -1,39 +1,48 @@
-import React from 'react';
-import { 
-  Box, 
-  Drawer, 
-  List, 
-  ListItem, 
-  ListItemButton, 
-  ListItemIcon, 
-  ListItemText, 
-  Typography, 
-  Avatar, 
-  Divider, 
+// src/components/Sidebar.tsx
+import React, { useState } from 'react';
+import {
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Typography,
+  Avatar,
+  Divider,
   styled,
   createTheme,
   ThemeProvider,
-  CssBaseline
+  CssBaseline,
+  Collapse,
 } from '@mui/material';
-import { 
-  LayoutDashboard, 
-  Users, 
-  CheckCircle, 
-  Megaphone, 
-  Users2, 
-  Trophy, 
-  BookOpen, 
-  BarChart3, 
-  Settings, 
-  UserCircle 
+import {
+  LayoutDashboard,
+  Users,
+  CheckCircle,
+  Megaphone,
+  Users2,
+  Trophy,
+  BookOpen,
+  BarChart3,
+  Settings,
+  UserCircle,
+  Send,
+  Bookmark,
+  FolderOpen,
+  Video,
+  FileText,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { getVisibleNavigation  } from '../../config/navigation';
+import { getVisibleNavigation } from '../../config/navigation';
 import type { UserRole } from '../../types';
 
-const theme = createTheme({
+export const theme = createTheme({
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: "Lenos, sans-serif",
   },
 });
 
@@ -98,6 +107,18 @@ const StyledListItemButton = styled(ListItemButton, {
   }),
 }));
 
+const SubItemButton = styled(ListItemButton, {
+  shouldForwardProp: (prop) => prop !== 'isActive',
+})<{ isActive?: boolean }>(({ isActive }) => ({
+  margin: '2px 16px 2px 48px',
+  borderRadius: '8px',
+  padding: '8px 12px',
+  backgroundColor: isActive ? 'rgba(139, 29, 35, 0.04)' : 'transparent',
+  '&:hover': {
+    backgroundColor: isActive ? 'rgba(139, 29, 35, 0.08)' : '#f8fafc',
+  },
+}));
+
 const iconMap: Record<string, React.ReactNode> = {
   Dashboard: <LayoutDashboard size={20} strokeWidth={2.5} />,
   Users: <Users size={20} strokeWidth={2.5} />,
@@ -109,6 +130,11 @@ const iconMap: Record<string, React.ReactNode> = {
   BarChart3: <BarChart3 size={20} strokeWidth={2.5} />,
   Settings: <Settings size={20} strokeWidth={2.5} />,
   UserCircle: <UserCircle size={20} strokeWidth={2.5} />,
+  Send: <Send size={20} strokeWidth={2.5} />,
+  Bookmark: <Bookmark size={20} strokeWidth={2.5} />,
+  FolderOpen: <FolderOpen size={20} strokeWidth={2.5} />,
+  Video: <Video size={20} strokeWidth={2.5} />,
+  FileText: <FileText size={20} strokeWidth={2.5} />,
 };
 
 interface SidebarProps {
@@ -121,14 +147,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, userName, userEmail }) =
   const location = useLocation();
   const navigate = useNavigate();
   const sections = getVisibleNavigation(role);
+  const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
-  const getRoleLabel = (role: UserRole) => {
-    switch (role) {
-      case 'ADMIN': return 'Super Admin';
-      case 'TRAINER': return 'Trainer';
-      case 'STUDENT': return 'Student';
-      default: return role;
-    }
+  const toggleItem = (path: string) => {
+    setOpenItems((prev) => ({ ...prev, [path]: !prev[path] }));
+  };
+
+  const isChildActive = (item: any): boolean => {
+    if (!item.items) return false;
+    return item.items.some((sub: any) => location.pathname === sub.path);
   };
 
   return (
@@ -141,43 +168,108 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, userName, userEmail }) =
             <Typography variant="subtitle2" sx={{ fontWeight: 800, color: '#1e293b', lineHeight: 1.2 }}>
               PMO Platform
             </Typography>
-            {/* <Typography variant="caption" sx={{ color: '#94a3b8',textAlign: 'left', fontWeight: 600 }}>
-              {getRoleLabel(role)}
-            </Typography> */}
+            <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 500 }}>
+              Math Olympiad
+            </Typography>
           </Box>
         </LogoContainer>
 
         <Box sx={{ flexGrow: 1, overflowY: 'auto', mt: 1 }}>
           {sections.map((section) => (
-            <Box key={section.title} sx={{ mb: 1 }}>
+            <Box key={section.title || 'no-title'} sx={{ mb: 2 }}>
+              {section.title && (
+                <Typography
+                  variant="caption"
+                  sx={{ px: 3, py: 1, display: 'block', color: '#94a3b8', fontWeight: 700, letterSpacing: '0.8px' }}
+                >
+                  {section.title}
+                </Typography>
+              )}
               <List disablePadding>
                 {section.items.map((item) => {
+                  const hasChildren = !!(item.items && item.items.length > 0);
+                  const isOpen = openItems[item.path] || false;
                   const isActive = location.pathname === item.path;
+                  const isParentActive = isActive || (hasChildren && isChildActive(item));
+
                   return (
-                    <ListItem key={item.path} disablePadding>
-                      <StyledListItemButton 
-                        isActive={isActive}
-                        onClick={() => navigate(item.path)}
-                      >
-                        <ListItemIcon sx={{ 
-                          minWidth: 40, 
-                          color: isActive ? '#8B1D23' : '#94a3b8' 
-                        }}>
-                          {iconMap[item.icon]}
-                        </ListItemIcon>
-                        <ListItemText 
-                          primary={
-                            <Typography sx={{ 
-                              fontSize: '14px', 
-                              fontWeight: isActive ? 700 : 600,
-                              color: isActive ? '#8B1D23' : '#64748b'
-                            }}>
-                              {item.title}
-                            </Typography>
-                          }
-                        />
-                      </StyledListItemButton>
-                    </ListItem>
+                    <React.Fragment key={item.path}>
+                      <ListItem disablePadding>
+                        <StyledListItemButton
+                          isActive={isParentActive}
+                          onClick={() => {
+                            if (hasChildren) {
+                              toggleItem(item.path);
+                            } else {
+                              navigate(item.path);
+                            }
+                          }}
+                        >
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 40,
+                              color: isParentActive ? '#8B1D23' : '#94a3b8',
+                            }}
+                          >
+                            {iconMap[item.icon]}
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{
+                                  fontSize: '14px',
+                                  fontWeight: isParentActive ? 700 : 600,
+                                  color: isParentActive ? '#8B1D23' : '#64748b',
+                                }}
+                              >
+                                {item.title}
+                              </Typography>
+                            }
+                          />
+
+                        </StyledListItemButton>
+                      </ListItem>
+
+                      {hasChildren && (
+                        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                          <List disablePadding>
+                            {item.items!.map((subItem) => {
+                              const isSubActive = location.pathname === subItem.path;
+                              return (
+                                <ListItem key={subItem.path} disablePadding>
+                                  <SubItemButton
+                                    isActive={isSubActive}
+                                    onClick={() => navigate(subItem.path)}
+                                  >
+                                    <ListItemIcon
+                                      sx={{
+                                        minWidth: 36,
+                                        color: isSubActive ? '#8B1D23' : '#94a3b8',
+                                      }}
+                                    >
+                                      {iconMap[subItem.icon]}
+                                    </ListItemIcon>
+                                    <ListItemText
+                                      primary={
+                                        <Typography
+                                          sx={{
+                                            fontSize: '13px',
+                                            fontWeight: isSubActive ? 600 : 500,
+                                            color: isSubActive ? '#8B1D23' : '#64748b',
+                                          }}
+                                        >
+                                          {subItem.title}
+                                        </Typography>
+                                      }
+                                    />
+                                  </SubItemButton>
+                                </ListItem>
+                              );
+                            })}
+                          </List>
+                        </Collapse>
+                      )}
+                    </React.Fragment>
                   );
                 })}
               </List>
@@ -186,25 +278,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ role, userName, userEmail }) =
         </Box>
 
         <Divider sx={{ borderColor: '#f1f5f9' }} />
-        
+
         <Box sx={{ p: 2 }}>
-          <Box sx={{ 
-            display: 'flex', 
-            alignItems: 'center', 
-            gap: 1.5, 
-            p: 1.5, 
-            borderRadius: '12px',
-            bgcolor: '#f8fafc',
-            border: '1px solid #f1f5f9'
-          }}>
-            <Avatar sx={{ 
-              bgcolor: '#8B1D23', 
-              fontSize: '0.875rem', 
-              fontWeight: 'bold',
-              width: 40,
-              height: 40
-            }}>
-              {userName.split(' ').map(n => n[0]).join('')}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              p: 1.5,
+              borderRadius: '12px',
+              bgcolor: '#f8fafc',
+              border: '1px solid #f1f5f9',
+            }}
+          >
+            <Avatar
+              sx={{
+                bgcolor: '#8B1D23',
+                fontSize: '0.875rem',
+                fontWeight: 'bold',
+                width: 40,
+                height: 40,
+              }}
+            >
+              {userName
+                .split(' ')
+                .map((n) => n[0])
+                .join('')}
             </Avatar>
             <Box sx={{ minWidth: 0, flexGrow: 1 }}>
               <Typography variant="body2" sx={{ fontWeight: 700, color: '#1e293b' }} noWrap>

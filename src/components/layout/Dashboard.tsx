@@ -21,11 +21,11 @@ interface DashboardLayoutProps {
   userEmail: string;
 }
 
-export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ 
-  children, 
-  role, 
-  userName, 
-  userEmail 
+export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
+  children,
+  role,
+  userName,
+  userEmail
 }) => {
   return (
     <ThemeProvider theme={theme}>
