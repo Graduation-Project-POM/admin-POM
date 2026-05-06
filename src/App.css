@@ -1,184 +1,287 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
-
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
-  }
+/* === PRIMARY FONT === */
+/* === Lenos Black === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
 }
 
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
+/* === Lenos Black Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-BlackItalic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
 }
 
-#center {
-  display: flex;
-  flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
-
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
-  }
+/* === Lenos Bold === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
 }
 
-#next-steps {
-  display: flex;
-  border-top: 1px solid var(--border);
-  text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+/* === Lenos Bold Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-BoldItalic.otf") format("opentype");
+  font-weight: 700;
+  font-style: italic;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+/* === Extra Bold === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
 }
 
-#next-steps ul {
-  list-style: none;
+/* === Extra Bold Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-ExtraBoldItalic.otf") format("opentype");
+  font-weight: 800;
+  font-style: italic;
+}
+
+/* === Extra Light === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-ExtraLight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+}
+
+/* === Extra Light Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-ExtraLightItalic.otf") format("opentype");
+  font-weight: 200;
+  font-style: italic;
+}
+
+/* === Light === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+/* === Light Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-LightItalic.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+/* === Medium === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+/* === Medium Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-MediumItalic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+/* === Regular === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
+/* === Regular Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-RegularItalic.otf") format("opentype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* === Semi Bold === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-SemiBold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+/* === Semi Bold Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-SemiBoldItalic.otf") format("opentype");
+  font-weight: 600;
+  font-style: italic;
+}
+
+/* === Thin === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+}
+
+/* === Thin Italic === */
+@font-face {
+  font-family: "Lenos";
+  src: url("/fonts/Lenos-ThinItalic.otf") format("opentype");
+  font-weight: 100;
+  font-style: italic;
+}
+
+/* === SECONDARY FONT === */
+/* ===== READDEX PRO — ARABIC ===== */
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-arabic-200-normal.ttf") format("truetype");
+  font-weight: 200;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-arabic-300-normal.ttf") format("truetype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-arabic-400-normal.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-arabic-500-normal.ttf") format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-arabic-600-normal.ttf") format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-arabic-700-normal.ttf") format("truetype");
+  font-weight: 700;
+}
+
+/* ===== READDEX PRO — LATIN ===== */
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-200-normal.ttf") format("truetype");
+  font-weight: 200;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-300-normal.ttf") format("truetype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-400-normal.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-500-normal.ttf") format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-600-normal.ttf") format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-700-normal.ttf") format("truetype");
+  font-weight: 700;
+}
+
+/* ===== READDEX PRO — LATIN EXT ===== */
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-ext-200-normal.ttf") format("truetype");
+  font-weight: 200;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-ext-300-normal.ttf") format("truetype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-ext-400-normal.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-ext-500-normal.ttf") format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-ext-600-normal.ttf") format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-latin-ext-700-normal.ttf") format("truetype");
+  font-weight: 700;
+}
+
+/* ===== READDEX PRO — VIETNAMESE ===== */
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-vietnamese-200-normal.ttf") format("truetype");
+  font-weight: 200;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-vietnamese-300-normal.ttf") format("truetype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-vietnamese-400-normal.ttf") format("truetype");
+  font-weight: 400;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-vietnamese-500-normal.ttf") format("truetype");
+  font-weight: 500;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-vietnamese-600-normal.ttf") format("truetype");
+  font-weight: 600;
+}
+@font-face {
+  font-family: "Readex Pro";
+  src: url("/fonts/readex/readex-pro-vietnamese-700-normal.ttf") format("truetype");
+  font-weight: 700;
+}
+
+body,.typography {
+  font-family: "Lenos Thin", sans-serif;
+  margin: 0;
   padding: 0;
-  display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
-.ticks {
-  position: relative;
-  width: 100%;
-
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
-
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
-  }
+.secondary-text {
+  font-family: "Readex Pro", sans-serif;
 }

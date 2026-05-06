@@ -1,8 +1,17 @@
+import "./App.css"
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import type { UserRole } from './types';
 import { useState } from 'react';
 import { Page } from './components/common/Page';
 import { DashboardLayout } from './components/layout/Dashboard';
+import { AdminRoute } from './components/AdminRoute';
+import { AdminApprovalsPage } from './pages/admin/approval/ApprovalsPage';
+import { AdminUsersPage } from './pages/admin/users/UsersPage';
+import { AdminProblemsPage } from './pages/admin/problem/ProblemsPage';
+import { TrainerContestProblemsPage } from './pages/trainer/contests/TrainerContestProblemsPage';
+import StudentProblemsPage from './pages/student/problem/ProblemsPage';
+import StudentSubmissonsPage from './pages/student/problem/SubmissonsPage'
+import StudentContestsPage from './pages/student/contest/ContestsPage';
 
 const USER_DATA = {
   ADMIN: { name: 'Admin User', email: 'admin@pmo.ps' },
@@ -10,59 +19,138 @@ const USER_DATA = {
   STUDENT: { name: 'Student Sara', email: 'sara@pmo.ps' },
 };
 
+const defaultUsers: User[] = [
+  {
+    id: '1',
+    name: 'John Doe',
+    email: 'john@example.com',
+    role: 'student',
+    status: 'active',
+    group: 'Advanced Algorithms',
+    joinedDate: '2026-01-15',
+  },
+  {
+    id: '2',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'trainer',
+    status: 'active',
+    group: '—',
+    joinedDate: '2026-01-10',
+  },
+  {
+    id: '3',
+    name: 'Mike Johnson',
+    email: 'mike@example.com',
+    role: 'admin',
+    status: 'active',
+    group: '—',
+    joinedDate: '2025-12-05',
+  },
+  {
+    id: '4',
+    name: 'Sarah Williams',
+    email: 'sarah@example.com',
+    role: 'student',
+    status: 'active',
+    group: 'Beginner Practice',
+    joinedDate: '2026-02-20',
+  },
+  {
+    id: '5',
+    name: 'Jane Smith',
+    email: 'jane@example.com',
+    role: 'trainer',
+    status: 'active',
+    group: '—',
+    joinedDate: '2026-01-10',
+  },
+  {
+    id: '6',
+    name: 'Mike Johnson',
+    email: 'mike@example.com',
+    role: 'admin',
+    status: 'active',
+    group: '—',
+    joinedDate: '2025-12-05',
+  },
+  {
+    id: '7',
+    name: 'Sarah Williams',
+    email: 'sarah@example.com',
+    role: 'student',
+    status: 'active',
+    group: 'Beginner Practice',
+    joinedDate: '2026-02-20',
+  },
+];
 function App() {
-  const [role] = useState<UserRole>('ADMIN');
+  const [role, setRole] = useState<UserRole>('STUDENT');
 
   return (
     <Router>
 
-      <DashboardLayout 
-        role={role} 
-        userName={USER_DATA[role].name} 
+      <DashboardLayout
+        role={role}
+        userName={USER_DATA[role].name}
         userEmail={USER_DATA[role].email}
       >
         <Routes>
           {/* Admin Routes */}
-          <Route path="/dashboard" element={<Page title="Admin Dashboard" />} />
-          <Route path="/admin/users" element={<Page title="User Management" />} />
-          <Route path="/admin/approvals" element={<Page title="Pending Approvals" />} />
+          <Route
+            path="/dashboard"
+            element={<Page title="Admin Dashboard" showTable={false} />} />
+          <Route
+            path="/admin/users"
+            element={
+              <AdminRoute role={role}>
+                <AdminUsersPage />
+              </AdminRoute>
+            }
+          />
+          <Route
+            path="/admin/approvals"
+            element={<AdminApprovalsPage />}
+          />
           <Route path="/admin/announcements" element={<Page title="Announcements" />} />
           <Route path="/admin/groups" element={<Page title="Training Groups" />} />
           <Route path="/contests" element={<Page title="Olympiad Contests" />} />
-          <Route path="/problems" element={<Page title="Problem Bank" />} />
+          <Route path="/admin/problems" element={<AdminProblemsPage />} />
           <Route path="/admin/reports" element={<Page title="System Reports" />} />
+
 
           {/* Trainer Routes */}
           <Route path="/trainer/dashboard" element={<Page title="Trainer Dashboard" />} />
-          <Route path="/groups" element={<Page title="My Training Groups" />} />
-          <Route path="/contests" element={<Page title="My Contests" />} />
-          <Route path="/problems" element={<Page title="Problem Management" />} />
+          <Route path="/trainer/groups" element={<Page title="My Training Groups" />} />
+          <Route path="/trainer/contests" element={<TrainerContestProblemsPage />} />
+          <Route path="/trainer/problems" element={<Page title="Problem Management" />} />
 
           {/* Student Routes */}
           <Route path="/student/dashboard" element={<Page title="Student Dashboard" />} />
-          <Route path="/groups" element={<Page title="My Groups" />} />
-          <Route path="/contests" element={<Page title="Active Contests" />} />
-          <Route path="/student/practice" element={<Page title="Practice Arena" />} />
+          <Route path="/student/groups" element={<Page title="My Groups" />} />
+          <Route path="/student/contests" element={<StudentContestsPage />} />
+          <Route path="/student/problems" element={<StudentProblemsPage />} />
+          <Route path="/student/problems/submissions" element={<StudentSubmissonsPage />} />
 
           {/* Shared Routes */}
           <Route path="/settings" element={<Page title="Account Settings" />} />
           <Route path="/profile" element={<Page title="User Profile" />} />
 
           {/* Default Route redirects to role-specific dashboard */}
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              <Navigate 
-                to={role === 'ADMIN' ? '/admin/dashboard' : role === 'TRAINER' ? '/trainer/dashboard' : '/student/dashboard'} 
-                replace 
+              <Navigate
+                to={role === 'ADMIN' ? '/admin/dashboard' : role === 'TRAINER' ? '/trainer/dashboard' : '/student/dashboard'}
+                replace
               />
-            } 
+            }
           />
           {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-       </DashboardLayout>
-     </Router>
+      </DashboardLayout>
+    </Router>
   )
-} 
+}
 export default App;
