@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container, ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { Sidebar } from './Sidebar';
+import { Sidebar } from './Sidebar/Sidebar';
 import type { UserRole } from '../../types';
 
 const theme = createTheme({
