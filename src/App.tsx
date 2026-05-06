@@ -8,10 +8,14 @@ import { AdminRoute } from './components/AdminRoute';
 import { AdminApprovalsPage } from './pages/admin/approval/ApprovalsPage';
 import { AdminUsersPage } from './pages/admin/users/UsersPage';
 import { AdminProblemsPage } from './pages/admin/problem/ProblemsPage';
-import { TrainerContestProblemsPage } from './pages/trainer/contests/TrainerContestProblemsPage';
+import TrainerContestProblemsPage from './pages/trainer/contests/TrainerContestProblemsPage';
 import StudentProblemsPage from './pages/student/problem/ProblemsPage';
 import StudentSubmissonsPage from './pages/student/problem/SubmissonsPage'
 import StudentContestsPage from './pages/student/contest/ContestsPage';
+import GroupsPage from "./pages/admin/group/groupPage";
+import ContestsPage from "./pages/admin/contest/contestPage";
+import CoursesPage from "./pages/trainer/groups/groupsPage";
+import { ProblemBank } from "./pages/trainer/problem/problemPage";
 
 const USER_DATA = {
   ADMIN: { name: 'Admin User', email: 'admin@pmo.ps' },
@@ -19,73 +23,8 @@ const USER_DATA = {
   STUDENT: { name: 'Student Sara', email: 'sara@pmo.ps' },
 };
 
-const defaultUsers: User[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    role: 'student',
-    status: 'active',
-    group: 'Advanced Algorithms',
-    joinedDate: '2026-01-15',
-  },
-  {
-    id: '2',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    role: 'trainer',
-    status: 'active',
-    group: '—',
-    joinedDate: '2026-01-10',
-  },
-  {
-    id: '3',
-    name: 'Mike Johnson',
-    email: 'mike@example.com',
-    role: 'admin',
-    status: 'active',
-    group: '—',
-    joinedDate: '2025-12-05',
-  },
-  {
-    id: '4',
-    name: 'Sarah Williams',
-    email: 'sarah@example.com',
-    role: 'student',
-    status: 'active',
-    group: 'Beginner Practice',
-    joinedDate: '2026-02-20',
-  },
-  {
-    id: '5',
-    name: 'Jane Smith',
-    email: 'jane@example.com',
-    role: 'trainer',
-    status: 'active',
-    group: '—',
-    joinedDate: '2026-01-10',
-  },
-  {
-    id: '6',
-    name: 'Mike Johnson',
-    email: 'mike@example.com',
-    role: 'admin',
-    status: 'active',
-    group: '—',
-    joinedDate: '2025-12-05',
-  },
-  {
-    id: '7',
-    name: 'Sarah Williams',
-    email: 'sarah@example.com',
-    role: 'student',
-    status: 'active',
-    group: 'Beginner Practice',
-    joinedDate: '2026-02-20',
-  },
-];
 function App() {
-  const [role, setRole] = useState<UserRole>('STUDENT');
+  const [role, setRole] = useState<UserRole>('TRAINER');
 
   return (
     <Router>
@@ -99,7 +38,7 @@ function App() {
           {/* Admin Routes */}
           <Route
             path="/admin/dashboard"
-            element={<Page title="Admin Dashboard" showTable={false} />} />
+            element={<Page title="Admin Dashboard" />} />
           <Route
             path="/admin/users"
             element={
@@ -113,18 +52,17 @@ function App() {
             element={<AdminApprovalsPage />}
           />
           <Route path="/admin/announcements" element={<Page title="Announcements" />} />
-          <Route path="/admin/groups" element={<Page title="Training Groups" />} />
-          <Route path="/admin/contests" element={<Page title="Olympiad Contests" />} />
+          <Route path="/admin/groups" element={<GroupsPage />} />
+          <Route path="/admin/contests" element={<ContestsPage />} />
           <Route path="/admin/problems" element={<AdminProblemsPage />} />
           <Route path="/admin/reports" element={<Page title="System Reports" />} />
 
 
           {/* Trainer Routes */}
           <Route path="/trainer/dashboard" element={<Page title="Trainer Dashboard" />} />
-          <Route path="/trainer/groups" element={<Page title="My Training Groups" />} />
+          <Route path="/trainer/groups" element={<CoursesPage />} />
           <Route path="/trainer/contests" element={<TrainerContestProblemsPage />} />
-          <Route path="/trainer/problems" element={<Page title="Problem Management" />} />
-
+          <Route path="/trainer/problems" element={<ProblemBank />} />
           {/* Student Routes */}
           <Route path="/student/dashboard" element={<Page title="Student Dashboard" />} />
           <Route path="/student/groups" element={<Page title="My Groups" />} />

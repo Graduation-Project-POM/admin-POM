@@ -1,12 +1,10 @@
 
-import React from 'react';
 import { SharedTable } from '../../../components/ui/tables';
 import {
   Avatar,
   Typography,
   Box,
   Chip,
-  Button,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
@@ -128,10 +126,8 @@ export const AdminApprovalsPage = () => {
 
   return (
     <SharedTable
-      title="Recently Processed"
       data={approvals}
       columns={columns}
-      searchPlaceholder="Search approvals..."
     />
   );
 };

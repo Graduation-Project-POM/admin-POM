@@ -1,28 +1,18 @@
-// SharedTable.tsx
 import React, { useState } from 'react';
 import {
   Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
-  Paper, styled, createTheme, ThemeProvider, CssBaseline, Typography,
-  Avatar, Chip, IconButton, Checkbox
+  Paper, styled, createTheme, ThemeProvider, CssBaseline, IconButton, Checkbox
 } from '@mui/material';
-import { MoreVertical, Search } from 'lucide-react';
+import { MoreVertical } from 'lucide-react';
 
-// ... الثيم والإعدادات السابقة كما هي ...
 export const theme = createTheme({
   typography: {
     fontFamily: "Lenos, sans-serif",
   },
 });
 
-
-const primaryColor = '#7A1E1E';
-
-const TableContainerStyled = styled(TableContainer)({
-  borderRadius: '10px',
-  border: '1px solid #e5e7eb',
-  boxShadow: 'none',
-  backgroundColor: '#fff',
-});
+// No longer need TableContainerStyled – use sx directly
+// If you want to keep it, remove component={Paper} usage
 
 const StyledTableHead = styled(TableHead)({
   backgroundColor: '#f9fafb',
@@ -50,85 +40,29 @@ const StyledTableCell = styled(TableCell)({
   fontSize: '14px',
 });
 
-const StatusChip = styled(Chip)<{ status: string }>(({ status }) => ({
-  height: '22px',
-  fontSize: '11px',
-  fontWeight: 600,
-  borderRadius: '6px',
-  ...(status === 'active' && {
-    backgroundColor: '#e7f7ec',
-    color: '#166534',
-  }),
-  ...(status === 'inactive' && {
-    backgroundColor: '#fdecec',
-    color: '#991b1b',
-  }),
-  ...(status === 'pending' && {
-    backgroundColor: '#fff7e0',
-    color: '#92400e',
-  }),
-}));
-
-const HeaderBox = styled(Box)({
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  marginBottom: '18px',
-  paddingBottom: '12px',
-  borderBottom: '1px solid #e5e7eb',
-});
-
-const SearchBox = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '8px',
-  padding: '6px 10px',
-  border: '1px solid #e5e7eb',
-  borderRadius: '8px',
-  backgroundColor: '#fff',
-  '& input': {
-    border: 'none',
-    outline: 'none',
-    fontSize: '13px',
-    width: '180px',
-  },
-});
-
-const UserCell = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '10px',
-});
-
-
 interface Column {
   id: string;
   label: string;
-  render?: (row: any) => React.ReactNode; // دالة مخصصة لعرض الخلية
+  render?: (row: any) => React.ReactNode;
 }
 
 interface SharedTableProps {
   title?: string;
-  data: any[];                // البيانات من الـ API
-  columns: Column[];          // تعريف الأعمدة
-  searchPlaceholder?: string;
+  data: any[];
+  columns: Column[];
   onRowSelect?: (selectedIds: string[]) => void;
 }
 
 export const SharedTable: React.FC<SharedTableProps> = ({
-  title = 'Data',
   data,
   columns,
-  searchPlaceholder = 'Search...',
   onRowSelect,
 }) => {
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
-  // البحث عبر كل البيانات (قابل للتخصيص)
   const filteredData = data.filter((row) =>
     Object.values(row).some((val) =>
-      String(val).toLowerCase().includes(searchTerm.toLowerCase())
+      String(val).toLowerCase().includes("")
     )
   );
 
@@ -150,9 +84,15 @@ export const SharedTable: React.FC<SharedTableProps> = ({
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ p: 3, bgcolor: '#f9fafb', minHeight: '100vh' }}>
-        {/* header & search ... */}
-        {/* نفس الكود السابق لكن مع dynamic placeholders */}
-        <TableContainerStyled component={Paper}>
+        <TableContainer
+          component={Paper}
+          sx={{
+            borderRadius: 2,
+            boxShadow: 1,
+            border: '1px solid #e5e7eb',
+            backgroundColor: '#fff',
+          }}
+        >
           <Table>
             <StyledTableHead>
               <TableRow>
@@ -190,7 +130,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               ))}
             </TableBody>
           </Table>
-        </TableContainerStyled>
+        </TableContainer>
       </Box>
     </ThemeProvider>
   );
