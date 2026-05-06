@@ -98,7 +98,7 @@ function App() {
         <Routes>
           {/* Admin Routes */}
           <Route
-            path="/dashboard"
+            path="/admin/dashboard"
             element={<Page title="Admin Dashboard" showTable={false} />} />
           <Route
             path="/admin/users"
@@ -114,7 +114,7 @@ function App() {
           />
           <Route path="/admin/announcements" element={<Page title="Announcements" />} />
           <Route path="/admin/groups" element={<Page title="Training Groups" />} />
-          <Route path="/contests" element={<Page title="Olympiad Contests" />} />
+          <Route path="/admin/contests" element={<Page title="Olympiad Contests" />} />
           <Route path="/admin/problems" element={<AdminProblemsPage />} />
           <Route path="/admin/reports" element={<Page title="System Reports" />} />
 

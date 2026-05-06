@@ -3,14 +3,14 @@ import { Box, Container, ThemeProvider, createTheme, CssBaseline } from '@mui/ma
 import { Sidebar } from './Sidebar/Sidebar';
 import type { UserRole } from '../../types';
 
-const theme = createTheme({
+export const theme = createTheme({
   palette: {
     background: {
       default: '#f8fafc',
     },
   },
   typography: {
-    fontFamily: '"Inter", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Lenos", sans-serif',
   },
 });
 

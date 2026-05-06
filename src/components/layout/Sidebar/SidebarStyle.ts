@@ -39,12 +39,11 @@ export const StyledListItemButton = styled(ListItemButton, {
   borderRadius: '8px',
   padding: '10px 12px',
   position: 'relative',
-  backgroundColor: isActive ? 'rgba(139, 29, 35, 0.04)' : 'transparent',
+
+  backgroundColor: isActive ? 'rgba(139, 29, 35, 0.06)' : 'transparent',
 
   '&:hover': {
-    backgroundColor: isActive
-      ? 'rgba(139, 29, 35, 0.08)'
-      : '#f8fafc',
+    backgroundColor: isActive ? 'rgba(139, 29, 35, 0.1)' : '#f8fafc',
   },
 
   ...(isActive && {
@@ -58,7 +57,6 @@ export const StyledListItemButton = styled(ListItemButton, {
       height: '24px',
       backgroundColor: '#8B1D23',
       borderRadius: '0 4px 4px 0',
-      boxShadow: '0 0 8px rgba(139, 29, 35, 0.3)',
     },
   }),
 }));
