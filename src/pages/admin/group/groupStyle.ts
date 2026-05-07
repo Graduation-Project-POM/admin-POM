@@ -1,9 +1,8 @@
 import { styled } from '@mui/material/styles';
-import { Container, Box, TextField } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 
-export const StyledContainer = styled(Container)(({ theme }) => ({
-  paddingTop: theme.spacing(4),
-  paddingBottom: theme.spacing(4),
+export const StyledContainer = styled(Box)(({ theme }) => ({
+  padding: '0',
 }));
 
 export const TitleWrapper = styled(Box)({
@@ -12,15 +11,18 @@ export const TitleWrapper = styled(Box)({
 
 export const SubtitleWrapper = styled(Box)({
   marginBottom: 32,
-  color: 'text.secondary',
 });
 
 export const SearchWrapper = styled(Box)({
   marginBottom: 32,
-  maxWidth: 400,
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  gap: '16px',
 });
 
 export const StyledSearchField = styled(TextField)({
+  maxWidth: 400,
   '& .MuiOutlinedInput-root': {
     borderRadius: '10px',
     backgroundColor: '#fff',
@@ -41,13 +43,15 @@ export const GroupsGrid = styled(Box)({
   '@media (min-width: 600px)': {
     gridTemplateColumns: 'repeat(2, 1fr)',
   },
-  '@media (min-width: 900px)': {
+  '@media (min-width: 1200px)': {
     gridTemplateColumns: 'repeat(3, 1fr)',
   },
 });
 
 export const EmptyStateWrapper = styled(Box)({
   textAlign: 'center',
-  paddingTop: 64,
-  paddingBottom: 64,
+  padding: '64px 0',
+  backgroundColor: '#f8fafc',
+  borderRadius: '16px',
+  border: '2px dashed #e2e8f0',
 });

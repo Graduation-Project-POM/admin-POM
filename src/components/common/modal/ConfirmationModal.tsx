@@ -29,6 +29,11 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
     maxWidth: '400px',
   },
+
+  '& .MuiBackdrop-root': {
+    backdropFilter: 'blur(7px)',       
+    backgroundColor: 'rgba(0,0,0,0.6)',
+  },
 }));
 
 export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({

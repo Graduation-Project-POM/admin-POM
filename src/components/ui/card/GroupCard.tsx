@@ -7,18 +7,10 @@ import {
   Button,
   Divider,
   styled,
+  IconButton,
 } from '@mui/material';
-import { Users, User, Calendar } from 'lucide-react';
-
-export interface GroupData {
-  id: string;
-  title: string;
-  description: string;
-  studentsCount: number;
-  trainerCount: number;
-  trainerName: string;
-  createdDate: string;
-}
+import { Users, User, Calendar, Trash2 } from 'lucide-react';
+import type { GroupData } from '../../../types';
 
 const StyledCard = styled(Card)({
   borderRadius: '16px',
@@ -28,6 +20,7 @@ const StyledCard = styled(Card)({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
+  position: 'relative',
   '&:hover': {
     boxShadow: '0 12px 20px -12px rgba(0, 0, 0, 0.15)',
   },
@@ -61,8 +54,9 @@ const ActionButtons = styled(Box)({
 interface GroupCardProps {
   group: GroupData;
   onView?: (id: string) => void;
-  onEdit?: (id: string) => void;
-  onMembers?: (id: string) => void;
+  onEdit?: (group: GroupData) => void;
+  onMembers?: (group: GroupData) => void;
+  onDelete?: (id: string) => void;
 }
 
 export const GroupCard: React.FC<GroupCardProps> = ({
@@ -70,14 +64,29 @@ export const GroupCard: React.FC<GroupCardProps> = ({
   onView,
   onEdit,
   onMembers,
+  onDelete,
 }) => {
   return (
     <StyledCard>
+      <IconButton 
+        size="small" 
+        onClick={() => onDelete?.(group.id)}
+        sx={{ 
+          position: 'absolute', 
+          top: 12, 
+          right: 12, 
+          color: '#94a3b8',
+          '&:hover': { color: '#ef4444', bgcolor: '#fef2f2' }
+        }}
+      >
+        <Trash2 size={16} />
+      </IconButton>
+
       <CardHeader>
-        <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 1, pr: 3 }}>
           {group.title}
         </Typography>
-        <Typography variant="body2" sx={{ color: '#64748b', mb: 2 }}>
+        <Typography variant="body2" sx={{ color: '#64748b', mb: 2, minHeight: '40px' }}>
           {group.description}
         </Typography>
       </CardHeader>
@@ -127,7 +136,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
           <Button
             variant="outlined"
             size="small"
-            onClick={() => onEdit?.(group.id)}
+            onClick={() => onEdit?.(group)}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
             Edit
@@ -135,8 +144,8 @@ export const GroupCard: React.FC<GroupCardProps> = ({
           <Button
             variant="contained"
             size="small"
-            onClick={() => onMembers?.(group.id)}
-            sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' } }}
+            onClick={() => onMembers?.(group)}
+            sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' }, boxShadow: 'none' }}
           >
             Members
           </Button>
