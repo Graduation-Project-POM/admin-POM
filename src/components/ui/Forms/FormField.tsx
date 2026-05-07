@@ -8,6 +8,7 @@ import {
 import { Input } from "../input/Input";
 import { Label } from "../label/Label";
 
+const PRIMARY_COLOR = "#8B1D23";
 type FieldType = "text" | "email" | "password" | "select" | "switch";
 
 interface Option {
@@ -83,6 +84,14 @@ export const FormField = ({
         onChange={onChange}
         select={type === "select"}
         required={required}
+        multiline={name === "bio"}
+        minRows={name === "bio" ? 3 : 1}
+        maxRows={name === "bio" ? 8 : 1}
+        sx={{
+          "& .MuiOutlinedInput-root.Mui-focused fieldset": {
+            borderColor: PRIMARY_COLOR,
+          },
+        }}
       >
         {type === "select" &&
           options.map((opt) => (
