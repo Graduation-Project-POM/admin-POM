@@ -1,56 +1,72 @@
 import React from "react";
-import MuiButton from "@mui/material/Button";
-import type { ButtonProps as MuiButtonProps } from "@mui/material/Button";
+import {
+  Button as MuiButton,
+  type ButtonProps as MuiButtonProps,
+  styled,
+} from "@mui/material";
 
-type Props = MuiButtonProps & {
-  variantType?: "default" | "outline" | "ghost";
-  sizeType?: "sm" | "md" | "lg";
-};
+interface StyledButtonProps extends MuiButtonProps {
+  variantType?: "default" | "outline" | "ghost" | "danger";
+}
 
-export const Button: React.FC<Props> = ({
+const StyledButton = styled(MuiButton, {
+  shouldForwardProp: (prop) => prop !== "variantType",
+})<StyledButtonProps>(({ variantType }) => ({
+  textTransform: "none",
+  fontWeight: 600,
+  padding: "8px 16px",
+  borderRadius: "8px",
+  boxShadow: "none",
+  "&:hover": {
+    boxShadow: "none",
+  },
+  ...(variantType === "default" && {
+    backgroundColor: "#8B1D23",
+    color: "#ffffff",
+    "&:hover": {
+      backgroundColor: "#72181d",
+    },
+  }),
+  ...(variantType === "outline" && {
+    border: "1px solid #e2e8f0",
+    color: "#1e293b",
+    backgroundColor: "#ffffff",
+    "&:hover": {
+      backgroundColor: "#f8fafc",
+      borderColor: "#cbd5e1",
+    },
+  }),
+  ...(variantType === "ghost" && {
+    color: "#64748b",
+    "&:hover": {
+      backgroundColor: "#f1f5f9",
+    },
+  }),
+  ...(variantType === "danger" && {
+    backgroundColor: "#fee2e2",
+    color: "#991b1b",
+    "&:hover": {
+      backgroundColor: "#fecaca",
+    },
+    "&.Mui-disabled": {
+      backgroundColor: "#f1f5f9",
+      color: "#cbd5e1",
+    },
+  }),
+  "&.Mui-disabled": {
+    backgroundColor: "#f1f5f9",
+    color: "#cbd5e1",
+  },
+}));
+
+export const Button: React.FC<StyledButtonProps> = ({
   variantType = "default",
-  sizeType = "md",
-  sx,
+  children,
   ...props
 }) => {
-  const getVariant = () => {
-    switch (variantType) {
-      case "outline":
-        return "outlined";
-      case "ghost":
-        return "text";
-      default:
-        return "contained";
-    }
-  };
-
-  const getSize = () => {
-    switch (sizeType) {
-      case "sm":
-        return "small";
-      case "lg":
-        return "large";
-      default:
-        return "medium";
-    }
-  };
-
   return (
-    <MuiButton
-      variant={getVariant()}
-      size={getSize()}
-      sx={{
-        textTransform: "none",
-        borderRadius: "8px",
-        bgcolor: "#8B1D23",
-        color: "#fff",
-
-        "&:hover": {
-          bgcolor: "#6f161b",
-        },
-        ...sx,
-      }}
-      {...props}
-    />
+    <StyledButton variantType={variantType} {...props}>
+      {children}
+    </StyledButton>
   );
 };

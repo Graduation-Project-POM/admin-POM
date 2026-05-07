@@ -1,4 +1,3 @@
-import React from 'react';
 import { SharedTable } from '../../../components/ui/table/tables';
 import {
   Box,
@@ -6,6 +5,10 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useState } from 'react';
+import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
+import Edit from './Edit';
+import Create from './Create';
 
 const primaryColor = '#7A1E1E';
 
@@ -77,6 +80,53 @@ const mockProblems: Problem[] = [
 ];
 
 export const AdminProblemsPage = () => {
+  const [problems, setProblems] = useState<Problem[]>(mockProblems);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
+  
+  const [confirmConfig, setConfirmConfig] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    open: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const handleCreate = (newProblem: Problem) => {
+    setProblems([newProblem, ...problems]);
+  };
+
+  const handleEdit = (updatedProblem: Problem) => {
+    setProblems(problems.map(p => p.id === updatedProblem.id ? updatedProblem : p));
+  };
+
+  const handleDelete = (id: string) => {
+    setConfirmConfig({
+      open: true,
+      title: 'Delete Problem',
+      message: 'Are you sure you want to delete this problem? This action cannot be undone.',
+      onConfirm: () => {
+        setProblems(problems.filter(p => p.id !== id));
+      }
+    });
+  };
+
+  const handleBulkDelete = (ids: string[]) => {
+    setConfirmConfig({
+      open: true,
+      title: 'Delete Problems',
+      message: `Are you sure you want to delete ${ids.length} selected problems? This action cannot be undone.`,
+      onConfirm: () => {
+        setProblems(problems.filter(p => !ids.includes(p.id)));
+      }
+    });
+  };
+
   const columns = [
     {
       id: 'title',
@@ -138,12 +188,54 @@ export const AdminProblemsPage = () => {
   ];
 
   return (
-    <SharedTable
-      title="Problem Bank"
-      data={mockProblems}
-      columns={columns}
-      searchPlaceholder="Search problems..."
-    />
+
+    <Box sx={{ p: 0 }}>
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
+          Problem Bank
+        </Typography>
+        <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
+          Manage the collection of mathematical problems
+        </Typography>
+      </Box>
+      <SharedTable
+        data={problems}
+        columns={columns}
+        onAdd={() => setIsCreateModalOpen(true)}
+        onEdit={(row) => {
+          setSelectedProblem(row);
+          setIsEditModalOpen(true);
+        }}
+        onSingleDelete={handleDelete}
+        onDelete={handleBulkDelete}
+        addButtonLabel="Add Problem"
+        searchPlaceholder="Search problems..."
+      />
+
+      <Create 
+        open={isCreateModalOpen} 
+        onClose={() => setIsCreateModalOpen(false)} 
+        onSave={handleCreate} 
+      />
+
+      <Edit 
+        open={isEditModalOpen} 
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedProblem(null);
+        }} 
+        problem={selectedProblem} 
+        onSave={handleEdit} 
+      />
+
+      <ConfirmationModal 
+        open={confirmConfig.open}
+        onClose={() => setConfirmConfig(prev => ({ ...prev, open: false }))}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        message={confirmConfig.message}
+      />
+    </Box>    
   );
 };
 
