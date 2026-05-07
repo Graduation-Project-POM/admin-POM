@@ -22,6 +22,7 @@ import ContestsPage from "./pages/admin/contest/contestPage";
 import CoursesPage from "./pages/trainer/groups/groupsPage";
 import { ProblemBank } from "./pages/trainer/problem/problemPage";
 import ProfilePage from "./pages/admin/profile/profilePage";
+import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
 
 const USER_DATA = {
   ADMIN: { name: "Admin User", email: "admin@pmo.ps" },
@@ -43,7 +44,7 @@ function App() {
           {/* Admin Routes */}
           <Route
             path="/admin/dashboard"
-            element={<Page title="Admin Dashboard" />}
+            element={<AdminDashboard />}
           />
           <Route
             path="/admin/users"
