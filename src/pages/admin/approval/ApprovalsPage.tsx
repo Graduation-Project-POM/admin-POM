@@ -231,7 +231,6 @@ export const AdminApprovalsPage = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Approval Action Dialog */}
       <Dialog open={approvalAction !== null} onClose={handleCancel}>
         <DialogTitle sx={{ fontWeight: 700, fontSize: '18px' }}>
           {approvalAction === 'approve' ? 'Approve Trainer' : 'Reject Application'}
