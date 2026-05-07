@@ -32,8 +32,8 @@ export const ModalWrapper: React.FC<Props> = ({
       slotProps={{
         backdrop: {
           sx: {
-            backgroundColor: "rgba(0, 0, 0, 0.5)",
-            backdropFilter: "blur(6px)",
+            backgroundColor: "rgba(0, 0, 0, 0.6)",
+            backdropFilter: "blur(7px)",
           },
         },
       }}
