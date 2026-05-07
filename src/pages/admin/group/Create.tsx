@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Stack, MenuItem, Box } from '@mui/material';
+import { Stack, MenuItem } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { Button } from '../../../components/ui/button/Button';
