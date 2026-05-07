@@ -1,7 +1,7 @@
 import { TextField } from "@mui/material";
 import type { TextFieldProps } from "@mui/material";
 
-export const Input = (props: TextFieldProps) => {
+export const Input = ({ sx, ...props }: TextFieldProps) => {
   return (
     <TextField
       variant="outlined"
@@ -10,8 +10,14 @@ export const Input = (props: TextFieldProps) => {
       {...props}
       sx={{
         "& .MuiOutlinedInput-root": {
-          borderRadius: "8px",
+          "&.Mui-focused fieldset": {
+            borderColor: "#8B1D23",
+          },
         },
+        "& .MuiInputLabel-root.Mui-focused": {
+          color: "#8B1D23",
+        },
+        ...sx,
       }}
     />
   );
