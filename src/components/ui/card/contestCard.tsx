@@ -9,7 +9,7 @@ import {
   Chip,
   styled,
 } from '@mui/material';
-import { Calendar, Users, Trophy, Clock, Zap } from 'lucide-react';
+import { Calendar, Users, Trophy, Clock } from 'lucide-react';
 import type { ContestData } from '../../../types';
 
 const StyledCard = styled(Card)({
@@ -20,10 +20,6 @@ const StyledCard = styled(Card)({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  '&:hover': {
-    transform: 'translateY(-4px)',
-    boxShadow: '0 12px 20px -12px rgba(0, 0, 0, 0.15)',
-  },
 });
 
 const CardHeader = styled(Box)({
@@ -107,10 +103,8 @@ export const ContestCard: React.FC<ContestCardProps> = ({
   const difficulty = contest.difficulty ?? 'Medium';
   const participants = contest.participants ?? 0;      
   const problemsCount = contest.problemsCount ?? 0;
-  const maxSlots = contest.maxSlots;
   const startDate = contest.startDate ?? '';
   const endDate = contest.endDate ?? '';
-  const description = contest.description ?? '';
   const title = contest.title ?? 'Untitled Contest';
 
   const statusColor = getStatusColor(status);
@@ -150,14 +144,6 @@ export const ContestCard: React.FC<ContestCardProps> = ({
               {problemsCount} Problems
             </Typography>
           </StatBox>
-          {maxSlots && (
-            <StatBox>
-              <Zap size={16} color="#8B1D23" />
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                {maxSlots} Max Slots
-              </Typography>
-            </StatBox>
-          )}
         </Box>
 
         <Divider sx={{ my: 1.5 }} />
@@ -176,10 +162,6 @@ export const ContestCard: React.FC<ContestCardProps> = ({
             </Typography>
           </Box>
         </Box>
-
-        <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontStyle: 'italic' }}>
-          {description}
-        </Typography>
 
         <ActionButtons>
           <Button variant="outlined" size="small" onClick={() => onView?.(contest.id)}>
