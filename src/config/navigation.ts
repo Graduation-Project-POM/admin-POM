@@ -5,6 +5,7 @@ export interface NavItem {
   path: string;
   icon: string;
   roles?: UserRole[];
+  items?: NavItem[];
 }
 
 export interface NavSection {
@@ -62,6 +63,12 @@ export const navigationConfig: NavSection[] = [
         title: "Reports",
         path: "/admin/reports",
         icon: "BarChart3",
+        roles: ["ADMIN"],
+      },
+      {
+        title: "Profile",
+        path: "/admin/profile",
+        icon: "UserCircle",
         roles: ["ADMIN"],
       },
 
@@ -129,15 +136,11 @@ export const navigationConfig: NavSection[] = [
         title: "Settings",
         path: "/settings",
         icon: "Settings",
-      },
-      {
-        title: "Profile",
-        path: "/profile",
-        icon: "UserCircle",
-      },
+      }
     ],
   },
 ];
+
 export const getVisibleNavigation = (role: UserRole) => {
   return navigationConfig
     .map((section) => ({
@@ -145,11 +148,12 @@ export const getVisibleNavigation = (role: UserRole) => {
       items: section.items.filter((item) => {
         if (item.roles && !item.roles.includes(role)) return false;
         if (item.items) {
-          item.items = item.items.filter((subItem) => {
-            if (!subItem.roles) return true;
-            return subItem.roles.includes(role);
+          const filteredChildren = item.items.filter((subItem) => {
+            if (subItem.roles && !subItem.roles.includes(role)) return false;
+            return true;
           });
-          if (item.items.length === 0) return false;
+          if (filteredChildren.length === 0) return false;
+          item.items = filteredChildren;
         }
         return true;
       }),
