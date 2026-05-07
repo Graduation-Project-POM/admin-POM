@@ -140,11 +140,16 @@ export const AdminUsersPage = () => {
   };
 
   const handleSingleDelete = (id: string) => {
-    if (confirm(`Are you sure you want to delete this user?`)) {
-      setUsers(users.filter(u => u.id !== id));
-    }
+    setConfirmConfig({
+      open: true,
+      title: "Delete User",
+      message: "Are you sure you want to delete this user? This action cannot be undone.",
+      onConfirm: () => {
+        setUsers(users.filter(u => u.id !== id));
+      }
+    });
   };
-
+  
   const handleEditClick = (user: User) => {
     // Transform table user to form user format
     const [firstName, ...lastNameParts] = user.name.split(' ');

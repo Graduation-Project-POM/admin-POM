@@ -1,14 +1,10 @@
 import { useState } from "react";
-import { Avatar, Typography, Box, Stack, Divider } from "@mui/material";
+import { Avatar, Typography, Box, Stack } from "@mui/material";
 import {
   CheckCircle,
   XCircle,
   Eye,
   Clock,
-  Mail,
-  Phone,
-  Briefcase,
-  Calendar,
 } from "lucide-react";
 import {
   PageContainer,
