@@ -98,3 +98,31 @@ export interface SharedTableProps {
   addButtonLabel?: string;
   searchPlaceholder?: string;
 }
+
+interface StatCardData {
+  title: string;
+  value: number;
+  trend?: {
+    value: number;
+    label: string;
+    direction: "up" | "down";
+  };
+  subtitle?: string;
+  icon: React.ElementType;
+  iconBg: string;
+  iconColor: string;
+}
+
+interface PendingTrainer {
+  id: number;
+  name: string;
+  title: string;
+  university: string;
+}
+
+interface Announcement {
+  id: number;
+  title: string;
+  date: string;
+  status: "Published" | "Draft";
+}
