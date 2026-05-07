@@ -21,6 +21,7 @@ import GroupsPage from "./pages/admin/group/groupPage";
 import ContestsPage from "./pages/admin/contest/contestPage";
 import CoursesPage from "./pages/trainer/groups/groupsPage";
 import { ProblemBank } from "./pages/trainer/problem/problemPage";
+import ProfilePage from "./pages/admin/profile/profilePage";
 
 const USER_DATA = {
   ADMIN: { name: "Admin User", email: "admin@pmo.ps" },
@@ -64,7 +65,7 @@ function App() {
             path="/admin/reports"
             element={<Page title="System Reports" />}
           />
-
+          <Route path="/admin/profile" element={<ProfilePage />} />
           {/* Trainer Routes */}
           <Route
             path="/trainer/dashboard"
@@ -76,6 +77,8 @@ function App() {
             element={<ContestsManager />}
           />
           <Route path="/trainer/problems" element={<ProblemBank />} />
+          <Route path="/trainer/profile" element={<ProfilePage />} />
+
           {/* Student Routes */}
           <Route
             path="/student/dashboard"
@@ -91,7 +94,6 @@ function App() {
 
           {/* Shared Routes */}
           <Route path="/settings" element={<Page title="Account Settings" />} />
-          <Route path="/profile" element={<Page title="User Profile" />} />
 
           {/* Default Route redirects to role-specific dashboard */}
           <Route
