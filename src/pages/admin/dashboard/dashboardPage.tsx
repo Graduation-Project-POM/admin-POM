@@ -58,7 +58,7 @@ import {
   draftChip,
 } from "./dashboardStyle";
 
-import type {StatCardData,PendingTrainer,Announcement } from "../../../types"
+import type { StatCardData, PendingTrainer, Announcement } from "../../../types/index"
 
 
 const AdminDashboard: React.FC = () => {

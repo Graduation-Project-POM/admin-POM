@@ -1,3 +1,4 @@
+import type { SxProps, Theme } from '@mui/material';
 
 export const dashboardContainer: SxProps<Theme> = {
   p: { xs: 2, sm: 3, md: 4 },
@@ -150,5 +151,4 @@ export const draftChip = {
   borderRadius: '30px',
   fontSize: '0.7rem',
 };
-
 
