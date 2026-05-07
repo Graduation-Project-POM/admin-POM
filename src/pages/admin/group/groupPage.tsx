@@ -1,7 +1,17 @@
-import React from 'react';
-import { Typography, Container, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { Typography, InputAdornment } from '@mui/material';
+import { Search } from 'lucide-react';
 import { GroupCard } from '../../../components/ui/card/GroupCard';
 import type { GroupData } from '../../../types/index';
+import {
+  StyledContainer,
+  TitleWrapper,
+  SubtitleWrapper,
+  SearchWrapper,
+  StyledSearchField,
+  GroupsGrid,
+  EmptyStateWrapper,
+} from './groupStyle';
 
 const mockGroups: GroupData[] = [
   {
@@ -34,43 +44,70 @@ const mockGroups: GroupData[] = [
 ];
 
 export const GroupsPage: React.FC = () => {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const handleView = (id: string) => console.log('View group', id);
   const handleEdit = (id: string) => console.log('Edit group', id);
   const handleMembers = (id: string) => console.log('Members group', id);
 
+  const filteredGroups = mockGroups.filter(
+    (group) =>
+      group.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      group.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <Container maxWidth="xl" sx={{ py: 4 }}>
-      <Typography variant="h4" sx={{ fontWeight: 800, mb: 1 }}>
-        My Groups
-      </Typography>
+    <StyledContainer maxWidth="xl">
+      <TitleWrapper>
+        <Typography variant="h4" sx={{ fontWeight: 800 }}>
+          My Groups
+        </Typography>
+      </TitleWrapper>
+      <SubtitleWrapper>
+        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+          Groups you are participating in or managing
+        </Typography>
+      </SubtitleWrapper>
 
-      <Typography variant="body2" sx={{ color: 'text.secondary', mb: 4 }}>
-        Groups you are participating in or managing
-      </Typography>
+      <SearchWrapper>
+        <StyledSearchField
+          fullWidth
+          size="small"
+          placeholder="Search by title or description..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={18} color="#9ca3af" />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
+      </SearchWrapper>
 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, 1fr)',
-            md: 'repeat(3, 1fr)',
-          },
-          gap: 3,
-        }}
-      >
-        {mockGroups.map((group) => (
-          <Box key={group.id}>
+      {filteredGroups.length === 0 ? (
+        <EmptyStateWrapper>
+          <Typography variant="body1" color="text.secondary">
+            No groups match your search.
+          </Typography>
+        </EmptyStateWrapper>
+      ) : (
+        <GroupsGrid>
+          {filteredGroups.map((group) => (
             <GroupCard
+              key={group.id}
               group={group}
               onView={handleView}
               onEdit={handleEdit}
               onMembers={handleMembers}
             />
-          </Box>
-        ))}
-      </Box>
-    </Container>
+          ))}
+        </GroupsGrid>
+      )}
+    </StyledContainer>
   );
 };
 

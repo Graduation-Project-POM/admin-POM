@@ -29,7 +29,6 @@ const StyledCard = styled(Card)({
   display: 'flex',
   flexDirection: 'column',
   '&:hover': {
-    transform: 'translateY(-4px)',
     boxShadow: '0 12px 20px -12px rgba(0, 0, 0, 0.15)',
   },
 });
