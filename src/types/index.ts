@@ -49,12 +49,34 @@ export interface ContestData {
   startDate: string;
   endDate: string;
 }
+export interface Contest {
+  id: number;
+  name: string;
+  status: 'Upcoming' | 'Ongoing' | 'Ended';
+  startDate: string;
+  endDate: string;
+  participants: number;
+  problems: number;
+  duration: string;
+  timeProgress?: number; 
+}
 
-export interface ContestProblem {
-  id: string;
+export interface TContestProblem {
+  id: number;
   problem: string;
   difficulty: 'Easy' | 'Medium' | 'Hard';
   studentsSolved: string;
   totalSubmissions: number;
   acceptanceRate: number;
+}
+
+
+export interface SContestProblem {
+  id: string;
+  title: string;
+  type: 'NT' | 'Alg';
+  difficulty: 'Easy' | 'Medium' | 'Hard' | 'V.Hard';
+  submissions: number;
+  solvedByUser: boolean;
+  userSolutionId?: string;
 }

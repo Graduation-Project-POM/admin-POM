@@ -8,7 +8,6 @@ import { AdminRoute } from './components/AdminRoute';
 import { AdminApprovalsPage } from './pages/admin/approval/ApprovalsPage';
 import { AdminUsersPage } from './pages/admin/users/UsersPage';
 import { AdminProblemsPage } from './pages/admin/problem/ProblemsPage';
-import TrainerContestProblemsPage from './pages/trainer/contests/TrainerContestProblemsPage';
 import StudentProblemsPage from './pages/student/problem/ProblemsPage';
 import StudentSubmissonsPage from './pages/student/problem/SubmissonsPage'
 import StudentContestsPage from './pages/student/contest/ContestsPage';
@@ -16,6 +15,7 @@ import GroupsPage from "./pages/admin/group/groupPage";
 import ContestsPage from "./pages/admin/contest/contestPage";
 import CoursesPage from "./pages/trainer/groups/groupsPage";
 import { ProblemBank } from "./pages/trainer/problem/problemPage";
+import { ContestsManager } from "./pages/trainer/contests/ContestPage";
 
 const USER_DATA = {
   ADMIN: { name: 'Admin User', email: 'admin@pmo.ps' },
@@ -24,7 +24,7 @@ const USER_DATA = {
 };
 
 function App() {
-  const [role, setRole] = useState<UserRole>('TRAINER');
+  const [role, setRole] = useState<UserRole>('STUDENT');
 
   return (
     <Router>
@@ -61,7 +61,7 @@ function App() {
           {/* Trainer Routes */}
           <Route path="/trainer/dashboard" element={<Page title="Trainer Dashboard" />} />
           <Route path="/trainer/groups" element={<CoursesPage />} />
-          <Route path="/trainer/contests" element={<TrainerContestProblemsPage />} />
+          <Route path="/trainer/contests" element={<ContestsManager />} />
           <Route path="/trainer/problems" element={<ProblemBank />} />
           {/* Student Routes */}
           <Route path="/student/dashboard" element={<Page title="Student Dashboard" />} />
