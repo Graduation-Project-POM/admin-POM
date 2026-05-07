@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Avatar,
   Typography,
   Box,
-  Button,
   Stack,
   Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from '@mui/material';
 import {
   CheckCircle,
@@ -21,7 +16,6 @@ import {
   Briefcase,
   Calendar,
 } from 'lucide-react';
-import { SharedTable } from '../../../components/ui/table/tables';
 import {
   PageContainer,
   HeaderSection,
@@ -37,19 +31,22 @@ import {
   StatusChip,
   UserCell,
 } from './ApprovalStyle';
+import { ViewTrainerDetails } from './View';
+import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
+import { SharedTable } from '../../../components/ui/table/tables';
+import Edit from './Edit';
 
-const pendingRequest = {
+const INITIAL_PENDING = {
   id: '0',
   name: 'David Wilson',
   email: 'david.wilson@example.com',
   phone: '+1 234 567 8903',
   submitted: '2026-03-28',
   specialization: 'Advanced Algorithms, Competitive Programming',
-  initials: 'DW',
   bio: 'Passionate educator with 8+ years of experience in teaching competitive programming and algorithms.',
 };
 
-const approvals = [
+const INITIAL_HISTORY = [
   {
     id: '1',
     name: 'Sarah Johnson',
@@ -94,16 +91,84 @@ const approvals = [
 
 export const AdminApprovalsPage = () => {
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [approvalAction, setApprovalAction] = useState<'approve' | 'reject' | null>(null);
+  const [editOpen, setEditOpen] = useState(false);
+  const [selectedTrainer, setSelectedTrainer] = useState<any>(null);
+  const [pendingRequest, setPendingRequest] = useState<any>(INITIAL_PENDING);
+  const [history, setHistory] = useState(INITIAL_HISTORY);
+  
+  const [confirmConfig, setConfirmConfig] = useState<{
+    open: boolean;
+    type: 'approve' | 'reject' | 'delete' | 'bulk_delete' | null;
+    onConfirmOverride?: () => void;
+    itemCount?: number;
+  }>({
+    open: false,
+    type: null,
+  });
 
-  const handleView = () => setDetailsOpen(true);
-  const handleApprove = () => setApprovalAction('approve');
-  const handleReject = () => setApprovalAction('reject');
-  const handleConfirm = () => {
-    console.log(`${approvalAction} trainer`);
-    setApprovalAction(null);
+  const handleApproveClick = () => setConfirmConfig({ open: true, type: 'approve' });
+  const handleRejectClick = () => setConfirmConfig({ open: true, type: 'reject' });
+
+  const handleEditSave = (updatedTrainer: any) => {
+    if (pendingRequest && updatedTrainer.id === pendingRequest.id) {
+      setPendingRequest({
+        ...pendingRequest,
+        ...updatedTrainer
+      });
+    } else {
+      setHistory(history.map(item => item.id === updatedTrainer.id ? { ...item, ...updatedTrainer } : item));
+    }
+    setEditOpen(false);
+    setSelectedTrainer(null);
   };
-  const handleCancel = () => setApprovalAction(null);
+
+  const handleHistoryEdit = (row: any) => {
+    setSelectedTrainer(row);
+    setEditOpen(true);
+  };
+
+  const handleHistoryDelete = (id: string) => {
+    setConfirmConfig({
+      open: true,
+      type: 'delete',
+      onConfirmOverride: () => {
+        setHistory(history.filter(item => item.id !== id));
+      }
+    });
+  };
+
+  const handleBulkDelete = (ids: string[]) => {
+    setConfirmConfig({
+      open: true,
+      type: 'bulk_delete',
+      itemCount: ids.length,
+      onConfirmOverride: () => {
+        setHistory((prev) => prev.filter(item => !ids.includes(item.id)));
+      }
+    });
+  };
+
+  const handleConfirmAction = () => {
+    if (confirmConfig.onConfirmOverride) {
+        confirmConfig.onConfirmOverride();
+        setConfirmConfig({ open: false, type: null });
+        return;
+    }
+    if (!pendingRequest) return;
+
+    const newStatus = confirmConfig.type === 'approve' ? 'Approved' : 'Rejected';
+    
+    setHistory([
+      {
+        ...pendingRequest,
+        status: newStatus,
+      },
+      ...history,
+    ]);
+
+    setPendingRequest(null);
+    setConfirmConfig({ open: false, type: null });
+  };
 
   const columns = [
     {
@@ -156,101 +221,142 @@ export const AdminApprovalsPage = () => {
         </Box>
       </HeaderSection>
 
-      <Box sx={{ mb: 4 }}>
-        <Typography sx={{ fontSize: '16px', fontWeight: 700, color: '#1e293b', mb: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Clock size={20} color="#81595bff" />
-          Pending Requests
-        </Typography>
-
-        <PendingCard>
-          <PendingBadge label="PENDING" />
-          <Box sx={{ p: 3 }}>
-            <Stack direction="row" spacing={1} sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <UserAvatar>{pendingRequest.initials}</UserAvatar>
-                <Box>
-                  <Typography sx={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
-                    {pendingRequest.name}
-                  </Typography>
-                  <Typography sx={{ fontSize: '13px', color: '#94a3b8', mt: '2px' }}>
-                    Trainer Application
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Divider sx={{ display: { xs: 'none', md: 'block' }, height: '60px', bgcolor: '#e2e8f0' }} />
-
-              <Box sx={{ flex: 1 }}>
-                <InfoItem>
-                  <InfoIcon><Mail size={16} /></InfoIcon>
-                  <Box><InfoLabel>Email</InfoLabel><InfoValue>{pendingRequest.email}</InfoValue></Box>
-                </InfoItem>
-                <InfoItem>
-                  <InfoIcon><Phone size={16} /></InfoIcon>
-                  <Box><InfoLabel>Phone</InfoLabel><InfoValue>{pendingRequest.phone}</InfoValue></Box>
-                </InfoItem>
-                <InfoItem>
-                  <InfoIcon><Calendar size={16} /></InfoIcon>
-                  <Box><InfoLabel>Submitted</InfoLabel><InfoValue>{pendingRequest.submitted}</InfoValue></Box>
-                </InfoItem>
-              </Box>
-
-              <Box sx={{ flex: 1 }}>
-                <InfoItem>
-                  <InfoIcon><Briefcase size={16} /></InfoIcon>
-                  <Box><InfoLabel>Specialization</InfoLabel><InfoValue sx={{ fontSize: '13px' }}>{pendingRequest.specialization}</InfoValue></Box>
-                </InfoItem>
-              </Box>
-
-              <Stack direction="row" spacing={1.5} sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                <ActionButton variant="outlined" startIcon={<Eye size={16} />} onClick={handleView}>View</ActionButton>
-                <ActionButton variant="contained" startIcon={<CheckCircle size={16} />} onClick={handleApprove}>Approve</ActionButton>
-                <ActionButton variant="outlined" color="error" startIcon={<XCircle size={16} />} onClick={handleReject}>Reject</ActionButton>
-              </Stack>
-            </Stack>
-          </Box>
-        </PendingCard>
-      </Box>
-
-      <SharedTable data={approvals} columns={columns} title="Approval History" />
-
-      <Dialog open={detailsOpen} onClose={() => setDetailsOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle sx={{ fontWeight: 700, fontSize: '18px' }}>{pendingRequest.name} - Full Details</DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <Stack spacing={2}>
-            <Box> <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', mb: 0.5, textTransform: 'uppercase' }}>Name</Typography> <Typography>{pendingRequest.name}</Typography> </Box>
-            <Box> <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', mb: 0.5, textTransform: 'uppercase' }}>Email</Typography> <Typography>{pendingRequest.email}</Typography> </Box>
-            <Box> <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', mb: 0.5, textTransform: 'uppercase' }}>Phone</Typography> <Typography>{pendingRequest.phone}</Typography> </Box>
-            <Box> <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', mb: 0.5, textTransform: 'uppercase' }}>Specialization</Typography> <Typography>{pendingRequest.specialization}</Typography> </Box>
-            <Box> <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', mb: 0.5, textTransform: 'uppercase' }}>Bio</Typography> <Typography>{pendingRequest.bio}</Typography> </Box>
-            <Box> <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', mb: 0.5, textTransform: 'uppercase' }}>Submitted Date</Typography> <Typography>{pendingRequest.submitted}</Typography> </Box>
-          </Stack>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={() => setDetailsOpen(false)}>Close</Button>
-        </DialogActions>
-      </Dialog>
-
-      <Dialog open={approvalAction !== null} onClose={handleCancel}>
-        <DialogTitle sx={{ fontWeight: 700, fontSize: '18px' }}>
-          {approvalAction === 'approve' ? 'Approve Trainer' : 'Reject Application'}
-        </DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <Typography>
-            {approvalAction === 'approve'
-              ? `Are you sure you want to approve ${pendingRequest.name} as a trainer? They will be able to create and manage courses.`
-              : `Are you sure you want to reject ${pendingRequest.name}'s application? They will be notified of the rejection.`}
+      {pendingRequest ? (
+        <Box sx={{ mb: 6 }}>
+          <Typography sx={{ fontSize: '16px', fontWeight: 700, color: '#1e293b', mb: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Clock size={20} color="#8B1D23" />
+            Pending Requests
           </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 2 }}>
-          <Button onClick={handleCancel}>Cancel</Button>
-          <Button variant="contained" sx={{ backgroundColor: approvalAction === 'approve' ? '#8B1D23' : '#81595bff' }} onClick={handleConfirm}>
-            {approvalAction === 'approve' ? 'Approve' : 'Reject'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+          <PendingCard>
+            <PendingBadge label="PENDING" />
+            <Box sx={{ p: 4 }}>
+              <Stack 
+                direction={{ xs: 'column', md: 'row' }} 
+                spacing={4} 
+                sx={{ alignItems: 'center' }}
+                divider={<Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' } }} />}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, minWidth: '200px' }}>
+                  <UserAvatar>{pendingRequest.name.split(' ').map((n: string) => n[0]).join('')}</UserAvatar>
+                  <Box>
+                    <Typography sx={{ fontSize: '18px', fontWeight: 700, color: '#1e293b' }}>
+                      {pendingRequest.name}
+                    </Typography>
+                    <Typography sx={{ fontSize: '13px', color: '#94a3b8', mt: '2px', fontWeight: 600 }}>
+                      Trainer Application
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ flex: 1 }}>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12} sm={6}>
+                      <InfoItem>
+                        <InfoIcon><Mail size={16} /></InfoIcon>
+                        <Box><InfoLabel>Email</InfoLabel><InfoValue>{pendingRequest.email}</InfoValue></Box>
+                      </InfoItem>
+                      <InfoItem>
+                        <InfoIcon><Phone size={16} /></InfoIcon>
+                        <Box><InfoLabel>Phone</InfoLabel><InfoValue>{pendingRequest.phone}</InfoValue></Box>
+                      </InfoItem>
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                       <InfoItem>
+                        <InfoIcon><Briefcase size={16} /></InfoIcon>
+                        <Box><InfoLabel>Specialization</InfoLabel><InfoValue>{pendingRequest.specialization}</InfoValue></Box>
+                      </InfoItem>
+                      <InfoItem>
+                        <InfoIcon><Calendar size={16} /></InfoIcon>
+                        <Box><InfoLabel>Submitted</InfoLabel><InfoValue>{pendingRequest.submitted}</InfoValue></Box>
+                      </InfoItem>
+                    </Grid>
+                  </Grid>
+                </Box>
+
+                <Stack direction="row" spacing={1.5}>
+                  <ActionButton variant="outlined" startIcon={<Eye size={16} />} onClick={() => setDetailsOpen(true)}>View</ActionButton>
+                  <ActionButton variant="contained" startIcon={<CheckCircle size={16} />} onClick={handleApproveClick}>Approve</ActionButton>
+                  <ActionButton variant="outlined" color="error" startIcon={<XCircle size={16} />} onClick={handleRejectClick}>Reject</ActionButton>
+                </Stack>
+              </Stack>
+            </Box>
+          </PendingCard>
+        </Box>
+      ) : (
+        <Box sx={{ mb: 6, p: 4, bgcolor: '#f8fafc', borderRadius: '16px', border: '2px dashed #e2e8f0', textAlign: 'center' }}>
+           <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>No pending trainer requests at the moment.</Typography>
+        </Box>
+      )}
+
+      <Typography sx={{ fontSize: '16px', fontWeight: 700, color: '#1e293b', mb: '16px' }}>
+        Approval History
+      </Typography>
+      <SharedTable 
+        data={history} 
+        columns={columns} 
+        onEdit={handleHistoryEdit}
+        onDelete={handleBulkDelete}
+        onSingleDelete={handleHistoryDelete}
+        searchPlaceholder="Search history..."
+      />
+
+      <ViewTrainerDetails 
+        open={detailsOpen} 
+        onClose={() => setDetailsOpen(false)} 
+        trainer={pendingRequest} 
+      />
+
+      <Edit
+        open={editOpen}
+        onClose={() => {
+          setEditOpen(false);
+          setSelectedTrainer(null);
+        }}
+        trainer={selectedTrainer || pendingRequest}
+        onSave={handleEditSave}
+      />
+
+      <ConfirmationModal
+        open={confirmConfig.open}
+        onClose={() => setConfirmConfig({ open: false, type: null })}
+        onConfirm={handleConfirmAction}
+        title={
+            confirmConfig.type === 'approve' ? "Approve Trainer" : 
+            confirmConfig.type === 'reject' ? "Reject Application" : 
+            confirmConfig.type === 'bulk_delete' ? "Delete History" :
+            "Delete Entry"
+        }
+        message={
+          confirmConfig.type === 'approve' 
+            ? `Are you sure you want to approve ${pendingRequest?.name} as a trainer? They will be able to create and manage courses.`
+            : confirmConfig.type === 'reject'
+            ? `Are you sure you want to reject ${pendingRequest?.name}'s application? They will be notified of the rejection.`
+            : confirmConfig.type === 'bulk_delete'
+            ? `Are you sure you want to delete ${confirmConfig.itemCount} selected entries from history? This cannot be undone.`
+            : "Are you sure you want to delete this history entry? This cannot be undone."
+        }
+        confirmLabel={
+            confirmConfig.type === 'approve' ? "Approve" : 
+            confirmConfig.type === 'reject' ? "Reject" : 
+            "Delete"
+        }
+        isDanger={confirmConfig.type !== 'approve'}
+      />
     </PageContainer>
   );
 };
 
-export default AdminApprovalsPage;
+const Grid = ({ children, container, xs, sm, spacing }: any) => {
+    if (container) return <Box sx={{ display: 'flex', flexWrap: 'wrap', m: -(spacing || 0) / 8 }}>{children}</Box>;
+    const width = xs ? (xs / 12) * 100 : 100;
+    const smWidth = sm ? (sm / 12) * 100 : width;
+    return (
+        <Box sx={{ 
+            p: (spacing || 0) / 8, 
+            width: { xs: `${width}%`, sm: `${smWidth}%` } 
+        }}>
+            {children}
+        </Box>
+    );
+};
