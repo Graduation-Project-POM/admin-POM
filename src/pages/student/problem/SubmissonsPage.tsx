@@ -6,7 +6,7 @@ import {
 import {
   Calendar, Globe, Tag, RotateCcw, BookOpen, TrendingUp,
 } from 'lucide-react';
-import { SharedTable } from '../../../components/ui/tables';
+import { SharedTable } from '../../../components/ui/table/tables';
 
 // نفس الـ styled components (يمكن استيرادها من ملف مشترك، لكن هنا نكرر للوضوح)
 const PageContainer = styled(Box)({

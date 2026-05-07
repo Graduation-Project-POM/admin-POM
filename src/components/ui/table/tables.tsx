@@ -1,15 +1,12 @@
+// SharedTable.tsx
 import React, { useState } from "react";
 import {
   Box,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
-  TableHead,
   TableRow,
   Paper,
-  styled,
-  createTheme,
   ThemeProvider,
   IconButton,
   Checkbox,
@@ -22,61 +19,14 @@ import {
   ListItemText,
 } from "@mui/material";
 import { MoreVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
-import { Button } from "./button/Button";
-
-export const theme = createTheme({
-  typography: {
-    fontFamily: "Lenos, sans-serif",
-  },
-});
-
-// No longer need TableContainerStyled – use sx directly
-// If you want to keep it, remove component={Paper} usage
-
-const StyledTableHead = styled(TableHead)({
-  backgroundColor: "#f9fafb",
-  borderBottom: "2px solid #e5e7eb",
-  "& th": {
-    fontWeight: 700,
-    color: "#374151",
-    fontSize: "12px",
-    letterSpacing: "0.8px",
-    textTransform: "uppercase",
-    padding: "14px",
-  },
-});
-
-const StyledTableRow = styled(TableRow)({
-  borderBottom: "1px solid #f3f4f6",
-  "&:hover": {
-    backgroundColor: "#fafafa",
-  },
-});
-
-const StyledTableCell = styled(TableCell)({
-  padding: "12px 14px",
-  color: "#1f2937",
-  fontSize: "14px",
-});
-
-interface Column {
-  id: string;
-  label: string;
-  render?: (row: any) => React.ReactNode;
-}
-
-interface SharedTableProps {
-  title?: string;
-  data: any[];
-  columns: Column[];
-  onRowSelect?: (selectedIds: string[]) => void;
-  onAdd?: () => void;
-  onDelete?: (selectedIds: string[]) => void;
-  onEdit?: (row: any) => void;
-  onSingleDelete?: (id: string) => void;
-  addButtonLabel?: string;
-  searchPlaceholder?: string;
-}
+import { Button } from "../button/Button";
+import {
+  theme,
+  StyledTableHead,
+  StyledTableRow,
+  StyledTableCell,
+} from "./tableStyle";
+import type { SharedTableProps } from "../../../types/index";
 
 export const SharedTable: React.FC<SharedTableProps> = ({
   data,
@@ -137,6 +87,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
   };
 
   const selectedIds = Array.from(selectedRows).map((id) => String(id));
+
   return (
     <ThemeProvider theme={theme}>
       <Box
@@ -179,7 +130,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
         <Stack direction="row" spacing={1.5}>
           {onDelete && (
             <Button
-              variantType="danger"
+              variantType="default"
               onClick={() => onDelete(selectedIds)}
               disabled={selectedRows.size === 0}
               startIcon={<Trash2 size={16} />}

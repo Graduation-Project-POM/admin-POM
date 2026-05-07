@@ -1,5 +1,5 @@
 import React from 'react';
-import { SharedTable } from '../../../components/ui/tables';
+import { SharedTable } from '../../../components/ui/table/tables';
 import {
   Box,
   Chip,

@@ -80,3 +80,23 @@ export interface SContestProblem {
   solvedByUser: boolean;
   userSolutionId?: string;
 }
+
+
+export interface Column {
+  id: string;
+  label: string;
+  render?: (row: any) => React.ReactNode;
+}
+
+export interface SharedTableProps {
+  title?: string;
+  data: any[];
+  columns: Column[];
+  onRowSelect?: (selectedIds: string[]) => void;
+  onAdd?: () => void;
+  onDelete?: (selectedIds: string[]) => void;
+  onEdit?: (row: any) => void;
+  onSingleDelete?: (id: string) => void;
+  addButtonLabel?: string;
+  searchPlaceholder?: string;
+}

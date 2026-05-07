@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { SharedTable } from '../../../components/ui/tables';
+import { SharedTable } from '../../../components/ui/table/tables';
 import { PageContainer } from './contestStyle';
 import type { SContestProblem } from '../../../types/index';
 

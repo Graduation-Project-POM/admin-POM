@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { SharedTable } from "../../../components/ui/tables";
+import { SharedTable } from "../../../components/ui/table/tables";
 import { Avatar, Typography, Box, Chip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Create from "./Create";
@@ -55,7 +55,7 @@ export const AdminUsersPage = () => {
     open: false,
     title: "",
     message: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   useEffect(() => {
@@ -141,7 +141,7 @@ export const AdminUsersPage = () => {
 
   const handleSingleDelete = (id: string) => {
     if (confirm(`Are you sure you want to delete this user?`)) {
-        setUsers(users.filter(u => u.id !== id));
+      setUsers(users.filter(u => u.id !== id));
     }
   };
 
@@ -209,7 +209,7 @@ export const AdminUsersPage = () => {
           </Typography>
         </Box>
 
-        
+
       </Box>
       <SharedTable
         data={users}
@@ -224,18 +224,18 @@ export const AdminUsersPage = () => {
 
       <Create open={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
-        {selectedUser && (
-        <Edit 
-          open={isEditModalOpen} 
+      {selectedUser && (
+        <Edit
+          open={isEditModalOpen}
           onClose={() => {
             setIsEditModalOpen(false);
             setSelectedUser(null);
-          }} 
-          userData={selectedUser} 
+          }}
+          userData={selectedUser}
         />
       )}
 
-       <ConfirmationModal 
+      <ConfirmationModal
         open={confirmConfig.open}
         onClose={() => setConfirmConfig(prev => ({ ...prev, open: false }))}
         onConfirm={confirmConfig.onConfirm}
