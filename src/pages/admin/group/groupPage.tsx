@@ -93,7 +93,7 @@ export const GroupsPage: React.FC = () => {
   return (
     <StyledContainer>
       <TitleWrapper>
-        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
+        <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b' }}>
           Training Groups
         </Typography>
       </TitleWrapper>

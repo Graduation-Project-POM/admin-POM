@@ -6,10 +6,10 @@ import {
   Box,
   Button,
   Divider,
-  Chip,
   styled,
+  IconButton,
 } from '@mui/material';
-import { Calendar, Users, Trophy, Clock } from 'lucide-react';
+import { Calendar, Users, Trophy, Clock, Trash2 } from 'lucide-react';
 import type { ContestData } from '../../../types';
 
 const StyledCard = styled(Card)({
@@ -20,16 +20,14 @@ const StyledCard = styled(Card)({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
+  position: 'relative',
+  '&:hover': {
+    boxShadow: '0 12px 20px -12px rgba(0, 0, 0, 0.15)',
+  },
 });
 
 const CardHeader = styled(Box)({
   padding: '16px 20px 8px 20px',
-});
-
-const BadgeWrapper = styled(Box)({
-  display: 'flex',
-  gap: '8px',
-  marginBottom: '12px',
 });
 
 const StatBox = styled(Box)({
@@ -45,7 +43,6 @@ const ActionButtons = styled(Box)({
   display: 'flex',
   gap: '8px',
   marginTop: '16px',
-  flexWrap: 'wrap',
   '& button': {
     flex: 1,
     textTransform: 'none',
@@ -53,24 +50,6 @@ const ActionButtons = styled(Box)({
     fontSize: '13px',
   },
 });
-
-const getStatusColor = (status: string) => {
-  switch (status) {
-    case 'Upcoming': return { bg: '#dcfce7', text: '#166534', label: 'Upcoming' };
-    case 'Ended': return { bg: '#fee2e2', text: '#991b1b', label: 'Ended' };
-    case 'Ongoing': return { bg: '#fef3c7', text: '#92400e', label: 'Ongoing' };
-    default: return { bg: '#f1f5f9', text: '#475569', label: status };
-  }
-};
-
-const getDifficultyColor = (difficulty: string) => {
-  switch (difficulty) {
-    case 'Easy': return { bg: '#dcfce7', text: '#166534' };
-    case 'Medium': return { bg: '#fef3c7', text: '#92400e' };
-    case 'Hard': return { bg: '#fee2e2', text: '#991b1b' };
-    default: return { bg: '#f1f5f9', text: '#475569' };
-  }
-};
 
 interface ContestCardProps {
   contest: ContestData;
@@ -87,7 +66,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
   onProblems,
   onDelete,
 }) => {
-    if (!contest) {
+  if (!contest) {
     return (
       <StyledCard>
         <CardHeader>
@@ -99,39 +78,36 @@ export const ContestCard: React.FC<ContestCardProps> = ({
     );
   }
 
-  const status = contest.status ?? 'Upcoming';
-  const difficulty = contest.difficulty ?? 'Medium';
-  const participants = contest.participants ?? 0;      
+  const title = contest.title ?? 'Untitled Contest';
+  const participants = contest.participants ?? 0;
   const problemsCount = contest.problemsCount ?? 0;
   const startDate = contest.startDate ?? '';
   const endDate = contest.endDate ?? '';
-  const title = contest.title ?? 'Untitled Contest';
-
-  const statusColor = getStatusColor(status);
-  const diffColor = getDifficultyColor(difficulty);
 
   return (
     <StyledCard>
+      <IconButton
+        size="small"
+        onClick={() => onDelete?.(contest.id)}
+        sx={{
+          position: 'absolute',
+          top: 12,
+          right: 12,
+          color: '#94a3b8',
+          '&:hover': { color: '#ef4444', bgcolor: '#fef2f2' }
+        }}
+      >
+        <Trash2 size={16} />
+      </IconButton>
+
       <CardHeader>
-        <BadgeWrapper>
-          <Chip
-            label={statusColor.label}
-            size="small"
-            sx={{ bgcolor: statusColor.bg, color: statusColor.text, fontWeight: 600 }}
-          />
-          <Chip
-            label={difficulty}
-            size="small"
-            sx={{ bgcolor: diffColor.bg, color: diffColor.text, fontWeight: 600 }}
-          />
-        </BadgeWrapper>
         <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
           {title}
         </Typography>
       </CardHeader>
 
       <CardContent sx={{ pt: 0, flex: 1 }}>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
           <StatBox>
             <Users size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -148,7 +124,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         <Divider sx={{ my: 1.5 }} />
 
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Calendar size={14} color="#94a3b8" />
             <Typography variant="caption" sx={{ color: '#64748b' }}>
@@ -164,17 +140,29 @@ export const ContestCard: React.FC<ContestCardProps> = ({
         </Box>
 
         <ActionButtons>
-          <Button variant="outlined" size="small" onClick={() => onView?.(contest.id)}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => onView?.(contest.id)}
+            sx={{ borderColor: '#cbd5e1', color: '#475569' }}
+          >
             View
           </Button>
-          <Button variant="outlined" size="small" onClick={() => onEdit?.(contest.id)}>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => onEdit?.(contest.id)}
+            sx={{ borderColor: '#cbd5e1', color: '#475569' }}
+          >
             Edit
           </Button>
-          <Button variant="contained" size="small" onClick={() => onProblems?.(contest.id)} sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' } }}>
+          <Button
+            variant="contained"
+            size="small"
+            onClick={() => onProblems?.(contest.id)}
+            sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' }, boxShadow: 'none' }}
+          >
             Problems
-          </Button>
-          <Button variant="outlined" size="small" color="error" onClick={() => onDelete?.(contest.id)}>
-            Delete
           </Button>
         </ActionButtons>
       </CardContent>

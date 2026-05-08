@@ -84,7 +84,7 @@ export const AdminProblemsPage = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
-  
+
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
     title: string;
@@ -94,7 +94,7 @@ export const AdminProblemsPage = () => {
     open: false,
     title: '',
     message: '',
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const handleCreate = (newProblem: Problem) => {
@@ -176,15 +176,15 @@ export const AdminProblemsPage = () => {
       label: 'Stats',
       render: (row: Problem) => (
         <Box>
-          <Typography variant="caption" display="block">
+          <Typography variant="caption" sx={{ display: 'block' }}>
             {row.submissions} submissions
           </Typography>
-          <Typography variant="caption" fontWeight={600}>
+          <Typography variant="caption" sx={{ display: 'block' }}>
             {row.successRate}% success
           </Typography>
         </Box>
       ),
-    },
+    }
   ];
 
   return (
@@ -212,30 +212,30 @@ export const AdminProblemsPage = () => {
         searchPlaceholder="Search problems..."
       />
 
-      <Create 
-        open={isCreateModalOpen} 
-        onClose={() => setIsCreateModalOpen(false)} 
-        onSave={handleCreate} 
+      <Create
+        open={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSave={handleCreate}
       />
 
-      <Edit 
-        open={isEditModalOpen} 
+      <Edit
+        open={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
           setSelectedProblem(null);
-        }} 
-        problem={selectedProblem} 
-        onSave={handleEdit} 
+        }}
+        problem={selectedProblem}
+        onSave={handleEdit}
       />
 
-      <ConfirmationModal 
+      <ConfirmationModal
         open={confirmConfig.open}
         onClose={() => setConfirmConfig(prev => ({ ...prev, open: false }))}
         onConfirm={confirmConfig.onConfirm}
         title={confirmConfig.title}
         message={confirmConfig.message}
       />
-    </Box>    
+    </Box>
   );
 };
 
