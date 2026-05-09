@@ -3,14 +3,58 @@ import {
   Box,
   Chip,
   Typography,
+  MenuItem,
+  Select,
+  FormControl,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { ConfirmationModal } from '../../components/common/modal/ConfirmationModal';
 import EditProblem from './Edit';
 import CreateProblem from './Create';
 
 const primaryColor = '#7A1E1E';
+
+const StyledFormControl = styled(FormControl)({
+  minWidth: '180px',
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '40px',
+    backgroundColor: '#ffffff',
+    height: '44px',
+    transition: 'all 0.2s',
+    '& fieldset': {
+      borderColor: '#e2e8f0',
+      borderWidth: '1px',
+    },
+    '&:hover fieldset': {
+      borderColor: '#8B1D23',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#8B1D23',
+      borderWidth: '1.5px',
+    },
+  },
+  '& .MuiSelect-select': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '0 14px',
+  },
+});
+const SearchFilterBox = styled(Box)({
+  display: 'flex',
+  gap: '16px',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  marginTop: '20px',
+  marginBottom: '24px',
+  padding: '0 4px',
+  '@media (max-width: 768px)': {
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: '12px',
+  },
+});
 
 const TagsContainer = styled(Box)({
   display: 'flex',
@@ -81,6 +125,7 @@ const mockProblems: Problem[] = [
 
 export const AdminProblemsPage = () => {
   const [problems, setProblems] = useState<Problem[]>(mockProblems);
+  const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
@@ -96,6 +141,11 @@ export const AdminProblemsPage = () => {
     message: '',
     onConfirm: () => { },
   });
+
+  const filteredProblems = useMemo(() => {
+    if (difficultyFilter === 'all') return problems;
+    return problems.filter(p => p.difficulty === difficultyFilter);
+  }, [problems, difficultyFilter]);
 
   const handleCreate = (newProblem: Problem) => {
     setProblems([newProblem, ...problems]);
@@ -188,7 +238,6 @@ export const AdminProblemsPage = () => {
   ];
 
   return (
-
     <Box sx={{ p: 0 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
@@ -197,9 +246,25 @@ export const AdminProblemsPage = () => {
         <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
           Manage the collection of mathematical problems
         </Typography>
+
+        <SearchFilterBox>
+          <StyledFormControl>
+            <Select
+              value={difficultyFilter}
+              onChange={(e) => setDifficultyFilter(e.target.value)}
+              displayEmpty
+            >
+              <MenuItem value="all">All Levels</MenuItem>
+              <MenuItem value="Easy">Easy</MenuItem>
+              <MenuItem value="Medium">Medium</MenuItem>
+              <MenuItem value="Hard">Hard</MenuItem>
+            </Select>
+          </StyledFormControl>
+        </SearchFilterBox>
       </Box>
+
       <SharedTable
-        data={problems}
+        data={filteredProblems}
         columns={columns}
         onAdd={() => setIsCreateModalOpen(true)}
         onEdit={(row) => {
