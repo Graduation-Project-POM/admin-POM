@@ -59,7 +59,7 @@ import {
 
 import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../../../types/trainerTypes";
 
-const TrainerDashboard: React.FC = () => {
+ const TrainerDashboard: React.FC = () => {
   const stats: TrainerStatCard[] = [
     {
       title: "Total Students",

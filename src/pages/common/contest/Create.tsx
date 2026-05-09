@@ -1,18 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Stack, MenuItem, Box } from "@mui/material";
-import { ModalWrapper } from "../../components/common/modal/ModalWrapper";
-import { FormField } from "../../components/ui/Forms/FormField";
-import { Button } from "../../components/ui/button/Button";
-import type { ContestData } from "../../types";
+import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
+import { FormField } from "../../../components/ui/Forms/FormField";
+import { Button } from "../../../components/ui/button/Button";
 
-interface EditContestProps {
+interface CreateContestProps {
   open: boolean;
   onClose: () => void;
-  contest: ContestData | null;
-  onSave: (contest: ContestData) => void;
+  onSave: (contest: any) => void;
 }
 
-const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
+const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
   const [formData, setFormData] = useState({
     title: "",
     status: "Upcoming",
@@ -20,18 +18,6 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     startDate: "",
     endDate: "",
   });
-
-  useEffect(() => {
-    if (contest) {
-      setFormData({
-        title: contest.title,
-        status: contest.status,
-        difficulty: contest.difficulty,
-        startDate: contest.startDate,
-        endDate: contest.endDate,
-      });
-    }
-  }, [contest]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -42,12 +28,12 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (contest) {
-      onSave({
-        ...contest,
-        ...(formData as any),
-      });
-    }
+    onSave({
+      ...formData,
+      id: Math.floor(Math.random() * 10000),
+      participants: 0,
+      problemsCount: 0,
+    });
     onClose();
   };
 
@@ -55,7 +41,7 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Edit Contest"
+      title="Create New Contest"
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
@@ -63,6 +49,7 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
           <FormField
             label="Contest Title"
             name="title"
+            placeholder="e.g., Spring Programming 2026"
             value={formData.title}
             onChange={handleChange}
             required
@@ -99,6 +86,8 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
             <FormField
               label="Start Date & Time"
               name="startDate"
+              type="text"
+              placeholder="Apr 15, 2026 at 09:00 AM"
               value={formData.startDate}
               onChange={handleChange}
               required
@@ -106,6 +95,8 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
             <FormField
               label="End Date & Time"
               name="endDate"
+              type="text"
+              placeholder="Apr 22, 2026 at 09:00 PM"
               value={formData.endDate}
               onChange={handleChange}
               required
@@ -114,11 +105,11 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
         </Stack>
 
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-          Save Changes
+          Create Contest
         </Button>
       </form>
     </ModalWrapper>
   );
 };
 
-export default EditContest;
+export default CreateContest;

@@ -10,7 +10,7 @@ import {
     Divider,
 } from '@mui/material';
 import { ArrowLeft, Users, Award, BookOpen, Clock } from 'lucide-react';
-import { ContestCard } from '../../components/ui/card/contestCard';
+import { ContestCard } from '../../../components/ui/card/contestCard';
 import {
     StyledContainer,
     HeaderSection,
@@ -18,13 +18,13 @@ import {
     StudentCardStyled,
     SearchInput,
 } from './groupDetailsStyle';
-import type { ContestData } from '../../types/index';
-import { Button } from '../../components/ui/button/Button';
-import { SharedTable } from '../../components/ui/table/tables';
+import type { ContestData } from '../../../types/index';
+import { Button } from '../../../components/ui/button/Button';
+import { SharedTable } from '../../../components/ui/table/tables';
 import CreateContest from '../contest/Create';
 import EditContest from '../contest/Edit';
 import ViewContest from '../contest/View';
-import { ConfirmationModal } from '../../components/common/modal/ConfirmationModal';
+import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import CreateProblem from '../problem/Create';
 import EditProblem from '../problem/Edit';
 

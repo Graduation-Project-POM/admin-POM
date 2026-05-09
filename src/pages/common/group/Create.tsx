@@ -1,33 +1,21 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Stack, MenuItem } from '@mui/material';
-import { ModalWrapper } from '../../components/common/modal/ModalWrapper';
-import { FormField } from '../../components/ui/Forms/FormField';
-import { Button } from '../../components/ui/button/Button';
-import type { GroupData } from '../../types';
+import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
+import { FormField } from '../../../components/ui/Forms/FormField';
+import { Button } from '../../../components/ui/button/Button';
 
-interface EditGroupProps {
+interface CreateGroupProps {
   open: boolean;
   onClose: () => void;
-  group: GroupData | null;
-  onSave: (group: GroupData) => void;
+  onSave: (group: any) => void;
 }
 
-const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
+const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
     trainerName: '',
   });
-
-  useEffect(() => {
-    if (group) {
-      setFormData({
-        title: group.title,
-        description: group.description,
-        trainerName: group.trainerName,
-      });
-    }
-  }, [group]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -36,22 +24,24 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (group) {
-      onSave({
-        ...group,
-        ...formData,
-      });
-    }
+    onSave({
+      ...formData,
+      id: Math.random().toString(36).substr(2, 9),
+      studentsCount: 0,
+      trainerCount: 1,
+      createdDate: new Date().toISOString().split('T')[0],
+    });
     onClose();
   };
 
   return (
-    <ModalWrapper open={open} onClose={onClose} title="Edit Training Group" maxWidth="sm">
+    <ModalWrapper open={open} onClose={onClose} title="Create Training Group" maxWidth="sm">
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
             label="Group Title"
             name="title"
+            placeholder="e.g., Geometry Masters"
             value={formData.title}
             onChange={handleChange}
             required
@@ -59,6 +49,7 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
           <FormField
             label="Description"
             name="description"
+            placeholder="Enter group purpose and goals..."
             value={formData.description}
             onChange={handleChange}
             multiline
@@ -79,11 +70,11 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
           </FormField>
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            Save Changes
+            Create Group
         </Button>
       </form>
     </ModalWrapper>
   );
 };
 
-export default EditGroups;
+export default CreateGroups;

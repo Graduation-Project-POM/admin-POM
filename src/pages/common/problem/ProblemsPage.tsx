@@ -1,4 +1,4 @@
-import { SharedTable } from '../../components/ui/table/tables';
+import { SharedTable } from '../../../components/ui/table/tables';
 import {
   Box,
   Chip,
@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useState, useMemo } from 'react';
-import { ConfirmationModal } from '../../components/common/modal/ConfirmationModal';
+import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import EditProblem from './Edit';
 import CreateProblem from './Create';
 

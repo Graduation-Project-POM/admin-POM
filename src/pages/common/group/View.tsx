@@ -1,8 +1,8 @@
 import { Stack, Typography, Box, Divider } from '@mui/material';
-import { ModalWrapper } from '../../components/common/modal/ModalWrapper';
-import { Button } from '../../components/ui/button/Button';
+import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
+import { Button } from '../../../components/ui/button/Button';
 import { Users, User, Calendar, Info } from 'lucide-react';
-import type { GroupData } from '../../types';
+import type { GroupData } from '../../../types';
 
 interface ViewGroupProps {
   open: boolean;

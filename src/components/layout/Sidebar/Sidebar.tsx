@@ -132,20 +132,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Box key={index} sx={{ mb: 1 }}>
               <List disablePadding>
                 {section.items.map((item: any) => {
-                  const hasChildren =
-                    item.items && item.items.length > 0;
+                  const hasChildren = item.items && item.items.length > 0;
                   const isOpen = openItem === item.path;
-                  const isActive =
-                    location.pathname === item.path;
-                  const isParentActive =
-                    isActive || isChildActive(item);
+                  const isActive = location.pathname === item.path;
+                  const isParentActive = isActive || isChildActive(item);
                   return (
                     <React.Fragment key={item.path}>
                       <ListItem disablePadding>
                         <StyledListItemButton
                           isActive={isParentActive}
                           onClick={() => {
-                            if (hasChildren) {
+                              if (hasChildren) {
                               toggleItem(item.path);
                             } else {
                               setOpenItem(null);
@@ -157,129 +154,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             }
                           }}
                         >
-                          <ListItemIcon
-                            sx={{
-                              minWidth: 40,
-                              color: isParentActive
-                                ? '#8B1D23'
-                                : '#94a3b8',
-                            }}
-                          >
+                          <ListItemIcon sx={{ minWidth: 40, color: isParentActive ? '#8B1D23' : '#94a3b8'}}>
                             {iconMap[item.icon]}
                           </ListItemIcon>
 
-                          <ListItemText
-                            primary={
-                              <Typography
-                                sx={{
-                                  fontSize: '14px',
-                                  fontWeight: isParentActive
-                                    ? 700
-                                    : 600,
-                                  color: isParentActive
-                                    ? '#8B1D23'
-                                    : '#64748b',
+                          <ListItemText primary={<Typography sx={{fontSize: '14px',fontWeight: isParentActive ? 700 : 600,color: isParentActive ? '#8B1D23' : '#64748b'}}>{item.title}</Typography>}/>
 
-                                  fontFamily: '"Lenos", sans-serif',
-                                }}
-                              >
-                                {item.title}
-                              </Typography>
-                            }
-                          />
-
-                          {hasChildren &&
-                            (isOpen ? (
-                              <ChevronDown
-                                size={16}
-                                color="#94a3b8"
-                              />
-                            ) : (
-                              <ChevronRight
-                                size={16}
-                                color="#94a3b8"
-                              />
-                            ))}
+                          {hasChildren && (isOpen ? (
+                            <ChevronDown size={16} color="#94a3b8"/>
+                          ) : (
+                            <ChevronRight size={16} color="#94a3b8"/>
+                          ))}
                         </StyledListItemButton>
                       </ListItem>
 
                       {
                         hasChildren && (
-                          <Collapse
-                            in={isOpen}
-                            timeout="auto"
-                            unmountOnExit
-                          >
+                          <Collapse in={isOpen} timeout="auto" unmountOnExit>
                             <List disablePadding>
                               {item.items.map(
                                 (subItem: any) => {
-                                  const isSubActive =
-                                    location.pathname ===
-                                    subItem.path;
-
+                                  const isSubActive = location.pathname === subItem.path;
                                   return (
-                                    <ListItem
-                                      key={subItem.path}
-                                      disablePadding
-                                    >
-                                      <StyledListItemButton
-                                        isActive={isSubActive}
-                                        onClick={() => {
-                                          navigate(
-                                            subItem.path
-                                          );
-
-                                          if (isMobile)
-                                            setMobileOpen(
-                                              false
-                                            );
-                                        }}
-                                        sx={{
-                                          ml: 4,
-                                          py: 0.7,
-                                          minHeight: 40,
-                                        }}
-                                      >
-                                        <ListItemIcon
-                                          sx={{
-                                            minWidth: 34,
-                                            color: isSubActive
-                                              ? '#8B1D23'
-                                              : '#94a3b8',
-                                          }}
-                                        >
-                                          {
-                                            iconMap[
-                                            subItem.icon
-                                            ]
-                                          }
+                                    <ListItem key={subItem.path} disablePadding>
+                                      <StyledListItemButton isActive={isSubActive} onClick={() => { navigate(subItem.path); if (isMobile) setMobileOpen(false); }} sx={{ ml: 4, py: 0.7, minHeight: 40, }}>
+                                        <ListItemIcon sx={{minWidth: 34,color: isSubActive ? '#8B1D23' : '#94a3b8',}}>
+                                          {iconMap[subItem.icon]}
                                         </ListItemIcon>
 
-                                        <ListItemText
-                                          primary={
-                                            <Typography
-                                              sx={{
-                                                fontSize:
-                                                  '12px',
-                                                fontWeight:
-                                                  isSubActive
-                                                    ? 800
-                                                    : 600,
-                                                color:
-                                                  isSubActive
-                                                    ? '#8B1D23'
-                                                    : '#64748b',
-
-                                                fontFamily:
-                                                  '"Readex Pro", sans-serif',
-                                              }}
-                                            >
-                                              {
-                                                subItem.title
-                                              }
-                                            </Typography>
-                                          }
-                                        />
+                                        <ListItemText primary={<Typography sx={{fontSize: '12px',fontWeight: isSubActive ? 800 : 600, color: isSubActive ? '#8B1D23' : '#64748b', }}>{subItem.title}</Typography>}/>
                                       </StyledListItemButton>
                                     </ListItem>
                                   );
@@ -301,55 +204,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {/* User Card */}
         <Box sx={{ p: 2 }}>
-          <Box
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.5,
-              p: 1.5,
-              borderRadius: '16px',
-              bgcolor: '#fafafa',
-              border: '1px solid #f1f5f9',
-            }}
-          >
-            <Avatar
-              sx={{
-                bgcolor: '#f1f5f9',
-                width: 42,
-                height: 42,
-              }}
-            >
-              <UserCircle
-                size={22}
-                strokeWidth={2}
-                color="#64748b"
-              />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: '16px', bgcolor: '#fafafa', border: '1px solid #f1f5f9',}}>
+            <Avatar sx={{bgcolor: '#f1f5f9',width: 42,height: 42,}}>
+              <UserCircle size={22} strokeWidth={2} color="#64748b"/>
             </Avatar>
 
             <Box sx={{ minWidth: 0 }}>
-              <Typography
-                noWrap
-                sx={{
-                  fontSize: '14px',
-                  fontWeight: 700,
-                  color: '#0f172a',
-                  fontFamily: '"Lenos", sans-serif',
-                }}
-              >
-                {userName}
-              </Typography>
-
-              <Typography
-                noWrap
-                sx={{
-                  fontSize: '12px',
-                  color: '#94a3b8',
-                  fontFamily:
-                    '"Readex Pro", sans-serif',
-                }}
-              >
-                {userEmail}
-              </Typography>
+              <Typography noWrap sx={{fontSize: '14px',fontWeight: 700,color: '#0f172a',}}>{userName}</Typography>
+              <Typography noWrap sx={{fontSize: '12px',color: '#94a3b8',}}>{userEmail}</Typography>
             </Box>
           </Box>
         </Box>

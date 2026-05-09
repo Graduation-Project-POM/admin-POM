@@ -35,12 +35,12 @@ export const navigationConfig: NavSection[] = [
         icon: "CheckCircle",
         roles: ["ADMIN"],
       },
-      {
-        title: "Announcements",
-        path: "/admin/announcements",
-        icon: "Megaphone",
-        roles: ["ADMIN"],
-      },
+      // {
+      //   title: "Announcements",
+      //   path: "/admin/announcements",
+      //   icon: "Megaphone",
+      //   roles: ["ADMIN"],
+      // },
       {
         title: "Groups",
         path: "/admin/groups",
@@ -59,12 +59,12 @@ export const navigationConfig: NavSection[] = [
         icon: "BookOpen",
         roles: ["ADMIN"],
       },
-      {
-        title: "Reports",
-        path: "/admin/reports",
-        icon: "BarChart3",
-        roles: ["ADMIN"],
-      },
+      // {
+      //   title: "Reports",
+      //   path: "/admin/reports",
+      //   icon: "BarChart3",
+      //   roles: ["ADMIN"],
+      // },
       {
         title: "Profile",
         path: "/admin/profile",
@@ -136,15 +136,15 @@ export const navigationConfig: NavSection[] = [
     ],
   },
 
-  {
-    items: [
-      {
-        title: "Settings",
-        path: "/settings",
-        icon: "Settings",
-      }
-    ],
-  },
+  // {
+  //   items: [
+  //     {
+  //       title: "Settings",
+  //       path: "/settings",
+  //       icon: "Settings",
+  //     }
+  //   ],
+  // },
 ];
 
 export const getVisibleNavigation = (role: UserRole) => {
