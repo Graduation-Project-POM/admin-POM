@@ -1,4 +1,4 @@
-import { SharedTable } from '../../../components/ui/table/tables';
+import { SharedTable } from "../../../components/ui/table/tables";
 import {
   Box,
   Chip,
@@ -6,118 +6,129 @@ import {
   MenuItem,
   Select,
   FormControl,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { useState, useMemo } from 'react';
-import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
-import EditProblem from './Edit';
-import CreateProblem from './Create';
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import { useState, useMemo } from "react";
+import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
+import EditProblem from "./Edit";
+import CreateProblem from "./Create";
 
-const primaryColor = '#7A1E1E';
+const primaryColor = "#7A1E1E";
 
 const StyledFormControl = styled(FormControl)({
-  minWidth: '180px',
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '40px',
-    backgroundColor: '#ffffff',
-    height: '44px',
-    transition: 'all 0.2s',
-    '& fieldset': {
-      borderColor: '#e2e8f0',
-      borderWidth: '1px',
+  minWidth: "180px",
+  "& .MuiOutlinedInput-root": {
+    borderRadius: "40px",
+    backgroundColor: "#ffffff",
+    height: "44px",
+    transition: "all 0.2s",
+    "& fieldset": {
+      borderColor: "#e2e8f0",
+      borderWidth: "1px",
     },
-    '&:hover fieldset': {
-      borderColor: '#8B1D23',
+    "&:hover fieldset": {
+      borderColor: "#8B1D23",
     },
-    '&.Mui-focused fieldset': {
-      borderColor: '#8B1D23',
-      borderWidth: '1.5px',
+    "&.Mui-focused fieldset": {
+      borderColor: "#8B1D23",
+      borderWidth: "1.5px",
     },
   },
-  '& .MuiSelect-select': {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px',
-    padding: '0 14px',
+  "& .MuiSelect-select": {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    padding: "0 14px",
   },
 });
 const SearchFilterBox = styled(Box)({
-  display: 'flex',
-  gap: '16px',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginTop: '20px',
-  marginBottom: '24px',
-  padding: '0 4px',
-  '@media (max-width: 768px)': {
-    flexDirection: 'column',
-    alignItems: 'stretch',
-    gap: '12px',
+  display: "flex",
+  gap: "16px",
+  alignItems: "center",
+  justifyContent: "space-between",
+  marginTop: "20px",
+  marginBottom: "24px",
+  padding: "0 4px",
+  "@media (max-width: 768px)": {
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: "12px",
   },
 });
 
 const TagsContainer = styled(Box)({
-  display: 'flex',
-  flexWrap: 'wrap',
-  gap: '6px',
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "6px",
 });
 
 const SmallChip = styled(Chip)({
-  fontSize: '11px',
-  height: '22px',
+  fontSize: "11px",
+  height: "22px",
   fontWeight: 500,
-  backgroundColor: '#f3f4f6',
-  color: '#374151',
+  backgroundColor: "#f3f4f6",
+  color: "#374151",
 });
 
-const DifficultyChip = styled(Chip)<{ difficulty: string }>(({ difficulty }) => ({
-  fontSize: '11px',
-  height: '22px',
-  fontWeight: 600,
-  ...(difficulty === 'Easy' && { backgroundColor: '#e7f7ec', color: '#166534' }),
-  ...(difficulty === 'Medium' && { backgroundColor: '#fff7e0', color: '#92400e' }),
-  ...(difficulty === 'Hard' && { backgroundColor: '#fdecec', color: '#991b1b' }),
-}));
+const DifficultyChip = styled(Chip)<{ difficulty: string }>(
+  ({ difficulty }) => ({
+    fontSize: "11px",
+    height: "22px",
+    fontWeight: 600,
+    ...(difficulty === "Easy" && {
+      backgroundColor: "#e7f7ec",
+      color: "#166534",
+    }),
+    ...(difficulty === "Medium" && {
+      backgroundColor: "#fff7e0",
+      color: "#92400e",
+    }),
+    ...(difficulty === "Hard" && {
+      backgroundColor: "#fdecec",
+      color: "#991b1b",
+    }),
+  }),
+);
 
 type Problem = {
   id: string;
   title: string;
   category: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  difficulty: "Easy" | "Medium" | "Hard";
   tags: string[];
-  visibility: 'general' | 'group-specific';
+  visibility: "general" | "group-specific";
   submissions: number;
   successRate: number;
 };
 
 const mockProblems: Problem[] = [
   {
-    id: '1',
-    title: 'Two Sum',
-    category: 'Array',
-    difficulty: 'Easy',
-    tags: ['Hash Table', 'Array'],
-    visibility: 'general',
+    id: "1",
+    title: "Two Sum",
+    category: "Array",
+    difficulty: "Easy",
+    tags: ["Hash Table", "Array"],
+    visibility: "general",
     submissions: 245,
     successRate: 78,
   },
   {
-    id: '2',
-    title: 'Binary Tree Maximum Path Sum',
-    category: 'Tree',
-    difficulty: 'Hard',
-    tags: ['Dynamic Programming', 'Tree'],
-    visibility: 'group-specific',
+    id: "2",
+    title: "Binary Tree Maximum Path Sum",
+    category: "Tree",
+    difficulty: "Hard",
+    tags: ["Dynamic Programming", "Tree"],
+    visibility: "group-specific",
     submissions: 87,
     successRate: 42,
   },
   {
-    id: '3',
-    title: 'Merge Intervals',
-    category: 'Array',
-    difficulty: 'Medium',
-    tags: ['Array', 'Sorting'],
-    visibility: 'general',
+    id: "3",
+    title: "Merge Intervals",
+    category: "Array",
+    difficulty: "Medium",
+    tags: ["Array", "Sorting"],
+    visibility: "general",
     submissions: 156,
     successRate: 65,
   },
@@ -125,7 +136,7 @@ const mockProblems: Problem[] = [
 
 export const AdminProblemsPage = () => {
   const [problems, setProblems] = useState<Problem[]>(mockProblems);
-  const [difficultyFilter, setDifficultyFilter] = useState<string>('all');
+  const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
@@ -137,14 +148,14 @@ export const AdminProblemsPage = () => {
     onConfirm: () => void;
   }>({
     open: false,
-    title: '',
-    message: '',
-    onConfirm: () => { },
+    title: "",
+    message: "",
+    onConfirm: () => {},
   });
 
   const filteredProblems = useMemo(() => {
-    if (difficultyFilter === 'all') return problems;
-    return problems.filter(p => p.difficulty === difficultyFilter);
+    if (difficultyFilter === "all") return problems;
+    return problems.filter((p) => p.difficulty === difficultyFilter);
   }, [problems, difficultyFilter]);
 
   const handleCreate = (newProblem: Problem) => {
@@ -152,52 +163,55 @@ export const AdminProblemsPage = () => {
   };
 
   const handleEdit = (updatedProblem: Problem) => {
-    setProblems(problems.map(p => p.id === updatedProblem.id ? updatedProblem : p));
+    setProblems(
+      problems.map((p) => (p.id === updatedProblem.id ? updatedProblem : p)),
+    );
   };
 
   const handleDelete = (id: string) => {
     setConfirmConfig({
       open: true,
-      title: 'Delete Problem',
-      message: 'Are you sure you want to delete this problem? This action cannot be undone.',
+      title: "Delete Problem",
+      message:
+        "Are you sure you want to delete this problem? This action cannot be undone.",
       onConfirm: () => {
-        setProblems(problems.filter(p => p.id !== id));
-      }
+        setProblems(problems.filter((p) => p.id !== id));
+      },
     });
   };
 
   const handleBulkDelete = (ids: string[]) => {
     setConfirmConfig({
       open: true,
-      title: 'Delete Problems',
+      title: "Delete Problems",
       message: `Are you sure you want to delete ${ids.length} selected problems? This action cannot be undone.`,
       onConfirm: () => {
-        setProblems(problems.filter(p => !ids.includes(p.id)));
-      }
+        setProblems(problems.filter((p) => !ids.includes(p.id)));
+      },
     });
   };
 
   const columns = [
     {
-      id: 'title',
-      label: 'Title',
+      id: "title",
+      label: "Title",
       render: (row: Problem) => (
         <Typography sx={{ fontWeight: 600, color: primaryColor }}>
           {row.title}
         </Typography>
       ),
     },
-    { id: 'category', label: 'Category' },
+    { id: "category", label: "Category" },
     {
-      id: 'difficulty',
-      label: 'Difficulty',
+      id: "difficulty",
+      label: "Difficulty",
       render: (row: Problem) => (
         <DifficultyChip label={row.difficulty} difficulty={row.difficulty} />
       ),
     },
     {
-      id: 'tags',
-      label: 'Tags',
+      id: "tags",
+      label: "Tags",
       render: (row: Problem) => (
         <TagsContainer>
           {row.tags.map((tag, idx) => (
@@ -207,43 +221,43 @@ export const AdminProblemsPage = () => {
       ),
     },
     {
-      id: 'visibility',
-      label: 'Visibility',
+      id: "visibility",
+      label: "Visibility",
       render: (row: Problem) => (
         <Chip
-          label={row.visibility === 'general' ? 'General' : 'Group-specific'}
+          label={row.visibility === "general" ? "General" : "Group-specific"}
           sx={{
-            fontSize: '11px',
-            height: '22px',
-            bgcolor: row.visibility === 'general' ? '#e7f7ec' : '#ffe0e0',
-            color: row.visibility === 'general' ? '#166534' : '#991b1b',
+            fontSize: "11px",
+            height: "22px",
+            bgcolor: row.visibility === "general" ? "#e7f7ec" : "#ffe0e0",
+            color: row.visibility === "general" ? "#166534" : "#991b1b",
           }}
         />
       ),
     },
     {
-      id: 'stats',
-      label: 'Stats',
+      id: "stats",
+      label: "Stats",
       render: (row: Problem) => (
         <Box>
-          <Typography variant="caption" sx={{ display: 'block' }}>
+          <Typography variant="caption" sx={{ display: "block" }}>
             {row.submissions} submissions
           </Typography>
-          <Typography variant="caption" sx={{ display: 'block' }}>
+          <Typography variant="caption" sx={{ display: "block" }}>
             {row.successRate}% success
           </Typography>
         </Box>
       ),
-    }
+    },
   ];
 
   return (
     <Box sx={{ p: 0 }}>
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
           Problem Bank
         </Typography>
-        <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
+        <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
           Manage the collection of mathematical problems
         </Typography>
 
@@ -295,7 +309,7 @@ export const AdminProblemsPage = () => {
 
       <ConfirmationModal
         open={confirmConfig.open}
-        onClose={() => setConfirmConfig(prev => ({ ...prev, open: false }))}
+        onClose={() => setConfirmConfig((prev) => ({ ...prev, open: false }))}
         onConfirm={confirmConfig.onConfirm}
         title={confirmConfig.title}
         message={confirmConfig.message}
