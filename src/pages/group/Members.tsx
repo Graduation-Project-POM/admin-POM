@@ -12,10 +12,10 @@ import {
   Stack,
 } from '@mui/material';
 import { UserPlus } from 'lucide-react';
-import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
-import { Button } from '../../../components/ui/button/Button';
-import { FormField } from '../../../components/ui/Forms/FormField';
-import type { GroupData } from '../../../types';
+import { ModalWrapper } from '../../components/common/modal/ModalWrapper';
+import { Button } from '../../components/ui/button/Button';
+import { FormField } from '../../components/ui/Forms/FormField';
+import type { GroupData } from '../../types';
 
 interface Member {
   id: string;

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Typography, InputAdornment, Stack } from '@mui/material';
 import { Plus, Search  } from 'lucide-react';
-import { GroupCard } from '../../../components/ui/card/GroupCard';
-import type { GroupData } from '../../../types/index';
+import { GroupCard } from '../../components/ui/card/GroupCard';
+import type { GroupData } from '../../types/index';
 import {
   StyledContainer,
   TitleWrapper,
@@ -12,8 +12,8 @@ import {
   GroupsGrid,
   EmptyStateWrapper,
 } from './groupStyle';
-import { Button } from '../../../components/ui/button/Button';
-import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
+import { Button } from '../../components/ui/button/Button';
+import { ConfirmationModal } from '../../components/common/modal/ConfirmationModal';
 import CreateGroups from './Create';
 import EditGroups from './Edit';
 import Members from './Members';

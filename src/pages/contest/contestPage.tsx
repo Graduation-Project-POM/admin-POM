@@ -11,12 +11,12 @@ import {
   ContestsGrid,
   EmptyStateWrapper,
 } from "./constentStyle";
-import { Button } from "../../../components/ui/button/Button";
-import { ContestCard } from "../../../components/ui/card/contestCard";
-import { SharedTable } from "../../../components/ui/table/tables";
-import type { ContestData } from "../../../types";
+import { Button } from "../../components/ui/button/Button";
+import { ContestCard } from "../../components/ui/card/contestCard";
+import { SharedTable } from "../../components/ui/table/tables";
+import type { ContestData } from "../../types";
 import { Search } from "lucide-react";
-import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
+import { ConfirmationModal } from "../../components/common/modal/ConfirmationModal";
 import EditContest from "./Edit";
 import CreateContest from "./Create";
 import ViewContest from "./View";

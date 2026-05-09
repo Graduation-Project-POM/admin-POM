@@ -9,21 +9,14 @@ import type { UserRole } from "./types";
 import { useState } from "react";
 import { Page } from "./components/common/Page";
 import { DashboardLayout } from "./components/layout/Dashboard";
-import { AdminRoute } from "./components/AdminRoute";
 import { AdminApprovalsPage } from "./pages/admin/approval/ApprovalsPage";
 import { AdminUsersPage } from "./pages/admin/users/UsersPage";
-import { AdminProblemsPage } from "./pages/admin/problem/ProblemsPage";
-import ContestsManager from "./pages/trainer/contests/ContestPage";
+import { AdminProblemsPage } from "./pages/problem/ProblemsPage";
+import GroupsPage from "./pages/group/groupPage";
+import ContestsPage from "./pages/contest/contestPage";
+import StudentContestsPage from "./pages/student/contest/ContestsPage";
 import StudentProblemsPage from "./pages/student/problem/ProblemsPage";
 import StudentSubmissonsPage from "./pages/student/problem/SubmissonsPage";
-import StudentContestsPage from "./pages/student/contest/ContestsPage";
-import GroupsPage from "./pages/admin/group/groupPage";
-import ContestsPage from "./pages/admin/contest/contestPage";
-import CoursesPage from "./pages/trainer/groups/groupsPage";
-import { ProblemBank } from "./pages/trainer/problem/problemPage";
-import ProfilePage from "./pages/admin/profile/profilePage";
-import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
-import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
 
 const USER_DATA = {
   ADMIN: { name: "Admin User", email: "admin@pmo.ps" },
@@ -32,54 +25,29 @@ const USER_DATA = {
 };
 
 function App() {
-  const [role, setRole] = useState<UserRole>('TRAINER');
+  const [role, setRole] = useState<UserRole>('ADMIN');
 
   return (
     <Router>
-      <DashboardLayout
-        role={role}
-        userName={USER_DATA[role].name}
+      <DashboardLayout 
+        role={role} 
+        userName={USER_DATA[role].name} 
         userEmail={USER_DATA[role].email}
       >
         <Routes>
-          {/* Admin Routes */}
-          <Route
-            path="/admin/dashboard"
-            element={<AdminDashboard />}
-          />
-          <Route
-            path="/admin/users"
-            element={
-              <AdminRoute role={role}>
-                <AdminUsersPage />
-              </AdminRoute>
-            }
-          />
+          <Route path="/admin/dashboard" element={<Page title="Admin Dashboard" />} />
+          <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/approvals" element={<AdminApprovalsPage />} />
-          <Route
-            path="/admin/announcements"
-            element={<Page title="Announcements" />}
-          />
+          <Route path="/admin/announcements" element={<Page title="Announcements" />} />
           <Route path="/admin/groups" element={<GroupsPage />} />
           <Route path="/admin/contests" element={<ContestsPage />} />
           <Route path="/admin/problems" element={<AdminProblemsPage />} />
-          <Route
-            path="/admin/reports"
-            element={<Page title="System Reports" />}
-          />
-          <Route path="/admin/profile" element={<ProfilePage />} />
-          {/* Trainer Routes */}
-          <Route
-            path="/trainer/dashboard"
-            element={<TrainerDashboard />}
-          />
-          <Route path="/trainer/groups" element={<CoursesPage />} />
-          <Route
-            path="/trainer/contests"
-            element={<ContestsManager />}
-          />
-          <Route path="/trainer/problems" element={<ProblemBank />} />
-          <Route path="/trainer/profile" element={<ProfilePage />} />
+          <Route path="/admin/reports" element={<Page title="System Reports" />} />
+
+          <Route path="/trainer/dashboard" element={<Page title="Trainer Dashboard" />} />
+          <Route path="/trainer/groups" element={<GroupsPage />} />
+          <Route path="/trainer/contests" element={<ContestsPage />} />
+          <Route path="/trainer/problems" element={<AdminProblemsPage />} />
 
           {/* Student Routes */}
           <Route
@@ -96,24 +64,17 @@ function App() {
 
           {/* Shared Routes */}
           <Route path="/settings" element={<Page title="Account Settings" />} />
+          <Route path="/profile" element={<Page title="User Profile" />} />
 
-          {/* Default Route redirects to role-specific dashboard */}
-          <Route
-            path="/"
+          <Route 
+            path="/" 
             element={
-              <Navigate
-                to={
-                  role === "ADMIN"
-                    ? "/admin/dashboard"
-                    : role === "TRAINER"
-                      ? "/trainer/dashboard"
-                      : "/student/dashboard"
-                }
-                replace
+              <Navigate 
+                to={role === 'ADMIN' ? '/admin/dashboard' : role === 'TRAINER' ? '/trainer/dashboard' : '/student/dashboard'} 
+                replace 
               />
-            }
+            } 
           />
-          {/* Catch-all redirect */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </DashboardLayout>

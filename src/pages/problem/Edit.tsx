@@ -4,9 +4,9 @@ import {
   MenuItem,
   Stack,
 } from '@mui/material';
-import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
-import { FormField } from '../../../components/ui/Forms/FormField';
-import { Button } from '../../../components/ui/button/Button';
+import { ModalWrapper } from '../../components/common/modal/ModalWrapper';
+import { FormField } from '../../components/ui/Forms/FormField';
+import { Button } from '../../components/ui/button/Button';
 
 interface ProblemFormData {
   id: string;
