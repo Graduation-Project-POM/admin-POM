@@ -14,10 +14,10 @@ import {
 } from './groupStyle';
 import { Button } from '../../../components/ui/button/Button';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
-import Create from './Create';
-import Edit from './Edit';
+import CreateGroups from './Create';
+import EditGroups from './Edit';
 import Members from './Members';
-import View from './View';
+import ViewGroups from './View';
 import { GroupDetailsPage } from './groupDetailsPage';
 
 const mockGroups: GroupData[] = [
@@ -191,14 +191,13 @@ export const GroupsPage: React.FC = () => {
         </GroupsGrid>
       )}
 
-      {/* Modals */}
-      <Create 
+      <CreateGroups 
         open={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
         onSave={handleCreate} 
       />
 
-      <Edit 
+      <EditGroups 
         open={isEditOpen} 
         onClose={() => {
             setIsEditOpen(false);
@@ -208,7 +207,7 @@ export const GroupsPage: React.FC = () => {
         onSave={handleUpdate} 
       />
 
-      <View 
+      <ViewGroups 
         open={isViewOpen} 
         onClose={() => {
             setIsViewOpen(false);

@@ -26,7 +26,7 @@ const DetailItem = ({ icon, label, value }: { icon: any; label: string; value?: 
   </Box>
 );
 
-const View = ({ open, onClose, group }: ViewGroupProps) => {
+const ViewGroups = ({ open, onClose, group }: ViewGroupProps) => {
   if (!group) return null;
 
   return (

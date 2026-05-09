@@ -12,7 +12,7 @@ interface EditGroupProps {
   onSave: (group: GroupData) => void;
 }
 
-const Edit = ({ open, onClose, group, onSave }: EditGroupProps) => {
+const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',

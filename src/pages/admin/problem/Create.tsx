@@ -22,7 +22,7 @@ interface CreateProblemProps {
   onSave: (problem: any) => void;
 }
 
-const Create = ({ open, onClose, onSave }: CreateProblemProps) => {
+const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
   const [formData, setFormData] = useState<ProblemFormData>({
     title: '',
     category: '',
@@ -134,4 +134,4 @@ const Create = ({ open, onClose, onSave }: CreateProblemProps) => {
   );
 };
 
-export default Create;
+export default CreateProblem;

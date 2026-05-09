@@ -24,7 +24,7 @@ interface EditProblemProps {
   onSave: (problem: any) => void;
 }
 
-const Edit = ({ open, onClose, problem, onSave }: EditProblemProps) => {
+const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
   const [formData, setFormData] = useState<ProblemFormData>({
     id: '',
     title: '',
@@ -133,4 +133,4 @@ const Edit = ({ open, onClose, problem, onSave }: EditProblemProps) => {
   );
 };
 
-export default Edit;
+export default EditProblem;

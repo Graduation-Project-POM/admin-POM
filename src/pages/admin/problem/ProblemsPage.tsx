@@ -7,8 +7,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
-import Edit from './Edit';
-import Create from './Create';
+import EditProblem from './Edit';
+import CreateProblem from './Create';
 
 const primaryColor = '#7A1E1E';
 
@@ -212,13 +212,13 @@ export const AdminProblemsPage = () => {
         searchPlaceholder="Search problems..."
       />
 
-      <Create
+      <CreateProblem
         open={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSave={handleCreate}
       />
 
-      <Edit
+      <EditProblem
         open={isEditModalOpen}
         onClose={() => {
           setIsEditModalOpen(false);
