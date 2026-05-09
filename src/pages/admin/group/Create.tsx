@@ -77,4 +77,4 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   );
 };
 
-export default Create;
+export default CreateGroups;

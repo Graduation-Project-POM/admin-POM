@@ -86,4 +86,4 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
   );
 };
 
-export default Edit;
+export default EditGroups;

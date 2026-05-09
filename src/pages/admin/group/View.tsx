@@ -58,4 +58,4 @@ const ViewGroups = ({ open, onClose, group }: ViewGroupProps) => {
   );
 };
 
-export default View;
+export default ViewGroups;
