@@ -21,9 +21,6 @@ import {
 } from './groupDetailsStyle';
 import type { ContestData } from '../../../types/index';
 
-// -------------------------------
-// Types
-// -------------------------------
 interface GroupData {
     id: string;
     title: string;
@@ -51,9 +48,7 @@ interface Trainer {
     bio: string;
 }
 
-// -------------------------------
-// Mock Data
-// -------------------------------
+
 const mockGroupDetails: GroupData = {
     id: '1',
     title: 'Advanced Algorithms',
@@ -81,10 +76,9 @@ const mockStudents: Student[] = [
     { id: 'student-5', name: 'Karim Saeed', email: 'karim@example.com', joinDate: '2026-02-03', solvedProblems: 47 },
 ];
 
-// تأكد من أن قيم status مطابقة للنوع المطلوب في ContestData
 const mockContests: ContestData[] = [
     {
-        id: 1,
+        id: "1",
         title: 'Sorting & Searching',
         problemsCount: 5,
         participants: 24,
@@ -94,7 +88,7 @@ const mockContests: ContestData[] = [
         difficulty: 'Medium',
     },
     {
-        id: 2,
+        id: "2",
         title: 'Greedy Algorithms',
         problemsCount: 6,
         participants: 22,
@@ -104,7 +98,7 @@ const mockContests: ContestData[] = [
         difficulty: 'Medium',
     },
     {
-        id: 3,
+        id: "3",
         title: 'Dynamic Programming',
         problemsCount: 8,
         participants: 20,
@@ -114,7 +108,7 @@ const mockContests: ContestData[] = [
         difficulty: 'Hard',
     },
     {
-        id: 4,
+        id: "4",
         title: 'Final Challenge',
         problemsCount: 10,
         participants: 0,

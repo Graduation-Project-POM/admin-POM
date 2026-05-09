@@ -38,10 +38,10 @@ export interface CourseCardProps {
 
 
 export interface ContestData {
-  id: number;
+  id: string;
   title: string;
-  status: 'Upcoming' | 'Ongoing' | 'Ended';
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  status: string;
+  difficulty: string;
   participants: number;
   problemsCount: number;
   startDate: string;

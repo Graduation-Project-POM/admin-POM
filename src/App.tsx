@@ -23,6 +23,7 @@ import CoursesPage from "./pages/trainer/groups/groupsPage";
 import { ProblemBank } from "./pages/trainer/problem/problemPage";
 import ProfilePage from "./pages/admin/profile/profilePage";
 import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
+import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
 
 const USER_DATA = {
   ADMIN: { name: "Admin User", email: "admin@pmo.ps" },
@@ -31,7 +32,7 @@ const USER_DATA = {
 };
 
 function App() {
-  const [role, setRole] = useState<UserRole>('ADMIN');
+  const [role, setRole] = useState<UserRole>('TRAINER');
 
   return (
     <Router>
@@ -70,7 +71,7 @@ function App() {
           {/* Trainer Routes */}
           <Route
             path="/trainer/dashboard"
-            element={<Page title="Trainer Dashboard" />}
+            element={<TrainerDashboard />}
           />
           <Route path="/trainer/groups" element={<CoursesPage />} />
           <Route
