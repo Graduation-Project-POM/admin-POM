@@ -11,7 +11,6 @@ import {
 
 export const PageContainer = styled(Box)({
   padding: '32px 24px',
-  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
   minHeight: '100vh',
 });
 
@@ -84,20 +83,36 @@ export const StyledSearchField = styled(TextField)({
 });
 
 export const StyledFormControl = styled(FormControl)({
-  minWidth: '180px',
+  minWidth: 180,
   '& .MuiOutlinedInput-root': {
     borderRadius: '12px',
     backgroundColor: '#ffffff',
+    fontSize: '14px',
+    fontWeight: 600,
+    color: '#1e293b',
     transition: 'all 0.3s ease',
-    '&:hover': {
-      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+
+    '& fieldset': {
+      borderColor: '#e2e8f0',
     },
-    '&.Mui-focused': {
-      boxShadow: '0 4px 20px rgba(139, 29, 35, 0.15)',
+
+    '&:hover fieldset': {
+      borderColor: '#8B1D23',
+    },
+
+    '&.Mui-focused fieldset': {
+      borderColor: '#8B1D23',
+      boxShadow: '0 0 0 3px rgba(139, 29, 35, 0.1)',
     },
   },
-});
 
+  '& .MuiSelect-select': {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 14px',
+  },
+});
 export const ProblemsGrid = styled(Box)({
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',

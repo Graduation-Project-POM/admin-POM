@@ -97,6 +97,12 @@ export const navigationConfig: NavSection[] = [
         icon: "BookOpen",
         roles: ["TRAINER"],
       },
+      {
+        title: "Profile",
+        path: "/trainer/profile",
+        icon: "UserCircle",
+        roles: ["TRAINER"],
+      },
 
       // ================= STUDENT =================
       {
