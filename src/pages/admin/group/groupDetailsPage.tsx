@@ -55,6 +55,7 @@ interface Trainer {
     bio: string;
 }
 
+
 const mockGroupDetails: GroupData = {
     id: '1',
     title: 'Advanced Algorithms',
@@ -84,7 +85,7 @@ const mockStudents: Student[] = [
 
 const mockContests: ContestData[] = [
     {
-        id: 1,
+        id: "1",
         title: 'Sorting & Searching',
         problemsCount: 5,
         participants: 24,
@@ -94,7 +95,7 @@ const mockContests: ContestData[] = [
         difficulty: 'Medium',
     },
     {
-        id: 2,
+        id: "2",
         title: 'Greedy Algorithms',
         problemsCount: 6,
         participants: 22,
@@ -104,7 +105,7 @@ const mockContests: ContestData[] = [
         difficulty: 'Medium',
     },
     {
-        id: 3,
+        id: "3",
         title: 'Dynamic Programming',
         problemsCount: 8,
         participants: 20,
@@ -114,7 +115,7 @@ const mockContests: ContestData[] = [
         difficulty: 'Hard',
     },
     {
-        id: 4,
+        id: "4",
         title: 'Final Challenge',
         problemsCount: 10,
         participants: 0,

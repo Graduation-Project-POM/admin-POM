@@ -88,7 +88,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
     <StyledCard>
       <IconButton
         size="small"
-        onClick={() => onDelete?.(contest.id)}
+        onClick={() => onDelete?.(Number(contest.id))}
         sx={{
           position: 'absolute',
           top: 12,
@@ -143,7 +143,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           <Button
             variant="outlined"
             size="small"
-            onClick={() => onView?.(contest.id)}
+            onClick={() => onView?.(Number(contest.id))}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
             View
@@ -151,7 +151,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           <Button
             variant="outlined"
             size="small"
-            onClick={() => onEdit?.(contest.id)}
+            onClick={() => onEdit?.(Number(contest.id))}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
             Edit
@@ -159,7 +159,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           <Button
             variant="contained"
             size="small"
-            onClick={() => onProblems?.(contest.id)}
+            onClick={() => onProblems?.(Number(contest.id))}
             sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' }, boxShadow: 'none' }}
           >
             Problems

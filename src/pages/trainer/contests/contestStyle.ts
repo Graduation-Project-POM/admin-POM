@@ -12,7 +12,6 @@ import type { Contest, TContestProblem } from '../../../types';
 
 export const PageContainer = styled(Box)({
   padding: '40px 24px',
-  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
   minHeight: '100vh',
 });
 
@@ -164,7 +163,6 @@ export const InfoIcon = styled(Box)({
   width: '32px',
   height: '32px',
   borderRadius: '8px',
-  backgroundColor: '#f1f5f9',
   color: '#8B1D23',
   fontSize: '16px',
   flexShrink: 0,
@@ -334,8 +332,8 @@ export const contestsData: Contest[] = [
     id: 3,
     name: 'Winter Coding Challenge',
     status: 'Upcoming',
-    startDate: 'December 15, 2026',
-    endDate: 'December 22, 2026',
+    startDate: 'April 15, 2026',
+    endDate: 'April 22, 2026',
     participants: 0,
     problems: 10,
     duration: '7 days',

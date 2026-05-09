@@ -1,49 +1,82 @@
 import React, { useState } from 'react';
-import { Box, Typography, Button, CardContent } from '@mui/material';
-import {
-  Calendar,
-  Users,
-  Clock,
-  ArrowLeft,
-  Target,
-  ChevronRight,
-} from 'lucide-react';
+import { Box, Typography, Button } from '@mui/material';
+import { ArrowLeft } from 'lucide-react';
 import {
   PageContainer,
   HeaderSection,
   TitleBox,
   IconBadge,
   BackButton,
-  ContestCard,
-  CardHeaderBox,
-  ContestTitle,
-  StatusChip,
-  InfoStack,
-  InfoItem,
-  InfoIcon,
-  InfoLabel,
-  InfoValue,
-  ProgressSection,
-  ProgressLabel,
-  ProgressLabelText,
-  ProgressPercentage,
-  StyledLinearProgress,
-  ActionButton,
-  DifficultyChip,
   TableContainer,
   TableHeader,
   TableTitle,
   TableSubtitle,
+  DifficultyChip,
   contestsData,
   contestProblemsMap,
 } from './contestStyle';
+import { ContestCard } from '../../../components/ui/card/contestCard';
+import { SharedTable } from '../../../components/ui/table/tables'; // استيراد الجدول المشترك
 
 export const ContestsManager: React.FC = () => {
   const [selectedContestId, setSelectedContestId] = useState<number | null>(null);
+  const [contests, setContests] = useState(contestsData);
+  const [currentProblems, setCurrentProblems] = useState<any[]>([]);
+
+  const handleView = (id: number) => {
+    console.log('View contest', id);
+    alert(`View contest ${id}`);
+  };
+
+  const handleEdit = (id: number) => {
+    console.log('Edit contest', id);
+    alert(`Edit contest ${id}`);
+  };
+
+  const handleProblems = (id: number) => {
+    const problems = contestProblemsMap[id] || [];
+    const problemsWithId = problems.map((p, idx) => ({
+      id: `${id}-${idx}`,
+      problem: p.problem,
+      difficulty: p.difficulty,
+      studentsSolved: p.studentsSolved,
+      totalSubmissions: p.totalSubmissions,
+      acceptanceRate: p.acceptanceRate,
+    }));
+    setCurrentProblems(problemsWithId);
+    setSelectedContestId(id);
+  };
+
+  const handleDelete = (id: number) => {
+    setContests((prev) => prev.filter((c) => c.id !== id));
+    if (selectedContestId === id) {
+      setSelectedContestId(null);
+    }
+  };
+
+  const handleEditProblem = (row: any) => {
+    console.log('Edit problem', row);
+    alert(`Edit problem: ${row.problem}`);
+  };
+
+  const handleSingleDeleteProblem = (problemId: string) => {
+    setCurrentProblems((prev) => prev.filter((p) => p.id !== problemId));
+  };
+
+  const handleBulkDeleteProblems = (selectedIds: string[]) => {
+    setCurrentProblems((prev) => prev.filter((p) => !selectedIds.includes(p.id)));
+  };
+
+  const problemColumns = [
+    { id: 'problem', label: 'Problem' },
+    { id: 'difficulty', label: 'Difficulty' },
+    { id: 'studentsSolved', label: 'Students Solved' },
+    { id: 'totalSubmissions', label: 'Total Submissions' },
+    { id: 'acceptanceRate', label: 'Acceptance Rate' },
+  ];
 
   if (selectedContestId !== null) {
-    const contestProblems = contestProblemsMap[selectedContestId] || [];
-    const contestName = contestsData.find((c) => c.id === selectedContestId)?.name || 'Contest';
+    const contestName = contests.find((c) => c.id === selectedContestId)?.name || 'Contest';
 
     return (
       <PageContainer>
@@ -55,59 +88,23 @@ export const ContestsManager: React.FC = () => {
           Back to Contests
         </BackButton>
 
-        <TableContainer>
+        <TableContainer >
           <TableHeader>
             <TableTitle>🏆 {contestName}</TableTitle>
             <TableSubtitle>Manage and monitor contest problems</TableSubtitle>
           </TableHeader>
 
-          <Box sx={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #e2e8f0', backgroundColor: '#f8fafc' }}>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 700, color: '#475569' }}>Problem</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 700, color: '#475569' }}>Difficulty</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 700, color: '#475569' }}>Students Solved</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 700, color: '#475569' }}>Total Submissions</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 700, color: '#475569' }}>Acceptance Rate</th>
-                  <th style={{ padding: '14px 16px', textAlign: 'left', fontWeight: 700, color: '#475569' }}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {contestProblems.map((problem, index) => (
-                  <tr
-                    key={index}
-                    style={{ borderBottom: '1px solid #f1f5f9' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#f8fafc')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                  >
-                    <td style={{ padding: '14px 16px', color: '#1e293b', fontWeight: 600 }}>{problem.problem}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <DifficultyChip label={problem.difficulty} difficulty={problem.difficulty} size="small" />
-                    </td>
-                    <td style={{ padding: '14px 16px', color: '#64748b' }}>{problem.studentsSolved}</td>
-                    <td style={{ padding: '14px 16px', color: '#64748b' }}>{problem.totalSubmissions}</td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <Box sx={{ fontSize: '14px', fontWeight: 600, color: '#8B1D23' }}>{problem.acceptanceRate}%</Box>
-                    </td>
-                    <td style={{ padding: '14px 16px' }}>
-                      <Button
-                        variant="text"
-                        size="small"
-                        sx={{
-                          color: '#8B1D23',
-                          fontWeight: 600,
-                          textTransform: 'none',
-                          '&:hover': { backgroundColor: 'rgba(139, 29, 35, 0.1)' },
-                        }}
-                      >
-                        Edit
-                      </Button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <Box sx={{ m: 2 }}>
+          <SharedTable 
+            data={currentProblems}
+            columns={problemColumns}
+            onEdit={handleEditProblem}
+            onSingleDelete={handleSingleDeleteProblem}
+            onDelete={handleBulkDeleteProblems}
+            searchPlaceholder="Search problems..."
+            addButtonLabel="Add Problem"
+            onAdd={() => alert('Add new problem')}
+          />
           </Box>
         </TableContainer>
       </PageContainer>
@@ -141,63 +138,28 @@ export const ContestsManager: React.FC = () => {
           gap: 3,
         }}
       >
-        {contestsData.map((contest) => (
-          <ContestCard key={contest.id} onClick={() => setSelectedContestId(contest.id)}>
-            <CardContent sx={{ flexGrow: 1 }}>
-              <CardHeaderBox>
-                <ContestTitle>{contest.name}</ContestTitle>
-                <StatusChip label={contest.status} status={contest.status} size="small" />
-              </CardHeaderBox>
-
-              <InfoStack>
-                <InfoItem>
-                  <InfoIcon><Calendar size={18} /></InfoIcon>
-                  <Box>
-                    <InfoLabel>Duration</InfoLabel>
-                    <InfoValue>{contest.startDate} - {contest.endDate}</InfoValue>
-                  </Box>
-                </InfoItem>
-                <InfoItem>
-                  <InfoIcon><Users size={18} /></InfoIcon>
-                  <Box>
-                    <InfoLabel>Participants</InfoLabel>
-                    <InfoValue>{contest.participants || 'Not started yet'}</InfoValue>
-                  </Box>
-                </InfoItem>
-                <InfoItem>
-                  <InfoIcon><Target size={18} /></InfoIcon>
-                  <Box>
-                    <InfoLabel>Problems</InfoLabel>
-                    <InfoValue>{contest.problems}</InfoValue>
-                  </Box>
-                </InfoItem>
-                <InfoItem>
-                  <InfoIcon><Clock size={18} /></InfoIcon>
-                  <Box>
-                    <InfoLabel>Duration</InfoLabel>
-                    <InfoValue>{contest.duration}</InfoValue>
-                  </Box>
-                </InfoItem>
-              </InfoStack>
-
-              {contest.status === 'Ongoing' && contest.timeProgress !== undefined && (
-                <ProgressSection>
-                  <ProgressLabel>
-                    <ProgressLabelText>Time Progress</ProgressLabelText>
-                    <ProgressPercentage>{contest.timeProgress}%</ProgressPercentage>
-                  </ProgressLabel>
-                  <StyledLinearProgress variant="determinate" value={contest.timeProgress} />
-                </ProgressSection>
-              )}
-            </CardContent>
-
-            <Box sx={{ p: 2, pt: 0 }}>
-              <ActionButton variant="contained" fullWidth endIcon={<ChevronRight size={16} />}>
-                View Details
-              </ActionButton>
-            </Box>
-          </ContestCard>
-        ))}
+        {contests.map((contest) => {
+          const contestForCard = {
+            id: String(contest.id),
+            title: contest.name,
+            participants: Number(contest.participants) || 0,
+            problemsCount: contest.problems,
+            startDate: contest.startDate,
+            endDate: contest.endDate,
+            status: contest.status,
+            difficulty: 'Medium',
+          };
+          return (
+            <ContestCard
+              key={contest.id}
+              contest={contestForCard}
+              onView={handleView}
+              onEdit={handleEdit}
+              onProblems={handleProblems}
+              onDelete={handleDelete}
+            />
+          );
+        })}
       </Box>
     </PageContainer>
   );
