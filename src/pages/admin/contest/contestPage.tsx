@@ -20,8 +20,8 @@ import { ConfirmationModal } from "../../../components/common/modal/Confirmation
 import EditContest from "./Edit";
 import CreateContest from "./Create";
 import ViewContest from "./View";
-import Create from "../problem/Create";
-import Edit from "../problem/Edit";
+import CreateProblem from "../problem/Create";
+import EditProblem from "../problem/Edit";
 
 interface Problem {
   id: string;
@@ -359,13 +359,13 @@ export const ContestsPage: React.FC = () => {
           searchPlaceholder="Search problems within contest..."
         />
 
-        <Create
+        <CreateProblem
           open={isAddProblemOpen}
           onClose={() => setIsAddProblemOpen(false)}
           onSave={handleAddProblem}
         />
 
-        <Edit
+        <EditProblem
           open={isEditProblemOpen}
           onClose={() => {
             setIsEditProblemOpen(false);

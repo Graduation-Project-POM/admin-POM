@@ -10,7 +10,7 @@ interface CreateGroupProps {
   onSave: (group: any) => void;
 }
 
-const Create = ({ open, onClose, onSave }: CreateGroupProps) => {
+const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
