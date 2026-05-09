@@ -12,6 +12,8 @@ import { useState, useMemo } from 'react';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import EditProblem from './Edit';
 import CreateProblem from './Create';
+import { StudentProgressModal } from '../../trainer/problems-solution/StudentProgressModeal';
+import { SolutionDetailModal } from '../../trainer/problems-solution/SolutionDetailsModal';
 
 const primaryColor = '#7A1E1E';
 
@@ -130,6 +132,10 @@ export const AdminProblemsPage = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
 
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
+  const [currentSubmission, setCurrentSubmission] = useState<any>(null);
+
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
     title: string;
@@ -182,7 +188,19 @@ export const AdminProblemsPage = () => {
       id: 'title',
       label: 'Title',
       render: (row: Problem) => (
-        <Typography sx={{ fontWeight: 600, color: primaryColor }}>
+        <Typography 
+          onClick={() => {
+            setSelectedProblem(row);
+            setIsProgressModalOpen(true);
+          }}
+          sx={{ 
+            fontWeight: 700, 
+            color: primaryColor, 
+            fontSize: '14px', 
+            cursor: 'pointer',
+            '&:hover': { textDecoration: 'underline' }
+          }}
+        >
           {row.title}
         </Typography>
       ),
@@ -299,6 +317,27 @@ export const AdminProblemsPage = () => {
         onConfirm={confirmConfig.onConfirm}
         title={confirmConfig.title}
         message={confirmConfig.message}
+      />
+
+      <StudentProgressModal
+        open={isProgressModalOpen}
+        onClose={() => setIsProgressModalOpen(false)}
+        problemTitle={selectedProblem?.title || ''}
+        onViewSolution={(submission) => {
+            setCurrentSubmission(submission);
+            setIsSolutionModalOpen(true);
+        }}
+      />
+
+      <SolutionDetailModal
+        open={isSolutionModalOpen}
+        onClose={() => setIsSolutionModalOpen(false)}
+        submission={currentSubmission}
+        problemTitle={selectedProblem?.title || ''}
+        onSaveMark={(id, score) => {
+            console.log(`Saved score ${score} for submission ${id}`);
+            setIsSolutionModalOpen(false);
+        }}
       />
     </Box>
   );
