@@ -18,6 +18,7 @@ import Create from './Create';
 import Edit from './Edit';
 import Members from './Members';
 import View from './View';
+import { GroupDetailsPage } from './groupDetailsPage';
 
 const mockGroups: GroupData[] = [
   {
@@ -58,6 +59,8 @@ export const GroupsPage: React.FC = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isMembersOpen, setIsMembersOpen] = useState(false);
   const [selectedGroup, setSelectedGroup] = useState<GroupData | null>(null);
+  const [viewingGroupDetails, setViewingGroupDetails] = useState(false);
+  const [detailsGroup, setDetailsGroup] = useState<GroupData | null>(null);
 
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
@@ -84,16 +87,42 @@ export const GroupsPage: React.FC = () => {
     setConfirmConfig({ open: false, id: '' });
   };
 
+  // Handler for viewing group details
+  const handleViewGroupDetails = (id: string) => {
+    const group = groups.find(g => g.id === id);
+    if (group) {
+      setDetailsGroup(group);
+      setViewingGroupDetails(true);
+    }
+  };
+
+  // Handler for going back from details page
+  const handleBackFromDetails = () => {
+    setViewingGroupDetails(false);
+    setDetailsGroup(null);
+  };
+
   const filteredGroups = groups.filter(
     (group) =>
       group.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       group.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // If viewing group details, show details page
+  if (viewingGroupDetails && detailsGroup) {
+    return (
+      <GroupDetailsPage 
+        group={detailsGroup} 
+        onBack={handleBackFromDetails}
+      />
+    );
+  }
+
+  // Otherwise show groups list
   return (
     <StyledContainer>
       <TitleWrapper>
-        <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b' }}>
+        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
           Training Groups
         </Typography>
       </TitleWrapper>
@@ -145,11 +174,8 @@ export const GroupsPage: React.FC = () => {
               key={group.id}
               group={group}
               onView={(id) => {
-                const g = groups.find(x => x.id === id);
-                if (g) {
-                    setSelectedGroup(g);
-                    setIsViewOpen(true);
-                }
+                // Navigate to details page when clicking on a group card
+                handleViewGroupDetails(id);
               }}
               onEdit={(g) => {
                 setSelectedGroup(g);
@@ -165,6 +191,7 @@ export const GroupsPage: React.FC = () => {
         </GroupsGrid>
       )}
 
+      {/* Modals */}
       <Create 
         open={isCreateOpen} 
         onClose={() => setIsCreateOpen(false)} 
