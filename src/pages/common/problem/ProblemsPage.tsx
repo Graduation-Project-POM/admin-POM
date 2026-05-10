@@ -304,4 +304,4 @@ export const AdminProblemsPage = () => {
   );
 };
 
-export default AdminProblemsPage;
+export default ProblemsPage;
