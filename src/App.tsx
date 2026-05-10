@@ -13,7 +13,7 @@ import { AdminApprovalsPage } from "./pages/admin/approval/ApprovalsPage";
 import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
 import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
 import { AdminUsersPage } from "./pages/admin/users/UsersPage";
-import ProblemsPage from "./pages/common/problem/ProblemsPage";
+import {ProblemsPage} from "./pages/common/problem/ProblemsPage";
 import GroupsPage from "./pages/common/group/groupPage";
 import ContestsPage from "./pages/common/contest/contestPage";
 import StudentContestsPage from "./pages/student/contest/ContestsPage";
@@ -21,6 +21,7 @@ import StudentProblemsPage from "./pages/student/problem/ProblemsPage";
 import StudentSubmissonsPage from "./pages/student/problem/SubmissonsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
 import StudentGroupsPage from './pages/student/group/GroupsPage';
+import StudentDashboardPage from './pages/student/dashboard/dashboard';
 
 
 const USER_DATA = {
@@ -59,11 +60,10 @@ function App() {
           {/* Student Routes */}
           <Route
             path="/student/dashboard"
-            element={<Page title="Student Dashboard" />}
-          />
+            element={<StudentDashboardPage />} />
           <Route path="/student/groups" element={<StudentGroupsPage/>} />
           <Route path="/student/contests" element={<StudentContestsPage />} />
-          <Route path="/student/problems" element={<ProblemsPage />} />
+          <Route path="/student/problems" element={<StudentProblemsPage />} />
           <Route
             path="/student/problems/submissions"
             element={<StudentSubmissonsPage />}
