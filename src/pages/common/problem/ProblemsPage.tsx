@@ -134,7 +134,7 @@ const mockProblems: Problem[] = [
   },
 ];
 
-export const AdminProblemsPage = () => {
+export const ProblemsPage = () => {
   const [problems, setProblems] = useState<Problem[]>(mockProblems);
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

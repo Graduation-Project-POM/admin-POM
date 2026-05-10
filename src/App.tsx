@@ -13,13 +13,16 @@ import { AdminApprovalsPage } from "./pages/admin/approval/ApprovalsPage";
 import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
 import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
 import { AdminUsersPage } from "./pages/admin/users/UsersPage";
-import { AdminProblemsPage } from "./pages/common/problem/ProblemsPage";
+import {ProblemsPage} from "./pages/common/problem/ProblemsPage";
 import GroupsPage from "./pages/common/group/groupPage";
 import ContestsPage from "./pages/common/contest/contestPage";
 import StudentContestsPage from "./pages/student/contest/ContestsPage";
-import StudentProblemsPage from "./pages/student/problem/ProblemsPage";
-import StudentSubmissonsPage from "./pages/student/problem/SubmissonsPage";
+import {ProblemBank} from "./pages/student/problem/ProblemsPage";
+import {MySubmissions} from "./pages/student/problem/SubmissonsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
+import StudentGroupsPage from './pages/student/group/GroupsPage';
+import StudentDashboardPage from './pages/student/dashboard/dashboard';
+
 
 const USER_DATA = {
   ADMIN: { name: "Admin User", email: "admin@pmo.ps" },
@@ -44,27 +47,26 @@ function App() {
           <Route path="/admin/announcements" element={<Page title="Announcements" />} />
           <Route path="/admin/groups" element={<GroupsPage />} />
           <Route path="/admin/contests" element={<ContestsPage />} />
-          <Route path="/admin/problems" element={<AdminProblemsPage />} />
+          <Route path="/admin/problems" element={<ProblemsPage />} />
           <Route path="/admin/reports" element={<Page title="System Reports" />} />
           <Route path="/admin/profile" element={<ProfilePage />} />
 
           <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
           <Route path="/trainer/groups" element={<GroupsPage />} />
           <Route path="/trainer/contests" element={<ContestsPage />} />
-          <Route path="/trainer/problems" element={<AdminProblemsPage />} />
+          <Route path="/trainer/problems" element={<ProblemsPage />} />
           <Route path="/trainer/profile" element={<ProfilePage />} />
 
           {/* Student Routes */}
           <Route
             path="/student/dashboard"
-            element={<Page title="Student Dashboard" />}
-          />
-          <Route path="/student/groups" element={<Page title="My Groups" />} />
+            element={<StudentDashboardPage />} />
+          <Route path="/student/groups" element={<StudentGroupsPage/>} />
           <Route path="/student/contests" element={<StudentContestsPage />} />
-          <Route path="/student/problems" element={<StudentProblemsPage />} />
+          <Route path="/student/problems" element={<ProblemBank />} />
           <Route
             path="/student/problems/submissions"
-            element={<StudentSubmissonsPage />}
+            element={<MySubmissions />}
           />
           <Route path="/student/profile" element={<ProfilePage />} />
 

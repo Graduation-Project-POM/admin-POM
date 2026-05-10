@@ -118,12 +118,6 @@ export const navigationConfig: NavSection[] = [
         roles: ["STUDENT"],
       },
       {
-        title: "Contests",
-        path: "/student/contests",
-        icon: "Trophy",
-        roles: ["STUDENT"],
-      },
-      {
         title: "Problems",
         path: "/student/problems",
         icon: "BookOpen",
@@ -132,6 +126,12 @@ export const navigationConfig: NavSection[] = [
           { title: "All Problems", path: "/student/problems", icon: "FileText" },
           { title: "My Submissions", path: "/student/problems/submissions", icon: "CheckCircle" },
         ],
+      },
+      {
+        title: "Profile",
+        path: "/student/profile",
+        icon: "UserCircle",
+        roles: ["STUDENT"],
       },
     ],
   },
