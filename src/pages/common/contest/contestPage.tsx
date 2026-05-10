@@ -22,6 +22,8 @@ import CreateContest from "./Create";
 import ViewContest from "./View";
 import CreateProblem from "../problem/Create";
 import EditProblem from "../problem/Edit";
+import { StudentProgressModal } from "../../trainer/problems-solution/StudentProgressModeal";
+import { SolutionDetailModal } from "../../trainer/problems-solution/SolutionDetailsModal";
 
 interface Problem {
   id: string;
@@ -145,13 +147,11 @@ export const ContestsPage: React.FC = () => {
     useState<Record<number, Problem[]>>(contestProblemsMap);
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Contest Selection for Problems View
   const [selectedContestId, setSelectedContestId] = useState<number | null>(
     null,
   );
   const [selectedContestTitle, setSelectedContestTitle] = useState<string>("");
 
-  // Modals state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
@@ -159,10 +159,13 @@ export const ContestsPage: React.FC = () => {
     null,
   );
 
-  // Problem Modals
   const [isAddProblemOpen, setIsAddProblemOpen] = useState(false);
   const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
+
+  const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+  const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
+  const [currentSubmission, setCurrentSubmission] = useState<any>(null);
 
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
@@ -287,6 +290,25 @@ export const ContestsPage: React.FC = () => {
       {
         id: "name",
         label: "Problem Name",
+        render: (row: Problem) => (
+          <Typography
+            onClick={() => {
+              setSelectedProblem(row);
+              setIsProgressModalOpen(true);
+            }}
+            sx={{
+              fontWeight: 700,
+              color: "#8B1D23",
+              fontSize: "14px",
+              cursor: "pointer",
+              "&:hover": {
+                textDecoration: "underline",
+              },
+            }}
+          >
+            {row.name}
+          </Typography>
+        ),
       },
       {
         id: "difficulty",
@@ -381,6 +403,27 @@ export const ContestsPage: React.FC = () => {
           onConfirm={confirmConfig.onConfirm}
           title={confirmConfig.title}
           message={confirmConfig.message}
+        />
+
+        <StudentProgressModal
+          open={isProgressModalOpen}
+          onClose={() => setIsProgressModalOpen(false)}
+          problemTitle={selectedProblem?.title || ""}
+          onViewSolution={(submission) => {
+            setCurrentSubmission(submission);
+            setIsSolutionModalOpen(true);
+          }}
+        />
+
+        <SolutionDetailModal
+          open={isSolutionModalOpen}
+          onClose={() => setIsSolutionModalOpen(false)}
+          submission={currentSubmission}
+          problemTitle={selectedProblem?.title || ""}
+          onSaveMark={(id, score) => {
+            console.log(`Saved score ${score} for submission ${id}`);
+            setIsSolutionModalOpen(false);
+          }}
         />
       </StyledContainer>
     );
