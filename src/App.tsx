@@ -31,7 +31,7 @@ const USER_DATA = {
 };
 
 function App() {
-  const [role, setRole] = useState<UserRole>('TRAINER');
+  const [role, setRole] = useState<UserRole>('ADMIN');
 
   return (
     <Router>

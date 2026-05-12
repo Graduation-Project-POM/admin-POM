@@ -16,6 +16,8 @@ export interface GroupData {
   id: string;
   title: string;
   description: string;
+  status: string;
+  progress:number;
   studentsCount: number;
   trainerCount: number;
   trainerName: string;
