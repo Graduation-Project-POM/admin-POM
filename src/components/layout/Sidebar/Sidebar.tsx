@@ -287,7 +287,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             }}
           >
             <Avatar sx={{ bgcolor: '#fff', color: '#fff', width: 42, height: 42 }}>
-              <UserCircle size={40} strokeWidth={2} color="#8B1D23" />
+              <UserCircle size={35} strokeWidth={2} color="#8B1D23" />
             </Avatar>
             <Box sx={{ minWidth: 0 }}>
               <Typography
