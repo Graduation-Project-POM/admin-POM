@@ -27,6 +27,7 @@ import {
 import type { ContestData, GroupData } from '../../../types';
 import { Button } from '../../../components/ui/button/studentButton';
 import { SharedTable } from '../../../components/ui/table/studentTable';
+import { useNavigate } from 'react-router-dom';
 
 const mockTrainer = {
   id: 'trainer-1',
@@ -252,6 +253,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   const [tabValue, setTabValue] = useState(0);
   const [studentSearchQuery, setStudentSearchQuery] = useState('');
   const [contestSearchQuery, setContestSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const [viewingProblems, setViewingProblems] = useState(false);
   const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
@@ -683,7 +685,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   startIcon={<Send size={16} />}
                   onClick={handleSubmitSolution}
                   disabled={!solutionText.trim() && !solutionImage}
-                  sx={{ py: 0.5, px: 2, fontSize: '12px',backgroundColor: '#fff',color: '#8B1D23','&:hover': {backgroundColor: '#fff',color: '#8B1D23'} }}
+                  sx={{ py: 0.5, px: 2, fontSize: '12px', backgroundColor: '#fff', color: '#8B1D23', '&:hover': { backgroundColor: '#fff', color: '#8B1D23' } }}
                 >
                   {selectedProblem?.status === 'submitted' ? 'Update Solution' : 'Submit Solution'}
                 </Button>
@@ -1114,15 +1116,19 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                     </Typography>
                   </Box>
                   <Button
-                    variant="outlined"
+                    variantType="outline"
                     size="small"
                     fullWidth
                     onClick={() => navigate(`/profile/${student.id}`)}
                     sx={{
                       mt: 1,
                       borderColor: '#8B1D23',
-                      color: '#ffffffff',
-                      '&:hover': { borderColor: '#6B141A', backgroundColor: '#fef2f2', color: '#8B1D23' }
+                      color: '#ffffff',
+                      '&:hover': {
+                        borderColor: '#6B141A',
+                        backgroundColor: '#fef2f2',
+                        color: '#8B1D23'
+                      }
                     }}
                   >
                     View Profile

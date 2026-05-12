@@ -125,7 +125,7 @@ export const streakCard: SxProps<Theme> = {
   border: '1px solid #FED7AA',
 };
 
-export const badgeItem: SxProps<Theme> = (colorBg: string, borderColor: string) => ({
+export const badgeItem = (colorBg: string, borderColor: string) => ({
   display: 'flex',
   alignItems: 'center',
   gap: 2,
@@ -134,7 +134,6 @@ export const badgeItem: SxProps<Theme> = (colorBg: string, borderColor: string) 
   bgcolor: colorBg,
   border: `1px solid ${borderColor}`,
 });
-
 export const tableContainer: SxProps<Theme> = {
   borderRadius: '16px',
   border: '1px solid #eef2f6',

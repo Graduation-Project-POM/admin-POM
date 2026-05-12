@@ -26,7 +26,6 @@ import {
   Users,
   BookOpen,
   Clock,
-  Calendar,
   Flame,
   CheckCircle2,
   Award,
