@@ -12,7 +12,6 @@ export interface NavSection {
   title?: string;
   items: NavItem[];
 }
-
 export const navigationConfig: NavSection[] = [
   {
     items: [
@@ -133,6 +132,12 @@ export const navigationConfig: NavSection[] = [
         icon: "UserCircle",
         roles: ["STUDENT"],
       },
+      {
+        title: "Logout",
+        path: "/logout",
+        icon: "LogOut",
+        roles: ["ADMIN", "TRAINER", "STUDENT"],
+      }
     ],
   },
 

@@ -18,17 +18,17 @@ import {
   LayoutDashboard,
   Users,
   CheckCircle,
-  Megaphone,
   Users2,
   Trophy,
   BookOpen,
-  BarChart3,
   Settings,
   UserCircle,
-  Menu,
+  Menu as MenuIcon,
   FileText,
   ChevronDown,
   ChevronRight,
+  Languages,
+  LogOut,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -47,6 +47,7 @@ interface SidebarProps {
   role: UserRole;
   userName: string;
   userEmail: string;
+  onLogout?: () => void;
 }
 
 const createIcon = (Icon: LucideIcon) => (
@@ -57,28 +58,47 @@ const iconMap: Record<string, React.ReactNode> = {
   Dashboard: createIcon(LayoutDashboard),
   Users: createIcon(Users),
   CheckCircle: createIcon(CheckCircle),
-  Megaphone: createIcon(Megaphone),
   Groups: createIcon(Users2),
   Trophy: createIcon(Trophy),
   BookOpen: createIcon(BookOpen),
-  BarChart3: createIcon(BarChart3),
   Settings: createIcon(Settings),
   UserCircle: createIcon(UserCircle),
   FileText: createIcon(FileText),
+  LogOut: createIcon(LogOut),
+  Languages: createIcon(Languages),
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({
   role,
   userName,
   userEmail,
+  onLogout,
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const sections = getVisibleNavigation(role);
+  const originalSections = getVisibleNavigation(role);
+
+  const sections = React.useMemo(() => {
+    return originalSections.map((section) => {
+      const logoutIndex = section.items.findIndex((item) => item.title === 'Logout');
+      if (logoutIndex !== -1) {
+        const languageItem = {
+          title: 'Language',
+          path: '#',
+          icon: 'Languages',
+        };
+        const newItems = [...section.items];
+        newItems.splice(logoutIndex, 0, languageItem);
+        return { ...section, items: newItems };
+      }
+      return section;
+    });
+  }, [originalSections]);
 
   const [mobileOpen, setMobileOpen] = useState(false);
-
   const [openItem, setOpenItem] = useState<string | null>(null);
+
+  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -86,6 +106,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
+
   const toggleItem = (path: string) => {
     setOpenItem(openItem === path ? null : path);
   };
@@ -97,13 +118,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
     );
   };
 
+  const handleLanguageToggle = () => {
+    setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));
+  };
+
+  const handleLogout = () => {
+    if (onLogout) {
+      onLogout();
+    }
+    if (isMobile) setMobileOpen(false);
+  };
+
   return (
-    <div>
+    <Box>
       <IconButton
         onClick={handleDrawerToggle}
-        sx={{ display: { md: 'none' } }}
+        sx={{ display: { md: 'none' }, position: 'fixed', top: 16, left: 16, zIndex: 1200 }}
       >
-        <Menu />
+        <MenuIcon />
       </IconButton>
 
       <SidebarContainer
@@ -126,7 +158,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <Divider sx={{ borderColor: '#eceff3' }} />
 
-        {/* Navigation */}
         <ScrollContainer>
           {sections.map((section, index) => (
             <Box key={index} sx={{ mb: 1 }}>
@@ -136,62 +167,103 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   const isOpen = openItem === item.path;
                   const isActive = location.pathname === item.path;
                   const isParentActive = isActive || isChildActive(item);
+                  
+                  const isLogoutItem = item.title === 'Logout';
+                  const isLanguageItem = item.title === 'Language';
+                  
                   return (
-                    <React.Fragment key={item.path}>
+                    <React.Fragment key={item.title + item.path}>
                       <ListItem disablePadding>
                         <StyledListItemButton
                           isActive={isParentActive}
                           onClick={() => {
-                              if (hasChildren) {
+                            if (isLogoutItem) {
+                              handleLogout();
+                              return;
+                            }
+                            if (isLanguageItem) {
+                              handleLanguageToggle();
+                              return;
+                            }
+                            if (hasChildren) {
                               toggleItem(item.path);
                             } else {
                               setOpenItem(null);
                               navigate(item.path);
-
-                              if (isMobile) {
-                                setMobileOpen(false);
-                              }
+                              if (isMobile) setMobileOpen(false);
                             }
                           }}
                         >
-                          <ListItemIcon sx={{ minWidth: 40, color: isParentActive ? '#8B1D23' : '#94a3b8'}}>
+                          <ListItemIcon sx={{ minWidth: 40, color: isParentActive ? '#8B1D23' : '#94a3b8' }}>
                             {iconMap[item.icon]}
                           </ListItemIcon>
-
-                          <ListItemText primary={<Typography sx={{fontSize: '14px',fontWeight: isParentActive ? 700 : 600,color: isParentActive ? '#8B1D23' : '#64748b'}}>{item.title}</Typography>}/>
-
-                          {hasChildren && (isOpen ? (
-                            <ChevronDown size={16} color="#94a3b8"/>
-                          ) : (
-                            <ChevronRight size={16} color="#94a3b8"/>
-                          ))}
+                          <ListItemText
+                            primary={
+                              <Typography
+                                sx={{
+                                  fontSize: '14px',
+                                  fontWeight: isParentActive ? 700 : 600,
+                                  color: isParentActive ? '#8B1D23' : '#64748b',
+                                }}
+                              >
+                                {isLanguageItem
+                                  ? (language === 'ar' ? 'العربية' : 'English')
+                                  : item.title}
+                              </Typography>
+                            }
+                          />
+                          {hasChildren && !isLogoutItem && !isLanguageItem &&
+                            (isOpen ? (
+                              <ChevronDown size={16} color="#94a3b8" />
+                            ) : (
+                              <ChevronRight size={16} color="#94a3b8" />
+                            ))}
                         </StyledListItemButton>
                       </ListItem>
 
-                      {
-                        hasChildren && (
-                          <Collapse in={isOpen} timeout="auto" unmountOnExit>
-                            <List disablePadding>
-                              {item.items.map(
-                                (subItem: any) => {
-                                  const isSubActive = location.pathname === subItem.path;
-                                  return (
-                                    <ListItem key={subItem.path} disablePadding>
-                                      <StyledListItemButton isActive={isSubActive} onClick={() => { navigate(subItem.path); if (isMobile) setMobileOpen(false); }} sx={{ ml: 4, py: 0.7, minHeight: 40, }}>
-                                        <ListItemIcon sx={{minWidth: 34,color: isSubActive ? '#8B1D23' : '#94a3b8',}}>
-                                          {iconMap[subItem.icon]}
-                                        </ListItemIcon>
-
-                                        <ListItemText primary={<Typography sx={{fontSize: '12px',fontWeight: isSubActive ? 800 : 600, color: isSubActive ? '#8B1D23' : '#64748b', }}>{subItem.title}</Typography>}/>
-                                      </StyledListItemButton>
-                                    </ListItem>
-                                  );
-                                }
-                              )}
-                            </List>
-                          </Collapse>
-                        )
-                      }
+                      {hasChildren && (
+                        <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                          <List disablePadding>
+                            {item.items.map((subItem: any) => {
+                              const isSubActive = location.pathname === subItem.path;
+                              return (
+                                <ListItem key={subItem.path} disablePadding>
+                                  <StyledListItemButton
+                                    isActive={isSubActive}
+                                    onClick={() => {
+                                      navigate(subItem.path);
+                                      if (isMobile) setMobileOpen(false);
+                                    }}
+                                    sx={{ ml: 4, py: 0.7, minHeight: 40 }}
+                                  >
+                                    <ListItemIcon
+                                      sx={{
+                                        minWidth: 34,
+                                        color: isSubActive ? '#8B1D23' : '#94a3b8',
+                                      }}
+                                    >
+                                      {iconMap[subItem.icon]}
+                                    </ListItemIcon>
+                                    <ListItemText
+                                      primary={
+                                        <Typography
+                                          sx={{
+                                            fontSize: '12px',
+                                            fontWeight: isSubActive ? 800 : 600,
+                                            color: isSubActive ? '#8B1D23' : '#64748b',
+                                          }}
+                                        >
+                                          {subItem.title}
+                                        </Typography>
+                                      }
+                                    />
+                                  </StyledListItemButton>
+                                </ListItem>
+                              );
+                            })}
+                          </List>
+                        </Collapse>
+                      )}
                     </React.Fragment>
                   );
                 })}
@@ -202,20 +274,35 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <Divider sx={{ borderColor: '#eceff3' }} />
 
-        {/* User Card */}
         <Box sx={{ p: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: '16px', bgcolor: '#fafafa', border: '1px solid #f1f5f9',}}>
-            <Avatar sx={{bgcolor: '#f1f5f9',width: 42,height: 42,}}>
-              <UserCircle size={22} strokeWidth={2} color="#64748b"/>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1.5,
+              p: 1.5,
+              borderRadius: '16px',
+              bgcolor: '#fafafa',
+              border: '1px solid #f1f5f9',
+            }}
+          >
+            <Avatar sx={{ bgcolor: '#fff', color: '#fff', width: 42, height: 42 }}>
+              <UserCircle size={40} strokeWidth={2} color="#8B1D23" />
             </Avatar>
-
             <Box sx={{ minWidth: 0 }}>
-              <Typography noWrap sx={{fontSize: '14px',fontWeight: 700,color: '#0f172a',}}>{userName}</Typography>
-              <Typography noWrap sx={{fontSize: '12px',color: '#94a3b8',}}>{userEmail}</Typography>
+              <Typography
+                noWrap
+                sx={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}
+              >
+                {userName}
+              </Typography>
+              <Typography noWrap sx={{ fontSize: '12px', color: '#94a3b8' }}>
+                {userEmail}
+              </Typography>
             </Box>
           </Box>
         </Box>
       </SidebarContainer>
-    </div >
+    </Box>
   );
 };
