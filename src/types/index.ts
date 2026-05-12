@@ -1,5 +1,5 @@
 
-export type UserRole  = 'ADMIN' | 'TRAINER' | 'STUDENT';
+export type UserRole = 'ADMIN' | 'TRAINER' | 'STUDENT';
 
 export interface NavItem {
   title: string;
@@ -17,7 +17,7 @@ export interface GroupData {
   title: string;
   description: string;
   status: string;
-  progress:number;
+  progress: number;
   studentsCount: number;
   trainerCount: number;
   trainerName: string;
@@ -58,7 +58,7 @@ export interface Contest {
   participants: number;
   problems: number;
   duration: string;
-  timeProgress?: number; 
+  timeProgress?: number;
 }
 
 export interface TContestProblem {
@@ -128,4 +128,46 @@ export interface Announcement {
   title: string;
   date: string;
   status: "Published" | "Draft";
-} 
+}
+
+export interface StudentStats {
+  name: string,
+  avatar: string,
+  totalProblemsSolved: number,
+  totalProblems: number,
+  completedContests: number,
+  totalContests: number,
+  averageGrade: number,
+  globalRank: number,
+  totalStudents: number,
+  currentStreak: number,
+  longestStreak: number,
+}
+
+
+export interface RecentActivity {
+  id: string;
+  title: string;
+  group: string;
+  time: string;
+  icon: React.ReactNode;
+  bgColor: string;
+}
+
+export interface UpcomingContest {
+  id: string;
+  title: string;
+  group: string;
+  startDate: string;
+  problemsCount: number;
+  difficulty: string;
+  daysLeft: number;
+}
+
+export interface TopGroup {
+  id: string;
+  name: string;
+  progress: number;
+  rank: number;
+  students: number;
+}

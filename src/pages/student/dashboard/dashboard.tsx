@@ -54,7 +54,8 @@ import {
   tableBodyCell,
   gradeChip,
 } from "./dashboardStyle";
-import type { StudentStats, RecentActivity, UpcomingContest, TopGroup } from "../../../types";
+import type { StudentStats, RecentActivity, UpcomingContest, TopGroup } from "../../../types/index";
+
 
 const studentStats: StudentStats = {
   name: "Ahmed Ali",

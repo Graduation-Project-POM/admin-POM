@@ -259,10 +259,10 @@ const AdminDashboard: React.FC = () => {
 
               <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
                 <Button variant="contained" startIcon={<Plus size={16} />} onClick={handleAddAnnouncement} sx={addAnnouncementButton}>
-                  + Announcement
+                  Announcement
                 </Button>
                 <Button variant="outlined" startIcon={<UserPlus size={16} />} onClick={handleAddUser} sx={addUserButton}>
-                  + Add User
+                  Add User
                 </Button>
               </Box>
             </CardContent>

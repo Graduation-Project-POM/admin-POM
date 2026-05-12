@@ -271,7 +271,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
                   onClick={handleAddAnnouncement}
                   sx={addAnnouncementButton}
                 >
-                  + Announcement
+                  Announcement
                 </Button>
                 <Button
                   variant="outlined"
@@ -279,7 +279,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
                   onClick={handleAddStudent}
                   sx={addUserButton}
                 >
-                  + Add Student
+                  Add Student
                 </Button>
               </Box>
             </CardContent>
