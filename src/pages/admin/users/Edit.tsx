@@ -1,20 +1,22 @@
-import { useState } from "react";
-import {
-  Box,
-  MenuItem,
-} from "@mui/material";
+import { useEffect, useState } from "react";
+import { Box, Alert } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { useTranslation } from "react-i18next";
+import { updateUser } from "../../../services/userService";
 
 interface UserFormData {
-  id: string;
+  id: number;
   firstName: string;
+  middleName?: string;
   lastName: string;
+  userName: string;
   email: string;
   phone: string;
+  gender: string;
   role: string;
+  profileImageUrl?: string;
   isActive: boolean;
 }
 
@@ -22,26 +24,42 @@ interface EditUserModalProps {
   open: boolean;
   onClose: () => void;
   userData: UserFormData | null;
+  onSuccess?: () => void;
 }
 
-const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
-  const { t } = useTranslation();
-  const [formData, setFormData] = useState<UserFormData>(
-    userData || {
-      id: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      role: "",
-      isActive: true,
-    },
-  );
+type FieldConfig = {
+  name: keyof UserFormData;
+  label: string;
+  type: "text" | "email" | "select";
+  required?: boolean;
+  placeholder?: string;
+  options?: { label: string; value: string }[];
+};
 
-  // Update form if userData changes (when modal opens)
-  useState(() => {
+const emptyForm: UserFormData = {
+  id: 0,
+  firstName: "",
+  middleName: "",
+  lastName: "",
+  userName: "",
+  email: "",
+  phone: "",
+  gender: "",
+  role: "",
+  profileImageUrl: "",
+  isActive: true,
+};
+
+const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState<UserFormData>(userData || emptyForm);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Sync the form whenever a different user is opened for editing.
+  useEffect(() => {
     if (userData) setFormData(userData);
-  });
+  }, [userData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -53,22 +71,77 @@ const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
     }));
   };
 
-  const handleRoleChange = (e: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: e.target.value,
-    }));
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      // Note: the backend UpdateUserDTO does not accept the role; role changes
+      // are handled elsewhere, so it is intentionally excluded from the payload.
+      await updateUser(formData.id, {
+        firstName: formData.firstName,
+        // MiddleName is NOT NULL in the DB, so always send a string (never null).
+        middleName: formData.middleName || "",
+        lastName: formData.lastName,
+        userName: formData.userName,
+        email: formData.email,
+        phoneNumber: formData.phone || undefined,
+        gender: formData.gender,
+        profileImageUrl: formData.profileImageUrl || "",
+      });
+      onSuccess?.();
+      onClose();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || t("admin.users.form.saveError"));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Updated User Data:", formData);
-    onClose();
-  };
+  const fields: FieldConfig[] = [
+    {
+      name: "firstName",
+      label: t("admin.users.form.firstName"),
+      type: "text",
+      required: true,
+      placeholder: t("admin.users.form.firstNamePlaceholder"),
+    },
+    { name: "middleName", label: t("admin.users.form.middleName"), type: "text" },
+    { name: "lastName", label: t("admin.users.form.lastName"), type: "text", required: true },
+    { name: "userName", label: t("admin.users.form.userName"), type: "text", required: true },
+    { name: "email", label: t("admin.users.form.emailAddress"), type: "email", required: true },
+    { name: "phone", label: t("form.labels.phone"), type: "text" },
+    {
+      name: "gender",
+      label: t("admin.users.form.gender"),
+      type: "select",
+      required: true,
+      options: [
+        { label: t("admin.users.form.genders.male"), value: "male" },
+        { label: t("admin.users.form.genders.female"), value: "female" },
+      ],
+    },
+    {
+      name: "role",
+      label: t("admin.users.form.userRole"),
+      type: "select",
+      required: true,
+      options: [
+        { label: t("admin.users.form.roles.student"), value: "STUDENT" },
+        { label: t("admin.users.form.roles.trainer"), value: "TRAINER" },
+        { label: t("admin.users.form.roles.administrator"), value: "ADMIN" },
+      ],
+    },
+  ];
 
   return (
     <ModalWrapper open={open} onClose={onClose} title={t("admin.users.form.editTitle")} maxWidth="md">
       <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
         <Box
           sx={{
             display: "grid",
@@ -76,55 +149,22 @@ const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
             gap: 3,
           }}
         >
-          <FormField
-            label={t("admin.users.form.firstName")}
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            required
-            placeholder={t("admin.users.form.firstNamePlaceholder")}
-          />
-
-          <FormField
-            label={t("admin.users.form.lastName")}
-            name="lastName"
-            value={formData.lastName}
-            onChange={handleChange}
-            required
-          />
-
-          <FormField
-            label={t("admin.users.form.emailAddress")}
-            name="email"
-            type="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-
-          <FormField
-            label={t("form.labels.phone")}
-            name="phone"
-            value={formData.phone}
-            onChange={handleChange}
-          />
-
-          <FormField
-            label={t("admin.users.form.userRole")}
-            name="role"
-            value={formData.role}
-            onChange={handleRoleChange}
-            required
-            select
-          >
-            <MenuItem value="STUDENT">{t("admin.users.form.roles.student")}</MenuItem>
-            <MenuItem value="TRAINER">{t("admin.users.form.roles.trainer")}</MenuItem>
-            <MenuItem value="ADMIN">{t("admin.users.form.roles.administrator")}</MenuItem>
-          </FormField>
+          {fields.map((field) => (
+            <FormField
+              key={field.name}
+              type={field.type}
+              label={field.label}
+              name={field.name}
+              value={formData[field.name]}
+              onChange={handleChange}
+              required={field.required}
+              placeholder={field.placeholder}
+              options={field.options}
+            />
+          ))}
         </Box>
-        <Button sx={{ mt: 3 }} variantType="default" type="submit">
-          {" "}
-          {t("buttons.edit")}{" "}
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting}>
+          {submitting ? t("common.loading") : t("buttons.edit")}
         </Button>
       </form>
     </ModalWrapper>

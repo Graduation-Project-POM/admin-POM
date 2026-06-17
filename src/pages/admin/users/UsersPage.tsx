@@ -1,11 +1,17 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { SharedTable } from "../../../components/ui/table/tables";
-import { Avatar, Typography, Box, Chip } from "@mui/material";
+import { Avatar, Typography, Box, Chip, CircularProgress, Alert } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Create from "./Create";
 import Edit from "./Edit";
 import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
 import { useTranslation } from "react-i18next";
+import {
+  getUsers,
+  deleteUser,
+  roleIdToLabel,
+  type BackendUser,
+} from "../../../services/userService";
 
 type User = {
   id: string;
@@ -41,9 +47,22 @@ const StatusChip = styled(Chip)<{ status: string }>(({ status }) => ({
   }),
 }));
 
+const toTableRow = (u: BackendUser): User => ({
+  id: String(u.id),
+  name: `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim(),
+  email: u.email,
+  role: roleIdToLabel(u.roleID),
+  status: u.isActive ? "active" : "inactive",
+  group: "—",
+  joinedDate: u.createdAt ? u.createdAt.split("T")[0] : "—",
+});
+
 export const AdminUsersPage = () => {
   const { t } = useTranslation();
+  const [rawUsers, setRawUsers] = useState<BackendUser[]>([]);
   const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -60,84 +79,40 @@ export const AdminUsersPage = () => {
     onConfirm: () => { },
   });
 
-  useEffect(() => {
-    const mock = [
-      {
-        id: "1",
-        name: "John Doe",
-        email: "john@example.com",
-        role: "student",
-        status: "active",
-        group: "Algorithms",
-        joinedDate: "2026-01-15",
-      },
-      {
-        id: "2",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "trainer",
-        status: "inactive",
-        group: "—",
-        joinedDate: "2026-01-10",
-      },
-      {
-        id: "3",
-        name: "Mike Johnson",
-        email: "mike@example.com",
-        role: "admin",
-        status: "active",
-        group: "—",
-        joinedDate: "2025-12-05",
-      },
-      {
-        id: "4",
-        name: "Sarah Williams",
-        email: "sarah@example.com",
-        role: "student",
-        status: "pending",
-        group: "Beginner Practice",
-        joinedDate: "2026-02-20",
-      },
-      {
-        id: "5",
-        name: "Jane Smith",
-        email: "jane@example.com",
-        role: "trainer",
-        status: "active",
-        group: "—",
-        joinedDate: "2026-01-10",
-      },
-      {
-        id: "6",
-        name: "Mike Johnson",
-        email: "mike@example.com",
-        role: "admin",
-        status: "active",
-        group: "—",
-        joinedDate: "2025-12-05",
-      },
-      {
-        id: "7",
-        name: "Sarah Williams",
-        email: "sarah@example.com",
-        role: "student",
-        status: "active",
-        group: "Beginner Practice",
-        joinedDate: "2026-02-20",
-      },
-    ];
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getUsers();
+      setRawUsers(data);
+      setUsers(data.map(toTableRow));
+    } catch (err: any) {
+      setError(err?.response?.data?.message || t("admin.users.form.loadError"));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
 
-    setUsers(mock);
-  }, []);
+  useEffect(() => {
+    loadUsers();
+  }, [loadUsers]);
+
+  const removeUsers = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map((id) => deleteUser(Number(id))));
+      await loadUsers();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || t("admin.users.form.deleteError"));
+    }
+  };
 
   const handleDelete = (selectedIds: string[]) => {
+    if (selectedIds.length === 0) return;
     setConfirmConfig({
       open: true,
       title: t("admin.users.delete.bulkTitle"),
       message: t("admin.users.delete.bulkMessage", { count: selectedIds.length }),
-      onConfirm: () => {
-        setUsers(users.filter(u => !selectedIds.includes(u.id)));
-      }
+      onConfirm: () => removeUsers(selectedIds),
     });
   };
 
@@ -146,23 +121,25 @@ export const AdminUsersPage = () => {
       open: true,
       title: t("admin.users.delete.singleTitle"),
       message: t("admin.users.delete.singleMessage"),
-      onConfirm: () => {
-        setUsers(users.filter(u => u.id !== id));
-      }
+      onConfirm: () => removeUsers([id]),
     });
   };
-  
+
   const handleEditClick = (user: User) => {
-    // Transform table user to form user format
-    const [firstName, ...lastNameParts] = user.name.split(' ');
+    const raw = rawUsers.find((u) => String(u.id) === user.id);
+    if (!raw) return;
     setSelectedUser({
-      id: user.id,
-      firstName,
-      lastName: lastNameParts.join(' '),
-      email: user.email,
-      phone: '', // mock
-      role: user.role.toUpperCase(),
-      isActive: user.status === 'active'
+      id: raw.id,
+      firstName: raw.firstName,
+      middleName: raw.middleName ?? "",
+      lastName: raw.lastName,
+      userName: raw.userName,
+      email: raw.email,
+      phone: raw.phoneNumber ?? "",
+      gender: raw.gender ?? "",
+      role: roleIdToLabel(raw.roleID).toUpperCase(),
+      profileImageUrl: raw.profileImageUrl ?? "",
+      isActive: raw.isActive,
     });
     setIsEditModalOpen(true);
   };
@@ -218,18 +195,35 @@ export const AdminUsersPage = () => {
 
 
       </Box>
-      <SharedTable
-        data={users}
-        columns={columns}
-        onAdd={() => setIsModalOpen(true)}
-        onDelete={handleDelete}
-        onEdit={handleEditClick}
-        onSingleDelete={handleSingleDelete}
-        searchPlaceholder={t("admin.users.searchPlaceholder")}
-        addButtonLabel={t("admin.users.createButton")}
-      />
 
-      <Create open={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+          <CircularProgress sx={{ color: "#8B1D23" }} />
+        </Box>
+      ) : (
+        <SharedTable
+          data={users}
+          columns={columns}
+          onAdd={() => setIsModalOpen(true)}
+          onDelete={handleDelete}
+          onEdit={handleEditClick}
+          onSingleDelete={handleSingleDelete}
+          searchPlaceholder={t("admin.users.searchPlaceholder")}
+          addButtonLabel={t("admin.users.createButton")}
+        />
+      )}
+
+      <Create
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={loadUsers}
+      />
 
       {selectedUser && (
         <Edit
@@ -239,6 +233,7 @@ export const AdminUsersPage = () => {
             setSelectedUser(null);
           }}
           userData={selectedUser}
+          onSuccess={loadUsers}
         />
       )}
 

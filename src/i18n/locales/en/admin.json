@@ -60,18 +60,29 @@
         "createTitle": "Create New User",
         "editTitle": "Edit User",
         "firstName": "First Name",
+        "middleName": "Middle Name",
         "lastName": "Last Name",
+        "userName": "Username",
         "emailAddress": "Email Address",
         "phoneNumber": "Phone Number",
         "userRole": "User Role",
+        "gender": "Gender",
         "activeAccount": "Active Account",
         "password": "Password",
         "confirmPassword": "Confirm Password",
         "firstNamePlaceholder": "Enter first name",
+        "loadError": "Failed to load users. Please try again.",
+        "saveError": "Failed to save user. Please try again.",
+        "deleteError": "Failed to delete user. Please try again.",
+        "passwordMismatch": "Passwords do not match",
         "roles": {
           "student": "Student",
           "trainer": "Trainer",
           "administrator": "Administrator"
+        },
+        "genders": {
+          "male": "Male",
+          "female": "Female"
         }
       }
     },
