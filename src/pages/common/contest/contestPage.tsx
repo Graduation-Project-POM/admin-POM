@@ -1,7 +1,23 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Typography, InputAdornment, Paper, Stack } from "@mui/material";
+import {
+  Box,
+  Typography,
+  InputAdornment,
+  Paper,
+  Stack,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
 import { ArrowLeft, Plus } from "lucide-react";
+import { useCompetitions } from "../../../hooks/useCompetitions";
+import type {
+  Competition,
+  ContestStatus,
+  CreateCompetitionInput,
+} from "../../../types/competition";
+import { problemsService } from "../../../services/problemsService";
+import { DIFFICULTY_FROM_LABEL } from "../../../types/problem";
 
 import {
   StyledContainer,
@@ -35,79 +51,42 @@ interface Problem {
   acceptanceRate: number;
 }
 
-const mockContests: ContestData[] = [
-  {
-    id: "1",
-    title: "Spring Programming 2026",
-    status: "Upcoming",
-    difficulty: "Medium",
-    participants: 156,
-    problemsCount: 8,
-    startDate: "Apr 15, 2026 at 09:00 AM",
-    endDate: "Apr 22, 2026 at 09:00 PM",
-  },
-  {
-    id: "2",
-    title: "Code Rush 2026",
-    status: "Ended",
-    difficulty: "Hard",
-    participants: 189,
-    problemsCount: 6,
-    startDate: "Mar 20, 2026 at 10:00 AM",
-    endDate: "Mar 20, 2026 at 06:00 PM",
-  },
-  {
-    id: "3",
-    title: "Beginner's Challenge",
-    status: "Upcoming",
-    difficulty: "Easy",
-    participants: 67,
-    problemsCount: 5,
-    startDate: "May 1, 2026 at 02:00 PM",
-    endDate: "May 3, 2026 at 02:00 PM",
-  },
-];
-
-const contestProblemsMap: Record<string, Problem[]> = {
-  1: [
-    {
-      id: "101",
-      name: "Two Sum",
-      difficulty: "Easy",
-      studentsSolved: 120,
-      totalSubmissions: 350,
-      acceptanceRate: 78,
-    },
-    {
-      id: "102",
-      name: "Reverse Linked List",
-      difficulty: "Medium",
-      studentsSolved: 95,
-      totalSubmissions: 210,
-      acceptanceRate: 65,
-    },
-  ],
-  2: [
-    {
-      id: "201",
-      name: "Maximum Subarray",
-      difficulty: "Medium",
-      studentsSolved: 80,
-      totalSubmissions: 180,
-      acceptanceRate: 55,
-    },
-  ],
-  3: [
-    {
-      id: "301",
-      name: "FizzBuzz",
-      difficulty: "Easy",
-      studentsSolved: 200,
-      totalSubmissions: 250,
-      acceptanceRate: 92,
-    },
-  ],
+// ---- Map between the API (Competition) and the card/modal UI shape (ContestData) ----
+// The UI uses the label "Ongoing"; the API enum calls it "Running" (status 2).
+const STATUS_LABEL_TO_NUMBER: Record<string, ContestStatus> = {
+  Upcoming: 1,
+  Ongoing: 2,
+  Running: 2,
+  Ended: 3,
+  Cancelled: 4,
 };
+const STATUS_NUMBER_TO_LABEL: Record<number, string> = {
+  1: "Upcoming",
+  2: "Ongoing",
+  3: "Ended",
+  4: "Cancelled",
+};
+
+const competitionToContestData = (c: Competition): ContestData => ({
+  id: String(c.id),
+  title: c.title,
+  status: STATUS_NUMBER_TO_LABEL[c.status] ?? "Upcoming",
+  difficulty: "Medium", // the API doesn't track difficulty
+  participants: c.studentCount,
+  problemsCount: c.problemCount,
+  startDate: c.startAt,
+  endDate: c.endAt,
+});
+
+// Turn a date input value (datetime-local or text) into an ISO string for the API.
+const toIso = (value: string): string => {
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+};
+
+// A newly created contest has no problems. There's no contest-scoped problems
+// endpoint yet, so start every contest empty (problems can be added in-session).
+const contestProblemsMap: Record<string, Problem[]> = {};
 
 const DifficultyBadge: React.FC<{ difficulty: string }> = ({ difficulty }) => {
   const { t } = useTranslation();
@@ -145,9 +124,17 @@ const AcceptanceRateDisplay: React.FC<{ rate: number }> = ({ rate }) => (
 
 export const ContestsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [contests, setContests] = useState<ContestData[]>(mockContests);
+
+  // Contests come from the backend (GET /Contest) via the hook.
+  const { competitions, loading, error, create, update, remove } =
+    useCompetitions();
+  const [actionError, setActionError] = useState<string | null>(null);
+  const contests = competitions.map(competitionToContestData);
+
   const [problemsMap, setProblemsMap] =
     useState<Record<string, Problem[]>>(contestProblemsMap);
+  // Problem ids currently attached to the open contest (persisted via PUT /Contest/{id}).
+  const [contestProblemIds, setContestProblemIds] = useState<number[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedContestId, setSelectedContestId] = useState<string | null>(
@@ -182,14 +169,39 @@ export const ContestsPage: React.FC = () => {
     onConfirm: () => {},
   });
 
-  const handleCreateContest = (newContest: ContestData) => {
-    setContests([newContest, ...contests]);
+  const handleCreateContest = async (newContest: ContestData) => {
+    setActionError(null);
+    const input: CreateCompetitionInput = {
+      title: newContest.title,
+      description: "",
+      status: STATUS_LABEL_TO_NUMBER[newContest.status] ?? 1,
+      startAt: toIso(newContest.startDate),
+      endAt: toIso(newContest.endDate),
+      problemIds: [],
+    };
+    try {
+      await create(input);
+    } catch {
+      setActionError(
+        t("contest.errors.createFailed", "Failed to create competition"),
+      );
+    }
   };
 
-  const handleUpdateContest = (updatedContest: ContestData) => {
-    setContests(
-      contests.map((c) => (c.id === updatedContest.id ? updatedContest : c)),
-    );
+  const handleUpdateContest = async (updatedContest: ContestData) => {
+    setActionError(null);
+    try {
+      await update(Number(updatedContest.id), {
+        title: updatedContest.title,
+        status: STATUS_LABEL_TO_NUMBER[updatedContest.status] ?? 1,
+        startAt: toIso(updatedContest.startDate),
+        endAt: toIso(updatedContest.endDate),
+      });
+    } catch {
+      setActionError(
+        t("contest.errors.updateFailed", "Failed to update competition"),
+      );
+    }
   };
 
   const handleDeleteContest = (id: string) => {
@@ -197,58 +209,102 @@ export const ContestsPage: React.FC = () => {
       open: true,
       title: t("contest.confirm.deleteContestTitle"),
       message: t("contest.confirm.deleteContestMessage"),
-      onConfirm: () => {
-        setContests(contests.filter((c) => c.id !== id));
+      onConfirm: async () => {
+        setConfirmConfig((prev) => ({ ...prev, open: false }));
+        setActionError(null);
+        try {
+          await remove(Number(id));
+        } catch {
+          setActionError(
+            t("contest.errors.deleteFailed", "Failed to delete competition"),
+          );
+        }
       },
     });
   };
 
-  const handleAddProblem = (newProblem: Problem) => {
+  // Add: create the problem in the bank (POST /api/Problems) to get an id,
+  // then attach it to the contest by persisting the full id set via PUT /Contest/{id}.
+  const handleAddProblem = async (form: any) => {
     if (selectedContestId === null) return;
-    const currentProblems = problemsMap[selectedContestId] || [];
-    setProblemsMap({
-      ...problemsMap,
-      [selectedContestId]: [newProblem, ...currentProblems],
-    });
-    setContests(
-      contests.map((c) =>
-        c.id === selectedContestId
-          ? { ...c, problemsCount: c.problemsCount + 1 }
-          : c,
-      ),
-    );
+    setActionError(null);
+    try {
+      const newId = await problemsService.create({
+        title: form.title,
+        statement: form.title, // backend requires a non-empty statement
+        solution: form.title, // and a non-empty solution
+        difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
+        topic: form.category || "General",
+        isPublished: form.visibility !== "group-specific",
+      });
+      const ids = [...contestProblemIds, newId];
+      await update(Number(selectedContestId), { problemIds: ids });
+      setContestProblemIds(ids);
+
+      const newProblem: Problem = {
+        id: String(newId),
+        name: form.title,
+        difficulty: (form.difficulty as Problem["difficulty"]) ?? "Medium",
+        studentsSolved: 0,
+        totalSubmissions: 0,
+        acceptanceRate: 0,
+      };
+      setProblemsMap((m) => ({
+        ...m,
+        [selectedContestId]: [newProblem, ...(m[selectedContestId] || [])],
+      }));
+    } catch {
+      setActionError(
+        t("contest.errors.addProblemFailed", "Failed to add problem to the contest"),
+      );
+    }
   };
 
-  const handleUpdateProblem = (updatedProblem: Problem) => {
+  // Edit updates the displayed row locally. (The bank's UpdateProblemDto
+  // requires a valid PhotoFileKey URL the modal doesn't collect, so we don't
+  // round-trip edits to /api/Problems here.)
+  const handleUpdateProblem = (form: any) => {
     if (selectedContestId === null) return;
-    const currentProblems = problemsMap[selectedContestId] || [];
-    setProblemsMap({
-      ...problemsMap,
-      [selectedContestId]: currentProblems.map((p) =>
-        p.id === updatedProblem.id ? updatedProblem : p,
+    setProblemsMap((m) => ({
+      ...m,
+      [selectedContestId]: (m[selectedContestId] || []).map((p) =>
+        p.id === String(form.id)
+          ? {
+              ...p,
+              name: form.title ?? p.name,
+              difficulty:
+                (form.difficulty as Problem["difficulty"]) ?? p.difficulty,
+            }
+          : p,
       ),
-    });
+    }));
   };
 
+  // Remove: detach from the contest by persisting the reduced id set via PUT /Contest/{id}.
   const handleDeleteProblem = (id: string) => {
     setConfirmConfig({
       open: true,
       title: t("contest.confirm.removeProblemTitle"),
       message: t("contest.confirm.removeProblemMessage"),
-      onConfirm: () => {
+      onConfirm: async () => {
+        setConfirmConfig((prev) => ({ ...prev, open: false }));
         if (selectedContestId === null) return;
-        const currentProblems = problemsMap[selectedContestId] || [];
-        setProblemsMap({
-          ...problemsMap,
-          [selectedContestId]: currentProblems.filter((p) => p.id !== id),
-        });
-        setContests(
-          contests.map((c) =>
-            c.id === selectedContestId
-              ? { ...c, problemsCount: Math.max(0, c.problemsCount - 1) }
-              : c,
-          ),
-        );
+        setActionError(null);
+        try {
+          const ids = contestProblemIds.filter((x) => x !== Number(id));
+          await update(Number(selectedContestId), { problemIds: ids });
+          setContestProblemIds(ids);
+          setProblemsMap((m) => ({
+            ...m,
+            [selectedContestId]: (m[selectedContestId] || []).filter(
+              (p) => p.id !== id,
+            ),
+          }));
+        } catch {
+          setActionError(
+            t("contest.errors.removeProblemFailed", "Failed to remove problem"),
+          );
+        }
       },
     });
   };
@@ -260,35 +316,38 @@ export const ContestsPage: React.FC = () => {
       message: t("contest.confirm.removeProblemsMessage", {
         count: ids.length,
       }),
-      onConfirm: () => {
+      onConfirm: async () => {
+        setConfirmConfig((prev) => ({ ...prev, open: false }));
         if (selectedContestId === null) return;
-        const currentProblems = problemsMap[selectedContestId] || [];
-        setProblemsMap({
-          ...problemsMap,
-          [selectedContestId]: currentProblems.filter(
-            (p) => !ids.includes(p.id),
-          ),
-        });
-        setContests(
-          contests.map((c) =>
-            c.id === selectedContestId
-              ? {
-                  ...c,
-                  problemsCount: Math.max(0, c.problemsCount - ids.length),
-                }
-              : c,
-          ),
-        );
+        setActionError(null);
+        try {
+          const numIds = ids.map(Number);
+          const remaining = contestProblemIds.filter(
+            (x) => !numIds.includes(x),
+          );
+          await update(Number(selectedContestId), { problemIds: remaining });
+          setContestProblemIds(remaining);
+          setProblemsMap((m) => ({
+            ...m,
+            [selectedContestId]: (m[selectedContestId] || []).filter(
+              (p) => !ids.includes(p.id),
+            ),
+          }));
+        } catch {
+          setActionError(
+            t("contest.errors.removeProblemFailed", "Failed to remove problems"),
+          );
+        }
       },
     });
   };
 
-  const filteredContests = mockContests.filter((contest) =>
+  const filteredContests = contests.filter((contest) =>
     contest.title.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   if (selectedContestId !== null) {
-    const problems = contestProblemsMap[selectedContestId] || [];
+    const problems = problemsMap[selectedContestId] || [];
 
     const problemColumns = [
       {
@@ -396,7 +455,18 @@ export const ContestsPage: React.FC = () => {
             setIsEditProblemOpen(false);
             setSelectedProblem(null);
           }}
-          problem={selectedProblem}
+          problem={
+            selectedProblem
+              ? {
+                  id: selectedProblem.id,
+                  title: selectedProblem.name,
+                  category: "",
+                  difficulty: selectedProblem.difficulty,
+                  visibility: "general",
+                  tags: [],
+                }
+              : null
+          }
           onSave={handleUpdateProblem}
         />
 
@@ -471,7 +541,21 @@ export const ContestsPage: React.FC = () => {
           </Button>
         </Stack>
       </SearchWrapper>
-      {filteredContests.length === 0 ? (
+      {actionError && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError(null)}>
+          {actionError}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+          <CircularProgress sx={{ color: "#8B1D23" }} />
+        </Box>
+      ) : error ? (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          {error}
+        </Alert>
+      ) : filteredContests.length === 0 ? (
         <EmptyStateWrapper>
           <Typography variant="body1" color="text.secondary">
             {t("contest.list.noResults")}
@@ -494,6 +578,10 @@ export const ContestsPage: React.FC = () => {
               onProblems={() => {
                 setSelectedContestId(contest.id);
                 setSelectedContestTitle(contest.title);
+                // No endpoint returns a contest's problems, so start the
+                // attached-id set empty for this session.
+                setContestProblemIds([]);
+                setProblemsMap((m) => ({ ...m, [contest.id]: [] }));
               }}
               onDelete={() => handleDeleteContest(contest.id)}
             />

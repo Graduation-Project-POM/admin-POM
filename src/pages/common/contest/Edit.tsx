@@ -25,12 +25,14 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
 
   useEffect(() => {
     if (contest) {
+      // datetime-local inputs need "YYYY-MM-DDTHH:mm" — trim the ISO string.
+      const toLocal = (v: string) => (v ? v.slice(0, 16) : "");
       setFormData({
         title: contest.title,
         status: contest.status,
         difficulty: contest.difficulty,
-        startDate: contest.startDate,
-        endDate: contest.endDate,
+        startDate: toLocal(contest.startDate),
+        endDate: toLocal(contest.endDate),
       });
     }
   }, [contest]);
@@ -101,6 +103,7 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
             <FormField
               label={t("contest.fields.startDateTime")}
               name="startDate"
+              type="datetime-local"
               value={formData.startDate}
               onChange={handleChange}
               required
@@ -108,6 +111,7 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
             <FormField
               label={t("contest.fields.endDateTime")}
               name="endDate"
+              type="datetime-local"
               value={formData.endDate}
               onChange={handleChange}
               required

@@ -13,6 +13,28 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// If a request comes back 401 with a stored token, the session has expired /
+// is invalid — clear it and send the user to the login page. (Skip the auth
+// endpoints so a failed login shows its own error instead of redirecting.)
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    const url: string = error?.config?.url ?? "";
+    const isAuthCall = url.includes("/Auth/");
+    if (status === 401 && !isAuthCall && localStorage.getItem("accessToken")) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("role");
+      localStorage.removeItem("userName");
+      if (!window.location.pathname.startsWith("/credentials")) {
+        window.location.href = "/credentials/login";
+      }
+    }
+    return Promise.reject(error);
+  },
+);
+
 export const loginUser = async (userName: string, password: string) => {
   const response = await api.post("/Auth/auth", { userName, password });
   return response.data;

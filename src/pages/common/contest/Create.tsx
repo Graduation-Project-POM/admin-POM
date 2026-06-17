@@ -88,8 +88,7 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
             <FormField
               label={t("contest.fields.startDateTime")}
               name="startDate"
-              type="text"
-              placeholder={t("contest.fields.startDatePlaceholder")}
+              type="datetime-local"
               value={formData.startDate}
               onChange={handleChange}
               required
@@ -97,8 +96,7 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
             <FormField
               label={t("contest.fields.endDateTime")}
               name="endDate"
-              type="text"
-              placeholder={t("contest.fields.endDatePlaceholder")}
+              type="datetime-local"
               value={formData.endDate}
               onChange={handleChange}
               required
