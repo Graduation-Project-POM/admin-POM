@@ -10,5 +10,10 @@
     "signUpLink": "إنشاء حساب",
     "validationRequired": "اسم المستخدم وكلمة المرور مطلوبان",
     "loginFailed": "فشل تسجيل الدخول"
+  },
+  "errors": {
+    "USERNAME_EXISTS": "اسم المستخدم مستخدم بالفعل",
+    "INVALID_CREDENTIALS": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "USER_NOT_FOUND": "المستخدم غير موجود"
   }
 }

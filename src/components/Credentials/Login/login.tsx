@@ -28,24 +28,42 @@ import { loginUser } from "../../../services/authService";
 import { useAuth } from "../../../services/AuthContext";
 import { LanguageToggle } from "../../common/LanguageToggle";
 
+function getApiErrorMessage(err: any, t: any, fallback: string): string {
+  const data = err?.response?.data;
+  if (!data) return fallback;
+
+  if (data.code && data.code !== "ERROR" && data.code !== "SERVER_ERROR") {
+    return t(`errors.${data.code}`, { defaultValue: data.message || fallback });
+  }
+
+  if (data.errors) {
+    const first = Object.values(data.errors)[0];
+    if (Array.isArray(first) && first.length) return first[0] as string;
+  }
+  if (typeof data.message === "string") return data.message;
+  return fallback;
+}
+
 export default function Login() {
-  const {t,  i18n } = useTranslation();
-  console.log(t("login.welcomeBackTitle"));
+  const { t } = useTranslation();
   const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
-  const { login } = useAuth();
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-console.log(i18n.language);
-       console.log(i18n.getDataByLanguage("en"));
+
     if (!userName || !password) {
-      setError(t("login.validationRequired"));
+      setError(
+        t("login.validationRequired", {
+          defaultValue: "Username and password are required",
+        }),
+      );
       return;
     }
 
@@ -63,14 +81,14 @@ console.log(i18n.language);
       else if (response.role === "Trainer") navigate("/trainer/dashboard");
       else navigate("/student/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || t("login.loginFailed"));
+      setError(getApiErrorMessage(err, t, t("login.loginFailed")));
     }
   };
+
   return (
-    <Container component="main" maxWidth="xs">
+    <Container component="main" maxWidth="sm">
       <LanguageToggle floating />
       <Box sx={containerStyles}>
-        
         <Paper elevation={3} sx={paperStyles}>
           <Typography component="h1" variant="h4" sx={titleStyles}>
             {t("login.welcomeBackTitle")}
@@ -96,9 +114,9 @@ console.log(i18n.language);
               required
               fullWidth
               id="userName"
-              label={t("login.usernameLabel")}
               name="userName"
               autoComplete="username"
+              label={t("login.usernameLabel")}
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               sx={textFieldStyles}
@@ -109,10 +127,10 @@ console.log(i18n.language);
               required
               fullWidth
               name="password"
-              label={t("login.passwordLabel")}
-              type={showPassword ? "text" : "password"}
               id="password"
               autoComplete="current-password"
+              label={t("login.passwordLabel")}
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={textFieldStyles}

@@ -4,10 +4,10 @@
     "createAccountSubtitle": "Sign up to get started with your account",
     "emailLabel": "Email Address",
     "passwordLabel": "Password",
-    "passwordHelper": "Must be at least 6 characters",
+    "passwordHelper": "Must be at least 8 characters",
     "confirmPasswordLabel": "Confirm Password",
     "passwordMismatchError": "Passwords do not match",
-    "passwordShortError": "Password must be at least 6 characters long",
+    "passwordShortError": "Password must be at least 8 characters long",
     "signUpButton": "Sign Up",
     "alreadyHaveAccount": "Already have an account?",
     "signInLink": "Sign In"
