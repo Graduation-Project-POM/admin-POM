@@ -1,5 +1,5 @@
 
-export type UserRole = 'ADMIN' | 'TRAINER' | 'STUDENT';
+export type UserRole = 'Admin' | 'Trainer' | 'Student';
 
 export interface NavItem {
   title: string;
