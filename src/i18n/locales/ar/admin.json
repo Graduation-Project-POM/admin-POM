@@ -60,18 +60,29 @@
         "createTitle": "إنشاء مستخدم جديد",
         "editTitle": "تعديل المستخدم",
         "firstName": "الاسم الأول",
+        "middleName": "الاسم الثاني",
         "lastName": "اسم العائلة",
+        "userName": "اسم المستخدم",
         "emailAddress": "عنوان البريد الإلكتروني",
         "phoneNumber": "رقم الهاتف",
         "userRole": "دور المستخدم",
+        "gender": "الجنس",
         "activeAccount": "حساب نشط",
         "password": "كلمة المرور",
         "confirmPassword": "تأكيد كلمة المرور",
         "firstNamePlaceholder": "أدخل الاسم الأول",
+        "loadError": "فشل تحميل المستخدمين. حاول مرة أخرى.",
+        "saveError": "فشل حفظ المستخدم. حاول مرة أخرى.",
+        "deleteError": "فشل حذف المستخدم. حاول مرة أخرى.",
+        "passwordMismatch": "كلمتا المرور غير متطابقتين",
         "roles": {
           "student": "طالب",
           "trainer": "مدرب",
           "administrator": "مسؤول"
+        },
+        "genders": {
+          "male": "ذكر",
+          "female": "أنثى"
         }
       }
     },
