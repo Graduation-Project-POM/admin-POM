@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  Outlet,
 } from "react-router-dom";
 import type { UserRole } from "./types";
 import { useState } from "react";
@@ -12,82 +13,143 @@ import { Page } from "./components/common/Page";
 import { DashboardLayout } from "./components/layout/Dashboard";
 import { AdminApprovalsPage } from "./pages/admin/approval/ApprovalsPage";
 import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
-import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
 import { AdminUsersPage } from "./pages/admin/users/UsersPage";
-import {ProblemsPage} from "./pages/common/problem/ProblemsPage";
+import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
+import { ProblemsPage } from "./pages/common/problem/ProblemsPage";
 import GroupsPage from "./pages/common/group/groupPage";
 import ContestsPage from "./pages/common/contest/contestPage";
 import StudentContestsPage from "./pages/student/contest/ContestsPage";
-import {ProblemBank} from "./pages/student/problem/ProblemsPage";
-import {MySubmissions} from "./pages/student/problem/SubmissonsPage";
+import { ProblemBank } from "./pages/student/problem/ProblemsPage";
+import { MySubmissions } from "./pages/student/problem/SubmissonsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
-import StudentGroupsPage from './pages/student/group/GroupsPage';
-import StudentDashboardPage from './pages/student/dashboard/dashboard';
+import StudentGroupsPage from "./pages/student/group/GroupsPage";
+import StudentDashboardPage from "./pages/student/dashboard/dashboard";
+import Signup from "./components/Credentials/signup/signup";
+import Login from "./components/Credentials/Login/login";
+import { AuthProvider, useAuth } from "./services/AuthContext";
+import type { UserRole } from "./types";
 
+function AppRoutes() {
+    const { t } = useTranslation();
 
-const USER_DATA = {
-  ADMIN: { name: "Admin User", email: "admin@pmo.ps" },
-  TRAINER: { name: "Trainer Ahmad", email: "ahmad@pmo.ps" },
-  STUDENT: { name: "Student Sara", email: "sara@pmo.ps" },
-};
+  const { role, userName, token } = useAuth();
 
-function App() {
-  const { t } = useTranslation();
-  const [role] = useState<UserRole>('STUDENT');
-
+  function RequireRole({ allow }: { allow: UserRole[] }) {
+    const { role } = useAuth();
+    // logged in but wrong role → send them back to their own area
+    if (!role || !allow.includes(role)) {
+      return <Navigate to="/" replace />;
+    }
+    return <Outlet />;
+  }
   return (
-    <Router>
-      <DashboardLayout 
-        role={role} 
-        userName={USER_DATA[role].name} 
-        userEmail={USER_DATA[role].email}
-      >
-        <Routes>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/users" element={<AdminUsersPage />} />
-          <Route path="/admin/approvals" element={<AdminApprovalsPage />} />
-          <Route path="/admin/announcements" element={<Page title={t('ui.pages.announcements')} />} />
-          <Route path="/admin/groups" element={<GroupsPage />} />
-          <Route path="/admin/contests" element={<ContestsPage />} />
-          <Route path="/admin/problems" element={<ProblemsPage />} />
-          <Route path="/admin/reports" element={<Page title={t('ui.pages.systemReports')} />} />
-          <Route path="/admin/profile" element={<ProfilePage />} />
+    <Routes>
+      <Route path="/credentials/login" element={<Login />} />
+      <Route path="/credentials/signup" element={<Signup />} />
 
-          <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
-          <Route path="/trainer/groups" element={<GroupsPage />} />
-          <Route path="/trainer/contests" element={<ContestsPage />} />
-          <Route path="/trainer/problems" element={<ProblemsPage />} />
-          <Route path="/trainer/profile" element={<ProfilePage />} />
+      <Route
+        path="/*"
+        element={
+          !token || !role ? (
+            <Navigate to="/credentials/login" replace />
+          ) : (
+            <DashboardLayout role={role} userName={userName ?? ""}>
+              <Routes>
+                {/* Admin-only */}
+                <Route element={<RequireRole allow={["Admin"]} />}>
+                  <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                  <Route path="/admin/users" element={<AdminUsersPage />} />
+                  <Route
+                    path="/admin/approvals"
+                    element={<AdminApprovalsPage />}
+                  />
+                  <Route
+                    path="/admin/announcements"
+                    element={<Page title="Announcements" />}
+                  />
+                  <Route path="/admin/groups" element={<GroupsPage />} />
+                  <Route path="/admin/contests" element={<ContestsPage />} />
+                  <Route path="/admin/problems" element={<ProblemsPage />} />
+                  <Route
+                    path="/admin/reports"
+                    element={<Page title="System Reports" />}
+                  />
+                  <Route path="/admin/profile" element={<ProfilePage />} />
+                </Route>
 
-          {/* Student Routes */}
-          <Route
-            path="/student/dashboard"
-            element={<StudentDashboardPage />} />
-          <Route path="/student/groups" element={<StudentGroupsPage/>} />
-          <Route path="/student/contests" element={<StudentContestsPage />} />
-          <Route path="/student/problems" element={<ProblemBank />} />
-          <Route
-            path="/student/problems/submissions"
-            element={<MySubmissions />}
-          />
-          <Route path="/student/profile" element={<ProfilePage />} />
+                {/* Trainer-only */}
+                <Route element={<RequireRole allow={["Trainer"]} />}>
+                  <Route
+                    path="/trainer/dashboard"
+                    element={<TrainerDashboard />}
+                  />
+                  <Route path="/trainer/groups" element={<GroupsPage />} />
+                  <Route path="/trainer/contests" element={<ContestsPage />} />
+                  <Route path="/trainer/problems" element={<ProblemsPage />} />
+                  <Route path="/trainer/profile" element={<ProfilePage />} />
+                </Route>
 
-          {/* Shared Routes */}
-          <Route path="/settings" element={<Page title={t('ui.pages.accountSettings')} />} />
+                {/* Student-only */}
+                <Route element={<RequireRole allow={["Student"]} />}>
+                  <Route
+                    path="/student/dashboard"
+                    element={<StudentDashboardPage />}
+                  />
+                  <Route
+                    path="/student/groups"
+                    element={<StudentGroupsPage />}
+                  />
+                  <Route
+                    path="/student/contests"
+                    element={<StudentContestsPage />}
+                  />
+                  <Route path="/student/problems" element={<ProblemBank />} />
+                  <Route
+                    path="/student/problems/submissions"
+                    element={<MySubmissions />}
+                  />
+                  <Route path="/student/profile" element={<ProfilePage />} />
+                </Route>
 
-          <Route 
-            path="/" 
-            element={
-              <Navigate 
-                to={role === 'ADMIN' ? '/admin/dashboard' : role === 'TRAINER' ? '/trainer/dashboard' : '/student/dashboard'} 
-                replace 
-              />
-            } 
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </DashboardLayout>
-    </Router>
+                {/* Shared - any logged-in role */}
+                <Route
+                  path="/settings"
+                  element={<Page title="Account Settings" />}
+                />
+
+                <Route
+                  path="/"
+                  element={
+                    <Navigate
+                      to={
+                        role === "Admin"
+                          ? "/admin/dashboard"
+                          : role === "Trainer"
+                            ? "/trainer/dashboard"
+                            : "/student/dashboard"
+                      }
+                      replace
+                    />
+                  }
+                />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </DashboardLayout>
+          )
+        }
+      />
+    </Routes>
   );
 }
+
+function App() {
+  return (
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
+  );
+}
+
 export default App;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   List,
@@ -12,7 +12,7 @@ import {
   useMediaQuery,
   IconButton,
   Collapse,
-} from '@mui/material';
+} from "@mui/material";
 
 import {
   LayoutDashboard,
@@ -30,19 +30,20 @@ import {
   Languages,
   LogOut,
   type LucideIcon,
-} from 'lucide-react';
+} from "lucide-react";
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { getVisibleNavigation } from '../../../config/navigation';
-import type { UserRole } from '../../../types';
+import { getVisibleNavigation } from "../../../config/navigation";
+import type { UserRole } from "../../../types";
 
 import {
   SidebarContainer,
   LogoContainer,
   ScrollContainer,
   StyledListItemButton,
-} from './SidebarStyle';
+} from "./SidebarStyle";
+import { useAuth } from "../../../services/AuthContext";
 
 interface SidebarProps {
   role: UserRole;
@@ -51,9 +52,7 @@ interface SidebarProps {
   onLogout?: () => void;
 }
 
-const createIcon = (Icon: LucideIcon) => (
-  <Icon size={20} strokeWidth={2.2} />
-);
+const createIcon = (Icon: LucideIcon) => <Icon size={20} strokeWidth={2.2} />;
 
 const iconMap: Record<string, React.ReactNode> = {
   Dashboard: createIcon(LayoutDashboard),
@@ -82,12 +81,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const sections = React.useMemo(() => {
     return originalSections.map((section) => {
-      const logoutIndex = section.items.findIndex((item) => item.title === 'Logout');
+      const logoutIndex = section.items.findIndex(
+        (item) => item.title === "Logout",
+      );
       if (logoutIndex !== -1) {
         const languageItem = {
-          title: 'Language',
-          path: '#',
-          icon: 'Languages',
+          title: "Language",
+          path: "#",
+          icon: "Languages",
         };
         const newItems = [...section.items];
         newItems.splice(logoutIndex, 0, languageItem);
@@ -100,10 +101,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openItem, setOpenItem] = useState<string | null>(null);
 
-  const language = i18n.resolvedLanguage === 'ar' ? 'ar' : 'en';
+  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
 
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+
+  const { logout } = useAuth();
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -116,20 +119,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isChildActive = (item: any) => {
     if (!item.items) return false;
     return item.items.some(
-      (subItem: any) => location.pathname === subItem.path
+      (subItem: any) => location.pathname === subItem.path,
     );
   };
 
   const handleLanguageToggle = () => {
-    // i18next persists this to localStorage and flips <html dir>/<lang> via the
-    // languageChanged listener configured in src/i18n/index.ts.
-    i18n.changeLanguage(language === 'ar' ? 'en' : 'ar');
+    setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));
   };
 
   const handleLogout = () => {
-    if (onLogout) {
-      onLogout();
-    }
+    logout();
+    navigate("/credentials/login", { replace: true });
     if (isMobile) setMobileOpen(false);
   };
 
@@ -137,13 +137,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <Box>
       <IconButton
         onClick={handleDrawerToggle}
-        sx={{ display: { md: 'none' }, position: 'fixed', top: 16, left: 16, zIndex: 1200 }}
+        sx={{
+          display: { md: "none" },
+          position: "fixed",
+          top: 16,
+          left: 16,
+          zIndex: 1200,
+        }}
       >
         <MenuIcon />
       </IconButton>
 
       <SidebarContainer
-        variant={isMobile ? 'temporary' : 'permanent'}
+        variant={isMobile ? "temporary" : "permanent"}
         open={isMobile ? mobileOpen : true}
         onClose={handleDrawerToggle}
         ModalProps={{ keepMounted: true }}
@@ -153,14 +159,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
             src="/logoPOM.png"
             alt="PMO Logo"
             style={{
-              maxWidth: '100%',
-              height: 'auto',
-              width: '128px',
+              maxWidth: "100%",
+              height: "auto",
+              width: "128px",
             }}
           />
         </LogoContainer>
 
-        <Divider sx={{ borderColor: '#eceff3' }} />
+        <Divider sx={{ borderColor: "#eceff3" }} />
 
         <ScrollContainer>
           {sections.map((section, index) => (
@@ -171,10 +177,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   const isOpen = openItem === item.path;
                   const isActive = location.pathname === item.path;
                   const isParentActive = isActive || isChildActive(item);
-                  
-                  const isLogoutItem = item.title === 'Logout';
-                  const isLanguageItem = item.title === 'Language';
-                  
+
+                  const isLogoutItem = item.title === "Logout";
+                  const isLanguageItem = item.title === "Language";
+
                   return (
                     <React.Fragment key={item.title + item.path}>
                       <ListItem disablePadding>
@@ -198,25 +204,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             }
                           }}
                         >
-                          <ListItemIcon sx={{ minWidth: 40, color: isParentActive ? '#8B1D23' : '#94a3b8' }}>
+                          <ListItemIcon
+                            sx={{
+                              minWidth: 40,
+                              color: isParentActive ? "#8B1D23" : "#94a3b8",
+                            }}
+                          >
                             {iconMap[item.icon]}
                           </ListItemIcon>
                           <ListItemText
                             primary={
                               <Typography
                                 sx={{
-                                  fontSize: '14px',
+                                  fontSize: "14px",
                                   fontWeight: isParentActive ? 700 : 600,
-                                  color: isParentActive ? '#8B1D23' : '#64748b',
+                                  color: isParentActive ? "#8B1D23" : "#64748b",
                                 }}
                               >
                                 {isLanguageItem
                                   ? (language === 'ar' ? 'العربية' : 'English')
-                                  : item.titleKey ? t(item.titleKey) : item.title}
+                                  : item.title}
                               </Typography>
                             }
                           />
-                          {hasChildren && !isLogoutItem && !isLanguageItem &&
+                          {hasChildren &&
+                            !isLogoutItem &&
+                            !isLanguageItem &&
                             (isOpen ? (
                               <ChevronDown size={16} color="#94a3b8" />
                             ) : (
@@ -229,7 +242,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         <Collapse in={isOpen} timeout="auto" unmountOnExit>
                           <List disablePadding>
                             {item.items.map((subItem: any) => {
-                              const isSubActive = location.pathname === subItem.path;
+                              const isSubActive =
+                                location.pathname === subItem.path;
                               return (
                                 <ListItem key={subItem.path} disablePadding>
                                   <StyledListItemButton
@@ -243,7 +257,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                     <ListItemIcon
                                       sx={{
                                         minWidth: 34,
-                                        color: isSubActive ? '#8B1D23' : '#94a3b8',
+                                        color: isSubActive
+                                          ? "#8B1D23"
+                                          : "#94a3b8",
                                       }}
                                     >
                                       {iconMap[subItem.icon]}
@@ -252,9 +268,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                       primary={
                                         <Typography
                                           sx={{
-                                            fontSize: '12px',
+                                            fontSize: "12px",
                                             fontWeight: isSubActive ? 800 : 600,
-                                            color: isSubActive ? '#8B1D23' : '#64748b',
+                                            color: isSubActive
+                                              ? "#8B1D23"
+                                              : "#64748b",
                                           }}
                                         >
                                           {subItem.titleKey ? t(subItem.titleKey) : subItem.title}
@@ -276,31 +294,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </ScrollContainer>
 
-        <Divider sx={{ borderColor: '#eceff3' }} />
+        <Divider sx={{ borderColor: "#eceff3" }} />
 
         <Box sx={{ p: 2 }}>
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
+              display: "flex",
+              alignItems: "center",
               gap: 1.5,
               p: 1.5,
-              borderRadius: '16px',
-              bgcolor: '#fafafa',
-              border: '1px solid #f1f5f9',
+              borderRadius: "16px",
+              bgcolor: "#fafafa",
+              border: "1px solid #f1f5f9",
             }}
           >
-            <Avatar sx={{ bgcolor: '#fff', color: '#fff', width: 42, height: 42 }}>
+            <Avatar
+              sx={{ bgcolor: "#fff", color: "#fff", width: 42, height: 42 }}
+            >
               <UserCircle size={35} strokeWidth={2} color="#8B1D23" />
             </Avatar>
             <Box sx={{ minWidth: 0 }}>
               <Typography
                 noWrap
-                sx={{ fontSize: '14px', fontWeight: 700, color: '#0f172a' }}
+                sx={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}
               >
                 {userName}
               </Typography>
-              <Typography noWrap sx={{ fontSize: '12px', color: '#94a3b8' }}>
+              <Typography noWrap sx={{ fontSize: "12px", color: "#94a3b8" }}>
                 {userEmail}
               </Typography>
             </Box>

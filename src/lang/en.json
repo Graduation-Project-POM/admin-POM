@@ -1,0 +1,26 @@
+{
+  "signup": {
+    "createAccountTitle": "Create Account",
+    "createAccountSubtitle": "Sign up to get started with your account",
+    "emailLabel": "Email Address",
+    "passwordLabel": "Password",
+    "passwordHelper": "Must be at least 6 characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "passwordMismatchError": "Passwords do not match",
+    "passwordShortError": "Password must be at least 6 characters long",
+    "signUpButton": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign In"
+  },
+  "login": {
+    "welcomeBackTitle": "Welcome Back",
+    "welcomeBackSubtitle": "Sign in to your account to continue",
+    "emailLabel": "Email Address",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "togglePasswordVisibility": "toggle password visibility",
+    "signInButton": "Sign In",
+    "noAccountQuestion": "Don't have an account?",
+    "signUpLink": "Sign Up"
+  }
+}

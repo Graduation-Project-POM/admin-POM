@@ -7,12 +7,6 @@ export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 
 const STORAGE_KEY = "appLanguage";
 
-/**
- * Auto-load every JSON file under locales/<lng>/ and merge them into a single
- * translation bundle per language. Each feature owns its own file (common.json,
- * admin.json, contest.json, ...) with a distinct top-level namespace, so adding
- * a new feature is just: drop a new file in — no edits needed here.
- */
 const enModules = import.meta.glob("./locales/en/*.json", { eager: true });
 const arModules = import.meta.glob("./locales/ar/*.json", { eager: true });
 
@@ -58,5 +52,31 @@ const applyDirection = (lng: string) => {
 // Apply on first load and whenever the language changes.
 applyDirection(i18n.resolvedLanguage ?? "en");
 i18n.on("languageChanged", applyDirection);
+
+export default i18n;
+import i18n from "i18next";
+import { initReactI18next } from "react-i18next";
+
+import en from "../lang/en.json";
+import ar from "../lang/ar.json";
+
+i18n
+  .use(initReactI18next)
+  .init({
+    resources: {
+      en: {
+        translation: en,
+      },
+      ar: {
+        translation: ar,
+      },
+    },
+    lng: "en",
+    fallbackLng: "en",
+
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 
 export default i18n;
