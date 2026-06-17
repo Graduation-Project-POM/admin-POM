@@ -18,7 +18,7 @@ export const CONTEST_STATUS_LABEL: Record<number, string> = {
 };
 
 /** Shape returned by GET /Contest and GET /Contest/{id} (ContestDTO). */
-export interface Competition {
+export interface Contest {
   id: number;
   title: string;
   description: string;
@@ -31,7 +31,7 @@ export interface Competition {
 }
 
 /** Body for POST /Contest (createContestDTO). */
-export interface CreateCompetitionInput {
+export interface CreateContestInput {
   title: string;
   description?: string;
   status: ContestStatus;
@@ -41,10 +41,10 @@ export interface CreateCompetitionInput {
 }
 
 /** Body for PUT /Contest/{id} (UpdateContestDTO) — all fields optional. */
-export type UpdateCompetitionInput = Partial<CreateCompetitionInput>;
+export type UpdateContestInput = Partial<CreateContestInput>;
 
 /** Shape returned by POST /Contest. */
-export interface CreateCompetitionResult {
+export interface CreateContestResult {
   message: string;
   contestID: number;
 }

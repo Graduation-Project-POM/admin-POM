@@ -10,14 +10,15 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { ArrowLeft, Plus } from "lucide-react";
-import { useCompetitions } from "../../../hooks/useCompetitions";
+import { useContests } from "../../../hooks/useContests";
+import { contestService } from "../../../services/contestService";
 import type {
-  Competition,
+  Contest,
   ContestStatus,
-  CreateCompetitionInput,
-} from "../../../types/competition";
+  CreateContestInput,
+} from "../../../types/contest";
 import { problemsService } from "../../../services/problemsService";
-import { DIFFICULTY_FROM_LABEL } from "../../../types/problem";
+import { DIFFICULTY_FROM_LABEL, DIFFICULTY_LABEL } from "../../../types/problem";
 
 import {
   StyledContainer,
@@ -51,8 +52,6 @@ interface Problem {
   acceptanceRate: number;
 }
 
-// ---- Map between the API (Competition) and the card/modal UI shape (ContestData) ----
-// The UI uses the label "Ongoing"; the API enum calls it "Running" (status 2).
 const STATUS_LABEL_TO_NUMBER: Record<string, ContestStatus> = {
   Upcoming: 1,
   Ongoing: 2,
@@ -67,25 +66,22 @@ const STATUS_NUMBER_TO_LABEL: Record<number, string> = {
   4: "Cancelled",
 };
 
-const competitionToContestData = (c: Competition): ContestData => ({
+const toContestData = (c: Contest): ContestData => ({
   id: String(c.id),
   title: c.title,
   status: STATUS_NUMBER_TO_LABEL[c.status] ?? "Upcoming",
-  difficulty: "Medium", // the API doesn't track difficulty
+  difficulty: "Medium", 
   participants: c.studentCount,
   problemsCount: c.problemCount,
   startDate: c.startAt,
   endDate: c.endAt,
 });
 
-// Turn a date input value (datetime-local or text) into an ISO string for the API.
 const toIso = (value: string): string => {
   const d = new Date(value);
   return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
 };
 
-// A newly created contest has no problems. There's no contest-scoped problems
-// endpoint yet, so start every contest empty (problems can be added in-session).
 const contestProblemsMap: Record<string, Problem[]> = {};
 
 const DifficultyBadge: React.FC<{ difficulty: string }> = ({ difficulty }) => {
@@ -125,16 +121,48 @@ const AcceptanceRateDisplay: React.FC<{ rate: number }> = ({ rate }) => (
 export const ContestsPage: React.FC = () => {
   const { t } = useTranslation();
 
-  // Contests come from the backend (GET /Contest) via the hook.
-  const { competitions, loading, error, create, update, remove } =
-    useCompetitions();
+  const { contests: apiContests, loading, error, create, update, remove } =
+    useContests();
   const [actionError, setActionError] = useState<string | null>(null);
-  const contests = competitions.map(competitionToContestData);
+  const contests = apiContests.map(toContestData);
 
   const [problemsMap, setProblemsMap] =
     useState<Record<string, Problem[]>>(contestProblemsMap);
-  // Problem ids currently attached to the open contest (persisted via PUT /Contest/{id}).
   const [contestProblemIds, setContestProblemIds] = useState<number[]>([]);
+  const [problemsLoading, setProblemsLoading] = useState(false);
+
+  const loadContestProblems = async (contestId: string) => {
+    setProblemsLoading(true);
+    setActionError(null);
+    try {
+      const data = await contestService.getProblems(Number(contestId));
+      const ids: number[] = [];
+      const mapped: Problem[] = data.map((p) => {
+        const pid = Number(p.id ?? p.iD ?? p.ID);
+        ids.push(pid);
+        return {
+          id: String(pid),
+          name: String(p.title ?? ""),
+          difficulty:
+            (DIFFICULTY_LABEL[Number(p.difficulty)] as Problem["difficulty"]) ??
+            "Medium",
+          studentsSolved: 0,
+          totalSubmissions: 0,
+          acceptanceRate: 0,
+        };
+      });
+      setContestProblemIds(ids);
+      setProblemsMap((m) => ({ ...m, [contestId]: mapped }));
+    } catch {
+      setContestProblemIds([]);
+      setProblemsMap((m) => ({ ...m, [contestId]: [] }));
+      setActionError(
+        t("contest.errors.loadProblemsFailed", "Failed to load contest problems"),
+      );
+    } finally {
+      setProblemsLoading(false);
+    }
+  };
   const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedContestId, setSelectedContestId] = useState<string | null>(
@@ -171,7 +199,7 @@ export const ContestsPage: React.FC = () => {
 
   const handleCreateContest = async (newContest: ContestData) => {
     setActionError(null);
-    const input: CreateCompetitionInput = {
+    const input: CreateContestInput = {
       title: newContest.title,
       description: "",
       status: STATUS_LABEL_TO_NUMBER[newContest.status] ?? 1,
@@ -183,7 +211,7 @@ export const ContestsPage: React.FC = () => {
       await create(input);
     } catch {
       setActionError(
-        t("contest.errors.createFailed", "Failed to create competition"),
+        t("contest.errors.createFailed", "Failed to create contest"),
       );
     }
   };
@@ -199,7 +227,7 @@ export const ContestsPage: React.FC = () => {
       });
     } catch {
       setActionError(
-        t("contest.errors.updateFailed", "Failed to update competition"),
+        t("contest.errors.updateFailed", "Failed to update contest"),
       );
     }
   };
@@ -216,23 +244,21 @@ export const ContestsPage: React.FC = () => {
           await remove(Number(id));
         } catch {
           setActionError(
-            t("contest.errors.deleteFailed", "Failed to delete competition"),
+            t("contest.errors.deleteFailed", "Failed to delete contest"),
           );
         }
       },
     });
   };
 
-  // Add: create the problem in the bank (POST /api/Problems) to get an id,
-  // then attach it to the contest by persisting the full id set via PUT /Contest/{id}.
   const handleAddProblem = async (form: any) => {
     if (selectedContestId === null) return;
     setActionError(null);
     try {
       const newId = await problemsService.create({
         title: form.title,
-        statement: form.title, // backend requires a non-empty statement
-        solution: form.title, // and a non-empty solution
+        statement: form.title,
+        solution: form.title,
         difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
         topic: form.category || "General",
         isPublished: form.visibility !== "group-specific",
@@ -260,9 +286,6 @@ export const ContestsPage: React.FC = () => {
     }
   };
 
-  // Edit updates the displayed row locally. (The bank's UpdateProblemDto
-  // requires a valid PhotoFileKey URL the modal doesn't collect, so we don't
-  // round-trip edits to /api/Problems here.)
   const handleUpdateProblem = (form: any) => {
     if (selectedContestId === null) return;
     setProblemsMap((m) => ({
@@ -280,7 +303,6 @@ export const ContestsPage: React.FC = () => {
     }));
   };
 
-  // Remove: detach from the contest by persisting the reduced id set via PUT /Contest/{id}.
   const handleDeleteProblem = (id: string) => {
     setConfirmConfig({
       open: true,
@@ -429,19 +451,35 @@ export const ContestsPage: React.FC = () => {
           </Typography>
         </Paper>
 
-        <SharedTable
-          data={problems}
-          columns={problemColumns}
-          onEdit={(row) => {
-            setSelectedProblem(row);
-            setIsEditProblemOpen(true);
-          }}
-          onSingleDelete={handleDeleteProblem}
-          onDelete={handleBulkDeleteProblems}
-          onAdd={() => setIsAddProblemOpen(true)}
-          addButtonLabel={t("contest.problems.addButton")}
-          searchPlaceholder={t("contest.problems.searchPlaceholder")}
-        />
+        {actionError && (
+          <Alert
+            severity="error"
+            sx={{ mb: 2 }}
+            onClose={() => setActionError(null)}
+          >
+            {actionError}
+          </Alert>
+        )}
+
+        {problemsLoading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
+            <CircularProgress sx={{ color: "#8B1D23" }} />
+          </Box>
+        ) : (
+          <SharedTable
+            data={problems}
+            columns={problemColumns}
+            onEdit={(row) => {
+              setSelectedProblem(row);
+              setIsEditProblemOpen(true);
+            }}
+            onSingleDelete={handleDeleteProblem}
+            onDelete={handleBulkDeleteProblems}
+            onAdd={() => setIsAddProblemOpen(true)}
+            addButtonLabel={t("contest.problems.addButton")}
+            searchPlaceholder={t("contest.problems.searchPlaceholder")}
+          />
+        )}
 
         <CreateProblem
           open={isAddProblemOpen}
@@ -578,10 +616,7 @@ export const ContestsPage: React.FC = () => {
               onProblems={() => {
                 setSelectedContestId(contest.id);
                 setSelectedContestTitle(contest.title);
-                // No endpoint returns a contest's problems, so start the
-                // attached-id set empty for this session.
-                setContestProblemIds([]);
-                setProblemsMap((m) => ({ ...m, [contest.id]: [] }));
+                void loadContestProblems(contest.id);
               }}
               onDelete={() => handleDeleteContest(contest.id)}
             />

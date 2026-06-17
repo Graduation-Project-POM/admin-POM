@@ -1,25 +1,7 @@
-/*
- * RTL directional-icon mirroring.
- *
- * i18n (src/i18n/index.ts) sets <html dir="rtl"> for Arabic and <html dir="ltr">
- * for English. These rules only apply under [dir="rtl"], so in English every icon
- * keeps its original orientation automatically — no JS, no per-component changes.
- *
- * `transform: scaleX(-1)` mirrors a horizontal icon, so a left-pointing "Back"
- * arrow points right in Arabic, a right-pointing "Next" arrow points left, etc.
- * Only LEFT/RIGHT (horizontal) icons are listed — up/down icons must NOT flip.
- *
- * Coverage:
- *   - Lucide ........ automatic, via the .lucide-<name> class on each <svg>.
- *   - Font Awesome .. automatic, via the .fa-<name> class.
- *   - Heroicons ..... opt-in: add className="rtl-flip" (they render bare <svg>).
- *   - Custom SVG .... opt-in: add className="rtl-flip" or data-rtl-flip.
- */
 
 [dir="rtl"] .rtl-flip,
 [dir="rtl"] [data-rtl-flip],
 
-/* ---- Lucide (lucide-react) ---- */
 [dir="rtl"] .lucide-arrow-left,
 [dir="rtl"] .lucide-arrow-right,
 [dir="rtl"] .lucide-arrow-big-left,
@@ -50,7 +32,6 @@
 [dir="rtl"] .lucide-log-out,
 [dir="rtl"] .lucide-log-in,
 
-/* ---- Font Awesome ---- */
 [dir="rtl"] .fa-arrow-left,
 [dir="rtl"] .fa-arrow-right,
 [dir="rtl"] .fa-arrow-left-long,
