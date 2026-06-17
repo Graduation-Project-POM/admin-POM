@@ -1,0 +1,14 @@
+{
+  "login": {
+    "welcomeBackTitle": "Welcome Back",
+    "welcomeBackSubtitle": "Sign in to your account to continue",
+    "usernameLabel": "Username",
+    "passwordLabel": "Password",
+    "togglePasswordVisibility": "Toggle password visibility",
+    "signInButton": "Sign In",
+    "noAccountQuestion": "Don't have an account?",
+    "signUpLink": "Sign up",
+    "validationRequired": "Username and password are required",
+    "loginFailed": "Login failed"
+  }
+}

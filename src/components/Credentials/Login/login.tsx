@@ -26,6 +26,7 @@ import {
 } from "./loginStyle";
 import { loginUser } from "../../../services/authService";
 import { useAuth } from "../../../services/AuthContext";
+import { LanguageToggle } from "../../common/LanguageToggle";
 
 export default function Login() {
   const {t,  i18n } = useTranslation();
@@ -44,7 +45,7 @@ export default function Login() {
 console.log(i18n.language);
        console.log(i18n.getDataByLanguage("en"));
     if (!userName || !password) {
-      setError("Username and password are required");
+      setError(t("login.validationRequired"));
       return;
     }
 
@@ -62,11 +63,12 @@ console.log(i18n.language);
       else if (response.role === "Trainer") navigate("/trainer/dashboard");
       else navigate("/student/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Login failed");
+      setError(err.response?.data?.message || t("login.loginFailed"));
     }
   };
   return (
     <Container component="main" maxWidth="xs">
+      <LanguageToggle floating />
       <Box sx={containerStyles}>
         
         <Paper elevation={3} sx={paperStyles}>
@@ -114,18 +116,20 @@ console.log(i18n.language);
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               sx={textFieldStyles}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label={t("login.togglePasswordVisibility")}
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label={t("login.togglePasswordVisibility")}
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 

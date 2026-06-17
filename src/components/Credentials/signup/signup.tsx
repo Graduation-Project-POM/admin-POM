@@ -25,6 +25,7 @@ import {
   linkStyles,
 } from "./signupStyle";
 import { signupUser } from "../../../services/authService";
+import { LanguageToggle } from "../../common/LanguageToggle";
 
 export default function Signup() {
   const { t } = useTranslation();
@@ -51,7 +52,7 @@ export default function Signup() {
     setSuccess("");
 
     if (!firstName || !lastName || !userName || !email || !password) {
-      setError("All fields are required");
+      setError(t("signup.allFieldsRequired"));
       return;
     }
 
@@ -66,7 +67,7 @@ export default function Signup() {
     }
 
     try {
-      const response = await signupUser({
+      await signupUser({
         firstName,
         middleName: "",
         lastName,
@@ -81,14 +82,15 @@ export default function Signup() {
       });
 
 
-      setSuccess("Account created successfully");
+      setSuccess(t("signup.successMessage"));
     } catch (err: any) {
-      setError(err.response?.data?.message || "Signup failed");
+      setError(err.response?.data?.message || t("signup.signupFailed"));
     }
   };
 
   return (
     <Container component="main" maxWidth="xs">
+      <LanguageToggle floating />
       <Box sx={containerStyles}>
         <Paper elevation={3} sx={paperStyles}>
           <Typography component="h1" variant="h4" sx={titleStyles}>
@@ -121,7 +123,7 @@ export default function Signup() {
               margin="normal"
               required
               fullWidth
-              label="First Name"
+              label={t("signup.firstNameLabel")}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
               sx={textFieldStyles}
@@ -132,7 +134,7 @@ export default function Signup() {
               margin="normal"
               required
               fullWidth
-              label="Last Name"
+              label={t("signup.lastNameLabel")}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
               sx={textFieldStyles}
@@ -143,7 +145,7 @@ export default function Signup() {
               margin="normal"
               required
               fullWidth
-              label="Username"
+              label={t("signup.usernameLabel")}
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               sx={textFieldStyles}
@@ -177,17 +179,19 @@ export default function Signup() {
               onChange={(e) => setPassword(e.target.value)}
               sx={textFieldStyles}
               helperText={t("signup.passwordHelper")}
-              inputprops={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(!showPassword)}
-                      edge="end"
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword(!showPassword)}
+                        edge="end"
+                      >
+                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 
@@ -204,19 +208,21 @@ export default function Signup() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               sx={textFieldStyles}
-              inputprops={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      edge="end"
-                    >
-                      {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                        edge="end"
+                      >
+                        {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
               }}
             />
 

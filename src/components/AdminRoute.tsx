@@ -7,5 +7,5 @@ interface AdminRouteProps {
 }
 
 export const AdminRoute = ({ role, children }: AdminRouteProps) => {
-  return role === 'ADMIN' ? <>{children}</> : <Navigate to="/" replace />;
+  return role === 'Admin' ? <>{children}</> : <Navigate to="/" replace />;
 };

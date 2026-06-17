@@ -22,7 +22,6 @@ export const resources = {
 };
 
 i18n
-  // Reads the saved language from localStorage (and persists changes there).
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
@@ -30,7 +29,7 @@ i18n
     fallbackLng: "en",
     supportedLngs: SUPPORTED_LANGUAGES,
     interpolation: {
-      escapeValue: false, // React already escapes against XSS
+      escapeValue: false, 
     },
     detection: {
       order: ["localStorage", "navigator"],
@@ -39,44 +38,13 @@ i18n
     },
   });
 
-/**
- * Sets <html dir="..."> and <html lang="..."> so the whole page mirrors
- * for Arabic (rtl) and reverts for English (ltr).
- */
 const applyDirection = (lng: string) => {
   const dir = lng === "ar" ? "rtl" : "ltr";
   document.documentElement.setAttribute("dir", dir);
   document.documentElement.setAttribute("lang", lng);
 };
 
-// Apply on first load and whenever the language changes.
 applyDirection(i18n.resolvedLanguage ?? "en");
 i18n.on("languageChanged", applyDirection);
-
-export default i18n;
-import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
-
-import en from "../lang/en.json";
-import ar from "../lang/ar.json";
-
-i18n
-  .use(initReactI18next)
-  .init({
-    resources: {
-      en: {
-        translation: en,
-      },
-      ar: {
-        translation: ar,
-      },
-    },
-    lng: "en",
-    fallbackLng: "en",
-
-    interpolation: {
-      escapeValue: false,
-    },
-  });
 
 export default i18n;

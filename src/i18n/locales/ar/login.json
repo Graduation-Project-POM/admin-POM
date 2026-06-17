@@ -1,0 +1,14 @@
+{
+  "login": {
+    "welcomeBackTitle": "مرحباً بعودتك",
+    "welcomeBackSubtitle": "سجّل الدخول إلى حسابك للمتابعة",
+    "usernameLabel": "اسم المستخدم",
+    "passwordLabel": "كلمة المرور",
+    "togglePasswordVisibility": "إظهار أو إخفاء كلمة المرور",
+    "signInButton": "تسجيل الدخول",
+    "noAccountQuestion": "ليس لديك حساب؟",
+    "signUpLink": "إنشاء حساب",
+    "validationRequired": "اسم المستخدم وكلمة المرور مطلوبان",
+    "loginFailed": "فشل تسجيل الدخول"
+  }
+}

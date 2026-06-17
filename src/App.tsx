@@ -7,8 +7,6 @@ import {
   Outlet,
 } from "react-router-dom";
 import type { UserRole } from "./types";
-import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Page } from "./components/common/Page";
 import { DashboardLayout } from "./components/layout/Dashboard";
 import { AdminApprovalsPage } from "./pages/admin/approval/ApprovalsPage";
@@ -27,11 +25,9 @@ import StudentDashboardPage from "./pages/student/dashboard/dashboard";
 import Signup from "./components/Credentials/signup/signup";
 import Login from "./components/Credentials/Login/login";
 import { AuthProvider, useAuth } from "./services/AuthContext";
-import type { UserRole } from "./types";
+import { DirectionProvider } from "./providers/DirectionProvider";
 
 function AppRoutes() {
-    const { t } = useTranslation();
-
   const { role, userName, token } = useAuth();
 
   function RequireRole({ allow }: { allow: UserRole[] }) {
@@ -144,11 +140,13 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <AppRoutes />
-      </Router>
-    </AuthProvider>
+    <DirectionProvider>
+      <AuthProvider>
+        <Router>
+          <AppRoutes />
+        </Router>
+      </AuthProvider>
+    </DirectionProvider>
   );
 }
 

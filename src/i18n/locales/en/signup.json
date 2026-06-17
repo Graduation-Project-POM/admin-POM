@@ -1,0 +1,21 @@
+{
+  "signup": {
+    "createAccountTitle": "Create Account",
+    "createAccountSubtitle": "Sign up to get started",
+    "firstNameLabel": "First Name",
+    "lastNameLabel": "Last Name",
+    "usernameLabel": "Username",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "passwordHelper": "Password must be at least 6 characters",
+    "confirmPasswordLabel": "Confirm Password",
+    "signUpButton": "Sign Up",
+    "alreadyHaveAccount": "Already have an account?",
+    "signInLink": "Sign in",
+    "passwordMismatchError": "Passwords do not match",
+    "passwordShortError": "Password must be at least 6 characters",
+    "allFieldsRequired": "All fields are required",
+    "successMessage": "Account created successfully",
+    "signupFailed": "Signup failed"
+  }
+}

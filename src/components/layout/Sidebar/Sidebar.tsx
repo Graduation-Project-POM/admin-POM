@@ -48,7 +48,7 @@ import { useAuth } from "../../../services/AuthContext";
 interface SidebarProps {
   role: UserRole;
   userName: string;
-  userEmail: string;
+  userEmail?: string;
   onLogout?: () => void;
 }
 
@@ -71,8 +71,7 @@ const iconMap: Record<string, React.ReactNode> = {
 export const Sidebar: React.FC<SidebarProps> = ({
   role,
   userName,
-  userEmail,
-  onLogout,
+  userEmail = "",
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -101,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openItem, setOpenItem] = useState<string | null>(null);
 
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
+  const language = i18n.resolvedLanguage === 'ar' ? 'ar' : 'en';
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -124,7 +123,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleLanguageToggle = () => {
-    setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));
+    i18n.changeLanguage(language === "ar" ? "en"   : "ar");
   };
 
   const handleLogout = () => {
@@ -222,8 +221,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 }}
                               >
                                 {isLanguageItem
-                                  ? (language === 'ar' ? 'العربية' : 'English')
-                                  : item.title}
+                                  ? language === "ar"
+                                    ? "العربية"
+                                    : "English"
+                                  : item.titleKey ? t(item.titleKey) : item.title}
                               </Typography>
                             }
                           />

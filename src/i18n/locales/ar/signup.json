@@ -1,0 +1,21 @@
+{
+  "signup": {
+    "createAccountTitle": "إنشاء حساب",
+    "createAccountSubtitle": "سجّل لتبدأ",
+    "firstNameLabel": "الاسم الأول",
+    "lastNameLabel": "اسم العائلة",
+    "usernameLabel": "اسم المستخدم",
+    "emailLabel": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordHelper": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+    "confirmPasswordLabel": "تأكيد كلمة المرور",
+    "signUpButton": "إنشاء حساب",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "signInLink": "تسجيل الدخول",
+    "passwordMismatchError": "كلمتا المرور غير متطابقتين",
+    "passwordShortError": "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل",
+    "allFieldsRequired": "جميع الحقول مطلوبة",
+    "successMessage": "تم إنشاء الحساب بنجاح",
+    "signupFailed": "فشل إنشاء الحساب"
+  }
+}
