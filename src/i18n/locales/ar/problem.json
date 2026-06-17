@@ -1,0 +1,54 @@
+{
+  "problem": {
+    "list": {
+      "title": "بنك المسائل",
+      "subtitle": "إدارة مجموعة المسائل الرياضية",
+      "addButton": "إضافة مسألة",
+      "searchPlaceholder": "البحث عن المسائل...",
+      "filter": {
+        "allLevels": "جميع المستويات"
+      },
+      "columns": {
+        "title": "العنوان",
+        "category": "الفئة",
+        "difficulty": "الصعوبة",
+        "tags": "التصنيفات",
+        "visibility": "الظهور",
+        "stats": "الإحصائيات"
+      },
+      "stats": {
+        "submissions": "{{count}} محاولة",
+        "success": "{{rate}}% نسبة النجاح"
+      }
+    },
+    "difficulty": {
+      "Easy": "سهل",
+      "Medium": "متوسط",
+      "Hard": "صعب"
+    },
+    "visibility": {
+      "general": "عام",
+      "groupSpecific": "خاص بمجموعة"
+    },
+    "delete": {
+      "singleTitle": "حذف المسألة",
+      "singleMessage": "هل أنت متأكد من رغبتك في حذف هذه المسألة؟ لا يمكن التراجع عن هذا الإجراء.",
+      "bulkTitle": "حذف المسائل",
+      "bulkMessage": "هل أنت متأكد من رغبتك في حذف {{count}} مسألة محددة؟ لا يمكن التراجع عن هذا الإجراء."
+    },
+    "form": {
+      "createTitle": "إنشاء مسألة جديدة",
+      "editTitle": "تعديل المسألة",
+      "problemTitle": "عنوان المسألة",
+      "problemTitlePlaceholder": "مثال: مجموع رقمين",
+      "category": "الفئة",
+      "categoryPlaceholder": "مثال: مصفوفة",
+      "difficulty": "الصعوبة",
+      "visibility": "الظهور",
+      "tags": "التصنيفات (مفصولة بفواصل)",
+      "tagsPlaceholder": "مثال: مصفوفة، جدول تجزئة",
+      "createSubmit": "إنشاء المسألة",
+      "saveChanges": "حفظ التغييرات"
+    }
+  }
+}

@@ -20,6 +20,7 @@ import { ViewTrainerDetails } from "./View";
 import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
 import { SharedTable } from "../../../components/ui/table/tables";
 import Edit from "./Edit";
+import { useTranslation } from "react-i18next";
 
 const INITIAL_PENDING = {
   id: "0",
@@ -75,6 +76,7 @@ const INITIAL_HISTORY = [
 ];
 
 export const AdminApprovalsPage = () => {
+  const { t } = useTranslation();
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState<any>(null);
@@ -165,7 +167,7 @@ export const AdminApprovalsPage = () => {
   const columns = [
     {
       id: "name",
-      label: "Name",
+      label: t("admin.approvals.columns.name"),
       render: (row: any) => (
         <UserCell>
           <Avatar
@@ -195,11 +197,11 @@ export const AdminApprovalsPage = () => {
         </UserCell>
       ),
     },
-    { id: "specialization", label: "Specialization" },
-    { id: "submitted", label: "Submitted" },
+    { id: "specialization", label: t("admin.approvals.columns.specialization") },
+    { id: "submitted", label: t("admin.approvals.columns.submitted") },
     {
       id: "status",
-      label: "Status",
+      label: t("admin.approvals.columns.status"),
       render: (row: any) => (
         <StatusChip label={row.status} status={row.status} />
       ),
@@ -219,7 +221,7 @@ export const AdminApprovalsPage = () => {
               letterSpacing: "-0.5px",
             }}
           >
-            Trainer Approvals
+            {t("admin.approvals.title")}
           </Typography>
           <Typography
             sx={{
@@ -229,7 +231,7 @@ export const AdminApprovalsPage = () => {
               mt: "6px",
             }}
           >
-            Review and approve trainer registration requests
+            {t("admin.approvals.subtitle")}
           </Typography>
         </Box>
       </HeaderSection>
@@ -248,7 +250,7 @@ export const AdminApprovalsPage = () => {
             }}
           >
             <Clock size={20} color="#8B1D23" />
-            Pending Requests
+            {t("admin.approvals.pendingRequests")}
           </Typography>
 
           <PendingCard>
@@ -293,7 +295,7 @@ export const AdminApprovalsPage = () => {
                         fontWeight: 600,
                       }}
                     >
-                      Trainer Application
+                      {t("admin.approvals.trainerApplication")}
                     </Typography>
                   </Box>
                 </Box>
@@ -307,7 +309,7 @@ export const AdminApprovalsPage = () => {
                       startIcon={<Eye size={16} />}
                       onClick={() => setDetailsOpen(true)}
                     >
-                      View
+                      {t("admin.approvals.actions.view")}
                     </ActionButton>
 
                     <ActionButton
@@ -315,7 +317,7 @@ export const AdminApprovalsPage = () => {
                       startIcon={<CheckCircle size={16} />}
                       onClick={handleApproveClick}
                     >
-                      Approve
+                      {t("admin.approvals.actions.approve")}
                     </ActionButton>
 
                     <ActionButton
@@ -324,7 +326,7 @@ export const AdminApprovalsPage = () => {
                       startIcon={<XCircle size={16} />}
                       onClick={handleRejectClick}
                     >
-                      Reject
+                      {t("admin.approvals.actions.reject")}
                     </ActionButton>
                   </Stack>
                 </Box>
@@ -344,7 +346,7 @@ export const AdminApprovalsPage = () => {
           }}
         >
           <Typography sx={{ color: "#94a3b8", fontWeight: 600 }}>
-            No pending trainer requests at the moment.
+            {t("admin.approvals.noPending")}
           </Typography>
         </Box>
       )}
@@ -352,7 +354,7 @@ export const AdminApprovalsPage = () => {
       <Typography
         sx={{ fontSize: "16px", fontWeight: 700, color: "#1e293b", mb: "16px" }}
       >
-        Approval History
+        {t("admin.approvals.approvalHistory")}
       </Typography>
       <SharedTable
         data={history}
@@ -360,7 +362,7 @@ export const AdminApprovalsPage = () => {
         onEdit={handleHistoryEdit}
         onDelete={handleBulkDelete}
         onSingleDelete={handleHistoryDelete}
-        searchPlaceholder="Search history..."
+        searchPlaceholder={t("admin.approvals.searchPlaceholder")}
       />
 
       <ViewTrainerDetails
@@ -385,28 +387,28 @@ export const AdminApprovalsPage = () => {
         onConfirm={handleConfirmAction}
         title={
           confirmConfig.type === "approve"
-            ? "Approve Trainer"
+            ? t("admin.approvals.confirm.approveTitle")
             : confirmConfig.type === "reject"
-              ? "Reject Application"
+              ? t("admin.approvals.confirm.rejectTitle")
               : confirmConfig.type === "bulk_delete"
-                ? "Delete History"
-                : "Delete Entry"
+                ? t("admin.approvals.confirm.bulkDeleteTitle")
+                : t("admin.approvals.confirm.deleteTitle")
         }
         message={
           confirmConfig.type === "approve"
-            ? `Are you sure you want to approve ${pendingRequest?.name} as a trainer? They will be able to create and manage courses.`
+            ? t("admin.approvals.confirm.approveMessage", { name: pendingRequest?.name })
             : confirmConfig.type === "reject"
-              ? `Are you sure you want to reject ${pendingRequest?.name}'s application? They will be notified of the rejection.`
+              ? t("admin.approvals.confirm.rejectMessage", { name: pendingRequest?.name })
               : confirmConfig.type === "bulk_delete"
-                ? `Are you sure you want to delete ${confirmConfig.itemCount} selected entries from history? This cannot be undone.`
-                : "Are you sure you want to delete this history entry? This cannot be undone."
+                ? t("admin.approvals.confirm.bulkDeleteMessage", { count: confirmConfig.itemCount })
+                : t("admin.approvals.confirm.deleteMessage")
         }
         confirmLabel={
           confirmConfig.type === "approve"
-            ? "Approve"
+            ? t("admin.approvals.confirm.approveLabel")
             : confirmConfig.type === "reject"
-              ? "Reject"
-              : "Delete"
+              ? t("admin.approvals.confirm.rejectLabel")
+              : t("admin.approvals.confirm.deleteLabel")
         }
         isDanger={confirmConfig.type !== "approve"}
       />

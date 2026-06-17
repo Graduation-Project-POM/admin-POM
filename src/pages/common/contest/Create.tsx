@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Stack, MenuItem, Box } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
@@ -11,6 +12,7 @@ interface CreateContestProps {
 }
 
 const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     status: "Upcoming",
@@ -41,15 +43,15 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Create New Contest"
+      title={t("contest.create.title")}
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
-            label="Contest Title"
+            label={t("contest.fields.contestTitle")}
             name="title"
-            placeholder="e.g., Spring Programming 2026"
+            placeholder={t("contest.fields.contestTitlePlaceholder")}
             value={formData.title}
             onChange={handleChange}
             required
@@ -58,45 +60,45 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             <FormField
               select
-              label="Status"
+              label={t("contest.fields.status")}
               name="status"
               value={formData.status}
               onChange={handleChange}
               required
             >
-              <MenuItem value="Upcoming">Upcoming</MenuItem>
-              <MenuItem value="Ongoing">Ongoing</MenuItem>
-              <MenuItem value="Ended">Ended</MenuItem>
+              <MenuItem value="Upcoming">{t("contest.status.upcoming")}</MenuItem>
+              <MenuItem value="Ongoing">{t("contest.status.ongoing")}</MenuItem>
+              <MenuItem value="Ended">{t("contest.status.ended")}</MenuItem>
             </FormField>
             <FormField
               select
-              label="Difficulty"
+              label={t("contest.fields.difficulty")}
               name="difficulty"
               value={formData.difficulty}
               onChange={handleChange}
               required
             >
-              <MenuItem value="Easy">Easy</MenuItem>
-              <MenuItem value="Medium">Medium</MenuItem>
-              <MenuItem value="Hard">Hard</MenuItem>
+              <MenuItem value="Easy">{t("contest.difficulty.easy")}</MenuItem>
+              <MenuItem value="Medium">{t("contest.difficulty.medium")}</MenuItem>
+              <MenuItem value="Hard">{t("contest.difficulty.hard")}</MenuItem>
             </FormField>
           </Box>
 
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             <FormField
-              label="Start Date & Time"
+              label={t("contest.fields.startDateTime")}
               name="startDate"
               type="text"
-              placeholder="Apr 15, 2026 at 09:00 AM"
+              placeholder={t("contest.fields.startDatePlaceholder")}
               value={formData.startDate}
               onChange={handleChange}
               required
             />
             <FormField
-              label="End Date & Time"
+              label={t("contest.fields.endDateTime")}
               name="endDate"
               type="text"
-              placeholder="Apr 22, 2026 at 09:00 PM"
+              placeholder={t("contest.fields.endDatePlaceholder")}
               value={formData.endDate}
               onChange={handleChange}
               required
@@ -105,7 +107,7 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
         </Stack>
 
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-          Create Contest
+          {t("contest.create.submitButton")}
         </Button>
       </form>
     </ModalWrapper>

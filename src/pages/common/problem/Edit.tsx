@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   MenuItem,
@@ -25,6 +26,7 @@ interface EditProblemProps {
 }
 
 const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<ProblemFormData>({
     id: '',
     title: '',
@@ -70,13 +72,13 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Edit Problem"
+      title={t("problem.form.editTitle")}
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
-            label="Problem Title"
+            label={t("problem.form.problemTitle")}
             name="title"
             value={formData.title}
             onChange={handleChange}
@@ -85,7 +87,7 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
             <FormField
-              label="Category"
+              label={t("problem.form.category")}
               name="category"
               value={formData.category}
               onChange={handleChange}
@@ -93,32 +95,32 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
             />
             <FormField
               select
-              label="Difficulty"
+              label={t("problem.form.difficulty")}
               name="difficulty"
               value={formData.difficulty}
               onChange={handleChange}
               required
             >
-              <MenuItem value="Easy">Easy</MenuItem>
-              <MenuItem value="Medium">Medium</MenuItem>
-              <MenuItem value="Hard">Hard</MenuItem>
+              <MenuItem value="Easy">{t("problem.difficulty.Easy")}</MenuItem>
+              <MenuItem value="Medium">{t("problem.difficulty.Medium")}</MenuItem>
+              <MenuItem value="Hard">{t("problem.difficulty.Hard")}</MenuItem>
             </FormField>
           </Box>
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
             <FormField
               select
-              label="Visibility"
+              label={t("problem.form.visibility")}
               name="visibility"
               value={formData.visibility}
               onChange={handleChange}
               required
             >
-              <MenuItem value="general">General</MenuItem>
-              <MenuItem value="group-specific">Group-specific</MenuItem>
+              <MenuItem value="general">{t("problem.visibility.general")}</MenuItem>
+              <MenuItem value="group-specific">{t("problem.visibility.groupSpecific")}</MenuItem>
             </FormField>
             <FormField
-              label="Tags (Comma separated)"
+              label={t("problem.form.tags")}
               name="tags"
               value={formData.tags}
               onChange={handleChange}
@@ -126,7 +128,7 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
           </Box>
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            Save Changes
+            {t("problem.form.saveChanges")}
         </Button>
       </form>
     </ModalWrapper>

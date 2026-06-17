@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -27,6 +28,7 @@ interface SolutionDetailModalProps {
 }
 
 export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, onSaveMark }: SolutionDetailModalProps) => {
+  const { t } = useTranslation();
   const [score, setScore] = useState<number>(submission?.score || 0);
 
   if (!submission) return null;
@@ -41,7 +43,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
       <Box sx={{ mt: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>Status:</Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>{t('trainer.solutionDetail.status')}</Typography>
             <Chip 
               label={submission.status} 
               size="small"
@@ -54,7 +56,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
             />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>Score:</Typography>
+             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>{t('trainer.solutionDetail.score')}</Typography>
              <input 
                 type="number" 
                 value={score} 
@@ -72,7 +74,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
           </Box>
         </Box>
 
-        <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b', mb: 1.5 }}>Solution:</Typography>
+        <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b', mb: 1.5 }}>{t('trainer.solutionDetail.solution')}</Typography>
         
         {submission.solutionCode ? (
             <Box sx={{ 
@@ -92,14 +94,14 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
         ) : (
             <Box sx={{ py: 4, textAlign: 'center', bgcolor: '#f8fafc', borderRadius: '12px', border: '1px dashed #e2e8f0', mb: 3 }}>
                 <AlertCircle size={32} color="#94a3b8" style={{ marginBottom: 8 }} />
-                <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>No submission found.</Typography>
-                <Typography variant="body2" sx={{ color: '#64748b' }}>This student has not submitted a solution yet.</Typography>
+                <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('trainer.solutionDetail.noSubmissionFound')}</Typography>
+                <Typography variant="body2" sx={{ color: '#64748b' }}>{t('trainer.solutionDetail.noSubmissionHint')}</Typography>
             </Box>
         )}
 
         {submission.result && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
-                <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>Result:</Typography>
+                <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>{t('trainer.solutionDetail.result')}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#166534' }}>
                     <CheckCircle2 size={16} />
                     <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{submission.result}</Typography>
@@ -114,10 +116,10 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
             onClick={() => onSaveMark(submission.id, score)}
             sx={{ px: 3, bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' } }}
           >
-            Mark as Done
+            {t('trainer.solutionDetail.markAsDone')}
           </Button>
           <Button variantType="outline" onClick={onClose}>
-            Close
+            {t('buttons.close')}
           </Button>
         </Box>
       </Box>

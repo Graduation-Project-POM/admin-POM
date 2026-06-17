@@ -10,6 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Users, User, Calendar, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { GroupData } from '../../../types';
 
 const StyledCard = styled(Card)({
@@ -66,6 +67,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
   onMembers,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   return (
     <StyledCard>
       <IconButton 
@@ -96,13 +98,13 @@ export const GroupCard: React.FC<GroupCardProps> = ({
           <StatBox>
             <Users size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {group.studentsCount} Students
+              {t('ui.groupCard.students', { count: group.studentsCount })}
             </Typography>
           </StatBox>
           <StatBox>
             <User size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {group.trainerCount} Trainer
+              {t('ui.groupCard.trainer', { count: group.trainerCount })}
             </Typography>
           </StatBox>
         </Box>
@@ -113,13 +115,13 @@ export const GroupCard: React.FC<GroupCardProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <User size={14} color="#94a3b8" />
             <Typography variant="caption" sx={{ color: '#64748b' }}>
-              Trainer: {group.trainerName}
+              {t('ui.groupCard.trainerLabel', { name: group.trainerName })}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Calendar size={14} color="#94a3b8" />
             <Typography variant="caption" sx={{ color: '#64748b' }}>
-              Created: {group.createdDate}
+              {t('ui.groupCard.created', { date: group.createdDate })}
             </Typography>
           </Box>
         </Box>
@@ -131,7 +133,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
             onClick={() => onView?.(group.id)}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
-            View
+            {t('buttons.view')}
           </Button>
           <Button
             variant="outlined"
@@ -139,7 +141,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
             onClick={() => onEdit?.(group)}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
-            Edit
+            {t('buttons.edit')}
           </Button>
           <Button
             variant="contained"
@@ -147,7 +149,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
             onClick={() => onMembers?.(group)}
             sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' }, boxShadow: 'none' }}
           >
-            Members
+            {t('ui.groupCard.members')}
           </Button>
         </ActionButtons>
       </CardContent>

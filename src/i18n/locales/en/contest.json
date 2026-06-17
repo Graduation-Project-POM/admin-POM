@@ -1,0 +1,68 @@
+{
+  "contest": {
+    "list": {
+      "title": "Contests Management",
+      "subtitle": "Create, manage, and monitor programming contests",
+      "searchPlaceholder": "Search contests by name...",
+      "createButton": "Create Contest",
+      "noResults": "No contests match your search."
+    },
+    "problems": {
+      "backButton": "Back to Contests",
+      "heading": "🏆 Problems in \"{{title}}\"",
+      "description": "Manage the list of mathematical challenges for this specific contest event.",
+      "addButton": "Add Problem",
+      "searchPlaceholder": "Search problems within contest...",
+      "columns": {
+        "name": "Problem Name",
+        "difficulty": "Difficulty",
+        "studentsSolved": "Students Solved",
+        "totalSubmissions": "Total Submissions",
+        "acceptanceRate": "Acceptance Rate"
+      }
+    },
+    "confirm": {
+      "deleteContestTitle": "Delete Contest",
+      "deleteContestMessage": "Are you sure you want to delete this contest? All associated problem data for this contest will be lost.",
+      "removeProblemTitle": "Remove Problem",
+      "removeProblemMessage": "Are you sure you want to remove this problem from the contest?",
+      "removeProblemsTitle": "Remove Problems",
+      "removeProblemsMessage": "Are you sure you want to remove {{count}} selected problems from this contest?"
+    },
+    "create": {
+      "title": "Create New Contest",
+      "submitButton": "Create Contest"
+    },
+    "edit": {
+      "title": "Edit Contest",
+      "submitButton": "Save Changes"
+    },
+    "view": {
+      "title": "Contest Overview",
+      "participants": "Participants",
+      "totalProblems": "Total Problems",
+      "startDate": "Start Date",
+      "endDate": "End Date"
+    },
+    "fields": {
+      "contestTitle": "Contest Title",
+      "contestTitlePlaceholder": "e.g., Spring Programming 2026",
+      "status": "Status",
+      "difficulty": "Difficulty",
+      "startDateTime": "Start Date & Time",
+      "endDateTime": "End Date & Time",
+      "startDatePlaceholder": "Apr 15, 2026 at 09:00 AM",
+      "endDatePlaceholder": "Apr 22, 2026 at 09:00 PM"
+    },
+    "status": {
+      "upcoming": "Upcoming",
+      "ongoing": "Ongoing",
+      "ended": "Ended"
+    },
+    "difficulty": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    }
+  }
+}

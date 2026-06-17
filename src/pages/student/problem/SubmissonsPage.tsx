@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box, Chip, Stack, Typography, Paper, Grid,
 } from '@mui/material';
@@ -239,6 +240,7 @@ const getGradeColor = (grade: number) => {
 };
 
 export const MySubmissions: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedYear, setSelectedYear] = useState<string>('All');
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
 
@@ -269,7 +271,7 @@ export const MySubmissions: React.FC = () => {
   const columns = [
     {
       id: 'id',
-      label: 'ID',
+      label: t('student.submissions.columns.id'),
       render: (row: Problem) => (
         <Typography sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '13px', fontFamily: 'monospace' }}>
           {row.id}
@@ -278,7 +280,7 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'name',
-      label: 'Problem Name',
+      label: t('student.submissions.columns.problemName'),
       render: (row: Problem) => (
         <Box>
           <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>
@@ -297,7 +299,7 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'year',
-      label: 'Year',
+      label: t('student.submissions.columns.year'),
       render: (row: Problem) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Calendar size={13} color="#8B1D23" />
@@ -307,7 +309,7 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'difficulty',
-      label: 'Difficulty',
+      label: t('student.submissions.columns.difficulty'),
       render: (row: Problem) => (
         <DifficultyBadge difficulty={row.difficulty}>
           {row.difficulty === 'Easy' && <Zap size={12} />}
@@ -319,7 +321,7 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'topic',
-      label: 'Topic',
+      label: t('student.submissions.columns.topic'),
       render: (row: Problem) => (
         <Chip
           label={row.topic}
@@ -336,7 +338,7 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'grade',
-      label: 'Grade',
+      label: t('student.submissions.columns.grade'),
       render: (row: Problem) => (
         row.grade !== undefined ? (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -350,18 +352,18 @@ export const MySubmissions: React.FC = () => {
           </Box>
         ) : (
           <Typography sx={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>
-            Pending
+            {t('student.submissions.pending')}
           </Typography>
         )
       ),
     },
     {
       id: 'status',
-      label: 'Status',
+      label: t('student.submissions.columns.status'),
       render: (row: Problem) => (
         <StatusBadge submitted={row.solutionsCount > 0}>
           {row.solutionsCount > 0 ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-          {row.solutionsCount > 0 ? 'Submitted' : 'Draft'}
+          {row.solutionsCount > 0 ? t('student.submissions.statusSubmitted') : t('student.submissions.statusDraft')}
         </StatusBadge>
       ),
     },
@@ -390,10 +392,10 @@ export const MySubmissions: React.FC = () => {
               </Box>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
-                  My Submissions
+                  {t('student.submissions.title')}
                 </Typography>
                 <Typography sx={{ opacity: 0.9, fontWeight: 500, fontSize: '14px' }}>
-                  Track your problem solutions and grades across all contests
+                  {t('student.submissions.subtitle')}
                 </Typography>
               </Box>
             </Box>
@@ -403,7 +405,7 @@ export const MySubmissions: React.FC = () => {
                   {stats.totalSubmitted}
                 </Typography>
                 <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
-                  Submitted
+                  {t('student.submissions.submitted')}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
@@ -411,7 +413,7 @@ export const MySubmissions: React.FC = () => {
                   {stats.averageGrade}%
                 </Typography>
                 <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
-                  Avg Grade
+                  {t('student.submissions.avgGrade')}
                 </Typography>
               </Box>
               <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
@@ -419,7 +421,7 @@ export const MySubmissions: React.FC = () => {
                   {stats.perfectScores}
                 </Typography>
                 <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
-                  Perfect
+                  {t('student.submissions.perfect')}
                 </Typography>
               </Box>
             </Box>
@@ -438,7 +440,7 @@ export const MySubmissions: React.FC = () => {
               {stats.totalSubmitted}
             </Typography>
             <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>
-              Total Submitted
+              {t('student.submissions.totalSubmitted')}
             </Typography>
           </StatsCard>
         </Grid>
@@ -451,7 +453,7 @@ export const MySubmissions: React.FC = () => {
               {stats.totalGraded}
             </Typography>
             <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>
-              Graded
+              {t('student.submissions.graded')}
             </Typography>
           </StatsCard>
         </Grid>
@@ -464,7 +466,7 @@ export const MySubmissions: React.FC = () => {
               {stats.easyCount}
             </Typography>
             <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>
-              Easy
+              {t('student.submissions.easy')}
             </Typography>
           </StatsCard>
         </Grid>
@@ -477,7 +479,7 @@ export const MySubmissions: React.FC = () => {
               {stats.mediumCount}
             </Typography>
             <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>
-              Medium
+              {t('student.submissions.medium')}
             </Typography>
           </StatsCard>
         </Grid>
@@ -490,7 +492,7 @@ export const MySubmissions: React.FC = () => {
               {stats.hardCount}
             </Typography>
             <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>
-              Hard
+              {t('student.submissions.hard')}
             </Typography>
           </StatsCard>
         </Grid>
@@ -503,7 +505,7 @@ export const MySubmissions: React.FC = () => {
               {stats.perfectScores}
             </Typography>
             <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>
-              Perfect
+              {t('student.submissions.perfect')}
             </Typography>
           </StatsCard>
         </Grid>
@@ -517,7 +519,7 @@ export const MySubmissions: React.FC = () => {
               <Filter size={18} color="#8B1D23" />
             </Box>
             <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px' }}>
-              Filters
+              {t('student.submissions.filters')}
             </Typography>
           </Box>
           {hasActiveFilters && (
@@ -528,7 +530,7 @@ export const MySubmissions: React.FC = () => {
               onClick={resetFilters}
               sx={{ color: '#8B1D23', '&:hover': { color: '#6B141A' }, ml: 5}}
             >
-              Reset All
+              {t('student.submissions.resetAll')}
             </Button>
           )}
         </Box>
@@ -538,11 +540,11 @@ export const MySubmissions: React.FC = () => {
             <FilterGroup>
               <FilterLabel>
                 <Calendar size={14} color="#8B1D23" />
-                Year
+                {t('student.submissions.year')}
               </FilterLabel>
               <FilterChipsStack>
                 <StyledChip
-                  label="All"
+                  label={t('common.all')}
                   onClick={() => setSelectedYear('All')}
                   active={selectedYear === 'All'}
                   size="small"
@@ -563,11 +565,11 @@ export const MySubmissions: React.FC = () => {
             <FilterGroup>
               <FilterLabel>
                 <Tag size={14} color="#8B1D23" />
-                Topic
+                {t('student.submissions.topic')}
               </FilterLabel>
               <FilterChipsStack>
                 <StyledChip
-                  label="All"
+                  label={t('common.all')}
                   onClick={() => setSelectedTopic('All')}
                   active={selectedTopic === 'All'}
                   size="small"
@@ -592,12 +594,12 @@ export const MySubmissions: React.FC = () => {
         <ActiveFiltersBar>
           <Filter size={16} color="#8B1D23" />
           <Typography sx={{ fontWeight: 600, color: '#8B1D23', fontSize: '13px' }}>
-            Active filters:
+            {t('student.submissions.activeFilters')}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, flex: 1 }}>
             {selectedYear !== 'All' && (
               <Chip
-                label={`Year: ${selectedYear}`}
+                label={t('student.submissions.yearFilter', { value: selectedYear })}
                 size="small"
                 onDelete={() => setSelectedYear('All')}
                 sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
@@ -605,7 +607,7 @@ export const MySubmissions: React.FC = () => {
             )}
             {selectedTopic !== 'All' && (
               <Chip
-                label={`Topic: ${selectedTopic}`}
+                label={t('student.submissions.topicFilter', { value: selectedTopic })}
                 size="small"
                 onDelete={() => setSelectedTopic('All')}
                 sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
@@ -613,7 +615,7 @@ export const MySubmissions: React.FC = () => {
             )}
           </Box>
           <Typography variant="body2" sx={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>
-            {filteredData.length} results
+            {t('student.submissions.results', { count: filteredData.length })}
           </Typography>
         </ActiveFiltersBar>
       )}
@@ -623,7 +625,7 @@ export const MySubmissions: React.FC = () => {
         <SharedTable
           data={filteredData}
           columns={columns}
-          searchPlaceholder="Search by problem name or ID..."
+          searchPlaceholder={t('student.submissions.searchPlaceholder')}
         />
       </TableSection>
     </PageContainer>

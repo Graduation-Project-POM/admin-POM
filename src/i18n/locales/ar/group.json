@@ -1,0 +1,70 @@
+{
+  "group": {
+    "list": {
+      "title": "مجموعات التدريب",
+      "subtitle": "إدارة مجموعات الطلاب والمدربين والمجموعات التعليمية",
+      "searchPlaceholder": "ابحث عن المجموعات حسب العنوان أو الوصف...",
+      "createGroup": "إنشاء مجموعة",
+      "emptyState": "لا توجد مجموعات مطابقة لبحثك.",
+      "deleteTitle": "حذف المجموعة",
+      "deleteMessage": "هل أنت متأكد من رغبتك في حذف هذه المجموعة؟ سيؤدي ذلك أيضًا إلى إلغاء تعيين جميع الأعضاء."
+    },
+    "details": {
+      "backToGroup": "العودة إلى تفاصيل المجموعة",
+      "backToGroups": "العودة إلى المجموعات",
+      "problemsTitle": "🏆 المسائل في \"{{title}}\"",
+      "problemName": "اسم المسألة",
+      "category": "الفئة",
+      "difficulty": "الصعوبة",
+      "successRate": "معدل النجاح",
+      "addProblem": "إضافة مسألة",
+      "searchProblems": "ابحث في مسائل المسابقة...",
+      "removeProblemTitle": "إزالة المسألة",
+      "removeProblemMessage": "هل أنت متأكد من رغبتك في إزالة هذه المسألة من المسابقة؟",
+      "removeProblemsTitle": "إزالة المسائل",
+      "removeProblemsMessage": "هل أنت متأكد من رغبتك في إزالة {{count}} مسألة محددة؟",
+      "deleteContestTitle": "حذف المسابقة",
+      "deleteContestMessage": "هل أنت متأكد من رغبتك في حذف هذه المسابقة من هذه المجموعة؟",
+      "studentsCount": "{{count}} طالب",
+      "created": "أُنشئت في {{date}}",
+      "tabContests": "المسابقات",
+      "tabStudents": "الطلاب",
+      "tabTrainer": "المدرب",
+      "searchGroupContests": "ابحث في مسابقات المجموعة...",
+      "createContest": "إنشاء مسابقة",
+      "noContests": "لا توجد مسابقات لهذه المجموعة.",
+      "searchStudents": "ابحث عن الطلاب في هذه المجموعة...",
+      "joined": "انضم في:",
+      "solvedProblems": "المسائل المحلولة:",
+      "viewStudentProfile": "عرض ملف الطالب",
+      "messageTrainer": "مراسلة المدرب",
+      "bio": "نبذة",
+      "expertise": "الخبرات"
+    },
+    "create": {
+      "title": "إنشاء مجموعة تدريب",
+      "groupTitle": "عنوان المجموعة",
+      "groupTitlePlaceholder": "مثال: محترفو الهندسة",
+      "descriptionPlaceholder": "أدخل غرض المجموعة وأهدافها...",
+      "assignTrainer": "تعيين مدرب"
+    },
+    "edit": {
+      "title": "تعديل مجموعة التدريب",
+      "groupTitle": "عنوان المجموعة",
+      "assignTrainer": "تعيين مدرب"
+    },
+    "view": {
+      "title": "تفاصيل المجموعة",
+      "totalStudents": "إجمالي الطلاب",
+      "trainer": "المدرب",
+      "createdOn": "تاريخ الإنشاء",
+      "groupId": "معرّف المجموعة"
+    },
+    "members": {
+      "title": "الأعضاء - {{title}}",
+      "addNewMember": "إضافة عضو جديد",
+      "selectUser": "اختر مستخدمًا...",
+      "remove": "إزالة"
+    }
+  }
+}

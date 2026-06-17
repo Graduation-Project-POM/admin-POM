@@ -1,0 +1,21 @@
+{
+  "profile": {
+    "title": "ملفي الشخصي",
+    "subtitle": "إدارة معلوماتك الشخصية وإعدادات حسابك",
+    "editProfile": "تعديل الملف الشخصي",
+    "personalInformation": "المعلومات الشخصية",
+    "fields": {
+      "fullName": "الاسم الكامل",
+      "displayName": "الاسم المعروض",
+      "emailAddress": "البريد الإلكتروني",
+      "department": "القسم",
+      "position": "المنصب",
+      "bio": "نبذة"
+    },
+    "stats": {
+      "totalContents": "إجمالي المحتويات",
+      "enrolledStudents": "الطلاب المسجلون",
+      "yearsOfExperience": "سنوات الخبرة"
+    }
+  }
+}

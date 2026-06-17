@@ -1,0 +1,58 @@
+{
+  "trainer": {
+    "dashboard": {
+      "title": "لوحة تحكم المدرب",
+      "stats": {
+        "totalStudents": "إجمالي الطلاب",
+        "upcomingSessions": "الجلسات القادمة",
+        "completedSessions": "الجلسات المكتملة",
+        "pendingFeedback": "التقييمات المعلقة",
+        "nextSession": "التالية: اليوم 4:00 مساءً",
+        "needsReview": "بحاجة إلى مراجعة",
+        "thisMonth": "هذا الشهر",
+        "thisWeek": "هذا الأسبوع"
+      },
+      "quickActions": {
+        "title": "إجراءات سريعة",
+        "manageStudents": "إدارة الطلاب",
+        "createSession": "إنشاء جلسة",
+        "postAnnouncement": "نشر إعلان",
+        "viewReports": "عرض التقارير",
+        "assignments": "الواجبات",
+        "schedule": "الجدول الزمني"
+      },
+      "pendingRequests": {
+        "title": "الطلبات المعلقة",
+        "review": "مراجعة",
+        "enrollmentRequest": "طلب التحاق",
+        "assignmentSubmission": "تسليم واجب"
+      },
+      "announcements": {
+        "title": "الإعلانات",
+        "tableTitle": "العنوان",
+        "tableDate": "التاريخ",
+        "tableStatus": "الحالة",
+        "published": "منشور",
+        "draft": "مسودة",
+        "addAnnouncement": "إعلان",
+        "addStudent": "إضافة طالب"
+      }
+    },
+    "solutionDetail": {
+      "status": "الحالة:",
+      "score": "الدرجة:",
+      "solution": "الحل:",
+      "noSubmissionFound": "لم يتم العثور على تسليم.",
+      "noSubmissionHint": "لم يقم هذا الطالب بتسليم حل بعد.",
+      "result": "النتيجة:",
+      "markAsDone": "وضع علامة كمنجز"
+    },
+    "studentProgress": {
+      "titleSuffix": "تقدم الطلاب",
+      "allStudents": "جميع الطلاب",
+      "solved": "تم الحل",
+      "notSolved": "لم يُحل",
+      "viewSolution": "عرض الحل"
+    }
+  }
+}

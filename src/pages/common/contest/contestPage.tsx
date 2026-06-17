@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Box, Typography, InputAdornment, Paper, Stack } from "@mui/material";
 import { ArrowLeft, Plus } from "lucide-react";
 
@@ -36,7 +37,7 @@ interface Problem {
 
 const mockContests: ContestData[] = [
   {
-    id: 1,
+    id: "1",
     title: "Spring Programming 2026",
     status: "Upcoming",
     difficulty: "Medium",
@@ -46,7 +47,7 @@ const mockContests: ContestData[] = [
     endDate: "Apr 22, 2026 at 09:00 PM",
   },
   {
-    id: 2,
+    id: "2",
     title: "Code Rush 2026",
     status: "Ended",
     difficulty: "Hard",
@@ -56,7 +57,7 @@ const mockContests: ContestData[] = [
     endDate: "Mar 20, 2026 at 06:00 PM",
   },
   {
-    id: 3,
+    id: "3",
     title: "Beginner's Challenge",
     status: "Upcoming",
     difficulty: "Easy",
@@ -67,7 +68,7 @@ const mockContests: ContestData[] = [
   },
 ];
 
-const contestProblemsMap: Record<number, Problem[]> = {
+const contestProblemsMap: Record<string, Problem[]> = {
   1: [
     {
       id: "101",
@@ -109,6 +110,7 @@ const contestProblemsMap: Record<number, Problem[]> = {
 };
 
 const DifficultyBadge: React.FC<{ difficulty: string }> = ({ difficulty }) => {
+  const { t } = useTranslation();
   const difficultyStyles = {
     Easy: { bgcolor: "#16a34a15", color: "#16a34a" },
     Medium: { bgcolor: "#eab30815", color: "#eab308" },
@@ -132,7 +134,7 @@ const DifficultyBadge: React.FC<{ difficulty: string }> = ({ difficulty }) => {
         fontWeight: 600,
       }}
     >
-      {difficulty}
+      {t(`contest.difficulty.${difficulty.toLowerCase()}`, difficulty)}
     </Box>
   );
 };
@@ -142,12 +144,13 @@ const AcceptanceRateDisplay: React.FC<{ rate: number }> = ({ rate }) => (
 );
 
 export const ContestsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [contests, setContests] = useState<ContestData[]>(mockContests);
   const [problemsMap, setProblemsMap] =
-    useState<Record<number, Problem[]>>(contestProblemsMap);
+    useState<Record<string, Problem[]>>(contestProblemsMap);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const [selectedContestId, setSelectedContestId] = useState<number | null>(
+  const [selectedContestId, setSelectedContestId] = useState<string | null>(
     null,
   );
   const [selectedContestTitle, setSelectedContestTitle] = useState<string>("");
@@ -189,12 +192,11 @@ export const ContestsPage: React.FC = () => {
     );
   };
 
-  const handleDeleteContest = (id: number) => {
+  const handleDeleteContest = (id: string) => {
     setConfirmConfig({
       open: true,
-      title: "Delete Contest",
-      message:
-        "Are you sure you want to delete this contest? All associated problem data for this contest will be lost.",
+      title: t("contest.confirm.deleteContestTitle"),
+      message: t("contest.confirm.deleteContestMessage"),
       onConfirm: () => {
         setContests(contests.filter((c) => c.id !== id));
       },
@@ -231,8 +233,8 @@ export const ContestsPage: React.FC = () => {
   const handleDeleteProblem = (id: string) => {
     setConfirmConfig({
       open: true,
-      title: "Remove Problem",
-      message: "Are you sure you want to remove this problem from the contest?",
+      title: t("contest.confirm.removeProblemTitle"),
+      message: t("contest.confirm.removeProblemMessage"),
       onConfirm: () => {
         if (selectedContestId === null) return;
         const currentProblems = problemsMap[selectedContestId] || [];
@@ -254,8 +256,10 @@ export const ContestsPage: React.FC = () => {
   const handleBulkDeleteProblems = (ids: string[]) => {
     setConfirmConfig({
       open: true,
-      title: "Remove Problems",
-      message: `Are you sure you want to remove ${ids.length} selected problems from this contest?`,
+      title: t("contest.confirm.removeProblemsTitle"),
+      message: t("contest.confirm.removeProblemsMessage", {
+        count: ids.length,
+      }),
       onConfirm: () => {
         if (selectedContestId === null) return;
         const currentProblems = problemsMap[selectedContestId] || [];
@@ -289,7 +293,7 @@ export const ContestsPage: React.FC = () => {
     const problemColumns = [
       {
         id: "name",
-        label: "Problem Name",
+        label: t("contest.problems.columns.name"),
         render: (row: Problem) => (
           <Typography
             onClick={() => {
@@ -312,22 +316,22 @@ export const ContestsPage: React.FC = () => {
       },
       {
         id: "difficulty",
-        label: "Difficulty",
+        label: t("contest.problems.columns.difficulty"),
         render: (row: Problem) => (
           <DifficultyBadge difficulty={row.difficulty} />
         ),
       },
       {
         id: "studentsSolved",
-        label: "Students Solved",
+        label: t("contest.problems.columns.studentsSolved"),
       },
       {
         id: "totalSubmissions",
-        label: "Total Submissions",
+        label: t("contest.problems.columns.totalSubmissions"),
       },
       {
         id: "acceptanceRate",
-        label: "Acceptance Rate",
+        label: t("contest.problems.columns.acceptanceRate"),
         render: (row: Problem) => (
           <AcceptanceRateDisplay rate={row.acceptanceRate} />
         ),
@@ -342,7 +346,7 @@ export const ContestsPage: React.FC = () => {
           onClick={() => setSelectedContestId(null)}
           sx={{ mb: 3 }}
         >
-          Back to Contests
+          {t("contest.problems.backButton")}
         </Button>
 
         <Paper
@@ -356,14 +360,13 @@ export const ContestsPage: React.FC = () => {
           }}
         >
           <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-            🏆 Problems in "{selectedContestTitle}"
+            {t("contest.problems.heading", { title: selectedContestTitle })}
           </Typography>
           <Typography
             variant="body2"
             sx={{ color: "#64748b", mt: 1, fontWeight: 500 }}
           >
-            Manage the list of mathematical challenges for this specific contest
-            event.
+            {t("contest.problems.description")}
           </Typography>
         </Paper>
 
@@ -377,8 +380,8 @@ export const ContestsPage: React.FC = () => {
           onSingleDelete={handleDeleteProblem}
           onDelete={handleBulkDeleteProblems}
           onAdd={() => setIsAddProblemOpen(true)}
-          addButtonLabel="Add Problem"
-          searchPlaceholder="Search problems within contest..."
+          addButtonLabel={t("contest.problems.addButton")}
+          searchPlaceholder={t("contest.problems.searchPlaceholder")}
         />
 
         <CreateProblem
@@ -408,7 +411,7 @@ export const ContestsPage: React.FC = () => {
         <StudentProgressModal
           open={isProgressModalOpen}
           onClose={() => setIsProgressModalOpen(false)}
-          problemTitle={selectedProblem?.title || ""}
+          problemTitle={selectedProblem?.name || ""}
           onViewSolution={(submission) => {
             setCurrentSubmission(submission);
             setIsSolutionModalOpen(true);
@@ -419,7 +422,7 @@ export const ContestsPage: React.FC = () => {
           open={isSolutionModalOpen}
           onClose={() => setIsSolutionModalOpen(false)}
           submission={currentSubmission}
-          problemTitle={selectedProblem?.title || ""}
+          problemTitle={selectedProblem?.name || ""}
           onSaveMark={(id, score) => {
             console.log(`Saved score ${score} for submission ${id}`);
             setIsSolutionModalOpen(false);
@@ -433,19 +436,19 @@ export const ContestsPage: React.FC = () => {
     <StyledContainer maxWidth="xl">
       <HeaderWrapper>
         <Typography variant="h4" sx={{ fontWeight: 800 }}>
-          Contests Management
+          {t("contest.list.title")}
         </Typography>
       </HeaderWrapper>
       <SubtitleWrapper>
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          Create, manage, and monitor programming contests
+          {t("contest.list.subtitle")}
         </Typography>
       </SubtitleWrapper>
       <SearchWrapper>
         <StyledSearchField
           fullWidth
           size="small"
-          placeholder="Search contests by name..."
+          placeholder={t("contest.list.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           slotProps={{
@@ -464,14 +467,14 @@ export const ContestsPage: React.FC = () => {
             onClick={() => setIsCreateOpen(true)}
             startIcon={<Plus size={18} />}
           >
-            Create Contest
+            {t("contest.list.createButton")}
           </Button>
         </Stack>
       </SearchWrapper>
       {filteredContests.length === 0 ? (
         <EmptyStateWrapper>
           <Typography variant="body1" color="text.secondary">
-            No contests match your search.
+            {t("contest.list.noResults")}
           </Typography>
         </EmptyStateWrapper>
       ) : (

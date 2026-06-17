@@ -1,4 +1,5 @@
 import { Stack, Typography, Box, Divider } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
 import { Users, User, Calendar, Info } from 'lucide-react';
@@ -27,10 +28,11 @@ const DetailItem = ({ icon, label, value }: { icon: any; label: string; value?: 
 );
 
 const ViewGroups = ({ open, onClose, group }: ViewGroupProps) => {
+  const { t } = useTranslation();
   if (!group) return null;
 
   return (
-    <ModalWrapper open={open} onClose={onClose} title="Group Details" maxWidth="sm">
+    <ModalWrapper open={open} onClose={onClose} title={t('group.view.title')} maxWidth="sm">
       <Stack spacing={3} sx={{ mt: 1 }}>
         <Box>
           <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
@@ -44,14 +46,14 @@ const ViewGroups = ({ open, onClose, group }: ViewGroupProps) => {
         <Divider />
 
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 3 }}>
-          <DetailItem icon={<Users size={20} />} label="Total Students" value={group.studentsCount} />
-          <DetailItem icon={<User size={20} />} label="Trainer" value={group.trainerName} />
-          <DetailItem icon={<Calendar size={20} />} label="Created On" value={group.createdDate} />
-          <DetailItem icon={<Info size={20} />} label="Group ID" value={`#${group.id}`} />
+          <DetailItem icon={<Users size={20} />} label={t('group.view.totalStudents')} value={group.studentsCount} />
+          <DetailItem icon={<User size={20} />} label={t('group.view.trainer')} value={group.trainerName} />
+          <DetailItem icon={<Calendar size={20} />} label={t('group.view.createdOn')} value={group.createdDate} />
+          <DetailItem icon={<Info size={20} />} label={t('group.view.groupId')} value={`#${group.id}`} />
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-          <Button variantType="outline" onClick={onClose}>Close</Button>
+          <Button variantType="outline" onClick={onClose}>{t('buttons.close')}</Button>
         </Box>
       </Stack>
     </ModalWrapper>

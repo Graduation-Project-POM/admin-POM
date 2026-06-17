@@ -59,38 +59,41 @@ import {
 } from "./dashboardStyle";
 
 import type { StatCardData, PendingTrainer, Announcement } from "../../../types/index"
+import { useTranslation } from "react-i18next";
 
 
 const AdminDashboard: React.FC = () => {
+  const { t } = useTranslation();
+
   const stats: StatCardData[] = [
     {
-      title: "Total Users",
+      title: t("admin.dashboard.stats.totalUsers"),
       value: 386,
-      trend: { value: 12, label: "this week", direction: "up" },
+      trend: { value: 12, label: t("admin.dashboard.stats.thisWeek"), direction: "up" },
       icon: Users,
       iconBg: "#fee2e2",
       iconColor: "#8B1D23",
     },
     {
-      title: "Active Trainers",
+      title: t("admin.dashboard.stats.activeTrainers"),
       value: 318,
-      subtitle: "83% of total",
+      subtitle: t("admin.dashboard.stats.ofTotal", { percent: 83 }),
       icon: UserCheck,
       iconBg: "#e0f2e9",
       iconColor: "#1f6e43",
     },
     {
-      title: "Total Students",
+      title: t("admin.dashboard.stats.totalStudents"),
       value: 4821,
-      trend: { value: 204, label: "today", direction: "up" },
+      trend: { value: 204, label: t("admin.dashboard.stats.today"), direction: "up" },
       icon: TrendingUp,
       iconBg: "#fff0db",
       iconColor: "#b45309",
     },
     {
-      title: "Pending Approvals",
+      title: t("admin.dashboard.stats.pendingApprovals"),
       value: 3,
-      subtitle: "Needs action",
+      subtitle: t("admin.dashboard.stats.needsAction"),
       icon: AlertCircle,
       iconBg: "#fee2e2",
       iconColor: "#b91c1c",
@@ -98,9 +101,9 @@ const AdminDashboard: React.FC = () => {
   ];
 
   const pendingTrainers: PendingTrainer[] = [
-    { id: 1, name: "Dr. Rania Al-Wanan", title: "Trainer", university: "Khadoori University" },
-    { id: 2, name: "Ahmad Nasser", title: "Trainer", university: "Birzeit University" },
-    { id: 3, name: "Layla Haddad", title: "Trainer", university: "An-Najah University" },
+    { id: 1, name: "Dr. Rania Al-Wanan", title: t("admin.dashboard.pendingApprovals.trainer"), university: "Khadoori University" },
+    { id: 2, name: "Ahmad Nasser", title: t("admin.dashboard.pendingApprovals.trainer"), university: "Birzeit University" },
+    { id: 3, name: "Layla Haddad", title: t("admin.dashboard.pendingApprovals.trainer"), university: "An-Najah University" },
   ];
 
   const announcements: Announcement[] = [
@@ -111,12 +114,12 @@ const AdminDashboard: React.FC = () => {
   ];
 
   const quickActions = [
-    { label: "Manage Users", icon: Users, path: "/admin/users" },
-    { label: "Review Trainers", icon: UserCog, path: "/admin/approvals" },
-    { label: "Post News", icon: Megaphone, path: "/admin/announcements" },
-    { label: "Partners", icon: Briefcase, path: "/admin/partners" },
-    { label: "Contests", icon: Trophy, path: "/admin/contests" },
-    { label: "Reports", icon: BarChart3, path: "/admin/reports" },
+    { label: t("admin.dashboard.quickActions.manageUsers"), icon: Users, path: "/admin/users" },
+    { label: t("admin.dashboard.quickActions.reviewTrainers"), icon: UserCog, path: "/admin/approvals" },
+    { label: t("admin.dashboard.quickActions.postNews"), icon: Megaphone, path: "/admin/announcements" },
+    { label: t("admin.dashboard.quickActions.partners"), icon: Briefcase, path: "/admin/partners" },
+    { label: t("admin.dashboard.quickActions.contests"), icon: Trophy, path: "/admin/contests" },
+    { label: t("admin.dashboard.quickActions.reports"), icon: BarChart3, path: "/admin/reports" },
   ];
 
   const handleApprove = (id: number) => console.log(`Approve trainer ${id}`);
@@ -126,15 +129,15 @@ const AdminDashboard: React.FC = () => {
 
   const getStatusChip = (status: string) => {
     if (status === "Published") {
-      return <Chip label="Published" size="small" sx={publishedChip} />;
+      return <Chip label={t("admin.dashboard.announcements.published")} size="small" sx={publishedChip} />;
     }
-    return <Chip label="Draft" size="small" sx={draftChip} />;
+    return <Chip label={t("admin.dashboard.announcements.draft")} size="small" sx={draftChip} />;
   };
 
   return (
     <Box sx={dashboardContainer}>
       <Typography variant="h4" sx={pageTitle}>
-        Admin Dashboard
+        {t("admin.dashboard.title")}
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -178,7 +181,7 @@ const AdminDashboard: React.FC = () => {
           <Card sx={{ ...sectionCard, mb: 4 }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                Quick Actions
+                {t("admin.dashboard.quickActions.title")}
               </Typography>
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
@@ -195,7 +198,7 @@ const AdminDashboard: React.FC = () => {
           <Card sx={sectionCard}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                Pending Approvals
+                {t("admin.dashboard.pendingApprovals.title")}
               </Typography>
               <Stack spacing={2}>
                 {pendingTrainers.map((trainer) => (
@@ -217,7 +220,7 @@ const AdminDashboard: React.FC = () => {
                         onClick={() => handleApprove(trainer.id)}
                         sx={approveButton}
                       >
-                        Approve
+                        {t("admin.dashboard.pendingApprovals.approve")}
                       </Button>
                       <IconButton size="small" onClick={() => handleEdit(trainer.id)} sx={{ color: "#64748b" }}>
                         <Edit size={16} />
@@ -234,15 +237,15 @@ const AdminDashboard: React.FC = () => {
           <Card sx={{ ...sectionCard, height: "100%", display: "flex", flexDirection: "column" }}>
             <CardContent sx={{ p: 3, flex: 1 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                Announcements
+                {t("admin.dashboard.announcements.title")}
               </Typography>
               <TableContainer component={Paper} elevation={0} sx={tableContainer}>
                 <Table sx={{ minWidth: 300 }}>
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#f8fafc" }}>
-                      <TableCell sx={tableHeadCell}>Title</TableCell>
-                      <TableCell sx={tableHeadCell}>Date</TableCell>
-                      <TableCell sx={tableHeadCell}>Status</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.announcements.tableTitle")}</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.announcements.tableDate")}</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.announcements.tableStatus")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -259,10 +262,10 @@ const AdminDashboard: React.FC = () => {
 
               <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
                 <Button variant="contained" startIcon={<Plus size={16} />} onClick={handleAddAnnouncement} sx={addAnnouncementButton}>
-                  Announcement
+                  {t("admin.dashboard.announcements.addAnnouncement")}
                 </Button>
                 <Button variant="outlined" startIcon={<UserPlus size={16} />} onClick={handleAddUser} sx={addUserButton}>
-                  Add User
+                  {t("admin.dashboard.announcements.addUser")}
                 </Button>
               </Box>
             </CardContent>

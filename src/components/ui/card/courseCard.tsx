@@ -10,6 +10,7 @@ import {
   linearProgressClasses,
 } from '@mui/material';
 import { Users, TrendingUp, BookOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const StyledCard = styled(Card)({
   borderRadius: '20px',
@@ -101,6 +102,7 @@ interface CourseCardProps {
 }
 
 export const CourseCard: React.FC<CourseCardProps> = ({ course, onViewDetails }) => {
+  const { t } = useTranslation();
   const { id, title, studentsCount, progressPercent } = course;
 
   return (
@@ -119,12 +121,12 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, onViewDetails })
         <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
           <StatChip>
             <Users size={16} color="#8B1D23" strokeWidth={1.8} />
-            <StatLabel>Students</StatLabel>
+            <StatLabel>{t('ui.courseCard.students')}</StatLabel>
             <StatValue>{studentsCount}</StatValue>
           </StatChip>
           <StatChip>
             <TrendingUp size={16} color="#8B1D23" strokeWidth={1.8} />
-            <StatLabel>Progress</StatLabel>
+            <StatLabel>{t('ui.courseCard.progress')}</StatLabel>
             <StatValue>{progressPercent}%</StatValue>
           </StatChip>
         </Box>
@@ -132,7 +134,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, onViewDetails })
         <Box sx={{ width: '100%' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
             <Typography variant="caption" sx={{ fontWeight: 500, color: '#475569' }}>
-              Average completion
+              {t('ui.courseCard.averageCompletion')}
             </Typography>
             <Typography variant="caption" sx={{ fontWeight: 700, color: '#8B1D23' }}>
               {progressPercent}%
@@ -161,7 +163,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, onViewDetails })
             },
           }}
         >
-          View Details →
+          {t('ui.courseCard.viewDetails')}
         </Button>
       </CardContent>
     </StyledCard>

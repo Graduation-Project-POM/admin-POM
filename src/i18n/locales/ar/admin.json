@@ -1,0 +1,133 @@
+{
+  "admin": {
+    "dashboard": {
+      "title": "لوحة تحكم المسؤول",
+      "stats": {
+        "totalUsers": "إجمالي المستخدمين",
+        "activeTrainers": "المدربون النشطون",
+        "totalStudents": "إجمالي الطلاب",
+        "pendingApprovals": "الموافقات المعلقة",
+        "ofTotal": "{{percent}}٪ من الإجمالي",
+        "needsAction": "بحاجة إلى إجراء",
+        "thisWeek": "هذا الأسبوع",
+        "today": "اليوم"
+      },
+      "quickActions": {
+        "title": "إجراءات سريعة",
+        "manageUsers": "إدارة المستخدمين",
+        "reviewTrainers": "مراجعة المدربين",
+        "postNews": "نشر الأخبار",
+        "partners": "الشركاء",
+        "contests": "المسابقات",
+        "reports": "التقارير"
+      },
+      "pendingApprovals": {
+        "title": "الموافقات المعلقة",
+        "trainer": "مدرب",
+        "approve": "موافقة"
+      },
+      "announcements": {
+        "title": "الإعلانات",
+        "tableTitle": "العنوان",
+        "tableDate": "التاريخ",
+        "tableStatus": "الحالة",
+        "published": "منشور",
+        "draft": "مسودة",
+        "addAnnouncement": "إعلان",
+        "addUser": "إضافة مستخدم"
+      }
+    },
+    "users": {
+      "title": "المستخدمون",
+      "subtitle": "إدارة المستخدمين في النظام",
+      "searchPlaceholder": "البحث عن المستخدمين...",
+      "createButton": "إنشاء مستخدم",
+      "columns": {
+        "name": "الاسم",
+        "email": "البريد الإلكتروني",
+        "role": "الدور",
+        "status": "الحالة",
+        "group": "المجموعة",
+        "joined": "تاريخ الانضمام"
+      },
+      "delete": {
+        "bulkTitle": "حذف المستخدمين",
+        "bulkMessage": "هل أنت متأكد أنك تريد حذف {{count}} مستخدم محدد؟ لا يمكن التراجع عن هذا الإجراء.",
+        "singleTitle": "حذف المستخدم",
+        "singleMessage": "هل أنت متأكد أنك تريد حذف هذا المستخدم؟ لا يمكن التراجع عن هذا الإجراء."
+      },
+      "form": {
+        "createTitle": "إنشاء مستخدم جديد",
+        "editTitle": "تعديل المستخدم",
+        "firstName": "الاسم الأول",
+        "lastName": "اسم العائلة",
+        "emailAddress": "عنوان البريد الإلكتروني",
+        "phoneNumber": "رقم الهاتف",
+        "userRole": "دور المستخدم",
+        "activeAccount": "حساب نشط",
+        "password": "كلمة المرور",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "firstNamePlaceholder": "أدخل الاسم الأول",
+        "roles": {
+          "student": "طالب",
+          "trainer": "مدرب",
+          "administrator": "مسؤول"
+        }
+      }
+    },
+    "approvals": {
+      "title": "موافقات المدربين",
+      "subtitle": "مراجعة طلبات تسجيل المدربين والموافقة عليها",
+      "pendingRequests": "الطلبات المعلقة",
+      "trainerApplication": "طلب مدرب",
+      "noPending": "لا توجد طلبات مدربين معلقة في الوقت الحالي.",
+      "approvalHistory": "سجل الموافقات",
+      "searchPlaceholder": "البحث في السجل...",
+      "columns": {
+        "name": "الاسم",
+        "specialization": "التخصص",
+        "submitted": "تاريخ التقديم",
+        "status": "الحالة"
+      },
+      "actions": {
+        "view": "عرض",
+        "approve": "موافقة",
+        "reject": "رفض"
+      },
+      "confirm": {
+        "approveTitle": "الموافقة على المدرب",
+        "rejectTitle": "رفض الطلب",
+        "bulkDeleteTitle": "حذف السجل",
+        "deleteTitle": "حذف الإدخال",
+        "approveMessage": "هل أنت متأكد أنك تريد الموافقة على {{name}} كمدرب؟ سيتمكن من إنشاء الدورات وإدارتها.",
+        "rejectMessage": "هل أنت متأكد أنك تريد رفض طلب {{name}}؟ سيتم إشعاره بالرفض.",
+        "bulkDeleteMessage": "هل أنت متأكد أنك تريد حذف {{count}} إدخالات محددة من السجل؟ لا يمكن التراجع عن ذلك.",
+        "deleteMessage": "هل أنت متأكد أنك تريد حذف هذا الإدخال من السجل؟ لا يمكن التراجع عن ذلك.",
+        "approveLabel": "موافقة",
+        "rejectLabel": "رفض",
+        "deleteLabel": "حذف"
+      },
+      "edit": {
+        "title": "تعديل طلب المدرب",
+        "fullName": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "phone": "الهاتف",
+        "specialization": "التخصص",
+        "biography": "نبذة تعريفية",
+        "saveChanges": "حفظ التغييرات"
+      },
+      "view": {
+        "title": "ملف المدرب",
+        "fullName": "الاسم الكامل",
+        "emailAddress": "عنوان البريد الإلكتروني",
+        "phoneNumber": "رقم الهاتف",
+        "submittedOn": "تاريخ التقديم",
+        "specialization": "التخصص",
+        "status": "الحالة",
+        "pendingReview": "قيد المراجعة",
+        "biography": "نبذة تعريفية",
+        "noBiography": "لم يتم تقديم نبذة تعريفية."
+      }
+    }
+  }
+}

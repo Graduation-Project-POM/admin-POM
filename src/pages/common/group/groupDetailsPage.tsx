@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
     Box,
     Typography,
@@ -146,6 +147,7 @@ interface GroupDetailsPageProps {
 }
 
 export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mockGroupDetails, onBack }) => {
+    const { t } = useTranslation();
     const [tabValue, setTabValue] = useState(0);
     const [studentSearchQuery, setStudentSearchQuery] = useState('');
     const [contestSearchQuery, setContestSearchQuery] = useState('');
@@ -180,16 +182,16 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const handleSingleDeleteProblem = (id: string) => {
         setConfirmConfig({
             open: true,
-            title: 'Remove Problem',
-            message: 'Are you sure you want to remove this problem from the contest?',
+            title: t('group.details.removeProblemTitle'),
+            message: t('group.details.removeProblemMessage'),
             onConfirm: () => setContestProblems(contestProblems.filter(x => x.id !== id))
         });
     };
     const handleBulkDeleteProblems = (ids: string[]) => {
         setConfirmConfig({
             open: true,
-            title: 'Remove Problems',
-            message: `Are you sure you want to remove ${ids.length} selected problems?`,
+            title: t('group.details.removeProblemsTitle'),
+            message: t('group.details.removeProblemsMessage', { count: ids.length }),
             onConfirm: () => setContestProblems(contestProblems.filter(x => !ids.includes(x.id)))
         });
     };
@@ -208,11 +210,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
 
     const handleCreateContest = (newContest: ContestData) => setContests([newContest, ...contests]);
     const handleUpdateContest = (updated: ContestData) => setContests(contests.map(c => c.id === updated.id ? updated : c));
-    const handleDeleteContest = (id: number) => {
+    const handleDeleteContest = (id: string) => {
         setConfirmConfig({
             open: true,
-            title: 'Delete Contest',
-            message: 'Are you sure you want to delete this contest from this group?',
+            title: t('group.details.deleteContestTitle'),
+            message: t('group.details.deleteContestMessage'),
             onConfirm: () => setContests(contests.filter(c => c.id !== id))
         });
     };
@@ -221,25 +223,25 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         return (
             <StyledContainer maxWidth="xl">
                 <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={() => setViewingProblems(false)} sx={{ mb: 3 }}>
-                    Back to Group Details
+                    {t('group.details.backToGroup')}
                 </Button>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e5e7eb', mb: 4, bgcolor: '#f8fafc' }}>
                     <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
-                        🏆 Problems in "{selectedContest.title}"
+                        {t('group.details.problemsTitle', { title: selectedContest.title })}
                     </Typography>
                 </Paper>
                 <SharedTable
                     data={contestProblems}
                     columns={[
                         { 
-                            id: 'title', 
-                            label: 'Problem Name',
+                            id: 'title',
+                            label: t('group.details.problemName'),
                             render: (row) => <Typography sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px' }}>{row.title}</Typography>
                         },
-                        { id: 'category', label: 'Category' },
-                        { 
-                            id: 'difficulty', 
-                            label: 'Difficulty',
+                        { id: 'category', label: t('group.details.category') },
+                        {
+                            id: 'difficulty',
+                            label: t('group.details.difficulty'),
                             render: (row) => (
                                 <Chip 
                                     label={row.difficulty} 
@@ -254,8 +256,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             )
                         },
                         { 
-                            id: 'stats', 
-                            label: 'Success Rate',
+                            id: 'stats',
+                            label: t('group.details.successRate'),
                             render: (row) => <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{row.successRate}%</Typography>
                         }
                     ]}
@@ -266,8 +268,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     }}
                     onSingleDelete={handleSingleDeleteProblem}
                     onDelete={handleBulkDeleteProblems}
-                    addButtonLabel="Add Problem"
-                    searchPlaceholder="Search contest problems..."
+                    addButtonLabel={t('group.details.addProblem')}
+                    searchPlaceholder={t('group.details.searchProblems')}
                 />
 
                 <CreateProblem 
@@ -300,7 +302,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     return (
         <StyledContainer maxWidth="xl">
             <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={onBack} sx={{ mb: 3 }}>
-                Back to Groups
+                {t('group.details.backToGroups')}
             </Button>
 
             <HeaderSection>
@@ -313,11 +315,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Users size={18} color="#8B1D23" />
-                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{group.studentsCount} Students</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('group.details.studentsCount', { count: group.studentsCount })}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Award size={18} color="#8B1D23" />
-                        <Typography variant="body2" sx={{ fontWeight: 700 }}>Created {new Date(group.createdDate).toLocaleDateString()}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('group.details.created', { date: new Date(group.createdDate).toLocaleDateString() })}</Typography>
                     </Box>
                 </Box>
             </HeaderSection>
@@ -333,9 +335,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                         '& .MuiTabs-indicator': { backgroundColor: '#8B1D23', height: 3, borderRadius: '999px' },
                     }}
                 >
-                    <Tab label="Contests" icon={<BookOpen size={16} />} iconPosition="start" />
-                    <Tab label="Students" icon={<Users size={16} />} iconPosition="start" />
-                    <Tab label="Trainer" icon={<Award size={16} />} iconPosition="start" />
+                    <Tab label={t('group.details.tabContests')} icon={<BookOpen size={16} />} iconPosition="start" />
+                    <Tab label={t('group.details.tabStudents')} icon={<Users size={16} />} iconPosition="start" />
+                    <Tab label={t('group.details.tabTrainer')} icon={<Award size={16} />} iconPosition="start" />
                 </Tabs>
 
                 <TabContentWrapper>
@@ -344,18 +346,18 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2 }}>
                             <SearchInput
                                 type="text"
-                                placeholder="Search group contests..."
+                                placeholder={t('group.details.searchGroupContests')}
                                 value={contestSearchQuery}
                                 onChange={(e) => setContestSearchQuery(e.target.value)}
                                 style={{ marginBottom: 0, flex: 1, maxWidth: '400px' }}
                             />
                             <Button variantType="default" startIcon={<Clock size={18} />} onClick={() => setIsCreateOpen(true)}>
-                                Create Contest
+                                {t('group.details.createContest')}
                             </Button>
                         </Box>
                         
                         {filteredContests.length === 0 ? (
-                            <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>No contests found for this group.</Typography>
+                            <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>{t('group.details.noContests')}</Typography>
                         ) : (
                             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
                                 {filteredContests.map((c) => (
@@ -376,7 +378,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     <TabPanel value={tabValue} index={1}>
                         <SearchInput
                             type="text"
-                            placeholder="Search students in this group..."
+                            placeholder={t('group.details.searchStudents')}
                             value={studentSearchQuery}
                             onChange={(e) => setStudentSearchQuery(e.target.value)}
                         />
@@ -395,14 +397,14 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                     <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
                                     <Box sx={{ mb: 2 }}>
                                         <Typography variant="body2" sx={{ color: '#64748b', mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
-                                            Joined: <span>{new Date(student.joinDate).toLocaleDateString()}</span>
+                                            {t('group.details.joined')} <span>{new Date(student.joinDate).toLocaleDateString()}</span>
                                         </Typography>
                                         <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-                                            Solved Problems: <span style={{ fontWeight: 700, color: '#1e293b' }}>{student.solvedProblems}</span>
+                                            {t('group.details.solvedProblems')} <span style={{ fontWeight: 700, color: '#1e293b' }}>{student.solvedProblems}</span>
                                         </Typography>
                                     </Box>
                                     <Button variantType="outline" fullWidth>
-                                        View Student Profile
+                                        {t('group.details.viewStudentProfile')}
                                     </Button>
                                 </StudentCardStyled>
                             ))}
@@ -418,16 +420,16 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                     <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{mockTrainer.name}</Typography>
                                     <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{mockTrainer.email}</Typography>
                                     <Button variantType="default">
-                                        Message Trainer
+                                        {t('group.details.messageTrainer')}
                                     </Button>
                                 </Box>
                             </Box>
                             <Box sx={{ mb: 4 }}>
-                                <Typography sx={{ fontWeight: 700, mb: 1, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>Bio</Typography>
+                                <Typography sx={{ fontWeight: 700, mb: 1, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.bio')}</Typography>
                                 <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.8, fontWeight: 500 }}>{mockTrainer.bio}</Typography>
                             </Box>
                             <Box>
-                                <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>Expertise</Typography>
+                                <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
                                 <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                                     {mockTrainer.expertise.map((skill) => (
                                         <Chip key={skill} label={skill} sx={{ bgcolor: '#ffffff', color: '#1e293b', fontWeight: 700, border: '1px solid #e2e8f0' }} />

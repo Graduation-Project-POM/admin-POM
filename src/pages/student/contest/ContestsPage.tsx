@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Box, Button, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { SharedTable } from '../../../components/ui/table/tables';
@@ -23,13 +24,16 @@ const getDifficultyColor = (difficulty: string) => {
   }
 };
 
-const columns = [
-  { id: 'id', label: '#' },
-  { id: 'title', label: 'Problem' },
-  { id: 'type', label: 'Type' },
+export const StudentContestsPage: React.FC = () => {
+  const { t } = useTranslation();
+
+  const columns = [
+  { id: 'id', label: t('student.contests.columns.number') },
+  { id: 'title', label: t('student.contests.columns.problem') },
+  { id: 'type', label: t('student.contests.columns.type') },
   {
     id: 'difficulty',
-    label: 'Difficulty',
+    label: t('student.contests.columns.difficulty'),
     render: (row: SContestProblem) => {
       const diffColor = getDifficultyColor(row.difficulty);
       return (
@@ -51,14 +55,14 @@ const columns = [
   },
   {
     id: 'submissions',
-    label: 'Submissions',
+    label: t('student.contests.columns.submissions'),
     render: (row: SContestProblem) => (
       <Typography sx={{ fontWeight: 600, color: '#475569' }}>{row.submissions}x</Typography>
     ),
   },
   {
     id: 'mySolution',
-    label: 'My Solution',
+    label: t('student.contests.columns.mySolution'),
     render: (row: SContestProblem) => (
       <Button
         component={Link}
@@ -73,24 +77,23 @@ const columns = [
         }}
         disabled={!row.solvedByUser}
       >
-        View My Solution
+        {t('student.contests.viewMySolution')}
       </Button>
     ),
   },
 ];
 
-export const StudentContestsPage: React.FC = () => {
   return (
     <PageContainer>
       <SharedTable
-        title="Problems in this contest"
+        title={t('student.contests.tableTitle')}
         data={contestProblems}
         columns={columns}
         onRowSelect={(selectedIds) => console.log('Selected:', selectedIds)}
       />
       <Box sx={{ mt: 2, textAlign: 'center' }}>
         <Typography variant="caption" color="text.secondary">
-          💡 Click "View My Solution" to see your submitted work.
+          {t('student.contests.hint')}
         </Typography>
       </Box>
     </PageContainer>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Avatar, LinearProgress, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Users, Calendar, ChevronRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { GroupData } from '../../../types';
 import { Button } from '../button/Button';
 
@@ -56,6 +57,7 @@ interface GroupCardProps {
 }
 
 export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
+  const { t } = useTranslation();
   const status = group.status || 'active';
 
   return (
@@ -81,7 +83,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
                 {group.title}
               </Typography>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 500, fontSize: '12px' }}>
-                Trainer: {group.trainerName}
+                {t('ui.studentGroupCard.trainerLabel', { name: group.trainerName })}
               </Typography>
             </Box>
           </Box>
@@ -99,7 +101,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
               <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '12px' }}>
-                Course Progress
+                {t('ui.studentGroupCard.courseProgress')}
               </Typography>
               <Typography variant="body2" sx={{ color: '#8B1D23', fontWeight: 800, fontSize: '12px' }}>
                 {group.progress}%
@@ -145,7 +147,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
             endIcon={<ChevronRight size={16} />}
             sx={{ py: 0.5, px: 1.5, fontSize: '12px' }}
           >
-            View Details
+            {t('ui.studentGroupCard.viewDetails')}
           </Button>
         </Box>
       </Box>

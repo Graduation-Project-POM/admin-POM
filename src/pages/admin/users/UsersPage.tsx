@@ -5,6 +5,7 @@ import { styled } from "@mui/material/styles";
 import Create from "./Create";
 import Edit from "./Edit";
 import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
+import { useTranslation } from "react-i18next";
 
 type User = {
   id: string;
@@ -41,6 +42,7 @@ const StatusChip = styled(Chip)<{ status: string }>(({ status }) => ({
 }));
 
 export const AdminUsersPage = () => {
+  const { t } = useTranslation();
   const [users, setUsers] = useState<User[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -131,8 +133,8 @@ export const AdminUsersPage = () => {
   const handleDelete = (selectedIds: string[]) => {
     setConfirmConfig({
       open: true,
-      title: "Delete Users",
-      message: `Are you sure you want to delete ${selectedIds.length} selected user(s)? This action cannot be undone.`,
+      title: t("admin.users.delete.bulkTitle"),
+      message: t("admin.users.delete.bulkMessage", { count: selectedIds.length }),
       onConfirm: () => {
         setUsers(users.filter(u => !selectedIds.includes(u.id)));
       }
@@ -142,8 +144,8 @@ export const AdminUsersPage = () => {
   const handleSingleDelete = (id: string) => {
     setConfirmConfig({
       open: true,
-      title: "Delete User",
-      message: "Are you sure you want to delete this user? This action cannot be undone.",
+      title: t("admin.users.delete.singleTitle"),
+      message: t("admin.users.delete.singleMessage"),
       onConfirm: () => {
         setUsers(users.filter(u => u.id !== id));
       }
@@ -168,7 +170,7 @@ export const AdminUsersPage = () => {
   const columns = [
     {
       id: "name",
-      label: "Name",
+      label: t("admin.users.columns.name"),
       render: (row: User) => (
         <UserCell>
           <Avatar sx={{ width: 34, height: 34, bgcolor: "#7A1E1E" }}>
@@ -178,17 +180,17 @@ export const AdminUsersPage = () => {
         </UserCell>
       ),
     },
-    { id: "email", label: "Email" },
-    { id: "role", label: "Role" },
+    { id: "email", label: t("admin.users.columns.email") },
+    { id: "role", label: t("admin.users.columns.role") },
     {
       id: "status",
-      label: "Status",
+      label: t("admin.users.columns.status"),
       render: (row: User) => (
         <StatusChip label={row.status} status={row.status} />
       ),
     },
-    { id: "group", label: "Group" },
-    { id: "joinedDate", label: "Joined" },
+    { id: "group", label: t("admin.users.columns.group") },
+    { id: "joinedDate", label: t("admin.users.columns.joined") },
   ];
 
   return (
@@ -203,14 +205,14 @@ export const AdminUsersPage = () => {
       >
         <Box>
           <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-            Users
+            {t("admin.users.title")}
           </Typography>
 
           <Typography
             variant="body2"
             sx={{ color: "#64748b", fontWeight: 500 }}
           >
-            Manage users in the system
+            {t("admin.users.subtitle")}
           </Typography>
         </Box>
 
@@ -223,8 +225,8 @@ export const AdminUsersPage = () => {
         onDelete={handleDelete}
         onEdit={handleEditClick}
         onSingleDelete={handleSingleDelete}
-        searchPlaceholder="Search users..."
-        addButtonLabel="Create User"
+        searchPlaceholder={t("admin.users.searchPlaceholder")}
+        addButtonLabel={t("admin.users.createButton")}
       />
 
       <Create open={isModalOpen} onClose={() => setIsModalOpen(false)} />

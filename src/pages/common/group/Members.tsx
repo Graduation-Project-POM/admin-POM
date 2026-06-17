@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -37,6 +38,7 @@ interface MembersProps {
 }
 
 const Members = ({ open, onClose, group }: MembersProps) => {
+  const { t } = useTranslation();
   const [members, setMembers] = useState<Member[]>(mockMembers);
   const [newMemberId, setNewMemberId] = useState('');
 
@@ -57,7 +59,7 @@ const Members = ({ open, onClose, group }: MembersProps) => {
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title={`Members - ${group.title}`}
+      title={t('group.members.title', { title: group.title })}
       maxWidth="sm"
     >
       <Box sx={{ mt: 1 }}>
@@ -77,7 +79,7 @@ const Members = ({ open, onClose, group }: MembersProps) => {
                         onClick={() => handleRemove(member.id)}
                         sx={{ fontSize: '11px', px: 1, py: 0.5, height: '28px' }}
                     >
-                        Remove
+                        {t('group.members.remove')}
                     </Button>
                   </Stack>
                 }
@@ -99,7 +101,7 @@ const Members = ({ open, onClose, group }: MembersProps) => {
 
         <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
           <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: '#1e293b' }}>
-            Add New Member
+            {t('group.members.addNewMember')}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
             <Box sx={{ flex: 1 }}>
@@ -109,7 +111,7 @@ const Members = ({ open, onClose, group }: MembersProps) => {
                     name="newMember"
                     value={newMemberId}
                     onChange={(e) => setNewMemberId(e.target.value)}
-                    placeholder="Select a user..."
+                    placeholder={t('group.members.selectUser')}
                 >
                     <MenuItem value="101">Zaid Hassan (Student)</MenuItem>
                     <MenuItem value="102">Laila Mahmoud (Student)</MenuItem>
@@ -122,14 +124,14 @@ const Members = ({ open, onClose, group }: MembersProps) => {
                 startIcon={<UserPlus size={16} />}
                 sx={{ mb: 0.5, height: '42px' }}
             >
-                Add
+                {t('buttons.add')}
             </Button>
           </Box>
         </Box>
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
           <Button variantType="outline" onClick={onClose}>
-            Close
+            {t('buttons.close')}
           </Button>
         </Box>
       </Box>

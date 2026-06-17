@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Stack, MenuItem, Box } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
@@ -13,6 +14,7 @@ interface EditContestProps {
 }
 
 const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
     status: "Upcoming",
@@ -55,13 +57,13 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Edit Contest"
+      title={t("contest.edit.title")}
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
-            label="Contest Title"
+            label={t("contest.fields.contestTitle")}
             name="title"
             value={formData.title}
             onChange={handleChange}
@@ -71,40 +73,40 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             <FormField
               select
-              label="Status"
+              label={t("contest.fields.status")}
               name="status"
               value={formData.status}
               onChange={handleChange}
               required
             >
-              <MenuItem value="Upcoming">Upcoming</MenuItem>
-              <MenuItem value="Ongoing">Ongoing</MenuItem>
-              <MenuItem value="Ended">Ended</MenuItem>
+              <MenuItem value="Upcoming">{t("contest.status.upcoming")}</MenuItem>
+              <MenuItem value="Ongoing">{t("contest.status.ongoing")}</MenuItem>
+              <MenuItem value="Ended">{t("contest.status.ended")}</MenuItem>
             </FormField>
             <FormField
               select
-              label="Difficulty"
+              label={t("contest.fields.difficulty")}
               name="difficulty"
               value={formData.difficulty}
               onChange={handleChange}
               required
             >
-              <MenuItem value="Easy">Easy</MenuItem>
-              <MenuItem value="Medium">Medium</MenuItem>
-              <MenuItem value="Hard">Hard</MenuItem>
+              <MenuItem value="Easy">{t("contest.difficulty.easy")}</MenuItem>
+              <MenuItem value="Medium">{t("contest.difficulty.medium")}</MenuItem>
+              <MenuItem value="Hard">{t("contest.difficulty.hard")}</MenuItem>
             </FormField>
           </Box>
 
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             <FormField
-              label="Start Date & Time"
+              label={t("contest.fields.startDateTime")}
               name="startDate"
               value={formData.startDate}
               onChange={handleChange}
               required
             />
             <FormField
-              label="End Date & Time"
+              label={t("contest.fields.endDateTime")}
               name="endDate"
               value={formData.endDate}
               onChange={handleChange}
@@ -114,7 +116,7 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
         </Stack>
 
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-          Save Changes
+          {t("contest.edit.submitButton")}
         </Button>
       </form>
     </ModalWrapper>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Typography, InputAdornment, Box } from '@mui/material';
 import { Search, BookOpen, Users, Trophy, Target } from 'lucide-react';
 import { GroupCard } from '../../../components/ui/card/studentGroupCard';
@@ -64,6 +65,7 @@ const mockGroups: GroupData[] = [
 ];
 
 export const StudentGroupsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [groups] = useState<GroupData[]>(mockGroups);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewingGroupDetails, setViewingGroupDetails] = useState(false);
@@ -105,12 +107,12 @@ export const StudentGroupsPage: React.FC = () => {
     <StyledContainer>
       <TitleWrapper>
         <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
-          My Groups
+          {t('student.groups.title')}
         </Typography>
       </TitleWrapper>
       <SubtitleWrapper>
         <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-          View your enrolled training groups, track progress, and participate in contests
+          {t('student.groups.subtitle')}
         </Typography>
       </SubtitleWrapper>
 
@@ -125,7 +127,7 @@ export const StudentGroupsPage: React.FC = () => {
                 {groups.length}
               </Typography>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
-                Total Groups
+                {t('student.groups.totalGroups')}
               </Typography>
             </Box>
           </Box>
@@ -140,7 +142,7 @@ export const StudentGroupsPage: React.FC = () => {
                 {activeGroups}
               </Typography>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
-                Active
+                {t('student.groups.active')}
               </Typography>
             </Box>
           </Box>
@@ -155,7 +157,7 @@ export const StudentGroupsPage: React.FC = () => {
                 {completedGroups}
               </Typography>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
-                Completed
+                {t('student.groups.completed')}
               </Typography>
             </Box>
           </Box>
@@ -170,7 +172,7 @@ export const StudentGroupsPage: React.FC = () => {
                 {groups.length - completedGroups}
               </Typography>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
-                In Progress
+                {t('student.groups.inProgress')}
               </Typography>
             </Box>
           </Box>
@@ -180,7 +182,7 @@ export const StudentGroupsPage: React.FC = () => {
       <SearchWrapper>
         <StyledSearchField
           size="small"
-          placeholder="Search groups by title, description, or trainer..."
+          placeholder={t('student.groups.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ width: '100%', maxWidth: 450 }}
@@ -200,10 +202,10 @@ export const StudentGroupsPage: React.FC = () => {
         <EmptyStateWrapper>
           <BookOpen size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
           <Typography variant="body1" sx={{ color: '#94a3b8', fontWeight: 600, mb: 1 }}>
-            No groups found
+            {t('student.groups.noGroupsFound')}
           </Typography>
           <Typography variant="body2" sx={{ color: '#cbd5e1', fontWeight: 500 }}>
-            {searchQuery ? 'Try adjusting your search terms' : 'You are not enrolled in any groups yet'}
+            {searchQuery ? t('student.groups.adjustSearch') : t('student.groups.notEnrolled')}
           </Typography>
         </EmptyStateWrapper>
       ) : (

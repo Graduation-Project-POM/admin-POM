@@ -3,6 +3,7 @@ import { Box } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
+import { useTranslation } from "react-i18next";
 
 interface UserFormData {
   firstName: string;
@@ -21,6 +22,7 @@ interface CreateUserModalProps {
 }
 
 const Create = ({ open, onClose }: CreateUserModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<UserFormData>({
     firstName: "",
     lastName: "",
@@ -66,7 +68,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Create New User"
+      title={t("admin.users.form.createTitle")}
       maxWidth="md"
     >
       <form onSubmit={handleSubmit}>
@@ -79,7 +81,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
         >
           <FormField
             type="text"
-            label="First Name"
+            label={t("admin.users.form.firstName")}
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
@@ -88,7 +90,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
 
           <FormField
             type="text"
-            label="Last Name"
+            label={t("admin.users.form.lastName")}
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
@@ -97,7 +99,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
 
           <FormField
             type="email"
-            label="Email Address"
+            label={t("admin.users.form.emailAddress")}
             name="email"
             value={formData.email}
             onChange={handleChange}
@@ -106,7 +108,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
 
           <FormField
             type="text"
-            label="Phone Number"
+            label={t("form.labels.phone")}
             name="phone"
             value={formData.phone}
             onChange={handleChange}
@@ -114,21 +116,21 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
 
           <FormField
             type="select"
-            label="User Role"
+            label={t("admin.users.form.userRole")}
             name="role"
             value={formData.role}
             onChange={handleRoleChange}
             required
             options={[
-              { label: "Student", value: "STUDENT" },
-              { label: "Trainer", value: "TRAINER" },
-              { label: "Administrator", value: "ADMIN" },
+              { label: t("admin.users.form.roles.student"), value: "STUDENT" },
+              { label: t("admin.users.form.roles.trainer"), value: "TRAINER" },
+              { label: t("admin.users.form.roles.administrator"), value: "ADMIN" },
             ]}
           />
 
           <FormField
             type="switch"
-            label="Active Account"
+            label={t("admin.users.form.activeAccount")}
             name="isActive"
             value={formData.isActive}
             onChange={handleSwitchChange}
@@ -136,7 +138,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
 
           <FormField
             type="password"
-            label="Password"
+            label={t("form.labels.password")}
             name="password"
             value={formData.password}
             onChange={handleChange}
@@ -145,7 +147,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
 
           <FormField
             type="password"
-            label="Confirm Password"
+            label={t("form.labels.confirmPassword")}
             name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
@@ -153,7 +155,7 @@ const Create = ({ open, onClose }: CreateUserModalProps) => {
           />
         </Box>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-          Create User
+          {t("admin.users.createButton")}
         </Button>
       </form>
     </ModalWrapper>

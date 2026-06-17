@@ -1,0 +1,54 @@
+{
+  "ui": {
+    "table": {
+      "createButton": "إنشاء",
+      "searchPlaceholder": "بحث...",
+      "actions": "الإجراءات",
+      "noDataFound": "لا توجد بيانات.",
+      "showingItems": "عرض {{shown}} من {{total}} عنصر"
+    },
+    "courseCard": {
+      "students": "الطلاب",
+      "progress": "التقدم",
+      "averageCompletion": "متوسط الإنجاز",
+      "viewDetails": "عرض التفاصيل ←"
+    },
+    "contestCard": {
+      "noData": "لا تتوفر بيانات للمسابقة",
+      "untitled": "مسابقة بدون عنوان",
+      "participants": "{{count}} مشارك",
+      "problemsStat": "{{count}} مسألة",
+      "start": "البداية: {{date}}",
+      "end": "النهاية: {{date}}",
+      "problems": "المسائل"
+    },
+    "groupCard": {
+      "students": "{{count}} طالب",
+      "trainer": "{{count}} مدرب",
+      "trainerLabel": "المدرب: {{name}}",
+      "created": "تاريخ الإنشاء: {{date}}",
+      "members": "الأعضاء"
+    },
+    "studentContestCard": {
+      "problems": "{{count}} مسألة",
+      "participants": "{{count}} مشارك",
+      "solveProblems": "حل المسائل",
+      "viewProblemsGrades": "عرض المسائل والدرجات",
+      "comingSoon": "قريباً"
+    },
+    "studentGroupCard": {
+      "trainerLabel": "المدرب: {{name}}",
+      "courseProgress": "تقدم الدورة",
+      "viewDetails": "عرض التفاصيل"
+    },
+    "page": {
+      "year": "السنة: 2024",
+      "placeholder": "سيتم تنفيذ محتوى {{title}} هنا."
+    },
+    "pages": {
+      "announcements": "الإعلانات",
+      "systemReports": "تقارير النظام",
+      "accountSettings": "إعدادات الحساب"
+    }
+  }
+}

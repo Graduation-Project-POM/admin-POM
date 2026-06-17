@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box, Chip, Stack, Typography, Paper, Grid,
 } from '@mui/material';
@@ -190,6 +191,7 @@ const allCountries = getUniqueValues('country');
 const allTopics = getUniqueValues('topic');
 
 export const ProblemBank: React.FC = () => {
+  const { t } = useTranslation();
   const [selectedYear, setSelectedYear] = useState<string>('All');
   const [selectedCountry, setSelectedCountry] = useState<string>('All');
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
@@ -213,7 +215,7 @@ export const ProblemBank: React.FC = () => {
   const columns = [
     {
       id: 'id',
-      label: 'ID',
+      label: t('student.problems.columns.id'),
       render: (row: Problem) => (
         <Typography sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '13px', fontFamily: 'monospace' }}>
           {row.id}
@@ -222,7 +224,7 @@ export const ProblemBank: React.FC = () => {
     },
     {
       id: 'name',
-      label: 'Problem Name',
+      label: t('student.problems.columns.problemName'),
       render: (row: Problem) => (
         <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>
           {row.name}
@@ -231,7 +233,7 @@ export const ProblemBank: React.FC = () => {
     },
     {
       id: 'year',
-      label: 'Year',
+      label: t('student.problems.columns.year'),
       render: (row: Problem) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Calendar size={13} color="#8B1D23" />
@@ -241,7 +243,7 @@ export const ProblemBank: React.FC = () => {
     },
     {
       id: 'country',
-      label: 'Country',
+      label: t('student.problems.columns.country'),
       render: (row: Problem) => (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           <Globe size={13} color="#8B1D23" />
@@ -251,7 +253,7 @@ export const ProblemBank: React.FC = () => {
     },
     {
       id: 'difficulty',
-      label: 'Difficulty',
+      label: t('student.problems.columns.difficulty'),
       render: (row: Problem) => (
         <DifficultyBadge difficulty={row.difficulty}>
           {row.difficulty === 'Easy' && <Zap size={12} />}
@@ -263,7 +265,7 @@ export const ProblemBank: React.FC = () => {
     },
     {
       id: 'topic',
-      label: 'Topic',
+      label: t('student.problems.columns.topic'),
       render: (row: Problem) => (
         <Chip
           label={row.topic}
@@ -280,14 +282,14 @@ export const ProblemBank: React.FC = () => {
     },
     {
       id: 'action',
-      label: 'Action',
+      label: t('student.problems.columns.action'),
       render: (row: Problem) => (
         <Button
           variantType={row.userSubmitted ? 'outline' : 'default'}
           size="small"
           sx={{ py: 0.5, px: 2, fontSize: '12px', '&:hover': {  color: 'white',backgroundColor: '#8B1D23'} }}
         >
-          {row.userSubmitted ? 'Review Solution' : 'Solve'}
+          {row.userSubmitted ? t('student.problems.reviewSolution') : t('student.problems.solve')}
         </Button>
       ),
     },
@@ -316,10 +318,10 @@ export const ProblemBank: React.FC = () => {
               </Box>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
-                  Problem Bank
+                  {t('student.problems.title')}
                 </Typography>
                 <Typography sx={{ opacity: 0.9, fontWeight: 500, fontSize: '14px' }}>
-                  Explore and solve challenges to improve your skills
+                  {t('student.problems.subtitle')}
                 </Typography>
               </Box>
             </Box>
@@ -329,7 +331,7 @@ export const ProblemBank: React.FC = () => {
                   {allProblemsData.length}
                 </Typography>
                 <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
-                  Total Problems
+                  {t('student.problems.totalProblems')}
                 </Typography>
               </Box>
             </Box>
@@ -345,7 +347,7 @@ export const ProblemBank: React.FC = () => {
               <Filter size={18} color="#8B1D23" />
             </Box>
             <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px' }}>
-              Filters
+              {t('student.problems.filters')}
             </Typography>
           </Box>
           {hasActiveFilters && (
@@ -356,7 +358,7 @@ export const ProblemBank: React.FC = () => {
               onClick={resetFilters}
               sx={{ color: '#8B1D23', '&:hover': { color: '#6B141A' } }}
             >
-              Reset All
+              {t('student.problems.resetAll')}
             </Button>
           )}
         </Box>
@@ -366,11 +368,11 @@ export const ProblemBank: React.FC = () => {
             <FilterGroup>
               <FilterLabel>
                 <Calendar size={14} color="#8B1D23" />
-                Year
+                {t('student.problems.year')}
               </FilterLabel>
               <FilterChipsStack>
                 <StyledChip
-                  label="All"
+                  label={t('common.all')}
                   onClick={() => setSelectedYear('All')}
                   active={selectedYear === 'All'}
                   size="small"
@@ -391,11 +393,11 @@ export const ProblemBank: React.FC = () => {
             <FilterGroup>
               <FilterLabel>
                 <Globe size={14} color="#8B1D23" />
-                Country
+                {t('student.problems.country')}
               </FilterLabel>
               <FilterChipsStack>
                 <StyledChip
-                  label="All"
+                  label={t('common.all')}
                   onClick={() => setSelectedCountry('All')}
                   active={selectedCountry === 'All'}
                   size="small"
@@ -416,11 +418,11 @@ export const ProblemBank: React.FC = () => {
             <FilterGroup>
               <FilterLabel>
                 <Tag size={14} color="#8B1D23" />
-                Topic
+                {t('student.problems.topic')}
               </FilterLabel>
               <FilterChipsStack>
                 <StyledChip
-                  label="All"
+                  label={t('common.all')}
                   onClick={() => setSelectedTopic('All')}
                   active={selectedTopic === 'All'}
                   size="small"
@@ -445,12 +447,12 @@ export const ProblemBank: React.FC = () => {
         <ActiveFiltersBar>
           <Filter size={16} color="#8B1D23" />
           <Typography sx={{ fontWeight: 600, color: '#8B1D23', fontSize: '13px' }}>
-            Active filters:
+            {t('student.problems.activeFilters')}
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, flex: 1 }}>
             {selectedYear !== 'All' && (
               <Chip
-                label={`Year: ${selectedYear}`}
+                label={t('student.problems.yearFilter', { value: selectedYear })}
                 size="small"
                 onDelete={() => setSelectedYear('All')}
                 sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
@@ -458,7 +460,7 @@ export const ProblemBank: React.FC = () => {
             )}
             {selectedCountry !== 'All' && (
               <Chip
-                label={`Country: ${selectedCountry}`}
+                label={t('student.problems.countryFilter', { value: selectedCountry })}
                 size="small"
                 onDelete={() => setSelectedCountry('All')}
                 sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
@@ -466,7 +468,7 @@ export const ProblemBank: React.FC = () => {
             )}
             {selectedTopic !== 'All' && (
               <Chip
-                label={`Topic: ${selectedTopic}`}
+                label={t('student.problems.topicFilter', { value: selectedTopic })}
                 size="small"
                 onDelete={() => setSelectedTopic('All')}
                 sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
@@ -474,7 +476,7 @@ export const ProblemBank: React.FC = () => {
             )}
           </Box>
           <Typography variant="body2" sx={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>
-            {filteredData.length} results
+            {t('student.problems.results', { count: filteredData.length })}
           </Typography>
         </ActiveFiltersBar>
       )}
@@ -484,7 +486,7 @@ export const ProblemBank: React.FC = () => {
         <SharedTable
           data={filteredData}
           columns={columns}
-          searchPlaceholder="Search by problem name or ID..."
+          searchPlaceholder={t('student.problems.searchPlaceholder')}
         />
       </TableSection>
     </PageContainer>

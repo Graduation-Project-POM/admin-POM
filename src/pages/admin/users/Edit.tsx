@@ -6,6 +6,7 @@ import {
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
+import { useTranslation } from "react-i18next";
 
 interface UserFormData {
   id: string;
@@ -24,6 +25,7 @@ interface EditUserModalProps {
 }
 
 const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<UserFormData>(
     userData || {
       id: "",
@@ -65,7 +67,7 @@ const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
   };
 
   return (
-    <ModalWrapper open={open} onClose={onClose} title="Edit User" maxWidth="md">
+    <ModalWrapper open={open} onClose={onClose} title={t("admin.users.form.editTitle")} maxWidth="md">
       <form onSubmit={handleSubmit}>
         <Box
           sx={{
@@ -75,16 +77,16 @@ const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
           }}
         >
           <FormField
-            label="First Name"
+            label={t("admin.users.form.firstName")}
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
             required
-            placeholder="Enter first name"
+            placeholder={t("admin.users.form.firstNamePlaceholder")}
           />
 
           <FormField
-            label="Last Name"
+            label={t("admin.users.form.lastName")}
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
@@ -92,7 +94,7 @@ const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
           />
 
           <FormField
-            label="Email Address"
+            label={t("admin.users.form.emailAddress")}
             name="email"
             type="email"
             value={formData.email}
@@ -101,28 +103,28 @@ const Edit = ({ open, onClose, userData }: EditUserModalProps) => {
           />
 
           <FormField
-            label="Phone Number"
+            label={t("form.labels.phone")}
             name="phone"
             value={formData.phone}
             onChange={handleChange}
           />
 
           <FormField
-            label="User Role"
+            label={t("admin.users.form.userRole")}
             name="role"
             value={formData.role}
             onChange={handleRoleChange}
             required
             select
           >
-            <MenuItem value="STUDENT">Student</MenuItem>
-            <MenuItem value="TRAINER">Trainer</MenuItem>
-            <MenuItem value="ADMIN">Administrator</MenuItem>
+            <MenuItem value="STUDENT">{t("admin.users.form.roles.student")}</MenuItem>
+            <MenuItem value="TRAINER">{t("admin.users.form.roles.trainer")}</MenuItem>
+            <MenuItem value="ADMIN">{t("admin.users.form.roles.administrator")}</MenuItem>
           </FormField>
         </Box>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
           {" "}
-          Edit{" "}
+          {t("buttons.edit")}{" "}
         </Button>
       </form>
     </ModalWrapper>

@@ -2,6 +2,8 @@ import type { UserRole } from "../types";
 
 export interface NavItem {
   title: string;
+  /** i18n key (e.g. "navbar.dashboard") resolved with t() in the Sidebar. */
+  titleKey?: string;
   path: string;
   icon: string;
   roles?: UserRole[];
@@ -18,18 +20,21 @@ export const navigationConfig: NavSection[] = [
       // ================= ADMIN =================
       {
         title: "Dashboard",
+        titleKey: "navbar.dashboard",
         path: "/admin/dashboard",
         icon: "Dashboard",
         roles: ["ADMIN"],
       },
       {
         title: "Users",
+        titleKey: "navbar.users",
         path: "/admin/users",
         icon: "Users",
         roles: ["ADMIN"],
       },
       {
         title: "Approvals",
+        titleKey: "navbar.approvals",
         path: "/admin/approvals",
         icon: "CheckCircle",
         roles: ["ADMIN"],
@@ -42,18 +47,21 @@ export const navigationConfig: NavSection[] = [
       // },
       {
         title: "Groups",
+        titleKey: "navbar.groups",
         path: "/admin/groups",
         icon: "Groups",
         roles: ["ADMIN"],
       },
       {
         title: "Contests",
+        titleKey: "navbar.contests",
         path: "/admin/contests",
         icon: "Trophy",
         roles: ["ADMIN"],
       },
       {
         title: "Problem Bank",
+        titleKey: "navbar.problems",
         path: "/admin/problems",
         icon: "BookOpen",
         roles: ["ADMIN"],
@@ -66,6 +74,7 @@ export const navigationConfig: NavSection[] = [
       // },
       {
         title: "Profile",
+        titleKey: "navbar.profile",
         path: "/admin/profile",
         icon: "UserCircle",
         roles: ["ADMIN"],
@@ -74,30 +83,35 @@ export const navigationConfig: NavSection[] = [
       // ================= TRAINER =================
       {
         title: "Dashboard",
+        titleKey: "navbar.dashboard",
         path: "/trainer/dashboard",
         icon: "Dashboard",
         roles: ["TRAINER"],
       },
       {
         title: "My Groups",
+        titleKey: "navbar.myGroups",
         path: "/trainer/groups",
         icon: "Groups",
         roles: ["TRAINER"],
       },
       {
         title: "Contests",
+        titleKey: "navbar.contests",
         path: "/trainer/contests",
         icon: "Trophy",
         roles: ["TRAINER"],
       },
       {
         title: "Problem Bank",
+        titleKey: "navbar.problems",
         path: "/trainer/problems",
         icon: "BookOpen",
         roles: ["TRAINER"],
       },
       {
         title: "Profile",
+        titleKey: "navbar.profile",
         path: "/trainer/profile",
         icon: "UserCircle",
         roles: ["TRAINER"],
@@ -106,34 +120,39 @@ export const navigationConfig: NavSection[] = [
       // ================= STUDENT =================
       {
         title: "Dashboard",
+        titleKey: "navbar.dashboard",
         path: "/student/dashboard",
         icon: "Dashboard",
         roles: ["STUDENT"],
       },
       {
         title: "My Groups",
+        titleKey: "navbar.myGroups",
         path: "/student/groups",
         icon: "Groups",
         roles: ["STUDENT"],
       },
       {
         title: "Problems",
+        titleKey: "navbar.problemsShort",
         path: "/student/problems",
         icon: "BookOpen",
         roles: ["STUDENT"],
         items: [
-          { title: "All Problems", path: "/student/problems", icon: "FileText" },
-          { title: "My Submissions", path: "/student/problems/submissions", icon: "CheckCircle" },
+          { title: "All Problems", titleKey: "navbar.allProblems", path: "/student/problems", icon: "FileText" },
+          { title: "My Submissions", titleKey: "navbar.mySubmissions", path: "/student/problems/submissions", icon: "CheckCircle" },
         ],
       },
       {
         title: "Profile",
+        titleKey: "navbar.profile",
         path: "/student/profile",
         icon: "UserCircle",
         roles: ["STUDENT"],
       },
       {
         title: "Logout",
+        titleKey: "navbar.logout",
         path: "/logout",
         icon: "LogOut",
         roles: ["ADMIN", "TRAINER", "STUDENT"],

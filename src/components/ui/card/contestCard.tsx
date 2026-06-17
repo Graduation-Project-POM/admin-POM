@@ -10,6 +10,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { Calendar, Users, Trophy, Clock, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { ContestData } from '../../../types';
 
 const StyledCard = styled(Card)({
@@ -66,19 +67,20 @@ export const ContestCard: React.FC<ContestCardProps> = ({
   onProblems,
   onDelete,
 }) => {
+  const { t } = useTranslation();
   if (!contest) {
     return (
       <StyledCard>
         <CardHeader>
           <Typography variant="body2" sx={{ color: '#64748b', p: 2 }}>
-            No contest data available
+            {t('ui.contestCard.noData')}
           </Typography>
         </CardHeader>
       </StyledCard>
     );
   }
 
-  const title = contest.title ?? 'Untitled Contest';
+  const title = contest.title ?? t('ui.contestCard.untitled');
   const participants = contest.participants ?? 0;
   const problemsCount = contest.problemsCount ?? 0;
   const startDate = contest.startDate ?? '';
@@ -111,13 +113,13 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           <StatBox>
             <Users size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {participants} Participants
+              {t('ui.contestCard.participants', { count: participants })}
             </Typography>
           </StatBox>
           <StatBox>
             <Trophy size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
-              {problemsCount} Problems
+              {t('ui.contestCard.problemsStat', { count: problemsCount })}
             </Typography>
           </StatBox>
         </Box>
@@ -128,13 +130,13 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Calendar size={14} color="#94a3b8" />
             <Typography variant="caption" sx={{ color: '#64748b' }}>
-              Start: {startDate}
+              {t('ui.contestCard.start', { date: startDate })}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Clock size={14} color="#94a3b8" />
             <Typography variant="caption" sx={{ color: '#64748b' }}>
-              End: {endDate}
+              {t('ui.contestCard.end', { date: endDate })}
             </Typography>
           </Box>
         </Box>
@@ -146,7 +148,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
             onClick={() => onView?.(Number(contest.id))}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
-            View
+            {t('buttons.view')}
           </Button>
           <Button
             variant="outlined"
@@ -154,7 +156,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
             onClick={() => onEdit?.(Number(contest.id))}
             sx={{ borderColor: '#cbd5e1', color: '#475569' }}
           >
-            Edit
+            {t('buttons.edit')}
           </Button>
           <Button
             variant="contained"
@@ -162,7 +164,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
             onClick={() => onProblems?.(Number(contest.id))}
             sx={{ bgcolor: '#8B1D23', '&:hover': { bgcolor: '#6d1620' }, boxShadow: 'none' }}
           >
-            Problems
+            {t('ui.contestCard.problems')}
           </Button>
         </ActionButtons>
       </CardContent>

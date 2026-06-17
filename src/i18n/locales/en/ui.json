@@ -1,0 +1,54 @@
+{
+  "ui": {
+    "table": {
+      "createButton": "Create",
+      "searchPlaceholder": "Search...",
+      "actions": "Actions",
+      "noDataFound": "No data found.",
+      "showingItems": "Showing {{shown}} of {{total}} items"
+    },
+    "courseCard": {
+      "students": "Students",
+      "progress": "Progress",
+      "averageCompletion": "Average completion",
+      "viewDetails": "View Details →"
+    },
+    "contestCard": {
+      "noData": "No contest data available",
+      "untitled": "Untitled Contest",
+      "participants": "{{count}} Participants",
+      "problemsStat": "{{count}} Problems",
+      "start": "Start: {{date}}",
+      "end": "End: {{date}}",
+      "problems": "Problems"
+    },
+    "groupCard": {
+      "students": "{{count}} Students",
+      "trainer": "{{count}} Trainer",
+      "trainerLabel": "Trainer: {{name}}",
+      "created": "Created: {{date}}",
+      "members": "Members"
+    },
+    "studentContestCard": {
+      "problems": "{{count}} Problems",
+      "participants": "{{count}} Participants",
+      "solveProblems": "Solve Problems",
+      "viewProblemsGrades": "View Problems & Grades",
+      "comingSoon": "Coming Soon"
+    },
+    "studentGroupCard": {
+      "trainerLabel": "Trainer: {{name}}",
+      "courseProgress": "Course Progress",
+      "viewDetails": "View Details"
+    },
+    "page": {
+      "year": "Year: 2024",
+      "placeholder": "Content for {{title}} will be implemented here."
+    },
+    "pages": {
+      "announcements": "Announcements",
+      "systemReports": "System Reports",
+      "accountSettings": "Account Settings"
+    }
+  }
+}

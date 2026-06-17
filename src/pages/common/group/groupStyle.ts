@@ -1,7 +1,7 @@
 import { styled } from '@mui/material/styles';
 import { Box, TextField } from '@mui/material';
 
-export const StyledContainer = styled(Box)(({ theme }) => ({
+export const StyledContainer = styled(Box)(() => ({
   padding: '0',
 }));
 

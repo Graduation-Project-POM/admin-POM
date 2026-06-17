@@ -13,6 +13,7 @@ import {
   Stack,
 } from "@mui/material";
 import { Edit, Save, BookOpen, Users, TrendingUp } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 
 interface ProfileData {
@@ -33,6 +34,7 @@ interface StatsData {
 
 
 const ProfilePage: React.FC = () => {
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<ProfileData>({
     fullName: "Admin User",
     displayName: "Admin User",
@@ -82,7 +84,7 @@ const ProfilePage: React.FC = () => {
             mb: 1,
           }}
         >
-          My Profile
+          {t('profile.title')}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
           <Typography
@@ -94,7 +96,7 @@ const ProfilePage: React.FC = () => {
               fontWeight: 500,
             }}
           >
-            Manage your personal information and account settings
+            {t('profile.subtitle')}
           </Typography>
         </Box>
       </Box>
@@ -155,7 +157,7 @@ const ProfilePage: React.FC = () => {
                       color: "#1e293b",
                     }}
                   >
-                    Edit Profile
+                    {t('profile.editProfile')}
                   </Button>
                 ) : (
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -171,7 +173,7 @@ const ProfilePage: React.FC = () => {
                         "&:hover": { bgcolor: "#6d1620" },
                       }}
                     >
-                      Save
+                      {t('buttons.save')}
                     </Button>
                     <Button
                       variant="outlined"
@@ -184,7 +186,7 @@ const ProfilePage: React.FC = () => {
                         color: "#64748b",
                       }}
                     >
-                      Cancel
+                      {t('buttons.cancel')}
                     </Button>
                   </Box>
                 )}
@@ -201,14 +203,14 @@ const ProfilePage: React.FC = () => {
                   fontSize: "1.1rem",
                 }}
               >
-                Personal Information
+                {t('profile.personalInformation')}
               </Typography>
 
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label="Full Name"
+                    label={t('profile.fields.fullName')}
                     value={profile.fullName}
                     onChange={handleChange("fullName")}
                     disabled={!isEditing}
@@ -225,7 +227,7 @@ const ProfilePage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label="Display Name"
+                    label={t('profile.fields.displayName')}
                     value={profile.displayName}
                     onChange={handleChange("displayName")}
                     disabled={!isEditing}
@@ -239,7 +241,7 @@ const ProfilePage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label="Email Address"
+                    label={t('profile.fields.emailAddress')}
                     type="email"
                     value={profile.email}
                     onChange={handleChange("email")}
@@ -254,7 +256,7 @@ const ProfilePage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label="Phone Number"
+                    label={t('form.labels.phone')}
                     value={profile.phone}
                     onChange={handleChange("phone")}
                     disabled={!isEditing}
@@ -268,7 +270,7 @@ const ProfilePage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label="Department"
+                    label={t('profile.fields.department')}
                     value={profile.department}
                     onChange={handleChange("department")}
                     disabled={!isEditing}
@@ -282,7 +284,7 @@ const ProfilePage: React.FC = () => {
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label="Position"
+                    label={t('profile.fields.position')}
                     value={profile.position}
                     onChange={handleChange("position")}
                     disabled={!isEditing}
@@ -300,7 +302,7 @@ const ProfilePage: React.FC = () => {
                   variant="subtitle2"
                   sx={{ fontWeight: 600, color: "#0f172a", mb: 1 }}
                 >
-                  Bio
+                  {t('profile.fields.bio')}
                 </Typography>
                 <TextField
                   fullWidth
@@ -329,7 +331,7 @@ const ProfilePage: React.FC = () => {
                       "&:hover": { bgcolor: "#6d1620" },
                     }}
                   >
-                    Edit Profile
+                    {t('profile.editProfile')}
                   </Button>
                 </Box>
               )}
@@ -369,7 +371,7 @@ const ProfilePage: React.FC = () => {
                   variant="body2"
                   sx={{ color: "#64748b", fontWeight: 500 }}
                 >
-                  Total Contents
+                  {t('profile.stats.totalContents')}
                 </Typography>
               </CardContent>
             </Card>
@@ -403,7 +405,7 @@ const ProfilePage: React.FC = () => {
                   variant="body2"
                   sx={{ color: "#64748b", fontWeight: 500 }}
                 >
-                  Enrolled Students
+                  {t('profile.stats.enrolledStudents')}
                 </Typography>
               </CardContent>
             </Card>
@@ -437,7 +439,7 @@ const ProfilePage: React.FC = () => {
                   variant="body2"
                   sx={{ color: "#64748b", fontWeight: 500 }}
                 >
-                  Years of Experience
+                  {t('profile.stats.yearsOfExperience')}
                 </Typography>
               </CardContent>
             </Card>

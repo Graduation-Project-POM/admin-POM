@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getVisibleNavigation } from '../../../config/navigation';
 import type { UserRole } from '../../../types';
 
@@ -76,6 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const originalSections = getVisibleNavigation(role);
 
   const sections = React.useMemo(() => {
@@ -98,7 +100,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openItem, setOpenItem] = useState<string | null>(null);
 
-  const [language, setLanguage] = useState<'ar' | 'en'>('ar');
+  const language = i18n.resolvedLanguage === 'ar' ? 'ar' : 'en';
 
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -119,7 +121,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const handleLanguageToggle = () => {
-    setLanguage((prev) => (prev === 'ar' ? 'en' : 'ar'));
+    // i18next persists this to localStorage and flips <html dir>/<lang> via the
+    // languageChanged listener configured in src/i18n/index.ts.
+    i18n.changeLanguage(language === 'ar' ? 'en' : 'ar');
   };
 
   const handleLogout = () => {
@@ -208,7 +212,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               >
                                 {isLanguageItem
                                   ? (language === 'ar' ? 'العربية' : 'English')
-                                  : item.title}
+                                  : item.titleKey ? t(item.titleKey) : item.title}
                               </Typography>
                             }
                           />
@@ -253,7 +257,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                             color: isSubActive ? '#8B1D23' : '#64748b',
                                           }}
                                         >
-                                          {subItem.title}
+                                          {subItem.titleKey ? t(subItem.titleKey) : subItem.title}
                                         </Typography>
                                       }
                                     />

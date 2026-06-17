@@ -1,0 +1,68 @@
+{
+  "contest": {
+    "list": {
+      "title": "إدارة المسابقات",
+      "subtitle": "إنشاء المسابقات البرمجية وإدارتها ومراقبتها",
+      "searchPlaceholder": "ابحث عن المسابقات بالاسم...",
+      "createButton": "إنشاء مسابقة",
+      "noResults": "لا توجد مسابقات تطابق بحثك."
+    },
+    "problems": {
+      "backButton": "العودة إلى المسابقات",
+      "heading": "🏆 المسائل في \"{{title}}\"",
+      "description": "أدر قائمة التحديات الرياضية لهذه المسابقة المحددة.",
+      "addButton": "إضافة مسألة",
+      "searchPlaceholder": "ابحث عن المسائل ضمن المسابقة...",
+      "columns": {
+        "name": "اسم المسألة",
+        "difficulty": "الصعوبة",
+        "studentsSolved": "الطلاب الذين حلّوا",
+        "totalSubmissions": "إجمالي عمليات التسليم",
+        "acceptanceRate": "معدل القبول"
+      }
+    },
+    "confirm": {
+      "deleteContestTitle": "حذف المسابقة",
+      "deleteContestMessage": "هل أنت متأكد أنك تريد حذف هذه المسابقة؟ سيتم فقدان جميع بيانات المسائل المرتبطة بهذه المسابقة.",
+      "removeProblemTitle": "إزالة المسألة",
+      "removeProblemMessage": "هل أنت متأكد أنك تريد إزالة هذه المسألة من المسابقة؟",
+      "removeProblemsTitle": "إزالة المسائل",
+      "removeProblemsMessage": "هل أنت متأكد أنك تريد إزالة {{count}} مسألة محددة من هذه المسابقة؟"
+    },
+    "create": {
+      "title": "إنشاء مسابقة جديدة",
+      "submitButton": "إنشاء مسابقة"
+    },
+    "edit": {
+      "title": "تعديل المسابقة",
+      "submitButton": "حفظ التغييرات"
+    },
+    "view": {
+      "title": "نظرة عامة على المسابقة",
+      "participants": "المشاركون",
+      "totalProblems": "إجمالي المسائل",
+      "startDate": "تاريخ البدء",
+      "endDate": "تاريخ الانتهاء"
+    },
+    "fields": {
+      "contestTitle": "عنوان المسابقة",
+      "contestTitlePlaceholder": "مثال: برمجة الربيع 2026",
+      "status": "الحالة",
+      "difficulty": "الصعوبة",
+      "startDateTime": "تاريخ ووقت البدء",
+      "endDateTime": "تاريخ ووقت الانتهاء",
+      "startDatePlaceholder": "15 أبريل 2026 الساعة 09:00 صباحًا",
+      "endDatePlaceholder": "22 أبريل 2026 الساعة 09:00 مساءً"
+    },
+    "status": {
+      "upcoming": "قادمة",
+      "ongoing": "جارية",
+      "ended": "منتهية"
+    },
+    "difficulty": {
+      "easy": "سهل",
+      "medium": "متوسط",
+      "hard": "صعب"
+    }
+  }
+}

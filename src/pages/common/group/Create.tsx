@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Stack, MenuItem } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
@@ -11,6 +12,7 @@ interface CreateGroupProps {
 }
 
 const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -35,21 +37,21 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   };
 
   return (
-    <ModalWrapper open={open} onClose={onClose} title="Create Training Group" maxWidth="sm">
+    <ModalWrapper open={open} onClose={onClose} title={t('group.create.title')} maxWidth="sm">
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
-            label="Group Title"
+            label={t('group.create.groupTitle')}
             name="title"
-            placeholder="e.g., Geometry Masters"
+            placeholder={t('group.create.groupTitlePlaceholder')}
             value={formData.title}
             onChange={handleChange}
             required
           />
           <FormField
-            label="Description"
+            label={t('form.labels.description')}
             name="description"
-            placeholder="Enter group purpose and goals..."
+            placeholder={t('group.create.descriptionPlaceholder')}
             value={formData.description}
             onChange={handleChange}
             multiline
@@ -58,7 +60,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
           />
           <FormField
             select
-            label="Assign Trainer"
+            label={t('group.create.assignTrainer')}
             name="trainerName"
             value={formData.trainerName}
             onChange={handleChange}
@@ -70,7 +72,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
           </FormField>
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            Create Group
+            {t('group.list.createGroup')}
         </Button>
       </form>
     </ModalWrapper>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Typography, Chip, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Calendar, Users, Target, ChevronRight, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { ContestData } from '../../../types';
 import { Button } from '../button/Button';
 
@@ -64,6 +65,7 @@ interface ContestCardProps {
 }
 
 export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblems }) => {
+  const { t } = useTranslation();
   const diffColor = getDifficultyColor(contest.difficulty);
 
   return (
@@ -99,13 +101,13 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Target size={14} color="#94a3b8" />
             <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
-              {contest.problemsCount} Problems
+              {t('ui.studentContestCard.problems', { count: contest.problemsCount })}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Users size={14} color="#94a3b8" />
             <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
-              {contest.participants} Participants
+              {t('ui.studentContestCard.participants', { count: contest.participants })}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -134,7 +136,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
               onClick={onViewProblems}
               sx={{ flex: 1, py: 0.5, fontSize: '12px' }}
             >
-              Solve Problems
+              {t('ui.studentContestCard.solveProblems')}
             </Button>
           ) : contest.status === 'Ended' ? (
             <Button
@@ -144,7 +146,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
               onClick={onViewProblems}
               sx={{ flex: 1, py: 0.5, fontSize: '12px' }}
             >
-              View Problems & Grades
+              {t('ui.studentContestCard.viewProblemsGrades')}
             </Button>
           ) : (
             <Button
@@ -153,7 +155,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
               disabled
               sx={{ flex: 1, py: 0.5, fontSize: '12px' }}
             >
-              Coming Soon
+              {t('ui.studentContestCard.comingSoon')}
             </Button>
           )}
         </Box>

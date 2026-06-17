@@ -10,6 +10,7 @@ import {
   styled,
 } from '@mui/material';
 import { AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui/button/Button';
 
 interface ConfirmationModalProps {
@@ -42,10 +43,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
+  confirmLabel,
+  cancelLabel,
   isDanger = true,
 }) => {
+  const { t } = useTranslation();
   return (
     <StyledDialog open={open} onClose={onClose}>
       <DialogTitle sx={{ pb: 1 }}>
@@ -63,7 +65,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       </DialogContent>
       <DialogActions sx={{ p: 2, gap: 1 }}>
         <Button variantType="outline" onClick={onClose}>
-          {cancelLabel}
+          {cancelLabel ?? t('buttons.cancel')}
         </Button>
         <Button 
           variantType={isDanger ? 'danger' : 'default'} 
@@ -72,7 +74,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             onClose();
           }}
         >
-          {confirmLabel}
+          {confirmLabel ?? t('buttons.confirm')}
         </Button>
       </DialogActions>
     </StyledDialog>

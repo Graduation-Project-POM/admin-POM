@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Stack, MenuItem } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
@@ -13,6 +14,7 @@ interface EditGroupProps {
 }
 
 const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -46,18 +48,18 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
   };
 
   return (
-    <ModalWrapper open={open} onClose={onClose} title="Edit Training Group" maxWidth="sm">
+    <ModalWrapper open={open} onClose={onClose} title={t('group.edit.title')} maxWidth="sm">
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
-            label="Group Title"
+            label={t('group.edit.groupTitle')}
             name="title"
             value={formData.title}
             onChange={handleChange}
             required
           />
           <FormField
-            label="Description"
+            label={t('form.labels.description')}
             name="description"
             value={formData.description}
             onChange={handleChange}
@@ -67,7 +69,7 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
           />
           <FormField
             select
-            label="Assign Trainer"
+            label={t('group.edit.assignTrainer')}
             name="trainerName"
             value={formData.trainerName}
             onChange={handleChange}
@@ -79,7 +81,7 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
           </FormField>
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            Save Changes
+            {t('buttons.save')}
         </Button>
       </form>
     </ModalWrapper>

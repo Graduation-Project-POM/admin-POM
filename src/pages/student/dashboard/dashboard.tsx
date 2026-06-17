@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -96,15 +97,16 @@ const gradedProblems = [
 ];
 
 const quickActions = [
-  { label: "Browse Contests", icon: Trophy, path: "/student/contests" },
-  { label: "My Groups", icon: Users, path: "/student/groups" },
-  { label: "View Progress", icon: BarChart3, path: "/student/progress" },
-  { label: "Join Group", icon: UserPlus, path: "/student/join-group" },
-  { label: "Daily Challenge", icon: Zap, path: "/student/daily" },
-  { label: "Leaderboard", icon: Medal, path: "/student/leaderboard" },
+  { labelKey: "student.dashboard.quickActions.browseContests", icon: Trophy, path: "/student/contests" },
+  { labelKey: "student.dashboard.quickActions.myGroups", icon: Users, path: "/student/groups" },
+  { labelKey: "student.dashboard.quickActions.viewProgress", icon: BarChart3, path: "/student/progress" },
+  { labelKey: "student.dashboard.quickActions.joinGroup", icon: UserPlus, path: "/student/join-group" },
+  { labelKey: "student.dashboard.quickActions.dailyChallenge", icon: Zap, path: "/student/daily" },
+  { labelKey: "student.dashboard.quickActions.leaderboard", icon: Medal, path: "/student/leaderboard" },
 ];
 
 const StudentDashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const solveRate = Math.round((studentStats.totalProblemsSolved / studentStats.totalProblems) * 100);
   const contestCompletionRate = Math.round((studentStats.completedContests / studentStats.totalContests) * 100);
 
@@ -121,13 +123,13 @@ const StudentDashboardPage: React.FC = () => {
               {studentStats.avatar}
             </Avatar>
             <Box>
-              <Typography variant="h4" sx={{ fontWeight: 800 }}>مرحباً, {studentStats.name.split(" ")[0]}! 👋</Typography>
+              <Typography variant="h4" sx={{ fontWeight: 800 }}>{t("student.dashboard.greeting", { name: studentStats.name.split(" ")[0] })}</Typography>
               <Typography sx={{ opacity: 0.9, display: "flex", alignItems: "center", gap: 1 }}>
-                <Flame size={18} /> أنت في موجة مستمرة لمدة {studentStats.currentStreak} يوماً – لا تتوقف!
+                <Flame size={18} /> {t("student.dashboard.streakMessage", { count: studentStats.currentStreak })}
               </Typography>
             </Box>
           </Box>
-          <Chip label="Student" icon={<Star size={14} />} sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, borderRadius: "40px" }} />
+          <Chip label={t("student.dashboard.roleBadge")} icon={<Star size={14} />} sx={{ bgcolor: "rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, borderRadius: "40px" }} />
         </Box>
       </Box>
 
@@ -138,18 +140,18 @@ const StudentDashboardPage: React.FC = () => {
             <CardContent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <Box>
-                  <Typography sx={statTitle}>Problems Solved</Typography>
+                  <Typography sx={statTitle}>{t("student.dashboard.stats.problemsSolved")}</Typography>
                   <Typography sx={statValue}>{studentStats.totalProblemsSolved}</Typography>
                   <Box sx={statTrendBox}>
                     <ArrowUpRight size={14} color="#1f6e43" />
                     <Typography variant="caption" sx={{ color: "#1f6e43", fontWeight: 500 }}>+5</Typography>
-                    <Typography variant="caption" sx={{ color: "#64748b" }}>this week</Typography>
+                    <Typography variant="caption" sx={{ color: "#64748b" }}>{t("student.dashboard.stats.thisWeek")}</Typography>
                   </Box>
                 </Box>
                 <Box sx={statIconBox("#fee2e2")}><Target size={24} color="#8B1D23" /></Box>
               </Box>
               <LinearProgress variant="determinate" value={solveRate} sx={{ mt: 2, height: 6, borderRadius: "10px", bgcolor: "#fee2e2", "& .MuiLinearProgress-bar": { bgcolor: "#8B1D23" } }} />
-              <Typography variant="caption" sx={{ color: "#64748b", mt: 0.5, display: "block" }}>{solveRate}% of {studentStats.totalProblems} total</Typography>
+              <Typography variant="caption" sx={{ color: "#64748b", mt: 0.5, display: "block" }}>{t("student.dashboard.stats.solveRate", { rate: solveRate, total: studentStats.totalProblems })}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -158,13 +160,13 @@ const StudentDashboardPage: React.FC = () => {
             <CardContent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <Box>
-                  <Typography sx={statTitle}>Contests Done</Typography>
+                  <Typography sx={statTitle}>{t("student.dashboard.stats.contestsDone")}</Typography>
                   <Typography sx={statValue}>{studentStats.completedContests}/{studentStats.totalContests}</Typography>
                 </Box>
                 <Box sx={statIconBox("#e0f2e9")}><Trophy size={24} color="#1f6e43" /></Box>
               </Box>
               <LinearProgress variant="determinate" value={contestCompletionRate} sx={{ mt: 2, height: 6, borderRadius: "10px", bgcolor: "#d1fae5", "& .MuiLinearProgress-bar": { bgcolor: "#059669" } }} />
-              <Typography variant="caption" sx={{ color: "#64748b", mt: 0.5, display: "block" }}>{contestCompletionRate}% completion rate</Typography>
+              <Typography variant="caption" sx={{ color: "#64748b", mt: 0.5, display: "block" }}>{t("student.dashboard.stats.completionRate", { rate: contestCompletionRate })}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -173,7 +175,7 @@ const StudentDashboardPage: React.FC = () => {
             <CardContent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <Box>
-                  <Typography sx={statTitle}>Average Grade</Typography>
+                  <Typography sx={statTitle}>{t("student.dashboard.stats.averageGrade")}</Typography>
                   <Typography sx={statValue}>{studentStats.averageGrade}%</Typography>
                 </Box>
                 <Box sx={statIconBox("#fffbeb")}><Star size={24} color="#d97706" /></Box>
@@ -191,12 +193,12 @@ const StudentDashboardPage: React.FC = () => {
             <CardContent>
               <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <Box>
-                  <Typography sx={statTitle}>Global Rank</Typography>
+                  <Typography sx={statTitle}>{t("student.dashboard.stats.globalRank")}</Typography>
                   <Typography sx={statValue}>#{studentStats.globalRank}</Typography>
                 </Box>
                 <Box sx={statIconBox("#f0f9ff")}><TrendingUp size={24} color="#0284c7" /></Box>
               </Box>
-              <Typography variant="caption" sx={{ color: "#64748b", mt: 2, display: "block" }}>out of {studentStats.totalStudents} students</Typography>
+              <Typography variant="caption" sx={{ color: "#64748b", mt: 2, display: "block" }}>{t("student.dashboard.stats.outOfStudents", { count: studentStats.totalStudents })}</Typography>
             </CardContent>
           </Card>
         </Grid>
@@ -209,12 +211,12 @@ const StudentDashboardPage: React.FC = () => {
           {/* Quick Actions */}
           <Card sx={{ ...sectionCard, mb: 4 }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>Quick Actions</Typography>
+              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.quickActions.title")}</Typography>
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
                   <Grid size={{ xs: 6, sm: 4 }} key={idx}>
                     <Button fullWidth variant="outlined" startIcon={<action.icon size={16} />} sx={quickActionButton} onClick={() => handleQuickAction(action.path)}>
-                      {action.label}
+                      {t(action.labelKey)}
                     </Button>
                   </Grid>
                 ))}
@@ -225,7 +227,7 @@ const StudentDashboardPage: React.FC = () => {
           {/* Top Groups */}
           <Card sx={{ ...sectionCard, mb: 4 }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>My Groups</Typography>
+              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.myGroups.title")}</Typography>
               <Stack spacing={2}>
                 {topGroups.map((group) => (
                   <Paper key={group.id} elevation={0} sx={{ p: 2, borderRadius: "16px", border: "1px solid #eef2f6" }}>
@@ -234,13 +236,13 @@ const StudentDashboardPage: React.FC = () => {
                         <Avatar sx={{ bgcolor: "#fef2f2", color: "#8B1D23", width: 40, height: 40 }}>{group.name.charAt(0)}</Avatar>
                         <Box>
                           <Typography sx={{ fontWeight: 600 }}>{group.name}</Typography>
-                          <Typography variant="caption" sx={{ color: "#64748b" }}>{group.students} students</Typography>
+                          <Typography variant="caption" sx={{ color: "#64748b" }}>{t("student.dashboard.myGroups.students", { count: group.students })}</Typography>
                         </Box>
                       </Box>
-                      <Chip label={`Rank #${group.rank}`} size="small" sx={{ bgcolor: group.rank === 1 ? "#fef3c7" : group.rank === 2 ? "#f1f5f9" : "#fef2f2", fontWeight: 700 }} />
+                      <Chip label={t("student.dashboard.myGroups.rank", { rank: group.rank })} size="small" sx={{ bgcolor: group.rank === 1 ? "#fef3c7" : group.rank === 2 ? "#f1f5f9" : "#fef2f2", fontWeight: 700 }} />
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                      <Typography variant="caption" sx={{ fontWeight: 600 }}>Progress</Typography>
+                      <Typography variant="caption" sx={{ fontWeight: 600 }}>{t("student.dashboard.myGroups.progress")}</Typography>
                       <Typography variant="caption" sx={{ fontWeight: 800, color: "#8B1D23" }}>{group.progress}%</Typography>
                     </Box>
                     <LinearProgress variant="determinate" value={group.progress} sx={{ height: 6, borderRadius: "10px", bgcolor: "#fee2e2", "& .MuiLinearProgress-bar": { bgcolor: "#8B1D23" } }} />
@@ -253,7 +255,7 @@ const StudentDashboardPage: React.FC = () => {
           {/* Recent Activity */}
           <Card sx={sectionCard}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>Recent Activity</Typography>
+              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.recentActivity.title")}</Typography>
               <Stack spacing={1.5}>
                 {recentActivities.map((act) => (
                   <Box key={act.id} sx={activityItem}>
@@ -280,7 +282,7 @@ const StudentDashboardPage: React.FC = () => {
           {/* Upcoming Contests */}
           <Card sx={{ ...sectionCard, mb: 4 }}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>Upcoming Contests</Typography>
+              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.upcomingContests.title")}</Typography>
               <Stack spacing={2}>
                 {upcomingContests.map((contest) => (
                   <Box key={contest.id} sx={contestCard} onClick={() => handleViewContest(contest.id)}>
@@ -293,10 +295,10 @@ const StudentDashboardPage: React.FC = () => {
                     </Box>
                     <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mt: 1 }}>
                       <Box sx={{ display: "flex", gap: 2 }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}><BookOpen size={12} /><Typography variant="caption" sx={{ fontWeight: 600 }}>{contest.problemsCount} problems</Typography></Box>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}><BookOpen size={12} /><Typography variant="caption" sx={{ fontWeight: 600 }}>{t("student.dashboard.upcomingContests.problems", { count: contest.problemsCount })}</Typography></Box>
                         <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}><Clock size={12} /><Typography variant="caption" sx={{ fontWeight: 600 }}>{new Date(contest.startDate).toLocaleDateString()}</Typography></Box>
                       </Box>
-                      <Chip label={`${contest.daysLeft} days left`} size="small" sx={{ bgcolor: "#fef2f2", color: "#8B1D23", fontWeight: 700 }} />
+                      <Chip label={t("student.dashboard.upcomingContests.daysLeft", { count: contest.daysLeft })} size="small" sx={{ bgcolor: "#fef2f2", color: "#8B1D23", fontWeight: 700 }} />
                     </Box>
                   </Box>
                 ))}
@@ -307,14 +309,14 @@ const StudentDashboardPage: React.FC = () => {
           {/* Recent Grades Table */}
           <Card sx={sectionCard}>
             <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>Recent Grades</Typography>
+              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.recentGrades.title")}</Typography>
               <TableContainer component={Paper} elevation={0} sx={tableContainer}>
                 <Table size="small">
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#f8fafc" }}>
-                      <TableCell sx={tableHeadCell}>Problem</TableCell>
-                      <TableCell sx={tableHeadCell} align="center">Grade</TableCell>
-                      <TableCell sx={tableHeadCell}>Feedback</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("student.dashboard.recentGrades.problem")}</TableCell>
+                      <TableCell sx={tableHeadCell} align="center">{t("student.dashboard.recentGrades.grade")}</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("student.dashboard.recentGrades.feedback")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>

@@ -1,0 +1,58 @@
+{
+  "trainer": {
+    "dashboard": {
+      "title": "Trainer Dashboard",
+      "stats": {
+        "totalStudents": "Total Students",
+        "upcomingSessions": "Upcoming Sessions",
+        "completedSessions": "Completed Sessions",
+        "pendingFeedback": "Pending Feedback",
+        "nextSession": "Next: Today 4:00 PM",
+        "needsReview": "Needs review",
+        "thisMonth": "this month",
+        "thisWeek": "this week"
+      },
+      "quickActions": {
+        "title": "Quick Actions",
+        "manageStudents": "Manage Students",
+        "createSession": "Create Session",
+        "postAnnouncement": "Post Announcement",
+        "viewReports": "View Reports",
+        "assignments": "Assignments",
+        "schedule": "Schedule"
+      },
+      "pendingRequests": {
+        "title": "Pending Requests",
+        "review": "Review",
+        "enrollmentRequest": "Enrollment Request",
+        "assignmentSubmission": "Assignment Submission"
+      },
+      "announcements": {
+        "title": "Announcements",
+        "tableTitle": "Title",
+        "tableDate": "Date",
+        "tableStatus": "Status",
+        "published": "Published",
+        "draft": "Draft",
+        "addAnnouncement": "Announcement",
+        "addStudent": "Add Student"
+      }
+    },
+    "solutionDetail": {
+      "status": "Status:",
+      "score": "Score:",
+      "solution": "Solution:",
+      "noSubmissionFound": "No submission found.",
+      "noSubmissionHint": "This student has not submitted a solution yet.",
+      "result": "Result:",
+      "markAsDone": "Mark as Done"
+    },
+    "studentProgress": {
+      "titleSuffix": "Student Progress",
+      "allStudents": "All Students",
+      "solved": "Solved",
+      "notSolved": "Not Solved",
+      "viewSolution": "View Solution"
+    }
+  }
+}

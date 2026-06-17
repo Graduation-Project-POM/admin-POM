@@ -7,6 +7,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { Search } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Column {
   id: string;
@@ -52,9 +53,10 @@ const TableRow = styled(Box)<{ clickable?: boolean }>(({ clickable }) => ({
 export const SharedTable: React.FC<SharedTableProps> = ({
   data,
   columns,
-  searchPlaceholder = 'Search...',
+  searchPlaceholder,
   onRowClick,
 }) => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filtered = data.filter((row) =>
@@ -73,7 +75,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
     <Box>
       <TextField
         size="small"
-        placeholder={searchPlaceholder}
+        placeholder={searchPlaceholder ?? t('ui.table.searchPlaceholder')}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
         sx={{
@@ -118,7 +120,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
 
         {filtered.length === 0 ? (
           <Box sx={{ py: 6, textAlign: 'center' }}>
-            <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>No data found.</Typography>
+            <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('ui.table.noDataFound')}</Typography>
           </Box>
         ) : (
           filtered.map((row) => (
@@ -147,7 +149,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
       {filtered.length > 0 && (
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
           <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 500 }}>
-            Showing {filtered.length} of {data.length} items
+            {t('ui.table.showingItems', { shown: filtered.length, total: data.length })}
           </Typography>
         </Box>
       )}

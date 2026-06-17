@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Typography,
@@ -58,6 +59,7 @@ interface StudentProgressModalProps {
 }
 
 export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSolution }: StudentProgressModalProps) => {
+  const { t } = useTranslation();
   const [filter, setFilter] = useState<'All' | 'Solved' | 'Not Solved'>('All');
 
   const filteredSubmissions = mockSubmissions.filter(s => {
@@ -69,7 +71,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title={`${problemTitle} - Student Progress`}
+      title={`${problemTitle} - ${t('trainer.studentProgress.titleSuffix')}`}
       maxWidth="md"
     >
       <Box sx={{ mt: 1 }}>
@@ -80,7 +82,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
             onClick={() => setFilter('All')}
             size="small"
           >
-            All Students
+            {t('trainer.studentProgress.allStudents')}
           </Button>
           <Button 
             variantType={filter === 'Solved' ? 'default' : 'outline'} 
@@ -89,7 +91,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
             startIcon={<CheckCircle2 size={16} color={filter === 'Solved' ? 'white' : '#166534'} />}
             sx={filter !== 'Solved' ? { color: '#166534', bgcolor: '#e7f7ec', border: 'none' } : {}}
           >
-            Solved
+            {t('trainer.studentProgress.solved')}
           </Button>
           <Button 
             variantType={filter === 'Not Solved' ? 'default' : 'outline'} 
@@ -98,7 +100,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
             startIcon={<XCircle size={16} color={filter === 'Not Solved' ? 'white' : '#991b1b'} />}
             sx={filter !== 'Not Solved' ? { color: '#991b1b', bgcolor: '#fdecec', border: 'none' } : {}}
           >
-            Not Solved
+            {t('trainer.studentProgress.notSolved')}
           </Button>
         </Stack>
 
@@ -128,7 +130,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
                       onClick={() => onViewSolution(student)}
                       sx={{ fontSize: '12px', fontWeight: 600 }}
                     >
-                      View Solution
+                      {t('trainer.studentProgress.viewSolution')}
                     </Button>
                   </Box>
                 }
@@ -150,7 +152,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
           <Button variantType="outline" onClick={onClose}>
-            Close
+            {t('buttons.close')}
           </Button>
         </Box>
       </Box>

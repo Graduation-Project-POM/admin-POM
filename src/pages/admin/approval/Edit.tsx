@@ -3,6 +3,7 @@ import { Stack } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
+import { useTranslation } from "react-i18next";
 
 interface TrainerRequestData {
   id: string;
@@ -26,6 +27,7 @@ const EditTrainerRequest = ({
   trainer,
   onSave,
 }: EditTrainerRequestProps) => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState<TrainerRequestData>({
     id: "",
     name: "",
@@ -61,14 +63,14 @@ const EditTrainerRequest = ({
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Edit Trainer Request"
+      title={t("admin.approvals.edit.title")}
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
             type="text"
-            label="Full Name"
+            label={t("admin.approvals.edit.fullName")}
             name="name"
             value={formData.name}
             onChange={handleChange}
@@ -78,7 +80,7 @@ const EditTrainerRequest = ({
           <Stack direction="row" spacing={2}>
             <FormField
               type="email"
-              label="Email"
+              label={t("admin.approvals.edit.email")}
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -87,7 +89,7 @@ const EditTrainerRequest = ({
 
             <FormField
               type="text"
-              label="Phone"
+              label={t("admin.approvals.edit.phone")}
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -97,7 +99,7 @@ const EditTrainerRequest = ({
 
           <FormField
             type="text"
-            label="Specialization"
+            label={t("admin.approvals.edit.specialization")}
             name="specialization"
             value={formData.specialization}
             onChange={handleChange}
@@ -106,7 +108,7 @@ const EditTrainerRequest = ({
 
           <FormField
             type="text"
-            label="Biography"
+            label={t("admin.approvals.edit.biography")}
             name="bio"
             value={formData.bio}
             onChange={handleChange}
@@ -115,7 +117,7 @@ const EditTrainerRequest = ({
         </Stack>
 
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            Save Changes
+            {t("admin.approvals.edit.saveChanges")}
         </Button>
       </form>
     </ModalWrapper>

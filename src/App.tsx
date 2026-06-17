@@ -7,6 +7,7 @@ import {
 } from "react-router-dom";
 import type { UserRole } from "./types";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Page } from "./components/common/Page";
 import { DashboardLayout } from "./components/layout/Dashboard";
 import { AdminApprovalsPage } from "./pages/admin/approval/ApprovalsPage";
@@ -31,7 +32,8 @@ const USER_DATA = {
 };
 
 function App() {
-  const [role, setRole] = useState<UserRole>('TRAINER');
+  const { t } = useTranslation();
+  const [role] = useState<UserRole>('STUDENT');
 
   return (
     <Router>
@@ -44,11 +46,11 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/users" element={<AdminUsersPage />} />
           <Route path="/admin/approvals" element={<AdminApprovalsPage />} />
-          <Route path="/admin/announcements" element={<Page title="Announcements" />} />
+          <Route path="/admin/announcements" element={<Page title={t('ui.pages.announcements')} />} />
           <Route path="/admin/groups" element={<GroupsPage />} />
           <Route path="/admin/contests" element={<ContestsPage />} />
           <Route path="/admin/problems" element={<ProblemsPage />} />
-          <Route path="/admin/reports" element={<Page title="System Reports" />} />
+          <Route path="/admin/reports" element={<Page title={t('ui.pages.systemReports')} />} />
           <Route path="/admin/profile" element={<ProfilePage />} />
 
           <Route path="/trainer/dashboard" element={<TrainerDashboard />} />
@@ -71,7 +73,7 @@ function App() {
           <Route path="/student/profile" element={<ProfilePage />} />
 
           {/* Shared Routes */}
-          <Route path="/settings" element={<Page title="Account Settings" />} />
+          <Route path="/settings" element={<Page title={t('ui.pages.accountSettings')} />} />
 
           <Route 
             path="/" 

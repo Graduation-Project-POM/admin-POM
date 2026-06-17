@@ -19,6 +19,7 @@ import {
   ListItemText,
 } from "@mui/material";
 import { MoreVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Button } from "../button/Button";
 import {
   theme,
@@ -36,9 +37,10 @@ export const SharedTable: React.FC<SharedTableProps> = ({
   onDelete,
   onEdit,
   onSingleDelete,
-  addButtonLabel = "Create",
-  searchPlaceholder = "Search...",
+  addButtonLabel,
+  searchPlaceholder,
 }) => {
+  const { t } = useTranslation();
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -100,7 +102,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
       >
         <TextField
           size="small"
-          placeholder={searchPlaceholder}
+          placeholder={searchPlaceholder ?? t("ui.table.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{
@@ -135,7 +137,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               disabled={selectedRows.size === 0}
               startIcon={<Trash2 size={16} />}
             >
-              Delete {selectedRows.size > 0 ? `(${selectedRows.size})` : ""}
+              {t("buttons.delete")} {selectedRows.size > 0 ? `(${selectedRows.size})` : ""}
             </Button>
           )}
           {onAdd && (
@@ -144,7 +146,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               onClick={onAdd}
               startIcon={<Plus size={16} />}
             >
-              {addButtonLabel}
+              {addButtonLabel ?? t("ui.table.createButton")}
             </Button>
           )}
         </Stack>
@@ -187,7 +189,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                 {columns.map((col) => (
                   <StyledTableCell key={col.id}>{col.label}</StyledTableCell>
                 ))}
-                <StyledTableCell align="center">Actions</StyledTableCell>
+                <StyledTableCell align="center">{t("common.actions")}</StyledTableCell>
               </TableRow>
             </StyledTableHead>
             <TableBody>
@@ -245,7 +247,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               <Pencil size={16} color="#64748b" />
             </ListItemIcon>
             <ListItemText
-              primary="Edit"
+              primary={t("buttons.edit")}
               slotProps={{
                 primary: {
                   sx: { fontSize: "14px", fontWeight: 600, color: "#1e293b" },
@@ -261,7 +263,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               <Trash2 size={16} color="#ef4444" />
             </ListItemIcon>
             <ListItemText
-              primary="Delete"
+              primary={t("buttons.delete")}
               slotProps={{
                 primary: {
                   sx: { fontSize: "14px", fontWeight: 600, color: "#ef4444" },

@@ -1,0 +1,54 @@
+{
+  "problem": {
+    "list": {
+      "title": "Problem Bank",
+      "subtitle": "Manage the collection of mathematical problems",
+      "addButton": "Add Problem",
+      "searchPlaceholder": "Search problems...",
+      "filter": {
+        "allLevels": "All Levels"
+      },
+      "columns": {
+        "title": "Title",
+        "category": "Category",
+        "difficulty": "Difficulty",
+        "tags": "Tags",
+        "visibility": "Visibility",
+        "stats": "Stats"
+      },
+      "stats": {
+        "submissions": "{{count}} submissions",
+        "success": "{{rate}}% success"
+      }
+    },
+    "difficulty": {
+      "Easy": "Easy",
+      "Medium": "Medium",
+      "Hard": "Hard"
+    },
+    "visibility": {
+      "general": "General",
+      "groupSpecific": "Group-specific"
+    },
+    "delete": {
+      "singleTitle": "Delete Problem",
+      "singleMessage": "Are you sure you want to delete this problem? This action cannot be undone.",
+      "bulkTitle": "Delete Problems",
+      "bulkMessage": "Are you sure you want to delete {{count}} selected problems? This action cannot be undone."
+    },
+    "form": {
+      "createTitle": "Create New Problem",
+      "editTitle": "Edit Problem",
+      "problemTitle": "Problem Title",
+      "problemTitlePlaceholder": "e.g., Two Sum",
+      "category": "Category",
+      "categoryPlaceholder": "e.g., Array",
+      "difficulty": "Difficulty",
+      "visibility": "Visibility",
+      "tags": "Tags (Comma separated)",
+      "tagsPlaceholder": "e.g., Array, Hash Table",
+      "createSubmit": "Create Problem",
+      "saveChanges": "Save Changes"
+    }
+  }
+}

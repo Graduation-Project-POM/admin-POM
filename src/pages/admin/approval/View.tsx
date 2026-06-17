@@ -18,6 +18,7 @@ import {
   Star,
 } from "lucide-react";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
+import { useTranslation } from "react-i18next";
 
 interface TrainerRequest {
   id: string;
@@ -90,6 +91,8 @@ export const ViewTrainerDetails = ({
   onClose,
   trainer,
 }: TrainerDetailsProps) => {
+  const { t } = useTranslation();
+
   if (!trainer) return null;
 
   const formattedDate = trainer.submitted
@@ -106,7 +109,7 @@ export const ViewTrainerDetails = ({
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Trainer Profile"
+      title={t("admin.approvals.view.title")}
       maxWidth="md"
     >
       <Paper
@@ -159,25 +162,25 @@ export const ViewTrainerDetails = ({
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={2.5}>
-              <InfoRow icon={User} label="Full Name" value={trainer.name} />
-              <InfoRow icon={Mail} label="Email Address" value={trainer.email} />
-              <InfoRow icon={Phone} label="Phone Number" value={trainer.phone} />
+              <InfoRow icon={User} label={t("admin.approvals.view.fullName")} value={trainer.name} />
+              <InfoRow icon={Mail} label={t("admin.approvals.view.emailAddress")} value={trainer.email} />
+              <InfoRow icon={Phone} label={t("admin.approvals.view.phoneNumber")} value={trainer.phone} />
             </Stack>
           </Grid>
           <Grid size={{ xs: 12, md: 6 }}>
             <Stack spacing={2.5}>
               <InfoRow
                 icon={Calendar}
-                label="Submitted On"
+                label={t("admin.approvals.view.submittedOn")}
                 value={formattedDate}
               />
               <InfoRow
                 icon={Briefcase}
-                label="Specialization"
+                label={t("admin.approvals.view.specialization")}
                 value={trainer.specialization}
               />
               <Box sx={{ opacity: 0.6 }}>
-                <InfoRow icon={FileText} label="Status" value="Pending Review" />
+                <InfoRow icon={FileText} label={t("admin.approvals.view.status")} value={t("admin.approvals.view.pendingReview")} />
               </Box>
             </Stack>
           </Grid>
@@ -196,7 +199,7 @@ export const ViewTrainerDetails = ({
               letterSpacing: "0.5px",
             }}
           >
-            Biography
+            {t("admin.approvals.view.biography")}
           </Typography>
           <Paper
             variant="outlined"
@@ -215,7 +218,7 @@ export const ViewTrainerDetails = ({
                 whiteSpace: "pre-wrap",
               }}
             >
-              {trainer.bio || "No biography provided."}
+              {trainer.bio || t("admin.approvals.view.noBiography")}
             </Typography>
           </Paper>
         </Box>

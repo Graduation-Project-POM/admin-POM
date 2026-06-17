@@ -1,0 +1,83 @@
+{
+  "navbar": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "approvals": "Approvals",
+    "groups": "Groups",
+    "myGroups": "My Groups",
+    "contests": "Contests",
+    "problems": "Problem Bank",
+    "problemsShort": "Problems",
+    "allProblems": "All Problems",
+    "mySubmissions": "My Submissions",
+    "profile": "Profile",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "create": "Create",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "search": "Search",
+    "view": "View",
+    "close": "Close",
+    "add": "Add"
+  },
+  "form": {
+    "labels": {
+      "name": "Name",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm Password",
+      "role": "Role",
+      "phone": "Phone Number",
+      "description": "Description"
+    },
+    "placeholders": {
+      "name": "Enter your name",
+      "email": "Enter your email",
+      "password": "Enter your password",
+      "search": "Search..."
+    }
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Please enter a valid email address",
+    "minLength": "Must be at least {{count}} characters",
+    "passwordMismatch": "Passwords do not match",
+    "unauthorized": "You are not authorized to perform this action",
+    "network": "A network error occurred. Please try again",
+    "generic": "Something went wrong. Please try again"
+  },
+  "success": {
+    "saved": "Changes saved successfully",
+    "created": "Created successfully",
+    "updated": "Updated successfully",
+    "deleted": "Deleted successfully",
+    "loggedIn": "Logged in successfully",
+    "loggedOut": "Logged out successfully"
+  },
+  "common": {
+    "loading": "Loading...",
+    "noData": "No data available",
+    "actions": "Actions",
+    "status": "Status",
+    "all": "All",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "ar": "العربية"
+  }
+}

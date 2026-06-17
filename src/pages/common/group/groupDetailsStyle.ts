@@ -61,7 +61,7 @@ export const StudentCardStyled = styled(Box)({
   },
 });
 
-export const SearchInput = styled('input')(({ theme }) => ({
+export const SearchInput = styled('input')(() => ({
   width: '100%',
   maxWidth: '420px',
   height: '48px',

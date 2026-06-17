@@ -1,0 +1,21 @@
+{
+  "profile": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and account settings",
+    "editProfile": "Edit Profile",
+    "personalInformation": "Personal Information",
+    "fields": {
+      "fullName": "Full Name",
+      "displayName": "Display Name",
+      "emailAddress": "Email Address",
+      "department": "Department",
+      "position": "Position",
+      "bio": "Bio"
+    },
+    "stats": {
+      "totalContents": "Total Contents",
+      "enrolledStudents": "Enrolled Students",
+      "yearsOfExperience": "Years of Experience"
+    }
+  }
+}

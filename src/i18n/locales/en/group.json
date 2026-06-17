@@ -1,0 +1,70 @@
+{
+  "group": {
+    "list": {
+      "title": "Training Groups",
+      "subtitle": "Manage student groups, trainers, and learning cohorts",
+      "searchPlaceholder": "Search groups by title or description...",
+      "createGroup": "Create Group",
+      "emptyState": "No groups found matching your search.",
+      "deleteTitle": "Delete Group",
+      "deleteMessage": "Are you sure you want to delete this group? This will also unassign all members."
+    },
+    "details": {
+      "backToGroup": "Back to Group Details",
+      "backToGroups": "Back to Groups",
+      "problemsTitle": "🏆 Problems in \"{{title}}\"",
+      "problemName": "Problem Name",
+      "category": "Category",
+      "difficulty": "Difficulty",
+      "successRate": "Success Rate",
+      "addProblem": "Add Problem",
+      "searchProblems": "Search contest problems...",
+      "removeProblemTitle": "Remove Problem",
+      "removeProblemMessage": "Are you sure you want to remove this problem from the contest?",
+      "removeProblemsTitle": "Remove Problems",
+      "removeProblemsMessage": "Are you sure you want to remove {{count}} selected problems?",
+      "deleteContestTitle": "Delete Contest",
+      "deleteContestMessage": "Are you sure you want to delete this contest from this group?",
+      "studentsCount": "{{count}} Students",
+      "created": "Created {{date}}",
+      "tabContests": "Contests",
+      "tabStudents": "Students",
+      "tabTrainer": "Trainer",
+      "searchGroupContests": "Search group contests...",
+      "createContest": "Create Contest",
+      "noContests": "No contests found for this group.",
+      "searchStudents": "Search students in this group...",
+      "joined": "Joined:",
+      "solvedProblems": "Solved Problems:",
+      "viewStudentProfile": "View Student Profile",
+      "messageTrainer": "Message Trainer",
+      "bio": "Bio",
+      "expertise": "Expertise"
+    },
+    "create": {
+      "title": "Create Training Group",
+      "groupTitle": "Group Title",
+      "groupTitlePlaceholder": "e.g., Geometry Masters",
+      "descriptionPlaceholder": "Enter group purpose and goals...",
+      "assignTrainer": "Assign Trainer"
+    },
+    "edit": {
+      "title": "Edit Training Group",
+      "groupTitle": "Group Title",
+      "assignTrainer": "Assign Trainer"
+    },
+    "view": {
+      "title": "Group Details",
+      "totalStudents": "Total Students",
+      "trainer": "Trainer",
+      "createdOn": "Created On",
+      "groupId": "Group ID"
+    },
+    "members": {
+      "title": "Members - {{title}}",
+      "addNewMember": "Add New Member",
+      "selectUser": "Select a user...",
+      "remove": "Remove"
+    }
+  }
+}

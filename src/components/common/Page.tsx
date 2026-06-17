@@ -1,11 +1,13 @@
 import React from 'react';
 import { Box, Typography, Paper, Chip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface PageProps {
   title: string;
 }
 
 export const Page: React.FC<PageProps> = ({ title }) => {
+  const { t } = useTranslation();
   return (
     <Box sx={{ py: 2 }}>
       <Box sx={{ 
@@ -18,9 +20,9 @@ export const Page: React.FC<PageProps> = ({ title }) => {
         <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b' }}>
           {title}
         </Typography>
-        <Chip 
-          label="Year: 2024" 
-          variant="outlined" 
+        <Chip
+          label={t('ui.page.year')}
+          variant="outlined"
           sx={{ 
             fontWeight: 600, 
             color: '#64748b',
@@ -44,7 +46,7 @@ export const Page: React.FC<PageProps> = ({ title }) => {
         }}
       >
         <Typography sx={{ color: '#94a3b8', fontStyle: 'italic', fontWeight: 500 }}>
-          Content for {title} will be implemented here.
+          {t('ui.page.placeholder', { title })}
         </Typography>
       </Paper>
     </Box>

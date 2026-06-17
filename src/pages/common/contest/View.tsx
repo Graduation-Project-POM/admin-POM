@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Stack, Typography, Box, Divider, Chip } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
@@ -45,20 +46,24 @@ const DetailItem = ({
 );
 
 const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
+  const { t } = useTranslation();
   if (!contest) return null;
 
   return (
     <ModalWrapper
       open={open}
       onClose={onClose}
-      title="Contest Overview"
+      title={t("contest.view.title")}
       maxWidth="sm"
     >
       <Stack spacing={3} sx={{ mt: 1 }}>
         <Box>
           <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
             <Chip
-              label={contest.status}
+              label={t(
+                `contest.status.${contest.status.toLowerCase()}`,
+                contest.status,
+              )}
               size="small"
               sx={{
                 bgcolor:
@@ -77,7 +82,10 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
               }}
             />
             <Chip
-              label={contest.difficulty}
+              label={t(
+                `contest.difficulty.${contest.difficulty.toLowerCase()}`,
+                contest.difficulty,
+              )}
               size="small"
               variant="outlined"
               sx={{ fontWeight: 600 }}
@@ -96,29 +104,29 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
         <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 3 }}>
           <DetailItem
             icon={<Users size={18} />}
-            label="Participants"
+            label={t("contest.view.participants")}
             value={contest.participants}
           />
           <DetailItem
             icon={<Trophy size={18} />}
-            label="Total Problems"
+            label={t("contest.view.totalProblems")}
             value={contest.problemsCount}
           />
           <DetailItem
             icon={<Calendar size={18} />}
-            label="Start Date"
+            label={t("contest.view.startDate")}
             value={contest.startDate}
           />
           <DetailItem
             icon={<Clock size={18} />}
-            label="End Date"
+            label={t("contest.view.endDate")}
             value={contest.endDate}
           />
         </Box>
 
         <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 2 }}>
           <Button variantType="outline" onClick={onClose}>
-            Close
+            {t("buttons.close")}
           </Button>
         </Box>
       </Stack>

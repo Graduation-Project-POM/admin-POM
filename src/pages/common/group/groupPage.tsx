@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Typography, InputAdornment, Stack } from '@mui/material';
 import { Plus, Search  } from 'lucide-react';
 import { GroupCard } from '../../../components/ui/card/GroupCard';
@@ -57,6 +58,7 @@ const mockGroups: GroupData[] = [
 ];
 
 export const GroupsPage: React.FC = () => {
+  const { t } = useTranslation();
   const [groups, setGroups] = useState<GroupData[]>(mockGroups);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -129,19 +131,19 @@ export const GroupsPage: React.FC = () => {
     <StyledContainer>
       <TitleWrapper>
         <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
-          Training Groups
+          {t('group.list.title')}
         </Typography>
       </TitleWrapper>
       <SubtitleWrapper>
         <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-          Manage student groups, trainers, and learning cohorts
+          {t('group.list.subtitle')}
         </Typography>
       </SubtitleWrapper>
 
       <SearchWrapper sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <StyledSearchField
           size="small"
-          placeholder="Search groups by title or description..."
+          placeholder={t('group.list.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ width: 400 }}
@@ -162,7 +164,7 @@ export const GroupsPage: React.FC = () => {
             onClick={() => setIsCreateOpen(true)}
             startIcon={<Plus size={18} />}
           >
-            Create Group
+            {t('group.list.createGroup')}
           </Button>
         </Stack>
       </SearchWrapper>
@@ -170,7 +172,7 @@ export const GroupsPage: React.FC = () => {
       {filteredGroups.length === 0 ? (
         <EmptyStateWrapper>
           <Typography variant="body1" sx={{ color: '#94a3b8', fontWeight: 600 }}>
-            No groups found matching your search.
+            {t('group.list.emptyState')}
           </Typography>
         </EmptyStateWrapper>
       ) : (
@@ -235,8 +237,8 @@ export const GroupsPage: React.FC = () => {
         open={confirmConfig.open}
         onClose={() => setConfirmConfig({ open: false, id: '' })}
         onConfirm={handleConfirmDelete}
-        title="Delete Group"
-        message="Are you sure you want to delete this group? This will also unassign all members."
+        title={t('group.list.deleteTitle')}
+        message={t('group.list.deleteMessage')}
       />
     </StyledContainer>
   );

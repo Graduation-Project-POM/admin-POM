@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import {
   Box,
   Typography,
@@ -60,35 +61,37 @@ import {
 import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../../../types/trainerTypes";
 
  const TrainerDashboard: React.FC = () => {
+  const { t } = useTranslation();
+
   const stats: TrainerStatCard[] = [
     {
-      title: "Total Students",
+      title: t("trainer.dashboard.stats.totalStudents"),
       value: 124,
-      trend: { value: 8, label: "this month", direction: "up" },
+      trend: { value: 8, label: t("trainer.dashboard.stats.thisMonth"), direction: "up" },
       icon: Users,
       iconBg: "#fee2e2",
       iconColor: "#8B1D23",
     },
     {
-      title: "Upcoming Sessions",
+      title: t("trainer.dashboard.stats.upcomingSessions"),
       value: 6,
-      subtitle: "Next: Today 4:00 PM",
+      subtitle: t("trainer.dashboard.stats.nextSession"),
       icon: Calendar,
       iconBg: "#e0f2e9",
       iconColor: "#1f6e43",
     },
     {
-      title: "Completed Sessions",
+      title: t("trainer.dashboard.stats.completedSessions"),
       value: 42,
-      trend: { value: 12, label: "this week", direction: "up" },
+      trend: { value: 12, label: t("trainer.dashboard.stats.thisWeek"), direction: "up" },
       icon: CheckCircle,
       iconBg: "#fff0db",
       iconColor: "#b45309",
     },
     {
-      title: "Pending Feedback",
+      title: t("trainer.dashboard.stats.pendingFeedback"),
       value: 3,
-      subtitle: "Needs review",
+      subtitle: t("trainer.dashboard.stats.needsReview"),
       icon: MessageSquare,
       iconBg: "#fee2e2",
       iconColor: "#b91c1c",
@@ -96,9 +99,9 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
   ];
 
   const pendingRequests: PendingRequest[] = [
-    { id: 1, name: "Omar Khalil", type: "Enrollment Request", course: "Data Structures", date: "Feb 18" },
-    { id: 2, name: "Sara Mousa", type: "Assignment Submission", course: "Algorithms", date: "Feb 17" },
-    { id: 3, name: "Lina Taha", type: "Enrollment Request", course: "Web Development", date: "Feb 16" },
+    { id: 1, name: "Omar Khalil", type: t("trainer.dashboard.pendingRequests.enrollmentRequest"), course: "Data Structures", date: "Feb 18" },
+    { id: 2, name: "Sara Mousa", type: t("trainer.dashboard.pendingRequests.assignmentSubmission"), course: "Algorithms", date: "Feb 17" },
+    { id: 3, name: "Lina Taha", type: t("trainer.dashboard.pendingRequests.enrollmentRequest"), course: "Web Development", date: "Feb 16" },
   ];
 
   const announcements: TrainerAnnouncement[] = [
@@ -109,12 +112,12 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
   ];
 
   const quickActions = [
-    { label: "Manage Students", icon: Users, path: "/trainer/students" },
-    { label: "Create Session", icon: Video, path: "/trainer/sessions/new" },
-    { label: "Post Announcement", icon: Megaphone, path: "/trainer/announcements" },
-    { label: "View Reports", icon: BarChart3, path: "/trainer/reports" },
-    { label: "Assignments", icon: FileText, path: "/trainer/assignments" },
-    { label: "Schedule", icon: Clock, path: "/trainer/schedule" },
+    { label: t("trainer.dashboard.quickActions.manageStudents"), icon: Users, path: "/trainer/students" },
+    { label: t("trainer.dashboard.quickActions.createSession"), icon: Video, path: "/trainer/sessions/new" },
+    { label: t("trainer.dashboard.quickActions.postAnnouncement"), icon: Megaphone, path: "/trainer/announcements" },
+    { label: t("trainer.dashboard.quickActions.viewReports"), icon: BarChart3, path: "/trainer/reports" },
+    { label: t("trainer.dashboard.quickActions.assignments"), icon: FileText, path: "/trainer/assignments" },
+    { label: t("trainer.dashboard.quickActions.schedule"), icon: Clock, path: "/trainer/schedule" },
   ];
 
   const handleApprove = (id: number) => console.log(`Approve request ${id}`);
@@ -124,15 +127,15 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
 
   const getStatusChip = (status: string) => {
     if (status === "Published") {
-      return <Chip label="Published" size="small" sx={publishedChip} />;
+      return <Chip label={t("trainer.dashboard.announcements.published")} size="small" sx={publishedChip} />;
     }
-    return <Chip label="Draft" size="small" sx={draftChip} />;
+    return <Chip label={t("trainer.dashboard.announcements.draft")} size="small" sx={draftChip} />;
   };
 
   return (
     <Box sx={dashboardContainer}>
       <Typography variant="h4" sx={pageTitle}>
-        Trainer Dashboard
+        {t("trainer.dashboard.title")}
       </Typography>
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -177,7 +180,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
           <Card sx={{ ...sectionCard, mb: 4 }}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                Quick Actions
+                {t("trainer.dashboard.quickActions.title")}
               </Typography>
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
@@ -199,7 +202,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
           <Card sx={sectionCard}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                Pending Requests
+                {t("trainer.dashboard.pendingRequests.title")}
               </Typography>
               <Stack spacing={2}>
                 {pendingRequests.map((request) => (
@@ -223,7 +226,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
                         onClick={() => handleApprove(request.id)}
                         sx={approveButton}
                       >
-                        Review
+                        {t("trainer.dashboard.pendingRequests.review")}
                       </Button>
                       <IconButton size="small" onClick={() => handleEdit(request.id)} sx={{ color: "#64748b" }}>
                         <Edit size={16} />
@@ -241,15 +244,15 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
           <Card sx={{ ...sectionCard, height: "100%", display: "flex", flexDirection: "column" }}>
             <CardContent sx={{ p: 3, flex: 1 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                Announcements
+                {t("trainer.dashboard.announcements.title")}
               </Typography>
               <TableContainer component={Paper} elevation={0} sx={tableContainerStyle}>
                 <Table sx={{ minWidth: 300 }}>
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#f8fafc" }}>
-                      <TableCell sx={tableHeadCell}>Title</TableCell>
-                      <TableCell sx={tableHeadCell}>Date</TableCell>
-                      <TableCell sx={tableHeadCell}>Status</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("trainer.dashboard.announcements.tableTitle")}</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("trainer.dashboard.announcements.tableDate")}</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("trainer.dashboard.announcements.tableStatus")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
@@ -271,7 +274,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
                   onClick={handleAddAnnouncement}
                   sx={addAnnouncementButton}
                 >
-                  Announcement
+                  {t("trainer.dashboard.announcements.addAnnouncement")}
                 </Button>
                 <Button
                   variant="outlined"
@@ -279,7 +282,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
                   onClick={handleAddStudent}
                   sx={addUserButton}
                 >
-                  Add Student
+                  {t("trainer.dashboard.announcements.addStudent")}
                 </Button>
               </Box>
             </CardContent>
