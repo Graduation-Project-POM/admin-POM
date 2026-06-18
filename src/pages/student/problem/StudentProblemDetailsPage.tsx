@@ -97,7 +97,7 @@ export const StudentProblemDetailsPage = () => {
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 1 }}>
-            <FileCode size={20} color="#8B1D23" />
+            <FileCode size={20} color="#8B1D23"  />
             {t('student.problemDetails.mySolution')}
           </Typography>
           {graded ? (
@@ -114,10 +114,10 @@ export const StudentProblemDetailsPage = () => {
           {t('student.problemDetails.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        <Box sx={{ bgcolor: '#1e293b', p: 2.5, borderRadius: '12px', overflow: 'hidden' }}>
+        <Box sx={{ bgcolor: '#8b1d233a', p: 2.5, borderRadius: '12px', overflow: 'hidden' }}>
           <Typography
             component="pre"
-            sx={{ color: '#e2e8f0', fontFamily: 'monospace', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
+            sx={{ color: '#8B1D23', fontFamily: 'monospace', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
           >
             {submission.solutionText || t('student.problemDetails.noSolution')}
           </Typography>

@@ -17,6 +17,7 @@ import {
   type DifficultyLabel,
 } from '../../../services/problemService';
 import { SubmitSolutionModal } from './SubmitSolutionModal';
+import { ProblemViewModal } from './ProblemViewModal';
 
 interface ProblemRow {
   id: string;
@@ -153,6 +154,8 @@ export const ProblemBank: React.FC = () => {
   // problemId -> grade (null = submitted but not graded yet). Absent = not submitted.
   const [gradeByProblem, setGradeByProblem] = useState<Map<number, number | null>>(new Map());
   const [modalProblem, setModalProblem] = useState<BackendProblem | null>(null);
+  // Read-only problem details modal (opened by clicking a problem name).
+  const [viewProblem, setViewProblem] = useState<BackendProblem | null>(null);
 
   const loadProblems = useCallback(async () => {
     setLoading(true);
@@ -207,19 +210,21 @@ export const ProblemBank: React.FC = () => {
 
   const columns = [
     {
-      id: 'id',
-      label: t('student.problems.columns.id'),
-      render: (row: ProblemRow) => (
-        <Typography sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '13px', fontFamily: 'monospace' }}>
-          {row.id}
-        </Typography>
-      ),
-    },
-    {
       id: 'name',
       label: t('student.problems.columns.problemName'),
       render: (row: ProblemRow) => (
-        <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{row.name}</Typography>
+        <Typography
+          onClick={() => setViewProblem(row.raw)}
+          sx={{
+            fontWeight: 700,
+            color: '#8B1D23',
+            fontSize: '14px',
+            cursor: 'pointer',
+            '&:hover': { textDecoration: 'underline' },
+          }}
+        >
+          {row.name}
+        </Typography>
       ),
     },
     {
@@ -391,6 +396,12 @@ export const ProblemBank: React.FC = () => {
         onClose={() => setModalProblem(null)}
         problem={modalProblem}
         onSubmitted={handleSubmitted}
+      />
+
+      <ProblemViewModal
+        open={!!viewProblem}
+        onClose={() => setViewProblem(null)}
+        problem={viewProblem}
       />
     </PageContainer>
   );
