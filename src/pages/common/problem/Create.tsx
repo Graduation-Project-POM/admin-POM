@@ -13,14 +13,12 @@ export interface ProblemFormValues {
   description: string;
   difficulty: string;
   isPublished: boolean;
-  // Optional problem image (stored path/key); empty string when none.
   imageUrl: string;
 }
 
 interface CreateProblemProps {
   open: boolean;
   onClose: () => void;
-  // The parent decides what to do with the collected data (e.g. call the API).
   onSave: (data: ProblemFormValues) => void | Promise<void>;
 }
 

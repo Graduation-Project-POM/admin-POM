@@ -14,7 +14,6 @@ export interface ProblemEditValues {
   description: string;
   difficulty: string;
   isPublished: boolean;
-  // Optional problem image (stored path/key); empty string when none.
   imageUrl: string;
 }
 
