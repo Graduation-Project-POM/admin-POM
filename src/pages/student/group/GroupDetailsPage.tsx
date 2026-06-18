@@ -64,7 +64,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
 
   const [contestProblems, setContestProblems] = useState<any[]>([]);
-  const [setProblemsLoading] = useState(false);
+  const [, setProblemsLoading] = useState(false);
   const [problemsError, setProblemsError] = useState<string | null>(null);
 
   const loadContestProblems = async (contestId: string) => {
