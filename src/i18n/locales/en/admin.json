@@ -75,6 +75,22 @@
         "saveError": "Failed to save user. Please try again.",
         "deleteError": "Failed to delete user. Please try again.",
         "passwordMismatch": "Passwords do not match",
+        "validation": {
+          "firstNameRequired": "First name is required.",
+          "firstNameShort": "First name must be at least 2 characters.",
+          "lastNameRequired": "Last name is required.",
+          "lastNameShort": "Last name must be at least 2 characters.",
+          "userNameRequired": "Username is required.",
+          "userNameShort": "Username must be at least 4 characters.",
+          "emailRequired": "Email is required.",
+          "emailInvalid": "Please enter a valid email address.",
+          "phoneInvalid": "Please enter a valid phone number.",
+          "roleRequired": "Please select a role.",
+          "genderRequired": "Please select a gender.",
+          "passwordRequired": "Password is required.",
+          "passwordShort": "Password must be at least 8 characters.",
+          "confirmPasswordRequired": "Please confirm the password."
+        },
         "roles": {
           "student": "Student",
           "trainer": "Trainer",

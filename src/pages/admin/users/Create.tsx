@@ -50,11 +50,14 @@ const initialFormData: UserFormData = {
   isActive: true,
 };
 
+type FieldErrors = Partial<Record<keyof UserFormData, string>>;
+
 const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -64,6 +67,8 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
       ...prev,
       [name]: value,
     }));
+    // Clear that field's error as the user corrects it.
+    setErrors((prev) => ({ ...prev, [name]: undefined }));
   };
 
   const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -76,17 +81,51 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
   const handleClose = () => {
     setFormData(initialFormData);
     setError(null);
+    setErrors({});
     onClose();
+  };
+
+  // Per-field validation (mirrors the backend CreateUserDTO rules).
+  const validate = (): FieldErrors => {
+    const e: FieldErrors = {};
+    const v = (s: string) => s.trim();
+
+    if (!v(formData.firstName)) e.firstName = t("admin.users.form.validation.firstNameRequired");
+    else if (v(formData.firstName).length < 2) e.firstName = t("admin.users.form.validation.firstNameShort");
+
+    if (!v(formData.lastName)) e.lastName = t("admin.users.form.validation.lastNameRequired");
+    else if (v(formData.lastName).length < 2) e.lastName = t("admin.users.form.validation.lastNameShort");
+
+    if (!v(formData.userName)) e.userName = t("admin.users.form.validation.userNameRequired");
+    else if (v(formData.userName).length < 4) e.userName = t("admin.users.form.validation.userNameShort");
+
+    if (!v(formData.email)) e.email = t("admin.users.form.validation.emailRequired");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v(formData.email)))
+      e.email = t("admin.users.form.validation.emailInvalid");
+
+    if (v(formData.phone) && !/^[+0-9][0-9\s\-()]{6,}$/.test(v(formData.phone)))
+      e.phone = t("admin.users.form.validation.phoneInvalid");
+
+    if (!formData.role) e.role = t("admin.users.form.validation.roleRequired");
+    if (!formData.gender) e.gender = t("admin.users.form.validation.genderRequired");
+
+    if (!formData.password) e.password = t("admin.users.form.validation.passwordRequired");
+    else if (formData.password.length < 8) e.password = t("admin.users.form.validation.passwordShort");
+
+    if (!formData.confirmPassword) e.confirmPassword = t("admin.users.form.validation.confirmPasswordRequired");
+    else if (formData.confirmPassword !== formData.password)
+      e.confirmPassword = t("admin.users.form.passwordMismatch");
+
+    return e;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
-    if (formData.password !== formData.confirmPassword) {
-      setError(t("admin.users.form.passwordMismatch"));
-      return;
-    }
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
 
     setSubmitting(true);
     try {
@@ -151,7 +190,7 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
       title={t("admin.users.form.createTitle")}
       maxWidth="md"
     >
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
@@ -194,6 +233,8 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
                 onChange={handleChange}
                 required={field.required}
                 options={field.options}
+                error={!!errors[field.name]}
+                helperText={errors[field.name]}
               />
             ),
           )}
