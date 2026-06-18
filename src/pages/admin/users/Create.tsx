@@ -6,6 +6,7 @@ import { FormField } from "../../../components/ui/Forms/FormField";
 import { Label } from "../../../components/ui/label/Label";
 import { useTranslation } from "react-i18next";
 import { createUser, roleNameToId } from "../../../services/userService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 interface UserFormData {
   firstName: string;
@@ -103,8 +104,8 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
       });
       onSuccess?.();
       handleClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("admin.users.form.saveError"));
+    } catch (err) {
+      setError(getApiErrorMessage(err, t("admin.users.form.saveError")));
     } finally {
       setSubmitting(false);
     }

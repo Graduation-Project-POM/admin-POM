@@ -14,10 +14,12 @@ import { useContests } from "../../../hooks/useContests";
 import { contestService } from "../../../services/contestService";
 import type {
   Contest,
-  ContestStatus,
   CreateContestInput,
 } from "../../../types/contest";
 import { problemsService } from "../../../services/problemsService";
+import type { ProblemSubmission } from "../../../services/problemsService";
+import { getApiErrorMessage } from "../../../utils/apiError";
+import { getContestStatus, getContestStatusNumber } from "../../../utils/contestStatus";
 import { DIFFICULTY_FROM_LABEL, DIFFICULTY_LABEL } from "../../../types/problem";
 
 import {
@@ -52,25 +54,11 @@ interface Problem {
   acceptanceRate: number;
 }
 
-const STATUS_LABEL_TO_NUMBER: Record<string, ContestStatus> = {
-  Upcoming: 1,
-  Ongoing: 2,
-  Running: 2,
-  Ended: 3,
-  Cancelled: 4,
-};
-const STATUS_NUMBER_TO_LABEL: Record<number, string> = {
-  1: "Upcoming",
-  2: "Ongoing",
-  3: "Ended",
-  4: "Cancelled",
-};
-
 const toContestData = (c: Contest): ContestData => ({
   id: String(c.id),
   title: c.title,
-  status: STATUS_NUMBER_TO_LABEL[c.status] ?? "Upcoming",
-  difficulty: "Medium", 
+  status: getContestStatus(c.startAt, c.endAt),
+  difficulty: "Medium",
   participants: c.studentCount,
   problemsCount: c.problemCount,
   startDate: c.startAt,
@@ -134,6 +122,8 @@ export const ContestsPage: React.FC = () => {
   const loadContestProblems = async (contestId: string) => {
     setProblemsLoading(true);
     setActionError(null);
+    setContestProblemIds([]);
+    setProblemsMap((m) => ({ ...m, [contestId]: [] }));
     try {
       const data = await contestService.getProblems(Number(contestId));
       const ids: number[] = [];
@@ -153,11 +143,36 @@ export const ContestsPage: React.FC = () => {
       });
       setContestProblemIds(ids);
       setProblemsMap((m) => ({ ...m, [contestId]: mapped }));
-    } catch {
+
+      void Promise.all(
+        mapped.map(async (prob) => {
+          try {
+            const subs = await problemsService.getSubmissions(Number(prob.id));
+            return { id: prob.id, ...submissionStats(subs) };
+          } catch {
+            return null;
+          }
+        }),
+      ).then((results) => {
+        const byId = new Map(
+          results.filter((r): r is NonNullable<typeof r> => r != null).map((r) => [r.id, r]),
+        );
+        if (byId.size === 0) return;
+        setProblemsMap((m) => ({
+          ...m,
+          [contestId]: (m[contestId] || []).map((p) =>
+            byId.has(p.id) ? { ...p, ...byId.get(p.id)! } : p,
+          ),
+        }));
+      });
+    } catch (err) {
       setContestProblemIds([]);
       setProblemsMap((m) => ({ ...m, [contestId]: [] }));
       setActionError(
-        t("contest.errors.loadProblemsFailed", "Failed to load contest problems"),
+        getApiErrorMessage(
+          err,
+          t("contest.errors.loadProblemsFailed", "Failed to load contest problems"),
+        ),
       );
     } finally {
       setProblemsLoading(false);
@@ -183,7 +198,65 @@ export const ContestsPage: React.FC = () => {
 
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
-  const [currentSubmission, setCurrentSubmission] = useState<any>(null);
+  const [currentSubmission, setCurrentSubmission] = useState<ProblemSubmission | null>(null);
+
+  const [submissions, setSubmissions] = useState<ProblemSubmission[]>([]);
+  const [submissionsLoading, setSubmissionsLoading] = useState(false);
+  const [gradingSaving, setGradingSaving] = useState(false);
+
+  const loadSubmissions = async (problemId: number): Promise<ProblemSubmission[]> => {
+    setSubmissionsLoading(true);
+    try {
+      const subs = await problemsService.getSubmissions(problemId);
+      setSubmissions(subs);
+      return subs;
+    } catch (err) {
+      setSubmissions([]);
+      setActionError(
+        getApiErrorMessage(err, t("contest.errors.loadSubmissionsFailed", "Failed to load submissions")),
+      );
+      return [];
+    } finally {
+      setSubmissionsLoading(false);
+    }
+  };
+
+  const submissionStats = (subs: ProblemSubmission[]) => {
+    const total = subs.length;
+    const graded = subs.filter((s) => s.gradedAt != null || s.score != null).length;
+    return {
+      totalSubmissions: total,
+      studentsSolved: graded,
+      acceptanceRate: total > 0 ? Math.round((graded / total) * 100) : 0,
+    };
+  };
+
+  const handleGradeSubmission = async (submissionId: number, score: number, feedback: string) => {
+    setGradingSaving(true);
+    setActionError(null);
+    try {
+      await problemsService.gradeSubmission(submissionId, {
+        score,
+        feedback: feedback.trim() || undefined,
+      });
+      setIsSolutionModalOpen(false);
+      if (selectedProblem && selectedContestId) {
+        const subs = await loadSubmissions(Number(selectedProblem.id));
+        const pid = selectedProblem.id;
+        const stats = submissionStats(subs);
+        setProblemsMap((m) => ({
+          ...m,
+          [selectedContestId]: (m[selectedContestId] || []).map((p) =>
+            p.id === pid ? { ...p, ...stats } : p,
+          ),
+        }));
+      }
+    } catch (err) {
+      setActionError(getApiErrorMessage(err, t("contest.errors.gradeFailed", "Failed to save mark")));
+    } finally {
+      setGradingSaving(false);
+    }
+  };
 
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
@@ -199,19 +272,21 @@ export const ContestsPage: React.FC = () => {
 
   const handleCreateContest = async (newContest: ContestData) => {
     setActionError(null);
+    const startAt = toIso(newContest.startDate);
+    const endAt = toIso(newContest.endDate);
     const input: CreateContestInput = {
       title: newContest.title,
       description: "",
-      status: STATUS_LABEL_TO_NUMBER[newContest.status] ?? 1,
-      startAt: toIso(newContest.startDate),
-      endAt: toIso(newContest.endDate),
+      status: getContestStatusNumber(startAt, endAt),
+      startAt,
+      endAt,
       problemIds: [],
     };
     try {
       await create(input);
-    } catch {
+    } catch (err) {
       setActionError(
-        t("contest.errors.createFailed", "Failed to create contest"),
+        getApiErrorMessage(err, t("contest.errors.createFailed", "Failed to create contest")),
       );
     }
   };
@@ -219,15 +294,17 @@ export const ContestsPage: React.FC = () => {
   const handleUpdateContest = async (updatedContest: ContestData) => {
     setActionError(null);
     try {
+      const startAt = toIso(updatedContest.startDate);
+      const endAt = toIso(updatedContest.endDate);
       await update(Number(updatedContest.id), {
         title: updatedContest.title,
-        status: STATUS_LABEL_TO_NUMBER[updatedContest.status] ?? 1,
-        startAt: toIso(updatedContest.startDate),
-        endAt: toIso(updatedContest.endDate),
+        status: getContestStatusNumber(startAt, endAt),
+        startAt,
+        endAt,
       });
-    } catch {
+    } catch (err) {
       setActionError(
-        t("contest.errors.updateFailed", "Failed to update contest"),
+        getApiErrorMessage(err, t("contest.errors.updateFailed", "Failed to update contest")),
       );
     }
   };
@@ -242,9 +319,9 @@ export const ContestsPage: React.FC = () => {
         setActionError(null);
         try {
           await remove(Number(id));
-        } catch {
+        } catch (err) {
           setActionError(
-            t("contest.errors.deleteFailed", "Failed to delete contest"),
+            getApiErrorMessage(err, t("contest.errors.deleteFailed", "Failed to delete contest")),
           );
         }
       },
@@ -257,10 +334,11 @@ export const ContestsPage: React.FC = () => {
     try {
       const newId = await problemsService.create({
         title: form.title,
-        statement: form.title,
-        solution: form.title,
+        statement: form.description || "",
+        solution: form.description || form.title,
         difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
         topic: form.category || "General",
+        photoFileKey: form.imageUrl || null,
         isPublished: form.visibility !== "group-specific",
       });
       const ids = [...contestProblemIds, newId];
@@ -279,9 +357,9 @@ export const ContestsPage: React.FC = () => {
         ...m,
         [selectedContestId]: [newProblem, ...(m[selectedContestId] || [])],
       }));
-    } catch {
+    } catch (err) {
       setActionError(
-        t("contest.errors.addProblemFailed", "Failed to add problem to the contest"),
+        getApiErrorMessage(err, t("contest.errors.addProblemFailed", "Failed to add problem to the contest")),
       );
     }
   };
@@ -322,9 +400,9 @@ export const ContestsPage: React.FC = () => {
               (p) => p.id !== id,
             ),
           }));
-        } catch {
+        } catch (err) {
           setActionError(
-            t("contest.errors.removeProblemFailed", "Failed to remove problem"),
+            getApiErrorMessage(err, t("contest.errors.removeProblemFailed", "Failed to remove problem")),
           );
         }
       },
@@ -355,9 +433,9 @@ export const ContestsPage: React.FC = () => {
               (p) => !ids.includes(p.id),
             ),
           }));
-        } catch {
+        } catch (err) {
           setActionError(
-            t("contest.errors.removeProblemFailed", "Failed to remove problems"),
+            getApiErrorMessage(err, t("contest.errors.removeProblemFailed", "Failed to remove problems")),
           );
         }
       },
@@ -379,7 +457,9 @@ export const ContestsPage: React.FC = () => {
           <Typography
             onClick={() => {
               setSelectedProblem(row);
+              setSubmissions([]);
               setIsProgressModalOpen(true);
+              void loadSubmissions(Number(row.id));
             }}
             sx={{
               fontWeight: 700,
@@ -520,6 +600,8 @@ export const ContestsPage: React.FC = () => {
           open={isProgressModalOpen}
           onClose={() => setIsProgressModalOpen(false)}
           problemTitle={selectedProblem?.name || ""}
+          submissions={submissions}
+          loading={submissionsLoading}
           onViewSolution={(submission) => {
             setCurrentSubmission(submission);
             setIsSolutionModalOpen(true);
@@ -531,10 +613,8 @@ export const ContestsPage: React.FC = () => {
           onClose={() => setIsSolutionModalOpen(false)}
           submission={currentSubmission}
           problemTitle={selectedProblem?.name || ""}
-          onSaveMark={(id, score) => {
-            console.log(`Saved score ${score} for submission ${id}`);
-            setIsSolutionModalOpen(false);
-          }}
+          saving={gradingSaving}
+          onSaveMark={handleGradeSubmission}
         />
       </StyledContainer>
     );

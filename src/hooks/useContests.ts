@@ -1,28 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { contestService } from "../services/contestService";
+import { getApiErrorMessage } from "../utils/apiError";
 import type {
   Contest,
   CreateContestInput,
   UpdateContestInput,
 } from "../types/contest";
-
-function toMessage(err: unknown, fallback: string): string {
-  const e = err as {
-    response?: { status?: number; data?: { message?: string; title?: string } };
-  };
-  if (!e?.response) {
-    return "Cannot reach the server. Please make sure the backend is running.";
-  }
-  const status = e.response.status;
-  if (status === 401)
-    return "Your session has expired or you're not logged in. Please log in again.";
-  if (status === 403)
-    return "You don't have permission to view contests (this endpoint is Admin-only). Log in as an admin.";
-  const data = e.response.data;
-  if (data?.message) return data.message;
-  if (data?.title) return data.title;
-  return `${fallback} (HTTP ${status})`;
-}
 
 export function useContests() {
   const [contests, setContests] = useState<Contest[]>([]);
@@ -35,7 +18,7 @@ export function useContests() {
     try {
       setContests(await contestService.getAll());
     } catch (err) {
-      setError(toMessage(err, "Failed to load contests"));
+      setError(getApiErrorMessage(err, "Failed to load contests"));
     } finally {
       setLoading(false);
     }

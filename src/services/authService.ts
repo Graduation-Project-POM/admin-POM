@@ -1,8 +1,7 @@
 import axios from "axios";
 
-const API_URL = "https://localhost:7205";
+export const API_URL = "https://localhost:7205";
 
-// one shared instance for the whole app
 export const api = axios.create({ baseURL: API_URL });
 
 api.interceptors.request.use((config) => {
@@ -13,9 +12,6 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// If a request comes back 401 with a stored token, the session has expired /
-// is invalid — clear it and send the user to the login page. (Skip the auth
-// endpoints so a failed login shows its own error instead of redirecting.)
 api.interceptors.response.use(
   (response) => response,
   (error) => {

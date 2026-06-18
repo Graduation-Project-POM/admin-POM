@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, InputAdornment, Stack } from '@mui/material';
+import { Box, Typography, InputAdornment, Stack, Alert, CircularProgress } from '@mui/material';
 import { Plus, Search  } from 'lucide-react';
 import { GroupCard } from '../../../components/ui/card/GroupCard';
 import type { GroupData } from '../../../types/index';
@@ -20,46 +20,36 @@ import EditGroups from './Edit';
 import Members from './Members';
 import ViewGroups from './View';
 import { GroupDetailsPage } from './groupDetailsPage';
+import { useGroups } from '../../../hooks/useGroups';
+import { groupService } from '../../../services/groupService';
+import { getApiErrorMessage } from '../../../utils/apiError';
+import { useAuth } from '../../../services/AuthContext';
+import type { Group } from '../../../types/group';
 
-const mockGroups: GroupData[] = [
-  {
-    id: '1',
-    title: 'Advanced Algorithms',
-    description: 'Focus on advanced algorithmic concepts and competitive programming',
-    status: 'Ongoing',
-    progress: 80,
-    studentsCount: 24,
-    trainerCount: 1,
-    trainerName: 'Jane Smith',
-    createdDate: '2026-01-15',
-  },
-  {
-    id: '2',
-    title: 'Data Structures Fundamentals',
-    description: 'Learn fundamental data structures and their applications',
-    status: 'Ongoing',
-    progress: 70,
-    studentsCount: 18,
-    trainerCount: 1,
-    trainerName: 'Jane Smith',
-    createdDate: '2026-02-01',
-  },
-  {
-    id: '3',
-    title: 'Beginner Practice',
-    description: 'Entry-level problem solving and programming basics',
-    status: 'Ongoing',
-    progress: 90,
-    studentsCount: 32,
-    trainerCount: 1,
-    trainerName: 'Emily Davis',
-    createdDate: '2026-01-20',
-  },
-];
+const toGroupData = (g: Group): GroupData => ({
+  id: String(g.id),
+  title: g.name,
+  description: g.description ?? '',
+  status: 'active',
+  progress: 0,
+  studentsCount: g.studentCount,
+  trainerCount: g.trainerName ? 1 : 0,
+  trainerName: g.trainerName ?? '',
+  createdDate: g.startDate,
+});
 
 export const GroupsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [groups, setGroups] = useState<GroupData[]>(mockGroups);
+  const { role, trainerId } = useAuth();
+  const { groups: apiGroups, loading, error, remove, reload } = useGroups();
+  const [actionError, setActionError] = useState<string | null>(null);
+  // A trainer only ever sees the groups they own (backend already enforces this;
+  // this client-side filter mirrors it as defense-in-depth). Admins see all.
+  const scopedGroups =
+    role === 'Trainer' && trainerId != null
+      ? apiGroups.filter((g) => g.trainerId === trainerId)
+      : apiGroups;
+  const groups = scopedGroups.map(toGroupData);
   const [searchQuery, setSearchQuery] = useState('');
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -78,24 +68,59 @@ export const GroupsPage: React.FC = () => {
     id: '',
   });
 
-  const handleCreate = (newGroup: GroupData) => {
-    setGroups([newGroup, ...groups]);
+  const handleCreate = async (newGroup: any) => {
+    setActionError(null);
+    try {
+      const res = await groupService.create({
+        name: newGroup.title,
+        description: newGroup.description,
+        trainerId: Number(newGroup.trainerId) || 0,
+      });
+      if (newGroup.studentIds?.length) {
+        await groupService.addStudents(res.groupId, newGroup.studentIds);
+      }
+      await reload();
+    } catch (err) {
+      setActionError(getApiErrorMessage(err, t('group.errors.createFailed', 'Failed to create group')));
+    }
   };
 
-  const handleUpdate = (updatedGroup: GroupData) => {
-    setGroups(groups.map(g => g.id === updatedGroup.id ? updatedGroup : g));
+  const handleUpdate = async (updatedGroup: any) => {
+    setActionError(null);
+    const id = Number(updatedGroup.id);
+    try {
+      await groupService.update(id, {
+        name: updatedGroup.title,
+        description: updatedGroup.description,
+      });
+      const current = await groupService.getStudents(id);
+      const currentIds = current.map((s) => s.studentId);
+      const selected: number[] = updatedGroup.studentIds ?? [];
+      const toAdd = selected.filter((x) => !currentIds.includes(x));
+      const toRemove = currentIds.filter((x) => !selected.includes(x));
+      if (toAdd.length) await groupService.addStudents(id, toAdd);
+      await Promise.all(toRemove.map((x) => groupService.removeStudent(id, x)));
+      await reload();
+    } catch (err) {
+      setActionError(getApiErrorMessage(err, t('group.errors.updateFailed', 'Failed to update group')));
+    }
   };
 
   const handleDeleteClick = (id: string) => {
     setConfirmConfig({ open: true, id });
   };
 
-  const handleConfirmDelete = () => {
-    setGroups(groups.filter(g => g.id !== confirmConfig.id));
+  const handleConfirmDelete = async () => {
+    const id = confirmConfig.id;
     setConfirmConfig({ open: false, id: '' });
+    setActionError(null);
+    try {
+      await remove(Number(id));
+    } catch (err) {
+      setActionError(getApiErrorMessage(err, t('group.errors.deleteFailed', 'Failed to delete group')));
+    }
   };
 
-  // Handler for viewing group details
   const handleViewGroupDetails = (id: string) => {
     const group = groups.find(g => g.id === id);
     if (group) {
@@ -104,7 +129,6 @@ export const GroupsPage: React.FC = () => {
     }
   };
 
-  // Handler for going back from details page
   const handleBackFromDetails = () => {
     setViewingGroupDetails(false);
     setDetailsGroup(null);
@@ -116,7 +140,6 @@ export const GroupsPage: React.FC = () => {
       group.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // If viewing group details, show details page
   if (viewingGroupDetails && detailsGroup) {
     return (
       <GroupDetailsPage 
@@ -126,7 +149,6 @@ export const GroupsPage: React.FC = () => {
     );
   }
 
-  // Otherwise show groups list
   return (
     <StyledContainer>
       <TitleWrapper>
@@ -169,7 +191,19 @@ export const GroupsPage: React.FC = () => {
         </Stack>
       </SearchWrapper>
 
-      {filteredGroups.length === 0 ? (
+      {actionError && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError(null)}>
+          {actionError}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+          <CircularProgress sx={{ color: '#8B1D23' }} />
+        </Box>
+      ) : error ? (
+        <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
+      ) : filteredGroups.length === 0 ? (
         <EmptyStateWrapper>
           <Typography variant="body1" sx={{ color: '#94a3b8', fontWeight: 600 }}>
             {t('group.list.emptyState')}
@@ -182,7 +216,6 @@ export const GroupsPage: React.FC = () => {
               key={group.id}
               group={group}
               onView={(id) => {
-                // Navigate to details page when clicking on a group card
                 handleViewGroupDetails(id);
               }}
               onEdit={(g) => {
@@ -224,13 +257,14 @@ export const GroupsPage: React.FC = () => {
         group={selectedGroup}
       />
 
-      <Members 
-        open={isMembersOpen} 
+      <Members
+        open={isMembersOpen}
         onClose={() => {
             setIsMembersOpen(false);
             setSelectedGroup(null);
-        }} 
+        }}
         group={selectedGroup}
+        onMembersChanged={reload}
       />
 
       <ConfirmationModal 

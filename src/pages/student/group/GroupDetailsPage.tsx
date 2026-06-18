@@ -1,5 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CircularProgress, Alert } from '@mui/material';
+import { groupService } from '../../../services/groupService';
+import { contestService } from '../../../services/contestService';
+import { problemsService } from '../../../services/problemsService';
+import { getApiErrorMessage } from '../../../utils/apiError';
+import { resolveMediaUrl } from '../../../utils/media';
+import { getContestStatus } from '../../../utils/contestStatus';
+import { DIFFICULTY_LABEL } from '../../../types/problem';
 import {
   Box,
   Typography,
@@ -30,211 +38,6 @@ import { Button } from '../../../components/ui/button/studentButton';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { useNavigate } from 'react-router-dom';
 
-const mockTrainer = {
-  id: 'trainer-1',
-  name: 'Jane Smith',
-  email: 'jane.smith@example.com',
-  avatar: 'JS',
-  expertise: ['Algorithms', 'Data Structures', 'Competitive Programming'],
-  bio: 'Experienced trainer with 8+ years in programming education. Specializes in algorithmic problem solving and competitive programming training.',
-  rating: 4.8,
-  totalStudents: 156,
-};
-
-const mockStudents = [
-  { id: 'student-1', name: 'Ahmed Ali', email: 'ahmed@example.com', joinDate: '2026-01-20', solvedProblems: 45 },
-  { id: 'student-2', name: 'Fatima Mohamed', email: 'fatima@example.com', joinDate: '2026-01-22', solvedProblems: 38 },
-  { id: 'student-3', name: 'Omar Hassan', email: 'omar@example.com', joinDate: '2026-01-25', solvedProblems: 52 },
-  { id: 'student-4', name: 'Layla Ibrahim', email: 'layla@example.com', joinDate: '2026-02-01', solvedProblems: 31 },
-  { id: 'student-5', name: 'Karim Saeed', email: 'karim@example.com', joinDate: '2026-02-03', solvedProblems: 47 },
-  { id: 'student-6', name: 'Nour Ahmed', email: 'nour@example.com', joinDate: '2026-02-05', solvedProblems: 29 },
-];
-
-const mockContests: ContestData[] = [
-  {
-    id: '1',
-    title: 'Sorting & Searching',
-    problemsCount: 5,
-    participants: 24,
-    startDate: '2026-01-20',
-    endDate: '2026-01-27',
-    status: 'Ended',
-    difficulty: 'Medium',
-  },
-  {
-    id: '2',
-    title: 'Greedy Algorithms',
-    problemsCount: 6,
-    participants: 22,
-    startDate: '2026-01-27',
-    endDate: '2026-02-03',
-    status: 'Ended',
-    difficulty: 'Medium',
-  },
-  {
-    id: '3',
-    title: 'Dynamic Programming',
-    problemsCount: 8,
-    participants: 20,
-    startDate: '2026-02-03',
-    endDate: '2026-02-10',
-    status: 'Ongoing',
-    difficulty: 'Hard',
-  },
-  {
-    id: '4',
-    title: 'Final Challenge',
-    problemsCount: 10,
-    participants: 0,
-    startDate: '2026-02-17',
-    endDate: '2026-02-24',
-    status: 'Upcoming',
-    difficulty: 'Hard',
-  },
-];
-
-// Problems for ongoing contest (student can submit)
-const ongoingProblems = [
-  {
-    id: '1',
-    title: 'Longest Common Subsequence',
-    category: 'Dynamic Programming',
-    difficulty: 'Medium' as const,
-    status: 'submitted',
-    questionText: 'Given two strings text1 and text2, return the length of their longest common subsequence. If there is no common subsequence, return 0. A subsequence of a string is a new string generated from the original string with some characters (can be none) deleted without changing the relative order of the remaining characters.',
-    questionImage: 'https://miro.medium.com/max/1400/1*2qNJm1QwYVHqQqVLFbQ3Qg.png',
-    textSolution: 'I used a bottom-up dynamic programming approach with a 2D table dp[i][j] representing the LCS length of text1[0..i-1] and text2[0..j-1]. Time complexity: O(n*m), Space: O(n*m).',
-    imageSolution: '',
-    submittedAt: '2026-02-05',
-  },
-  {
-    id: '2',
-    title: 'Knapsack Problem',
-    category: 'Dynamic Programming',
-    difficulty: 'Medium' as const,
-    status: 'submitted',
-    questionText: 'Given n items, each with a weight and a value, determine the maximum value that can be obtained by selecting a subset of items such that the total weight does not exceed the capacity W.',
-    questionImage: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/fd/Knapsack.svg/450px-Knapsack.svg.png',
-    textSolution: 'Classic 0/1 knapsack solved with memoization. Created a recursive function with two parameters: current index and remaining capacity.',
-    imageSolution: '',
-    submittedAt: '2026-02-06',
-  },
-  {
-    id: '3',
-    title: 'Coin Change',
-    category: 'Dynamic Programming',
-    difficulty: 'Easy' as const,
-    status: 'not_submitted',
-    questionText: 'You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money. Return the fewest number of coins needed to make up that amount. If it cannot be made up, return -1.',
-    questionImage: '',
-    textSolution: '',
-    imageSolution: '',
-    submittedAt: '',
-  },
-  {
-    id: '4',
-    title: 'Edit Distance',
-    category: 'Dynamic Programming',
-    difficulty: 'Hard' as const,
-    status: 'not_submitted',
-    questionText: 'Given two strings word1 and word2, return the minimum number of operations (insert, delete, replace) required to convert word1 to word2.',
-    questionImage: 'https://www.educative.io/api/edpresso/shot/6697204883701760/image/5669498796941312',
-    textSolution: '',
-    imageSolution: '',
-    submittedAt: '',
-  },
-  {
-    id: '5',
-    title: 'Matrix Chain Multiplication',
-    category: 'Dynamic Programming',
-    difficulty: 'Hard' as const,
-    status: 'not_submitted',
-    questionText: 'Given a sequence of matrices, find the most efficient way to multiply these matrices together. The problem is not actually to perform the multiplications, but merely to decide the sequence of the matrix multiplications involved.',
-    questionImage: '',
-    textSolution: '',
-    imageSolution: '',
-    submittedAt: '',
-  },
-];
-
-// Problems for ended contest (trainer graded)
-const endedProblems = [
-  {
-    id: '1',
-    title: 'Binary Search',
-    category: 'Algorithms',
-    difficulty: 'Easy' as const,
-    questionText: 'Implement binary search to find a target value in a sorted array. Return the index if found, otherwise return -1.',
-    questionImage: '',
-    textSolution: 'Implemented iterative binary search with left and right pointers. Compare middle element with target and narrow down the search space.',
-    imageSolution: '',
-    grade: 95,
-    maxGrade: 100,
-    trainerFeedback: 'Good solution! Clean implementation. Consider adding edge case handling for empty arrays.',
-    submittedAt: '2026-01-22',
-    gradedAt: '2026-01-28',
-  },
-  {
-    id: '2',
-    title: 'Merge Sort',
-    category: 'Sorting',
-    difficulty: 'Medium' as const,
-    questionText: 'Implement the merge sort algorithm to sort an array of integers in ascending order.',
-    questionImage: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Merge-sort-example-300px.gif/220px-Merge-sort-example-300px.gif',
-    textSolution: 'Divide and conquer approach. Split array into halves, recursively sort each half, then merge the sorted halves.',
-    imageSolution: '',
-    grade: 80,
-    maxGrade: 100,
-    trainerFeedback: 'Correct approach but could optimize space complexity. Try to do it in-place.',
-    submittedAt: '2026-01-23',
-    gradedAt: '2026-01-28',
-  },
-  {
-    id: '3',
-    title: 'Quick Sort',
-    category: 'Sorting',
-    difficulty: 'Medium' as const,
-    questionText: 'Implement quicksort with an efficient pivot selection strategy.',
-    questionImage: '',
-    textSolution: 'Used median-of-three pivot selection. Partition the array around the pivot, then recursively sort the two halves.',
-    imageSolution: '',
-    grade: 100,
-    maxGrade: 100,
-    trainerFeedback: 'Perfect solution! Excellent pivot selection strategy. Very well explained.',
-    submittedAt: '2026-01-24',
-    gradedAt: '2026-01-28',
-  },
-  {
-    id: '4',
-    title: 'Two Sum',
-    category: 'Arrays',
-    difficulty: 'Easy' as const,
-    questionText: 'Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.',
-    questionImage: '',
-    textSolution: 'Used a hash map to store each number and its index. For each number, check if target - num exists in the map.',
-    imageSolution: '',
-    grade: 100,
-    maxGrade: 100,
-    trainerFeedback: 'Great use of hash map for O(n) solution! Clean and efficient.',
-    submittedAt: '2026-01-21',
-    gradedAt: '2026-01-28',
-  },
-  {
-    id: '5',
-    title: 'Container With Most Water',
-    category: 'Two Pointers',
-    difficulty: 'Medium' as const,
-    questionText: 'Given n non-negative integers representing heights, find two lines that together with the x-axis form a container that holds the most water.',
-    questionImage: 'https://s3-lc-upload.s3.amazonaws.com/uploads/2018/07/17/question_11.jpg',
-    textSolution: 'Two pointer approach starting from both ends. Move the pointer with smaller height inward.',
-    imageSolution: '',
-    grade: 70,
-    maxGrade: 100,
-    trainerFeedback: 'Correct but consider edge cases more carefully. Also, explain why moving the shorter pointer is optimal.',
-    submittedAt: '2026-01-25',
-    gradedAt: '2026-01-28',
-  },
-];
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
   const { children, value, index, ...other } = props;
@@ -260,6 +63,161 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   const [viewingProblems, setViewingProblems] = useState(false);
   const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
 
+  // Live problems for the contest being viewed, fetched by contest ID. Each row
+  // carries the current student's submission + grade. No mock data.
+  const [contestProblems, setContestProblems] = useState<any[]>([]);
+  const [problemsLoading, setProblemsLoading] = useState(false);
+  const [problemsError, setProblemsError] = useState<string | null>(null);
+
+  const loadContestProblems = async (contestId: string) => {
+    setProblemsLoading(true);
+    setProblemsError(null);
+    setContestProblems([]);
+    try {
+      const data = await contestService.getMyProblems(Number(contestId));
+      setContestProblems(
+        data.map((p) => ({
+          id: String(p.problemId),
+          title: String(p.title ?? ''),
+          category: String(p.topic ?? ''),
+          difficulty: DIFFICULTY_LABEL[Number(p.difficulty)] ?? 'Medium',
+          status: p.submitted ? 'submitted' : 'not_submitted',
+          submittedAt: p.submittedAt ?? '',
+          textSolution: p.solutionText ?? '',
+          imageSolution: resolveMediaUrl(p.solutionPhotoUrl) ?? '',
+          questionText: p.statement ?? '',
+          questionImage: resolveMediaUrl(p.photoUrl) ?? '',
+          grade: p.score ?? 0,
+          maxGrade: 100,
+          feedback: p.feedback ?? '',
+        })),
+      );
+    } catch (err) {
+      setProblemsError(getApiErrorMessage(err, t('student.groupDetails.loadProblemsFailed', 'Failed to load problems')));
+    } finally {
+      setProblemsLoading(false);
+    }
+  };
+
+  const [contests, setContests] = useState<ContestData[]>([]);
+  const [contestsLoading, setContestsLoading] = useState(true);
+  const [contestsError, setContestsError] = useState<string | null>(null);
+
+  const [members, setMembers] = useState<{ id: string; name: string; email: string; joinDate: string; solvedProblems: number }[]>([]);
+  const [membersLoading, setMembersLoading] = useState(true);
+  const [membersError, setMembersError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!group?.id) return;
+    let cancelled = false;
+    setMembersLoading(true);
+    setMembersError(null);
+    groupService
+      .getStudents(Number(group.id))
+      .then((data) => {
+        if (cancelled) return;
+        setMembers(
+          data.map((x) => ({
+            id: String(x.studentId),
+            name: x.fullName,
+            email: '',
+            joinDate: x.joinDate,
+            solvedProblems: 0,
+          })),
+        );
+      })
+      .catch((err) => {
+        if (!cancelled)
+          setMembersError(getApiErrorMessage(err, t('student.groupDetails.loadStudentsFailed', 'Failed to load students')));
+      })
+      .finally(() => {
+        if (!cancelled) setMembersLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [group?.id, t]);
+
+  useEffect(() => {
+    if (!group?.id) return;
+    let cancelled = false;
+    setContestsLoading(true);
+    setContestsError(null);
+    groupService
+      .getContests(Number(group.id))
+      .then((data) => {
+        if (cancelled) return;
+        const base = data.map<ContestData>((x) => {
+          return {
+            id: String(x.contestId),
+            title: x.title,
+            status: getContestStatus(x.startAt, x.endAt),
+            difficulty: 'Medium',
+            participants: group.studentsCount,
+            problemsCount: 0,
+            startDate: x.startAt,
+            endDate: x.endAt,
+          };
+        });
+        setContests(base);
+        base.forEach((c) => {
+          Promise.all([
+            contestService.getById(Number(c.id)).catch(() => null),
+            contestService.getMyProblems(Number(c.id)).catch(() => [] as Record<string, any>[]),
+          ]).then(([info, problems]) => {
+            if (cancelled) return;
+            const difficulty = problems.length
+              ? DIFFICULTY_LABEL[
+                  Math.round(
+                    problems.reduce((sum, p) => sum + (Number(p.difficulty) || 2), 0) / problems.length,
+                  )
+                ] ?? 'Medium'
+              : 'Medium';
+            setContests((prev) =>
+              prev.map((p) =>
+                p.id === c.id
+                  ? {
+                      ...p,
+                      participants: group.studentsCount,
+                      problemsCount: info?.problemCount ?? problems.length,
+                      difficulty,
+                    }
+                  : p,
+              ),
+            );
+          });
+        });
+      })
+      .catch((err) => {
+        if (!cancelled)
+          setContestsError(getApiErrorMessage(err, t('student.groupDetails.loadContestsFailed', 'Failed to load contests')));
+      })
+      .finally(() => {
+        if (!cancelled) setContestsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [group?.id, t]);
+
+  const [courseProgress, setCourseProgress] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!group?.id) return;
+    let cancelled = false;
+    groupService
+      .getProgress(Number(group.id))
+      .then((value) => {
+        if (!cancelled) setCourseProgress(value);
+      })
+      .catch(() => {
+        if (!cancelled) setCourseProgress(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [group?.id]);
+
   // Submit solution modal
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<any>(null);
@@ -277,34 +235,48 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => setTabValue(newValue);
 
-  const filteredStudents = mockStudents.filter(
+  const filteredStudents = members.filter(
     (student) =>
       student.name.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
       student.email.toLowerCase().includes(studentSearchQuery.toLowerCase())
   );
 
-  const filteredContests = mockContests.filter((contest) =>
+  const filteredContests = contests.filter((contest) =>
     contest.title.toLowerCase().includes(contestSearchQuery.toLowerCase())
   );
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSolutionImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+    event.target.value = '';
+    if (!file) return;
+    try {
+      const url = await problemsService.uploadImage(file);
+      setSolutionImage(url);
+    } catch (err) {
+      setProblemsError(getApiErrorMessage(err, t('student.groupDetails.imageUploadFailed', 'Failed to upload image')));
     }
   };
 
-  const handleSubmitSolution = () => {
-    // In real app, this would send to API
-    console.log('Submitting solution:', { text: solutionText, image: solutionImage });
-    setSubmitModalOpen(false);
-    setSolutionText('');
-    setSolutionImage(null);
-    setSelectedProblem(null);
+  const handleSubmitSolution = async () => {
+    if (!selectedProblem) return;
+    if (!solutionText.trim() && !solutionImage) {
+      setProblemsError(t('student.groupDetails.solutionRequired', 'Provide a text solution or an image'));
+      return;
+    }
+    setProblemsError(null);
+    try {
+      await problemsService.submitSolution(Number(selectedProblem.id), {
+        solutionText: solutionText.trim() || undefined,
+        photoFileKey: solutionImage || undefined,
+      });
+      setSubmitModalOpen(false);
+      setSolutionText('');
+      setSolutionImage(null);
+      setSelectedProblem(null);
+      if (selectedContest) await loadContestProblems(selectedContest.id);
+    } catch (err) {
+      setProblemsError(getApiErrorMessage(err, t('student.groupDetails.submitFailed', 'Failed to submit solution')));
+    }
   };
 
   const openSubmitModal = (problem: any) => {
@@ -349,8 +321,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           </Box>
         </Paper>
 
+        {problemsError && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setProblemsError(null)}>{problemsError}</Alert>
+        )}
+
         <SharedTable
-          data={ongoingProblems}
+          data={contestProblems}
           columns={[
             {
               id: 'title',
@@ -616,7 +592,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 <Box sx={{ position: 'relative' }}>
                   <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
                     <img
-                      src={solutionImage}
+                      src={resolveMediaUrl(solutionImage) ?? solutionImage}
                       alt={t('student.groupDetails.solutionImageAlt')}
                       style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '8px' }}
                     />
@@ -701,9 +677,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
   // Problems view for ended contest (graded by trainer)
   if (viewingProblems && selectedContest?.status === 'Ended') {
-    const totalGrade = endedProblems.reduce((sum, p) => sum + (p.grade || 0), 0);
-    const maxTotalGrade = endedProblems.reduce((sum, p) => sum + (p.maxGrade || 0), 0);
-    const averageGrade = Math.round((totalGrade / maxTotalGrade) * 100);
+    const totalGrade = contestProblems.reduce((sum, p) => sum + (p.grade || 0), 0);
+    const maxTotalGrade = contestProblems.reduce((sum, p) => sum + (p.maxGrade || 0), 0);
+    const averageGrade = maxTotalGrade > 0 ? Math.round((totalGrade / maxTotalGrade) * 100) : 0;
 
     return (
       <StyledContainer>
@@ -731,8 +707,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           </Box>
         </Paper>
 
+        {problemsError && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setProblemsError(null)}>{problemsError}</Alert>
+        )}
+
         <SharedTable
-          data={endedProblems}
+          data={contestProblems}
           columns={[
             {
               id: 'title',
@@ -1007,19 +987,19 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Box>
             </Box>
           </Box>
-          {group.progress !== undefined && (
+          {courseProgress !== null && (
             <Box sx={{ minWidth: 200 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                 <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '12px' }}>
                   {t('student.groupDetails.courseProgress')}
                 </Typography>
                 <Typography variant="body2" sx={{ color: '#8B1D23', fontWeight: 800, fontSize: '12px' }}>
-                  {group.progress}%
+                  {courseProgress}%
                 </Typography>
               </Box>
               <LinearProgress
                 variant="determinate"
-                value={group.progress}
+                value={courseProgress}
                 sx={{
                   height: 8,
                   borderRadius: '999px',
@@ -1070,7 +1050,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               />
             </Box>
 
-            {filteredContests.length === 0 ? (
+            {contestsLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                <CircularProgress sx={{ color: '#8B1D23' }} />
+              </Box>
+            ) : contestsError ? (
+              <Alert severity="error" sx={{ mt: 2 }}>{contestsError}</Alert>
+            ) : filteredContests.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
                 <BookOpen size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
                 <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noContestsFound')}</Typography>
@@ -1081,7 +1067,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   <ContestCard
                     key={c.id}
                     contest={c}
-                    onViewProblems={() => { setSelectedContest(c); setViewingProblems(true); }}
+                    onViewProblems={() => { setSelectedContest(c); setViewingProblems(true); void loadContestProblems(c.id); }}
                   />
                 ))}
               </Box>
@@ -1096,6 +1082,18 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               value={studentSearchQuery}
               onChange={(e) => setStudentSearchQuery(e.target.value)}
             />
+            {membersLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                <CircularProgress sx={{ color: '#8B1D23' }} />
+              </Box>
+            ) : membersError ? (
+              <Alert severity="error" sx={{ mt: 2 }}>{membersError}</Alert>
+            ) : filteredStudents.length === 0 ? (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <Users size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
+                <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noStudents', 'No students in this group')}</Typography>
+              </Box>
+            ) : (
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
               {filteredStudents.map((student) => (
                 <StudentCardStyled key={student.id}>
@@ -1138,9 +1136,16 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 </StudentCardStyled>
               ))}
             </Box>
+            )}
           </TabPanel>
           {/* Trainer Tab */}
           <TabPanel value={tabValue} index={2}>
+            {!group.trainerName ? (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <Award size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
+                <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noTrainer', 'No trainer assigned to this group')}</Typography>
+              </Box>
+            ) : (
             <Paper elevation={0} sx={{ p: 4, maxWidth: 600, borderRadius: '16px', border: '1px solid #e5e7eb', bgcolor: '#f8fafc' }}>
               <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
                 <Avatar
@@ -1153,39 +1158,23 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                     borderRadius: '16px',
                   }}
                 >
-                  {mockTrainer.avatar}
+                  {group.trainerName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                 </Avatar>
                 <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{mockTrainer.name}</Typography>
-                  <Typography variant="body2" sx={{ color: '#64748b', mb: 1, fontWeight: 500 }}>{mockTrainer.email}</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Star size={16} color="#d97706" fill="#d97706" />
-                    <Typography variant="body2" sx={{ fontWeight: 700, color: '#1e293b' }}>
-                      {mockTrainer.rating}
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#94a3b8' }}>
-                      {t('student.groupDetails.studentsTrained', { count: mockTrainer.totalStudents })}
-                    </Typography>
-                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{group.trainerName}</Typography>
+                  {group.trainerEmail && (
+                    <Typography variant="body2" sx={{ color: '#64748b', mb: 1, fontWeight: 500 }}>{group.trainerEmail}</Typography>
+                  )}
                 </Box>
               </Box>
-              <Box sx={{ mb: 4 }}>
-                <Typography sx={{ fontWeight: 700, mb: 1, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  {t('student.groupDetails.bio')}
-                </Typography>
-                <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.8, fontWeight: 500 }}>
-                  {mockTrainer.bio}
-                </Typography>
-              </Box>
-              <Box>
-                <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                  {t('student.groupDetails.expertise')}
-                </Typography>
-                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                  {mockTrainer.expertise.map((skill) => (
+              {group.trainerSpecialization && (
+                <Box>
+                  <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    {t('student.groupDetails.expertise')}
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                     <Chip
-                      key={skill}
-                      label={skill}
+                      label={group.trainerSpecialization}
                       sx={{
                         bgcolor: '#ffffff',
                         color: '#1e293b',
@@ -1193,10 +1182,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                         border: '1px solid #e2e8f0',
                       }}
                     />
-                  ))}
+                  </Box>
                 </Box>
-              </Box>
+              )}
             </Paper>
+            )}
           </TabPanel>
         </TabContentWrapper>
       </Paper>

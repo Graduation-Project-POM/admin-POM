@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
     Box,
@@ -9,7 +9,10 @@ import {
     Avatar,
     Chip,
     Divider,
+    Alert,
+    CircularProgress,
 } from '@mui/material';
+import { groupService } from '../../../services/groupService';
 import { ArrowLeft, Users, Award, BookOpen, Clock } from 'lucide-react';
 import { ContestCard } from '../../../components/ui/card/contestCard';
 import {
@@ -28,6 +31,17 @@ import ViewContest from '../contest/View';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import CreateProblem from '../problem/Create';
 import EditProblem from '../problem/Edit';
+import ProblemDetailModal from '../problem/ProblemDetailModal';
+import { contestService } from '../../../services/contestService';
+import { problemsService } from '../../../services/problemsService';
+import { getApiErrorMessage } from '../../../utils/apiError';
+import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL } from '../../../types/problem';
+import { getContestStatus, getContestStatusNumber } from '../../../utils/contestStatus';
+
+const toIso = (value: string): string => {
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? new Date().toISOString() : d.toISOString();
+};
 
 interface GroupData {
     id: string;
@@ -47,13 +61,10 @@ interface Student {
     solvedProblems: number;
 }
 
-interface Trainer {
-    id: string;
+interface TrainerInfo {
     name: string;
     email: string;
-    avatar: string;
-    expertise: string[];
-    bio: string;
+    specialization: string;
 }
 
 
@@ -66,71 +77,6 @@ const mockGroupDetails: GroupData = {
     trainerName: 'Jane Smith',
     createdDate: '2026-01-15',
 };
-
-const mockTrainer: Trainer = {
-    id: 'trainer-1',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    avatar: 'JS',
-    expertise: ['Algorithms', 'Data Structures', 'Competitive Programming'],
-    bio: 'Experienced trainer with 8+ years in programming education',
-};
-
-const mockStudents: Student[] = [
-    { id: 'student-1', name: 'Ahmed Ali', email: 'ahmed@example.com', joinDate: '2026-01-20', solvedProblems: 45 },
-    { id: 'student-2', name: 'Fatima Mohamed', email: 'fatima@example.com', joinDate: '2026-01-22', solvedProblems: 38 },
-    { id: 'student-3', name: 'Omar Hassan', email: 'omar@example.com', joinDate: '2026-01-25', solvedProblems: 52 },
-    { id: 'student-4', name: 'Layla Ibrahim', email: 'layla@example.com', joinDate: '2026-02-01', solvedProblems: 31 },
-    { id: 'student-5', name: 'Karim Saeed', email: 'karim@example.com', joinDate: '2026-02-03', solvedProblems: 47 },
-];
-
-const mockContests: ContestData[] = [
-    {
-        id: "1",
-        title: 'Sorting & Searching',
-        problemsCount: 5,
-        participants: 24,
-        startDate: '2026-01-20',
-        endDate: '2026-01-27',
-        status: 'Ended',
-        difficulty: 'Medium',
-    },
-    {
-        id: "2",
-        title: 'Greedy Algorithms',
-        problemsCount: 6,
-        participants: 22,
-        startDate: '2026-01-27',
-        endDate: '2026-02-03',
-        status: 'Ended',
-        difficulty: 'Medium',
-    },
-    {
-        id: "3",
-        title: 'Dynamic Programming',
-        problemsCount: 8,
-        participants: 20,
-        startDate: '2026-02-03',
-        endDate: '2026-02-10',
-        status: 'Ongoing',
-        difficulty: 'Hard',
-    },
-    {
-        id: "4",
-        title: 'Final Challenge',
-        problemsCount: 10,
-        participants: 0,
-        startDate: '2026-02-17',
-        endDate: '2026-02-24',
-        status: 'Upcoming',
-        difficulty: 'Hard',
-    },
-];
-
-const mockProblems: any[] = [
-    { id: '1', title: 'Binary Search', category: 'Algorithms', difficulty: 'Easy', tags: ['Search'], visibility: 'general', submissions: 120, successRate: 85 },
-    { id: '2', title: 'Quick Sort', category: 'Sorting', difficulty: 'Medium', tags: ['Divide & Conquer'], visibility: 'general', submissions: 95, successRate: 60 },
-];
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
     const { children, value, index, ...other } = props;
@@ -152,7 +98,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [studentSearchQuery, setStudentSearchQuery] = useState('');
     const [contestSearchQuery, setContestSearchQuery] = useState('');
 
-    const [contests, setContests] = useState<ContestData[]>(mockContests);
+    const [contests, setContests] = useState<ContestData[]>([]);
+    const [students, setStudents] = useState<Student[]>([]);
+    const [trainer, setTrainer] = useState<TrainerInfo | null>(null);
+    const [tabsLoading, setTabsLoading] = useState(true);
+    const [tabsError, setTabsError] = useState<string | null>(null);
     const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
     
     const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -160,10 +110,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [isViewOpen, setIsViewOpen] = useState(false);
     
     const [viewingProblems, setViewingProblems] = useState(false);
-    const [contestProblems, setContestProblems] = useState<any[]>(mockProblems);
+    const [contestProblems, setContestProblems] = useState<any[]>([]);
+    const [contestProblemIds, setContestProblemIds] = useState<number[]>([]);
     const [isCreateProblemOpen, setIsCreateProblemOpen] = useState(false);
     const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState<any>(null);
+    const [detailProblemId, setDetailProblemId] = useState<number | null>(null);
+    const [isDetailOpen, setIsDetailOpen] = useState(false);
 
     const [confirmConfig, setConfirmConfig] = useState<{
         open: boolean;
@@ -177,45 +130,250 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         onConfirm: () => {},
     });
 
-    const handleCreateProblem = (p: any) => setContestProblems([p, ...contestProblems]);
-    const handleUpdateProblem = (p: any) => setContestProblems(contestProblems.map(x => x.id === p.id ? p : x));
+    
+    const loadGroupData = useCallback(async () => {
+        if (!group?.id) return;
+        setTabsLoading(true);
+        setTabsError(null);
+        try {
+            const [s, c, g] = await Promise.all([
+                groupService.getStudents(Number(group.id)),
+                groupService.getContests(Number(group.id)),
+                groupService.getById(Number(group.id)),
+            ]);
+            setTrainer(
+                g.trainerName
+                    ? {
+                        name: g.trainerName,
+                        email: g.trainerEmail ?? '',
+                        specialization: g.trainerSpecialization ?? '',
+                    }
+                    : null,
+            );
+            setStudents(
+                s.map((x) => ({
+                    id: String(x.studentId),
+                    name: x.fullName,
+                    email: '',
+                    joinDate: x.joinDate,
+                    solvedProblems: 0,
+                })),
+            );
+            
+            const details = await Promise.all(
+                c.map((x) => contestService.getById(x.contestId).catch(() => null)),
+            );
+            setContests(
+                c.map((x, i) => {
+                    const d = details[i];
+                    return {
+                        id: String(x.contestId),
+                        title: x.title,
+                        status: getContestStatus(d?.startAt ?? x.addDate, d?.endAt ?? x.addDate),
+                        difficulty: 'Medium',
+                        participants: d?.studentCount ?? 0,
+                        problemsCount: d?.problemCount ?? 0,
+                        startDate: d?.startAt ?? x.addDate,
+                        endDate: d?.endAt ?? x.addDate,
+                    };
+                }),
+            );
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.loadFailed', 'Failed to load group details')));
+        } finally {
+            setTabsLoading(false);
+        }
+    }, [group?.id, t]);
+
+    useEffect(() => {
+        void loadGroupData();
+    }, [loadGroupData]);
+
+    
+    const loadContestQuestions = async (contestId: string) => {
+        try {
+            const data = await contestService.getProblems(Number(contestId));
+            const ids: number[] = [];
+            const mapped = data.map((p) => {
+                const pid = Number(p.id ?? p.iD ?? p.ID);
+                ids.push(pid);
+                return {
+                    id: String(pid),
+                    title: String(p.title ?? ''),
+                    category: String(p.topic ?? ''),
+                    difficulty: DIFFICULTY_LABEL[Number(p.difficulty)] ?? 'Medium',
+                    successRate: 0,
+                };
+            });
+            setContestProblemIds(ids);
+            setContestProblems(mapped);
+        } catch (err) {
+            setContestProblemIds([]);
+            setContestProblems([]);
+            setTabsError(getApiErrorMessage(err, t('group.details.loadProblemsFailed', 'Failed to load contest problems')));
+        }
+    };
+
+    const handleCreateProblem = async (form: any) => {
+        if (!selectedContest) return;
+        try {
+            const newId = await problemsService.create({
+                title: form.title,
+                statement: form.description || '',
+                solution: form.description || form.title,
+                difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
+                topic: form.category || 'General',
+                photoFileKey: form.imageUrl || null,
+                isPublished: form.visibility !== 'group-specific',
+            });
+            await contestService.update(Number(selectedContest.id), {
+                problemIds: [...contestProblemIds, newId],
+            });
+            await loadContestQuestions(selectedContest.id);
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.addProblemFailed', 'Failed to add problem')));
+        }
+    };
+
+    const handleUpdateProblem = async (form: any) => {
+        if (!selectedContest) return;
+        try {
+            await problemsService.update(Number(form.id), {
+                title: form.title,
+                statement: form.description || '',
+                difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
+                topic: form.category || 'General',
+                photoFileKey: form.imageUrl || null,
+                isPublished: form.visibility !== 'group-specific',
+            });
+            await loadContestQuestions(selectedContest.id);
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.updateProblemFailed', 'Failed to update problem')));
+        }
+    };
+
+    
+    const handleOpenEditProblem = async (row: any) => {
+        try {
+            const detail = await problemsService.getById(Number(row.id));
+            setSelectedProblem({
+                id: String(detail.id),
+                title: detail.title,
+                description: detail.statement ?? '',
+                imageUrl: detail.photoUrl ?? '',
+                category: detail.topic,
+                difficulty: DIFFICULTY_LABEL[detail.difficulty] ?? 'Medium',
+                visibility: detail.isPublished ? 'general' : 'group-specific',
+                tags: [],
+            });
+            setIsEditProblemOpen(true);
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.loadProblemFailed', 'Failed to load problem')));
+        }
+    };
+
     const handleSingleDeleteProblem = (id: string) => {
         setConfirmConfig({
             open: true,
             title: t('group.details.removeProblemTitle'),
             message: t('group.details.removeProblemMessage'),
-            onConfirm: () => setContestProblems(contestProblems.filter(x => x.id !== id))
+            onConfirm: async () => {
+                setConfirmConfig(prev => ({ ...prev, open: false }));
+                if (!selectedContest) return;
+                try {
+                    const ids = contestProblemIds.filter((x) => x !== Number(id));
+                    await contestService.update(Number(selectedContest.id), { problemIds: ids });
+                    await loadContestQuestions(selectedContest.id);
+                } catch (err) {
+                    setTabsError(getApiErrorMessage(err, t('group.details.removeProblemFailed', 'Failed to remove problem')));
+                }
+            }
         });
     };
+
     const handleBulkDeleteProblems = (ids: string[]) => {
         setConfirmConfig({
             open: true,
             title: t('group.details.removeProblemsTitle'),
             message: t('group.details.removeProblemsMessage', { count: ids.length }),
-            onConfirm: () => setContestProblems(contestProblems.filter(x => !ids.includes(x.id)))
+            onConfirm: async () => {
+                setConfirmConfig(prev => ({ ...prev, open: false }));
+                if (!selectedContest) return;
+                try {
+                    const numIds = ids.map(Number);
+                    const remaining = contestProblemIds.filter((x) => !numIds.includes(x));
+                    await contestService.update(Number(selectedContest.id), { problemIds: remaining });
+                    await loadContestQuestions(selectedContest.id);
+                } catch (err) {
+                    setTabsError(getApiErrorMessage(err, t('group.details.removeProblemsFailed', 'Failed to remove problems')));
+                }
+            }
         });
     };
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => setTabValue(newValue);
 
-    const filteredStudents = mockStudents.filter(
+    const filteredStudents = students.filter(
         (student) =>
             student.name.toLowerCase().includes(studentSearchQuery.toLowerCase()) ||
             student.email.toLowerCase().includes(studentSearchQuery.toLowerCase())
     );
 
-    const filteredContests = mockContests.filter((contest) =>
+    const filteredContests = contests.filter((contest) =>
         contest.title.toLowerCase().includes(contestSearchQuery.toLowerCase())
     );
 
-    const handleCreateContest = (newContest: ContestData) => setContests([newContest, ...contests]);
-    const handleUpdateContest = (updated: ContestData) => setContests(contests.map(c => c.id === updated.id ? updated : c));
+    const handleCreateContest = async (newContest: ContestData) => {
+        if (!group) return;
+        setTabsError(null);
+        try {
+            const startAt = toIso(newContest.startDate);
+            const endAt = toIso(newContest.endDate);
+            const res = await contestService.create({
+                title: newContest.title,
+                description: '',
+                status: getContestStatusNumber(startAt, endAt),
+                startAt,
+                endAt,
+                problemIds: [],
+            });
+            await groupService.addContest(Number(group.id), res.contestID);
+            await loadGroupData();
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.createContestFailed', 'Failed to create contest')));
+        }
+    };
+
+    const handleUpdateContest = async (updated: ContestData) => {
+        setTabsError(null);
+        try {
+            const startAt = toIso(updated.startDate);
+            const endAt = toIso(updated.endDate);
+            await contestService.update(Number(updated.id), {
+                title: updated.title,
+                status: getContestStatusNumber(startAt, endAt),
+                startAt,
+                endAt,
+            });
+            await loadGroupData();
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.updateContestFailed', 'Failed to update contest')));
+        }
+    };
     const handleDeleteContest = (id: string) => {
         setConfirmConfig({
             open: true,
             title: t('group.details.deleteContestTitle'),
             message: t('group.details.deleteContestMessage'),
-            onConfirm: () => setContests(contests.filter(c => c.id !== id))
+            onConfirm: async () => {
+                setConfirmConfig(prev => ({ ...prev, open: false }));
+                try {
+                    await groupService.removeContest(Number(group.id), Number(id));
+                    setContests(prev => prev.filter(c => c.id !== id));
+                } catch (err) {
+                    setTabsError(getApiErrorMessage(err, t('group.details.removeContestFailed', 'Failed to remove contest from group')));
+                }
+            }
         });
     };
 
@@ -233,10 +391,17 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <SharedTable
                     data={contestProblems}
                     columns={[
-                        { 
+                        {
                             id: 'title',
                             label: t('group.details.problemName'),
-                            render: (row) => <Typography sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px' }}>{row.title}</Typography>
+                            render: (row) => (
+                                <Typography
+                                    onClick={() => { setDetailProblemId(Number(row.id)); setIsDetailOpen(true); }}
+                                    sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                                >
+                                    {row.title}
+                                </Typography>
+                            )
                         },
                         { id: 'category', label: t('group.details.category') },
                         {
@@ -262,20 +427,23 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                         }
                     ]}
                     onAdd={() => setIsCreateProblemOpen(true)}
-                    onEdit={(row) => {
-                        setSelectedProblem(row);
-                        setIsEditProblemOpen(true);
-                    }}
+                    onEdit={(row) => { void handleOpenEditProblem(row); }}
                     onSingleDelete={handleSingleDeleteProblem}
                     onDelete={handleBulkDeleteProblems}
                     addButtonLabel={t('group.details.addProblem')}
                     searchPlaceholder={t('group.details.searchProblems')}
                 />
 
-                <CreateProblem 
-                    open={isCreateProblemOpen} 
-                    onClose={() => setIsCreateProblemOpen(false)} 
-                    onSave={handleCreateProblem} 
+                <ProblemDetailModal
+                    open={isDetailOpen}
+                    onClose={() => { setIsDetailOpen(false); setDetailProblemId(null); }}
+                    problemId={detailProblemId}
+                />
+
+                <CreateProblem
+                    open={isCreateProblemOpen}
+                    onClose={() => setIsCreateProblemOpen(false)}
+                    onSave={handleCreateProblem}
                 />
                 
                 <EditProblem 
@@ -315,7 +483,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Users size={18} color="#8B1D23" />
-                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('group.details.studentsCount', { count: group.studentsCount })}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('group.details.studentsCount', { count: students.length })}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         <Award size={18} color="#8B1D23" />
@@ -323,6 +491,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     </Box>
                 </Box>
             </HeaderSection>
+
+            {tabsError && (
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setTabsError(null)}>
+                    {tabsError}
+                </Alert>
+            )}
 
             <Paper elevation={0} sx={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #e5e7eb', bgcolor: '#ffffff' }}>
                 <Tabs
@@ -356,7 +530,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             </Button>
                         </Box>
                         
-                        {filteredContests.length === 0 ? (
+                        {tabsLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                                <CircularProgress sx={{ color: '#8B1D23' }} />
+                            </Box>
+                        ) : filteredContests.length === 0 ? (
                             <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>{t('group.details.noContests')}</Typography>
                         ) : (
                             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
@@ -366,7 +544,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                         contest={c}
                                         onView={() => { setSelectedContest(c); setIsViewOpen(true); }}
                                         onEdit={() => { setSelectedContest(c); setIsEditOpen(true); }}
-                                        onProblems={() => { setSelectedContest(c); setViewingProblems(true); }}
+                                        onProblems={() => { setSelectedContest(c); setViewingProblems(true); setContestProblems([]); setContestProblemIds([]); void loadContestQuestions(c.id); }}
                                         onDelete={() => handleDeleteContest(c.id)}
                                     />
                                 ))}
@@ -382,6 +560,15 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             value={studentSearchQuery}
                             onChange={(e) => setStudentSearchQuery(e.target.value)}
                         />
+                        {tabsLoading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                            <CircularProgress sx={{ color: '#8B1D23' }} />
+                        </Box>
+                        ) : filteredStudents.length === 0 ? (
+                        <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>
+                            {t('group.details.noStudents', 'No students in this group')}
+                        </Typography>
+                        ) : (
                         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
                             {filteredStudents.map((student) => (
                                 <StudentCardStyled key={student.id}>
@@ -409,34 +596,45 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                 </StudentCardStyled>
                             ))}
                         </Box>
+                        )}
                     </TabPanel>
 
                     {/* Trainer Tab */}
                     <TabPanel value={tabValue} index={2}>
+                        {tabsLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                                <CircularProgress sx={{ color: '#8B1D23' }} />
+                            </Box>
+                        ) : !trainer ? (
+                            <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>
+                                {t('group.details.noTrainer', 'No trainer assigned to this group')}
+                            </Typography>
+                        ) : (
                         <Paper elevation={0} sx={{ p: 4, maxWidth: 600, borderRadius: '16px', border: '1px solid #e5e7eb', bgcolor: '#f8fafc' }}>
                             <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
-                                <Avatar sx={{ width: 80, height: 88, bgcolor: '#8B1D23', fontSize: 30, fontWeight: 700, borderRadius: '16px' }}>{mockTrainer.avatar}</Avatar>
+                                <Avatar sx={{ width: 80, height: 88, bgcolor: '#8B1D23', fontSize: 30, fontWeight: 700, borderRadius: '16px' }}>
+                                    {trainer.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                                </Avatar>
                                 <Box>
-                                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{mockTrainer.name}</Typography>
-                                    <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{mockTrainer.email}</Typography>
+                                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{trainer.name}</Typography>
+                                    {trainer.email && (
+                                        <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{trainer.email}</Typography>
+                                    )}
                                     <Button variantType="default">
                                         {t('group.details.messageTrainer')}
                                     </Button>
                                 </Box>
                             </Box>
-                            <Box sx={{ mb: 4 }}>
-                                <Typography sx={{ fontWeight: 700, mb: 1, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.bio')}</Typography>
-                                <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.8, fontWeight: 500 }}>{mockTrainer.bio}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
-                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                    {mockTrainer.expertise.map((skill) => (
-                                        <Chip key={skill} label={skill} sx={{ bgcolor: '#ffffff', color: '#1e293b', fontWeight: 700, border: '1px solid #e2e8f0' }} />
-                                    ))}
+                            {trainer.specialization && (
+                                <Box>
+                                    <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                        <Chip label={trainer.specialization} sx={{ bgcolor: '#ffffff', color: '#1e293b', fontWeight: 700, border: '1px solid #e2e8f0' }} />
+                                    </Box>
                                 </Box>
-                            </Box>
+                            )}
                         </Paper>
+                        )}
                     </TabPanel>
                 </TabContentWrapper>
             </Paper>

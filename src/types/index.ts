@@ -21,6 +21,8 @@ export interface GroupData {
   studentsCount: number;
   trainerCount: number;
   trainerName: string;
+  trainerEmail?: string;
+  trainerSpecialization?: string;
   createdDate: string;
 }
 
