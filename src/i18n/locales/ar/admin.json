@@ -150,7 +150,10 @@
         "pendingReview": "قيد المراجعة",
         "biography": "نبذة تعريفية",
         "noBiography": "لم يتم تقديم نبذة تعريفية."
-      }
+      },
+      "loadFailed": "فشل تحميل طلبات الموافقة",
+      "actionFailed": "فشل تنفيذ الإجراء",
+      "studentApplication": "تسجيل طالب"
     }
   }
 }

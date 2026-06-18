@@ -150,7 +150,10 @@
         "pendingReview": "Pending Review",
         "biography": "Biography",
         "noBiography": "No biography provided."
-      }
+      },
+      "loadFailed": "Failed to load approvals",
+      "actionFailed": "Action failed",
+      "studentApplication": "Student registration"
     }
   }
 }

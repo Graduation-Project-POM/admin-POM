@@ -43,6 +43,13 @@ export interface StudentOption {
   email: string;
 }
 
+// A student row for the admin list/approvals views.
+export interface StudentListItem extends StudentOption {
+  gradeLevel: string;
+  joinYear: string;
+  isAccepted: boolean;
+}
+
 // Full student profile (GET /Student/{id}) — every stored field, for the
 // View Profile screen.
 export interface StudentProfile {
@@ -84,16 +91,26 @@ export const studentService = {
     return data.map(toStudentOption);
   },
 
-  // GET /Student — full list including acceptance status (Admin), for the
-  // admin dashboard's pending-approvals section.
-  getAllDetailed: async (): Promise<(StudentOption & { isAccepted: boolean })[]> => {
+  // GET /Student — full list including acceptance status + a few profile fields
+  // (Admin), for the dashboard and the approvals page.
+  getAllDetailed: async (): Promise<StudentListItem[]> => {
     const { data } = await api.get<Record<string, any>[]>("/Student");
-    return data.map((s) => ({ ...toStudentOption(s), isAccepted: Boolean(s.isAccepted) }));
+    return data.map((s) => ({
+      ...toStudentOption(s),
+      gradeLevel: s.gradeLevel ?? "",
+      joinYear: s.joinYear ?? "",
+      isAccepted: Boolean(s.isAccepted),
+    }));
   },
 
-  // POST /Student/{id}/accept — admin approves a pending student.
+  // PATCH /Student/{id}/accept — admin approves a pending student.
   accept: async (id: number): Promise<void> => {
-    await api.post(`/Student/${id}/accept`);
+    await api.patch(`/Student/${id}/accept`);
+  },
+
+  // DELETE /Student/{id} — admin removes a student (used to reject a pending one).
+  remove: async (id: number): Promise<void> => {
+    await api.delete(`/Student/${id}`);
   },
 
   // GET /Student/{id} — full profile by id. Backend authorizes via the
