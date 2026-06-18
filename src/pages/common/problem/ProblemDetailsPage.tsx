@@ -1,0 +1,276 @@
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import {
+  Box,
+  Typography,
+  Paper,
+  Divider,
+  Avatar,
+  Chip,
+  CircularProgress,
+  TextField,
+} from '@mui/material';
+import { ArrowLeft, CheckCircle2, FileCode } from 'lucide-react';
+import { Button } from '../../../components/ui/button/Button';
+import {
+  getProblemById,
+  getSubmissions,
+  gradeSubmission,
+  difficultyIdToLabel,
+  type BackendProblem,
+  type Submission,
+} from '../../../services/problemService';
+
+const initials = (name: string) =>
+  name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
+
+const SubmissionCard = ({
+  submission,
+  onGraded,
+}: {
+  submission: Submission;
+  onGraded: (s: Submission) => void;
+}) => {
+  const [grade, setGrade] = useState<string>(
+    submission.grade != null ? String(submission.grade) : '',
+  );
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    const value = Number(grade);
+    if (grade === '' || Number.isNaN(value) || value < 0 || value > 100) {
+      setError('Enter a grade between 0 and 100.');
+      return;
+    }
+    setError(null);
+    setSaving(true);
+    try {
+      const updated = await gradeSubmission(submission.id, value);
+      onGraded(updated);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to save grade.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '350px 1fr' }, gap: 4 }}>
+        {/* Student Info + Grading */}
+        <Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', fontWeight: 700 }}>
+              {initials(submission.studentName)}
+            </Avatar>
+            <Box>
+              <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>{submission.studentName}</Typography>
+              <Typography variant="body2" sx={{ color: '#64748b' }}>{submission.studentEmail}</Typography>
+            </Box>
+          </Box>
+          <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>Status</Typography>
+              <Chip
+                label={submission.grade != null ? 'Graded' : 'Pending'}
+                size="small"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '11px',
+                  bgcolor: submission.grade != null ? '#e7f7ec' : '#fef3c7',
+                  color: submission.grade != null ? '#166534' : '#92400e',
+                }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>Grade</Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <TextField
+                  type="number"
+                  size="small"
+                  value={grade}
+                  onChange={(e) => setGrade(e.target.value)}
+                  slotProps={{ htmlInput: { min: 0, max: 100, style: { width: 60, textAlign: 'center', fontWeight: 700 } } }}
+                />
+                <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>/ 100</Typography>
+              </Box>
+            </Box>
+            <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'right' }}>
+              Submitted: {new Date(submission.submittedAt).toLocaleString()}
+            </Typography>
+          </Box>
+          {error && (
+            <Typography variant="caption" sx={{ color: '#dc2626', display: 'block', mt: 1 }}>
+              {error}
+            </Typography>
+          )}
+          <Button
+            variantType="default"
+            fullWidth
+            startIcon={<CheckCircle2 size={16} />}
+            sx={{ mt: 3, bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' } }}
+            onClick={handleSave}
+            disabled={saving}
+          >
+            {saving ? 'Saving...' : 'Save Grade'}
+          </Button>
+        </Box>
+
+        {/* Solution */}
+        <Box sx={{ bgcolor: '#1e293b', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, color: '#94a3b8' }}>
+            <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
+              Solution
+            </Typography>
+            <FileCode size={16} />
+          </Box>
+          <Typography
+            component="pre"
+            sx={{
+              color: '#e2e8f0',
+              fontFamily: 'monospace',
+              fontSize: '13px',
+              lineHeight: 1.6,
+              m: 0,
+              overflowX: 'auto',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {submission.solutionText || 'No text solution submitted.'}
+          </Typography>
+          {submission.photoUrl && (
+            <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
+              <img src={submission.photoUrl} alt="solution" style={{ width: '100%', display: 'block' }} />
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </Paper>
+  );
+};
+
+export const ProblemDetailsPage = () => {
+  const { problemId } = useParams();
+  const navigate = useNavigate();
+  const [problem, setProblem] = useState<BackendProblem | null>(null);
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const id = Number(problemId);
+        const [prob, subs] = await Promise.all([
+          getProblemById(id),
+          getSubmissions(id),
+        ]);
+        setProblem(prob);
+        setSubmissions(subs);
+      } catch (err: any) {
+        setError(err?.response?.data?.message || 'Problem not found.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [problemId]);
+
+  const handleGraded = (updated: Submission) => {
+    setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
+  };
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
+        <CircularProgress sx={{ color: '#8B1D23' }} />
+      </Box>
+    );
+  }
+  if (error || !problem) {
+    return <Box sx={{ p: 4 }}>{error || 'Problem not found.'}</Box>;
+  }
+
+  const difficulty = difficultyIdToLabel(problem.difficulty);
+
+  return (
+    <Box sx={{ pb: 8 }}>
+      <Button
+        variantType="outline"
+        startIcon={<ArrowLeft size={18} />}
+        onClick={() => navigate(-1)}
+        sx={{ mb: 3 }}
+      >
+        Back
+      </Button>
+
+      {/* Problem Header & Statement */}
+      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+              {problem.title}
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+              <Chip label={problem.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+              <Chip
+                label={problem.isPublished ? 'Published' : 'Draft'}
+                size="small"
+                sx={{
+                  fontWeight: 600,
+                  bgcolor: problem.isPublished ? '#e7f7ec' : '#f3f4f6',
+                  color: problem.isPublished ? '#166534' : '#374151',
+                }}
+              />
+            </Box>
+          </Box>
+          <Chip
+            label={difficulty}
+            sx={{
+              bgcolor: difficulty === 'Easy' ? '#e7f7ec' : difficulty === 'Medium' ? '#fff7e0' : '#fdecec',
+              color: difficulty === 'Easy' ? '#166534' : difficulty === 'Medium' ? '#92400e' : '#991b1b',
+              fontWeight: 700,
+            }}
+          />
+        </Box>
+
+        <Typography sx={{ color: '#475569', lineHeight: 1.8, fontSize: '16px', mb: 2, whiteSpace: 'pre-wrap' }}>
+          {problem.statement || 'No statement available for this problem.'}
+        </Typography>
+
+        {problem.photoUrl && (
+          <Box sx={{ mb: 2, borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+            <img src={problem.photoUrl} alt={problem.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
+          </Box>
+        )}
+      </Paper>
+
+      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <FileCode size={24} color="#8B1D23" />
+        Student Submissions ({submissions.length})
+      </Typography>
+
+      {submissions.length === 0 ? (
+        <Paper
+          elevation={0}
+          sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
+        >
+          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>No submissions yet</Typography>
+          <Typography variant="body2">No students have submitted a solution for this problem.</Typography>
+        </Paper>
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {submissions.map((sub) => (
+            <SubmissionCard key={sub.id} submission={sub} onGraded={handleGraded} />
+          ))}
+        </Box>
+      )}
+    </Box>
+  );
+};
+
+export default ProblemDetailsPage;

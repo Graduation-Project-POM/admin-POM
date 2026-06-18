@@ -11,15 +11,18 @@
       "columns": {
         "title": "Title",
         "category": "Category",
+        "topic": "Topic",
         "difficulty": "Difficulty",
         "tags": "Tags",
         "visibility": "Visibility",
+        "status": "Status",
         "stats": "Stats"
       },
       "stats": {
         "submissions": "{{count}} submissions",
         "success": "{{rate}}% success"
-      }
+      },
+      "loadError": "Failed to load problems. Please try again."
     },
     "difficulty": {
       "Easy": "Easy",
@@ -29,6 +32,10 @@
     "visibility": {
       "general": "General",
       "groupSpecific": "Group-specific"
+    },
+    "status": {
+      "published": "Published",
+      "draft": "Draft"
     },
     "delete": {
       "singleTitle": "Delete Problem",
@@ -43,12 +50,23 @@
       "problemTitlePlaceholder": "e.g., Two Sum",
       "category": "Category",
       "categoryPlaceholder": "e.g., Array",
+      "topic": "Topic",
+      "topicPlaceholder": "e.g., Arrays",
+      "description": "Description",
+      "descriptionPlaceholder": "Describe the problem...",
+      "statement": "Statement",
+      "statementPlaceholder": "Describe the problem...",
+      "solution": "Solution (optional)",
+      "solutionPlaceholder": "Reference solution...",
       "difficulty": "Difficulty",
       "visibility": "Visibility",
+      "published": "Published",
       "tags": "Tags (Comma separated)",
       "tagsPlaceholder": "e.g., Array, Hash Table",
       "createSubmit": "Create Problem",
-      "saveChanges": "Save Changes"
+      "saveChanges": "Save Changes",
+      "saveError": "Failed to save problem. Please try again.",
+      "deleteError": "Failed to delete problem. Please try again."
     }
   }
 }

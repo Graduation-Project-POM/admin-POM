@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -11,9 +11,13 @@ import {
   Avatar,
   Chip,
   Stack,
+  Alert,
 } from "@mui/material";
 import { Edit, Save, BookOpen, Users, TrendingUp } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../../../services/AuthContext";
+import { StudentAcademicInfo } from "./StudentAcademicInfo";
+import { getCurrentUser, updateCurrentUser, type BackendUser } from "../../../services/userService";
 
 
 interface ProfileData {
@@ -35,15 +39,20 @@ interface StatsData {
 
 const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
+  const { role } = useAuth();
+  const isStudent = (role ?? "").toLowerCase() === "student";
   const [profile, setProfile] = useState<ProfileData>({
-    fullName: "Admin User",
-    displayName: "Admin User",
-    email: "admin@pmo-platform.com",
-    phone: "+1 (555) 123-4567",
-    department: "Administration",
-    position: "Super Administrator",
-    bio: "Experienced administrator with over 5 years in educational technology. Passionate about competitive programming and student development.",
+    fullName: "",
+    displayName: "",
+    email: "",
+    phone: "",
+    department: "",
+    position: role ?? "",
+    bio: "",
   });
+  const [loadedUser, setLoadedUser] = useState<BackendUser | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
 
   const [stats] = useState<StatsData>({
     contents: 67,
@@ -53,16 +62,64 @@ const ProfilePage: React.FC = () => {
 
   const [isEditing, setIsEditing] = useState(false);
 
+  const applyUser = (u: BackendUser) => {
+    setLoadedUser(u);
+    setProfile((prev) => ({
+      ...prev,
+      fullName: `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim(),
+      displayName: u.userName ?? "",
+      email: u.email ?? "",
+      phone: u.phoneNumber ?? "",
+      position: role ?? prev.position,
+    }));
+  };
+
+  useEffect(() => {
+    getCurrentUser()
+      .then(applyUser)
+      .catch(() => setSaveError(t("profile.loadError")));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleChange = (field: keyof ProfileData) => (event: React.ChangeEvent<HTMLInputElement>) => {
     setProfile({ ...profile, [field]: event.target.value });
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    console.log("Saved profile data:", profile);
+  const handleSave = async () => {
+    if (!loadedUser) {
+      setIsEditing(false);
+      return;
+    }
+    setSaveError(null);
+    setSaving(true);
+    // Split the full name; fall back to the existing values when needed.
+    const parts = profile.fullName.trim().split(/\s+/).filter(Boolean);
+    const firstName = parts[0] || loadedUser.firstName;
+    const lastName = parts.slice(1).join(" ") || loadedUser.lastName;
+    try {
+      await updateCurrentUser({
+        firstName,
+        middleName: loadedUser.middleName ?? "",
+        lastName,
+        email: profile.email,
+        userName: profile.displayName || loadedUser.userName,
+        phoneNumber: profile.phone || undefined,
+        gender: loadedUser.gender,
+        profileImageUrl: loadedUser.profileImageUrl ?? "",
+      });
+      const fresh = await getCurrentUser();
+      applyUser(fresh);
+      setIsEditing(false);
+    } catch (err: any) {
+      setSaveError(err?.response?.data?.message || t("profile.saveError"));
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleCancel = () => {
+    if (loadedUser) applyUser(loadedUser);
+    setSaveError(null);
     setIsEditing(false);
   };
 
@@ -165,6 +222,7 @@ const ProfilePage: React.FC = () => {
                       variant="contained"
                       startIcon={<Save size={16} />}
                       onClick={handleSave}
+                      disabled={saving}
                       sx={{
                         borderRadius: "40px",
                         textTransform: "none",
@@ -173,7 +231,7 @@ const ProfilePage: React.FC = () => {
                         "&:hover": { bgcolor: "#6d1620" },
                       }}
                     >
-                      {t('buttons.save')}
+                      {saving ? t('common.loading') : t('buttons.save')}
                     </Button>
                     <Button
                       variant="outlined"
@@ -193,6 +251,12 @@ const ProfilePage: React.FC = () => {
               </Box>
 
               <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
+
+              {saveError && (
+                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setSaveError(null)}>
+                  {saveError}
+                </Alert>
+              )}
 
               <Typography
                 variant="subtitle1"
@@ -446,6 +510,8 @@ const ProfilePage: React.FC = () => {
           </Stack>
         </Grid>
       </Grid>
+
+      {isStudent && <StudentAcademicInfo />}
     </Box>
   );
 };

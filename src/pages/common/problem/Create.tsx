@@ -1,37 +1,49 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Box,
-  MenuItem,
-  Stack,
-} from '@mui/material';
+import { Box, Stack, Alert, Switch } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
+import { Label } from '../../../components/ui/label/Label';
 import { Button } from '../../../components/ui/button/Button';
 
-interface ProblemFormData {
+export interface ProblemFormValues {
   title: string;
   category: string;
+  description: string;
   difficulty: string;
-  visibility: string;
-  tags: string; // We'll handle tags as a comma-separated string for simplicity in the form
+  isPublished: boolean;
 }
 
 interface CreateProblemProps {
   open: boolean;
   onClose: () => void;
-  onSave: (problem: any) => void;
+  // The parent decides what to do with the collected data (e.g. call the API).
+  onSave: (data: ProblemFormValues) => void | Promise<void>;
 }
+
+type FieldConfig = {
+  name: keyof ProblemFormValues;
+  label: string;
+  type: "text" | "select" | "textarea" | "switch";
+  required?: boolean;
+  placeholder?: string;
+  rows?: number;
+  options?: { label: string; value: string }[];
+};
+
+const initialFormData: ProblemFormValues = {
+  title: '',
+  category: '',
+  description: '',
+  difficulty: 'Easy',
+  isPublished: false,
+};
 
 const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<ProblemFormData>({
-    title: '',
-    category: '',
-    difficulty: 'Easy',
-    visibility: 'general',
-    tags: '',
-  });
+  const [formData, setFormData] = useState<ProblemFormValues>(initialFormData);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -43,93 +55,101 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Process tags from string to array
-    const problemData = {
-      ...formData,
-      id: Math.random().toString(36).substr(2, 9),
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-      submissions: 0,
-      successRate: 0,
-    };
+  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData((prev) => ({ ...prev, isPublished: e.target.checked }));
+  };
 
-    onSave(problemData);
-    setFormData({
-      title: '',
-      category: '',
-      difficulty: 'Easy',
-      visibility: 'general',
-      tags: '',
-    });
+  const handleClose = () => {
+    setFormData(initialFormData);
+    setError(null);
     onClose();
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setSubmitting(true);
+    try {
+      await onSave(formData);
+      handleClose();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || t('problem.form.saveError'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const fields: FieldConfig[] = [
+    { name: "title", label: t("problem.form.problemTitle"), type: "text", required: true, placeholder: t("problem.form.problemTitlePlaceholder") },
+    { name: "category", label: t("problem.form.category"), type: "text", required: true, placeholder: t("problem.form.categoryPlaceholder") },
+    { name: "description", label: t("problem.form.description"), type: "textarea", rows: 4, placeholder: t("problem.form.descriptionPlaceholder") },
+    {
+      name: "difficulty",
+      label: t("problem.form.difficulty"),
+      type: "select",
+      required: true,
+      options: [
+        { label: t("problem.difficulty.Easy"), value: "Easy" },
+        { label: t("problem.difficulty.Medium"), value: "Medium" },
+        { label: t("problem.difficulty.Hard"), value: "Hard" },
+      ],
+    },
+    { name: "isPublished", label: t("problem.form.published"), type: "switch" },
+  ];
 
   return (
     <ModalWrapper
       open={open}
-      onClose={onClose}
+      onClose={handleClose}
       title={t("problem.form.createTitle")}
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
         <Stack spacing={3} sx={{ mt: 1 }}>
-          <FormField
-            label={t("problem.form.problemTitle")}
-            name="title"
-            placeholder={t("problem.form.problemTitlePlaceholder")}
-            value={formData.title}
-            onChange={handleChange}
-            required
-          />
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <FormField
-              label={t("problem.form.category")}
-              name="category"
-              placeholder={t("problem.form.categoryPlaceholder")}
-              value={formData.category}
-              onChange={handleChange}
-              required
-            />
-            <FormField
-              select
-              label={t("problem.form.difficulty")}
-              name="difficulty"
-              value={formData.difficulty}
-              onChange={handleChange}
-              required
-            >
-              <MenuItem value="Easy">{t("problem.difficulty.Easy")}</MenuItem>
-              <MenuItem value="Medium">{t("problem.difficulty.Medium")}</MenuItem>
-              <MenuItem value="Hard">{t("problem.difficulty.Hard")}</MenuItem>
-            </FormField>
-          </Box>
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
-            <FormField
-              select
-              label={t("problem.form.visibility")}
-              name="visibility"
-              value={formData.visibility}
-              onChange={handleChange}
-              required
-            >
-              <MenuItem value="general">{t("problem.visibility.general")}</MenuItem>
-              <MenuItem value="group-specific">{t("problem.visibility.groupSpecific")}</MenuItem>
-            </FormField>
-            <FormField
-              label={t("problem.form.tags")}
-              name="tags"
-              placeholder={t("problem.form.tagsPlaceholder")}
-              value={formData.tags}
-              onChange={handleChange}
-            />
-          </Box>
+          {fields.map((field) =>
+            field.type === "switch" ? (
+              <Box key={field.name}>
+                <Label>{field.label}</Label>
+                <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 40 }}>
+                  <Switch
+                    name={field.name}
+                    checked={formData.isPublished}
+                    onChange={handleSwitchChange}
+                    sx={{
+                      "& .MuiSwitch-switchBase.Mui-checked": {
+                        color: "#8B1D23",
+                      },
+                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+                        backgroundColor: "#8B1D23",
+                      },
+                    }}
+                  />
+                </Box>
+              </Box>
+            ) : (
+              <FormField
+                key={field.name}
+                type={field.type === "select" ? "select" : "text"}
+                label={field.label}
+                name={field.name}
+                value={formData[field.name] as string}
+                onChange={handleChange}
+                required={field.required}
+                placeholder={field.placeholder}
+                options={field.options}
+                multiline={field.type === "textarea"}
+                rows={field.rows}
+              />
+            ),
+          )}
         </Stack>
-        <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            {t("problem.form.createSubmit")}
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting}>
+          {submitting ? t("common.loading") : t("problem.form.createSubmit")}
         </Button>
       </form>
     </ModalWrapper>

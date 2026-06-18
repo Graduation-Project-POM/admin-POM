@@ -60,6 +60,17 @@ export const getUserById = async (id: number): Promise<BackendUser> => {
   return response.data;
 };
 
+// The logged-in user's own account (any authenticated role).
+export const getCurrentUser = async (): Promise<BackendUser> => {
+  const response = await api.get<BackendUser>("/User/me");
+  return response.data;
+};
+
+export const updateCurrentUser = async (data: UpdateUserPayload) => {
+  const response = await api.put("/User/me", data);
+  return response.data;
+};
+
 export const createUser = async (data: CreateUserPayload) => {
   const response = await api.post("/User", data);
   return response.data;

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   List,
@@ -115,12 +115,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setOpenItem(openItem === path ? null : path);
   };
 
-  const isChildActive = (item: any) => {
-    if (!item.items) return false;
-    return item.items.some(
-      (subItem: any) => location.pathname === subItem.path,
-    );
+  // Active if the path matches exactly or is an ancestor segment of the current
+  // route (so e.g. /student/problems/3 still highlights the Problems item).
+  const matchesPath = (path: string) =>
+    !!path &&
+    path !== "#" &&
+    (location.pathname === path || location.pathname.startsWith(path + "/"));
+
+  // Among an item's children, the active one is the longest matching path
+  // (so /student/problems/submissions activates "My Submissions", not "All Problems").
+  const activeChildPath = (item: any): string | undefined => {
+    if (!item.items) return undefined;
+    return item.items
+      .filter((subItem: any) => matchesPath(subItem.path))
+      .sort((a: any, b: any) => b.path.length - a.path.length)[0]?.path;
   };
+
+  const isChildActive = (item: any) => !!activeChildPath(item);
+
+  // Keep the submenu of the active route expanded (e.g. on a problem details page).
+  useEffect(() => {
+    const parent = sections
+      .flatMap((s) => s.items)
+      .find((item: any) => item.items && isChildActive(item));
+    if (parent) setOpenItem(parent.path);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   const handleLanguageToggle = () => {
     i18n.changeLanguage(language === "ar" ? "en"   : "ar");
@@ -174,7 +194,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {section.items.map((item: any) => {
                   const hasChildren = item.items && item.items.length > 0;
                   const isOpen = openItem === item.path;
-                  const isActive = location.pathname === item.path;
+                  // Parent items with children shouldn't self-highlight from a prefix
+                  // match (the child handles it); leaf items use the segment match.
+                  const hasChildItems = item.items && item.items.length > 0;
+                  const isActive = hasChildItems
+                    ? location.pathname === item.path
+                    : matchesPath(item.path);
                   const isParentActive = isActive || isChildActive(item);
 
                   const isLogoutItem = item.title === "Logout";
@@ -242,9 +267,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {hasChildren && (
                         <Collapse in={isOpen} timeout="auto" unmountOnExit>
                           <List disablePadding>
-                            {item.items.map((subItem: any) => {
-                              const isSubActive =
-                                location.pathname === subItem.path;
+                            {(() => {
+                              const currentActiveChild = activeChildPath(item);
+                              return item.items.map((subItem: any) => {
+                              const isSubActive = subItem.path === currentActiveChild;
                               return (
                                 <ListItem key={subItem.path} disablePadding>
                                   <StyledListItemButton
@@ -283,7 +309,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                   </StyledListItemButton>
                                 </ListItem>
                               );
-                            })}
+                              });
+                            })()}
                           </List>
                         </Collapse>
                       )}

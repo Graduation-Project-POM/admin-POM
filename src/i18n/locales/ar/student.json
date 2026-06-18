@@ -82,7 +82,32 @@
         "action": "الإجراء"
       },
       "reviewSolution": "مراجعة الحل",
-      "solve": "حلّ"
+      "solve": "حلّ",
+      "submitted": "تم الإرسال",
+      "gradeValue": "الدرجة: {{grade}}/100",
+      "loadError": "فشل تحميل المسائل. حاول مرة أخرى.",
+      "submit": {
+        "title": "إرسال الحل",
+        "solutionLabel": "الحل الخاص بك",
+        "solutionPlaceholder": "اكتب حلك هنا...",
+        "textSolution": "حل نصي",
+        "textSolutionHint": "اكتب حلك كنص.",
+        "imageSolution": "حل بصورة",
+        "imageSolutionHint": "ارفع صورة لحلك المكتوب بخط اليد.",
+        "imageAlt": "صورة الحل",
+        "clickToUpload": "اضغط لرفع صورة",
+        "uploadHint": "PNG أو JPG",
+        "replaceImage": "استبدال",
+        "remove": "إزالة",
+        "provideAtLeastOne": "قدّم حلاً نصياً أو صورة.",
+        "readyToSubmit": "جاهز للإرسال.",
+        "submitButton": "إرسال الحل",
+        "cancel": "إلغاء",
+        "required": "يرجى كتابة الحل قبل الإرسال.",
+        "success": "تم إرسال الحل بنجاح.",
+        "alreadySubmitted": "لقد قمت بالفعل بإرسال حل لهذه المسألة.",
+        "error": "فشل إرسال الحل. حاول مرة أخرى."
+      }
     },
     "submissions": {
       "title": "مشاركاتي",
@@ -115,7 +140,18 @@
       },
       "pending": "قيد الانتظار",
       "statusSubmitted": "مُقدَّمة",
-      "statusDraft": "مسودة"
+      "statusDraft": "مسودة",
+      "loadError": "فشل تحميل مساهماتك. حاول مرة أخرى."
+    },
+    "problemDetails": {
+      "back": "رجوع",
+      "notFound": "لم يتم العثور على المساهمة.",
+      "noStatement": "لا يوجد وصف لهذه المسألة.",
+      "mySolution": "الحل الخاص بي",
+      "grade": "الدرجة: {{grade}}/100",
+      "pending": "بانتظار التقييم",
+      "submittedAt": "تم الإرسال: {{date}}",
+      "noSolution": "لم يتم إرسال نص الحل."
     },
     "groups": {
       "title": "مجموعاتي",

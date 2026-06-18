@@ -1,4 +1,3 @@
-import { SharedTable } from "../../../components/ui/table/tables";
 import {
   Box,
   Chip,
@@ -6,13 +5,18 @@ import {
   MenuItem,
   Select,
   FormControl,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import { useState, useMemo } from "react";
-import { useTranslation } from "react-i18next";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { createProblem, deleteProblem, difficultyIdToLabel, difficultyLabelToId, getProblems, updateProblem, type BackendProblem, type DifficultyLabel } from "../../../services/problemService";
+import type { ProblemFormValues } from "./Create";
 import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
-import EditProblem from "./Edit";
 import CreateProblem from "./Create";
+import EditProblem, { type ProblemEditValues } from "./Edit";
+import { SharedTable } from "../../../components/ui/table/tables";
 
 const primaryColor = "#7A1E1E";
 
@@ -57,20 +61,6 @@ const SearchFilterBox = styled(Box)({
   },
 });
 
-const TagsContainer = styled(Box)({
-  display: "flex",
-  flexWrap: "wrap",
-  gap: "6px",
-});
-
-const SmallChip = styled(Chip)({
-  fontSize: "11px",
-  height: "22px",
-  fontWeight: 500,
-  backgroundColor: "#f3f4f6",
-  color: "#374151",
-});
-
 const DifficultyChip = styled(Chip)<{ difficulty: string }>(
   ({ difficulty }) => ({
     fontSize: "11px",
@@ -95,53 +85,36 @@ type Problem = {
   id: string;
   title: string;
   category: string;
-  difficulty: "Easy" | "Medium" | "Hard";
-  tags: string[];
-  visibility: "general" | "group-specific";
-  submissions: number;
-  successRate: number;
+  difficulty: DifficultyLabel;
+  publisher: string;
+  status: "published" | "draft";
+  canModify: boolean;
 };
 
-const mockProblems: Problem[] = [
-  {
-    id: "1",
-    title: "Two Sum",
-    category: "Array",
-    difficulty: "Easy",
-    tags: ["Hash Table", "Array"],
-    visibility: "general",
-    submissions: 245,
-    successRate: 78,
-  },
-  {
-    id: "2",
-    title: "Binary Tree Maximum Path Sum",
-    category: "Tree",
-    difficulty: "Hard",
-    tags: ["Dynamic Programming", "Tree"],
-    visibility: "group-specific",
-    submissions: 87,
-    successRate: 42,
-  },
-  {
-    id: "3",
-    title: "Merge Intervals",
-    category: "Array",
-    difficulty: "Medium",
-    tags: ["Array", "Sorting"],
-    visibility: "general",
-    submissions: 156,
-    successRate: 65,
-  },
-];
+// Convert a backend problem record into the row shape the table renders.
+const toTableRow = (p: BackendProblem): Problem => ({
+  id: String(p.id),
+  title: p.title,
+  category: p.topic,
+  difficulty: difficultyIdToLabel(p.difficulty),
+  publisher: p.publisherName || "—",
+  status: p.isPublished ? "published" : "draft",
+  canModify: p.canModify ?? false,
+});
 
 export const ProblemsPage = () => {
-  const { t } = useTranslation();
-  const [problems, setProblems] = useState<Problem[]>(mockProblems);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [rawProblems, setRawProblems] = useState<BackendProblem[]>([]);
+  const [problems, setProblems] = useState<Problem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
+  const [selectedProblem, setSelectedProblem] = useState<BackendProblem | null>(
+    null,
+  );
 
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
@@ -155,106 +128,129 @@ export const ProblemsPage = () => {
     onConfirm: () => {},
   });
 
+  const loadProblems = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getProblems();
+      setRawProblems(data);
+      setProblems(data.map(toTableRow));
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to load problems.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadProblems();
+  }, [loadProblems]);
+
   const filteredProblems = useMemo(() => {
     if (difficultyFilter === "all") return problems;
     return problems.filter((p) => p.difficulty === difficultyFilter);
   }, [problems, difficultyFilter]);
 
-  const handleCreate = (newProblem: Problem) => {
-    setProblems([newProblem, ...problems]);
+  const handleCreate = async (data: ProblemFormValues) => {
+    await createProblem({
+      title: data.title,
+      statement: data.description || undefined,
+      difficulty: difficultyLabelToId(data.difficulty),
+      topic: data.category,
+      isPublished: data.isPublished,
+    });
+    await loadProblems();
   };
 
-  const handleEdit = (updatedProblem: Problem) => {
-    setProblems(
-      problems.map((p) => (p.id === updatedProblem.id ? updatedProblem : p)),
-    );
+  const handleUpdate = async (data: ProblemEditValues) => {
+    await updateProblem(Number(data.id), {
+      title: data.title,
+      statement: data.description || undefined,
+      difficulty: difficultyLabelToId(data.difficulty),
+      topic: data.category,
+      isPublished: data.isPublished,
+    });
+    await loadProblems();
+  };
+
+  const removeProblems = async (ids: string[]) => {
+    try {
+      await Promise.all(ids.map((id) => deleteProblem(Number(id))));
+      await loadProblems();
+    } catch (err: any) {
+      setError(err?.response?.data?.message || "Failed to delete problem.");
+    }
   };
 
   const handleDelete = (id: string) => {
     setConfirmConfig({
       open: true,
-      title: t("problem.delete.singleTitle"),
-      message: t("problem.delete.singleMessage"),
-      onConfirm: () => {
-        setProblems(problems.filter((p) => p.id !== id));
-      },
+      title: "Delete Problem",
+      message: "Are you sure you want to delete this problem?",
+      onConfirm: () => removeProblems([id]),
     });
   };
 
   const handleBulkDelete = (ids: string[]) => {
+    if (ids.length === 0) return;
     setConfirmConfig({
       open: true,
-      title: t("problem.delete.bulkTitle"),
-      message: t("problem.delete.bulkMessage", { count: ids.length }),
-      onConfirm: () => {
-        setProblems(problems.filter((p) => !ids.includes(p.id)));
-      },
+      title: "Delete Problems",
+      message: `Are you sure you want to delete ${ids.length} selected problems?`,
+      onConfirm: () => removeProblems(ids),
     });
+  };
+
+  const handleEditClick = (row: Problem) => {
+    const raw = rawProblems.find((p) => String(p.id) === row.id);
+    if (!raw) return;
+    setSelectedProblem(raw);
+    setIsEditModalOpen(true);
   };
 
   const columns = [
     {
       id: "title",
-      label: t("problem.list.columns.title"),
+      label: "Title",
       render: (row: Problem) => (
-        <Typography sx={{ fontWeight: 600, color: primaryColor }}>
+        <Typography 
+          onClick={() => navigate(`${location.pathname.replace(/\/$/, "")}/${row.id}`)}
+          sx={{ 
+            fontWeight: 600, 
+            color: primaryColor, 
+            cursor: 'pointer',
+            '&:hover': { textDecoration: 'underline' }
+          }}
+        >
           {row.title}
         </Typography>
       ),
     },
-    { id: "category", label: t("problem.list.columns.category") },
+    { id: "category", label: "Category" },
     {
       id: "difficulty",
-      label: t("problem.list.columns.difficulty"),
+      label: "Difficulty",
       render: (row: Problem) => (
         <DifficultyChip
-          label={t(`problem.difficulty.${row.difficulty}`)}
+          label={row.difficulty}
           difficulty={row.difficulty}
         />
       ),
     },
+    { id: "publisher", label: "Publisher" },
     {
-      id: "tags",
-      label: t("problem.list.columns.tags"),
-      render: (row: Problem) => (
-        <TagsContainer>
-          {row.tags.map((tag, idx) => (
-            <SmallChip key={idx} label={tag} />
-          ))}
-        </TagsContainer>
-      ),
-    },
-    {
-      id: "visibility",
-      label: t("problem.list.columns.visibility"),
+      id: "status",
+      label: "Status",
       render: (row: Problem) => (
         <Chip
-          label={
-            row.visibility === "general"
-              ? t("problem.visibility.general")
-              : t("problem.visibility.groupSpecific")
-          }
+          label={row.status}
           sx={{
             fontSize: "11px",
             height: "22px",
-            bgcolor: row.visibility === "general" ? "#e7f7ec" : "#ffe0e0",
-            color: row.visibility === "general" ? "#166534" : "#991b1b",
+            bgcolor: row.status === "published" ? "#e7f7ec" : "#f3f4f6",
+            color: row.status === "published" ? "#166534" : "#374151",
           }}
         />
-      ),
-    },
-    {
-      id: "stats",
-      label: t("problem.list.columns.stats"),
-      render: (row: Problem) => (
-        <Box>
-          <Typography variant="caption" sx={{ display: "block" }}>
-            {t("problem.list.stats.submissions", { count: row.submissions })}
-          </Typography>
-          <Typography variant="caption" sx={{ display: "block" }}>
-            {t("problem.list.stats.success", { rate: row.successRate })}
-          </Typography>
-        </Box>
       ),
     },
   ];
@@ -263,10 +259,10 @@ export const ProblemsPage = () => {
     <Box sx={{ p: 0 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-          {t("problem.list.title")}
+          Problem Bank
         </Typography>
         <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-          {t("problem.list.subtitle")}
+          Manage your collection of math problems
         </Typography>
 
         <SearchFilterBox>
@@ -275,29 +271,41 @@ export const ProblemsPage = () => {
               value={difficultyFilter}
               onChange={(e) => setDifficultyFilter(e.target.value)}
               displayEmpty
+              size="small"
             >
-              <MenuItem value="all">{t("problem.list.filter.allLevels")}</MenuItem>
-              <MenuItem value="Easy">{t("problem.difficulty.Easy")}</MenuItem>
-              <MenuItem value="Medium">{t("problem.difficulty.Medium")}</MenuItem>
-              <MenuItem value="Hard">{t("problem.difficulty.Hard")}</MenuItem>
+              <MenuItem value="all">All Levels</MenuItem>
+              <MenuItem value="Easy">Easy</MenuItem>
+              <MenuItem value="Medium">Medium</MenuItem>
+              <MenuItem value="Hard">Hard</MenuItem>
             </Select>
           </StyledFormControl>
         </SearchFilterBox>
       </Box>
 
-      <SharedTable
-        data={filteredProblems}
-        columns={columns}
-        onAdd={() => setIsCreateModalOpen(true)}
-        onEdit={(row) => {
-          setSelectedProblem(row);
-          setIsEditModalOpen(true);
-        }}
-        onSingleDelete={handleDelete}
-        onDelete={handleBulkDelete}
-        addButtonLabel={t("problem.list.addButton")}
-        searchPlaceholder={t("problem.list.searchPlaceholder")}
-      />
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
+      {loading ? (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+          <CircularProgress sx={{ color: "#8B1D23" }} />
+        </Box>
+      ) : (
+        <SharedTable
+          data={filteredProblems}
+          columns={columns}
+          onAdd={() => setIsCreateModalOpen(true)}
+          onEdit={handleEditClick}
+          onSingleDelete={handleDelete}
+          onDelete={handleBulkDelete}
+          canEditRow={(row: Problem) => row.canModify}
+          canDeleteRow={(row: Problem) => row.canModify}
+          addButtonLabel="Create Problem"
+          searchPlaceholder="Search problems..."
+        />
+      )}
 
       <CreateProblem
         open={isCreateModalOpen}
@@ -305,15 +313,24 @@ export const ProblemsPage = () => {
         onSave={handleCreate}
       />
 
-      <EditProblem
-        open={isEditModalOpen}
-        onClose={() => {
-          setIsEditModalOpen(false);
-          setSelectedProblem(null);
-        }}
-        problem={selectedProblem}
-        onSave={handleEdit}
-      />
+      {selectedProblem && (
+        <EditProblem
+          open={isEditModalOpen}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedProblem(null);
+          }}
+          problem={{
+            id: selectedProblem.id,
+            title: selectedProblem.title,
+            category: selectedProblem.topic,
+            description: selectedProblem.statement,
+            difficulty: difficultyIdToLabel(selectedProblem.difficulty),
+            isPublished: selectedProblem.isPublished,
+          }}
+          onSave={handleUpdate}
+        />
+      )}
 
       <ConfirmationModal
         open={confirmConfig.open}
