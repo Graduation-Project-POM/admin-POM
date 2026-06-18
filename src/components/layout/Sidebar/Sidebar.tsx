@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   List,
@@ -115,12 +115,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setOpenItem(openItem === path ? null : path);
   };
 
-  const isChildActive = (item: any) => {
-    if (!item.items) return false;
-    return item.items.some(
-      (subItem: any) => location.pathname === subItem.path,
-    );
+  const matchesPath = (path: string) =>
+    !!path &&
+    path !== "#" &&
+    (location.pathname === path || location.pathname.startsWith(path + "/"));
+
+  const activeChildPath = (item: any): string | undefined => {
+    if (!item.items) return undefined;
+    return item.items
+      .filter((subItem: any) => matchesPath(subItem.path))
+      .sort((a: any, b: any) => b.path.length - a.path.length)[0]?.path;
   };
+
+  const isChildActive = (item: any) => !!activeChildPath(item);
+
+  useEffect(() => {
+    const parent = sections
+      .flatMap((s) => s.items)
+      .find((item: any) => item.items && isChildActive(item));
+    if (parent) setOpenItem(parent.path);
+  }, [location.pathname]);
 
   const handleLanguageToggle = () => {
     i18n.changeLanguage(language === "ar" ? "en"   : "ar");
@@ -174,7 +188,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {section.items.map((item: any) => {
                   const hasChildren = item.items && item.items.length > 0;
                   const isOpen = openItem === item.path;
-                  const isActive = location.pathname === item.path;
+                  const hasChildItems = item.items && item.items.length > 0;
+                  const isActive = hasChildItems
+                    ? location.pathname === item.path
+                    : matchesPath(item.path);
                   const isParentActive = isActive || isChildActive(item);
 
                   const isLogoutItem = item.title === "Logout";
@@ -242,9 +259,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       {hasChildren && (
                         <Collapse in={isOpen} timeout="auto" unmountOnExit>
                           <List disablePadding>
-                            {item.items.map((subItem: any) => {
-                              const isSubActive =
-                                location.pathname === subItem.path;
+                            {(() => {
+                              const currentActiveChild = activeChildPath(item);
+                              return item.items.map((subItem: any) => {
+                              const isSubActive = subItem.path === currentActiveChild;
                               return (
                                 <ListItem key={subItem.path} disablePadding>
                                   <StyledListItemButton
@@ -283,7 +301,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                   </StyledListItemButton>
                                 </ListItem>
                               );
-                            })}
+                              });
+                            })()}
                           </List>
                         </Collapse>
                       )}

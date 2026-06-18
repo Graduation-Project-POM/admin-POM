@@ -1,43 +1,30 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Box, Chip, Stack, Typography, Paper, Grid,
+  Box, Chip, Stack, Typography, Paper, Grid, CircularProgress, Alert,
 } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
 import {
-  Calendar, Globe, Tag, RotateCcw,
-  Filter, Target, Flame, Zap, Library,
+  Tag, RotateCcw, Filter, Target, Flame, Zap, Library, Gauge,
 } from 'lucide-react';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { Button } from '../../../components/ui/button/Button';
+import {
+  getProblems,
+  getMySubmissions,
+  difficultyIdToLabel,
+  type BackendProblem,
+  type DifficultyLabel,
+} from '../../../services/problemService';
+import { SubmitSolutionModal } from './SubmitSolutionModal';
 
-interface Problem {
+interface ProblemRow {
   id: string;
   name: string;
-  year: string;
-  country: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
   topic: string;
-  solutionsCount: number;
-  userSubmitted: boolean;
-  grade?: number;
-  maxGrade?: number;
-  submittedDate?: string;
+  difficulty: DifficultyLabel;
+  raw: BackendProblem;
 }
-
-const allProblemsData: Problem[] = [
-  { id: "P001", name: "Divisibility Chain", year: "2026", country: "Palestine", difficulty: "Easy", topic: "Number Theory", solutionsCount: 1, userSubmitted: true, grade: 95, maxGrade: 100, submittedDate: "2026-02-01" },
-  { id: "P002", name: "Infinite GCD Pairs", year: "2025", country: "Palestine", difficulty: "Medium", topic: "Number Theory", solutionsCount: 0, userSubmitted: false },
-  { id: "P003", name: "Triangle Inequality", year: "2024", country: "Egypt", difficulty: "Easy", topic: "Geometry", solutionsCount: 0, userSubmitted: false },
-  { id: "P004", name: "Sequence Limit", year: "2025", country: "Jordan", difficulty: "Medium", topic: "Algebra", solutionsCount: 0, userSubmitted: false },
-  { id: "P005", name: "Counting Paths", year: "2026", country: "Palestine", difficulty: "Hard", topic: "Combinatorics", solutionsCount: 1, userSubmitted: true, grade: 78, maxGrade: 100, submittedDate: "2026-02-05" },
-  { id: "P006", name: "Circle Inversion", year: "2023", country: "Palestine", difficulty: "Hard", topic: "Geometry", solutionsCount: 1, userSubmitted: false },
-  { id: "P007", name: "Functional Equation", year: "2024", country: "Egypt", difficulty: "Hard", topic: "Algebra", solutionsCount: 0, userSubmitted: false },
-  { id: "P008", name: "Pigeonhole Principle", year: "2025", country: "Palestine", difficulty: "Easy", topic: "Combinatorics", solutionsCount: 0, userSubmitted: false },
-  { id: "P009", name: "Quadratic Residues", year: "2026", country: "Jordan", difficulty: "Medium", topic: "Number Theory", solutionsCount: 1, userSubmitted: true, grade: 88, maxGrade: 100, submittedDate: "2026-02-10" },
-  { id: "P010", name: "Modular Arithmetic", year: "2026", country: "Palestine", difficulty: "Easy", topic: "Number Theory", solutionsCount: 1, userSubmitted: true, grade: 100, maxGrade: 100, submittedDate: "2026-02-12" },
-  { id: "P011", name: "Graph Coloring", year: "2025", country: "Jordan", difficulty: "Hard", topic: "Graph Theory", solutionsCount: 1, userSubmitted: true, grade: 65, maxGrade: 100, submittedDate: "2026-01-28" },
-];
 
 const fadeInUp = keyframes`
   from { opacity: 0; transform: translateY(20px); }
@@ -71,16 +58,6 @@ const WelcomeBanner = styled(Box)({
     height: '300px',
     borderRadius: '50%',
     background: 'radial-gradient(circle, rgba(139,29,35,0.4) 0%, transparent 70%)',
-  },
-  '&::after': {
-    content: '""',
-    position: 'absolute',
-    bottom: '-40%',
-    left: '20%',
-    width: '200px',
-    height: '200px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
   },
 });
 
@@ -131,11 +108,6 @@ const StyledChip = styled(Chip)<{ active?: boolean }>(({ active }) => ({
   boxShadow: active ? '0 4px 12px rgba(139, 29, 35, 0.25)' : 'none',
   '&:hover': {
     backgroundColor: active ? '#6d1620' : '#f1f5f9',
-    transform: 'translateY(-2px)',
-    boxShadow: active ? '0 6px 16px rgba(139, 29, 35, 0.35)' : '0 4px 12px rgba(0,0,0,0.06)',
-  },
-  '&:active': {
-    transform: 'translateY(0)',
   },
 }));
 
@@ -165,58 +137,79 @@ const DifficultyBadge = styled(Box)<{ difficulty: string }>(({ difficulty }) => 
   }),
 }));
 
-const ActiveFiltersBar = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  gap: '12px',
-  padding: '12px 20px',
-  backgroundColor: '#fef2f2',
-  borderRadius: '12px',
-  border: '1px solid #fecaca',
-  marginBottom: '20px',
-  animation: `${fadeIn} 0.3s ease-out`,
-});
-
 const TableSection = styled(Box)({
   animation: `${fadeInUp} 0.5s ease-out 300ms both`,
 });
 
-const getUniqueValues = <K extends keyof Problem>(key: K): string[] => {
-  const values = allProblemsData.map(p => p[key]).filter(v => v !== undefined && v !== null);
-  return [...new Set(values.map(v => String(v)))].sort();
-};
-
-const allYears = getUniqueValues('year');
-const allCountries = getUniqueValues('country');
-const allTopics = getUniqueValues('topic');
+const DIFFICULTIES: DifficultyLabel[] = ['Easy', 'Medium', 'Hard'];
 
 export const ProblemBank: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedYear, setSelectedYear] = useState<string>('All');
-  const [selectedCountry, setSelectedCountry] = useState<string>('All');
+  const [problems, setProblems] = useState<BackendProblem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
+  const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  // problemId -> grade (null = submitted but not graded yet). Absent = not submitted.
+  const [gradeByProblem, setGradeByProblem] = useState<Map<number, number | null>>(new Map());
+  const [modalProblem, setModalProblem] = useState<BackendProblem | null>(null);
 
-  const hasActiveFilters = selectedYear !== 'All' || selectedCountry !== 'All' || selectedTopic !== 'All';
+  const loadProblems = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      // Published problems + the student's existing submissions (to mark solved + show grade).
+      const [data, mine] = await Promise.all([getProblems(), getMySubmissions()]);
+      setProblems(data);
+      setGradeByProblem(new Map(mine.map((s) => [s.problemId, s.grade ?? null])));
+    } catch (err: any) {
+      setError(err?.response?.data?.message || t('student.problems.loadError'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
 
-  const filteredData = useMemo(() => {
-    let filtered = [...allProblemsData];
-    if (selectedYear !== 'All') filtered = filtered.filter(p => p.year === selectedYear);
-    if (selectedCountry !== 'All') filtered = filtered.filter(p => p.country === selectedCountry);
-    if (selectedTopic !== 'All') filtered = filtered.filter(p => p.topic === selectedTopic);
-    return filtered;
-  }, [selectedYear, selectedCountry, selectedTopic]);
+  useEffect(() => {
+    loadProblems();
+  }, [loadProblems]);
 
+  const allTopics = useMemo(
+    () => [...new Set(problems.map((p) => p.topic).filter(Boolean))].sort(),
+    [problems],
+  );
+
+  const rows: ProblemRow[] = useMemo(
+    () =>
+      problems
+        .filter((p) => (selectedTopic === 'All' ? true : p.topic === selectedTopic))
+        .filter((p) =>
+          selectedDifficulty === 'All' ? true : difficultyIdToLabel(p.difficulty) === selectedDifficulty,
+        )
+        .map((p) => ({
+          id: String(p.id),
+          name: p.title,
+          topic: p.topic,
+          difficulty: difficultyIdToLabel(p.difficulty),
+          raw: p,
+        })),
+    [problems, selectedTopic, selectedDifficulty],
+  );
+
+  const hasActiveFilters = selectedTopic !== 'All' || selectedDifficulty !== 'All';
   const resetFilters = () => {
-    setSelectedYear('All');
-    setSelectedCountry('All');
     setSelectedTopic('All');
+    setSelectedDifficulty('All');
+  };
+
+  const handleSubmitted = (problemId: number) => {
+    setGradeByProblem((prev) => new Map(prev).set(problemId, null));
   };
 
   const columns = [
     {
       id: 'id',
       label: t('student.problems.columns.id'),
-      render: (row: Problem) => (
+      render: (row: ProblemRow) => (
         <Typography sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '13px', fontFamily: 'monospace' }}>
           {row.id}
         </Typography>
@@ -225,36 +218,25 @@ export const ProblemBank: React.FC = () => {
     {
       id: 'name',
       label: t('student.problems.columns.problemName'),
-      render: (row: Problem) => (
-        <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>
-          {row.name}
-        </Typography>
+      render: (row: ProblemRow) => (
+        <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{row.name}</Typography>
       ),
     },
     {
-      id: 'year',
-      label: t('student.problems.columns.year'),
-      render: (row: Problem) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Calendar size={13} color="#8B1D23" />
-          <Typography sx={{ fontWeight: 600, color: '#475569', fontSize: '13px' }}>{row.year}</Typography>
-        </Box>
-      ),
-    },
-    {
-      id: 'country',
-      label: t('student.problems.columns.country'),
-      render: (row: Problem) => (
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-          <Globe size={13} color="#8B1D23" />
-          <Typography sx={{ fontWeight: 600, color: '#475569', fontSize: '13px' }}>{row.country}</Typography>
-        </Box>
+      id: 'topic',
+      label: t('student.problems.columns.topic'),
+      render: (row: ProblemRow) => (
+        <Chip
+          label={row.topic}
+          size="small"
+          sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600, fontSize: '11px', borderRadius: '8px' }}
+        />
       ),
     },
     {
       id: 'difficulty',
       label: t('student.problems.columns.difficulty'),
-      render: (row: Problem) => (
+      render: (row: ProblemRow) => (
         <DifficultyBadge difficulty={row.difficulty}>
           {row.difficulty === 'Easy' && <Zap size={12} />}
           {row.difficulty === 'Medium' && <Target size={12} />}
@@ -264,40 +246,43 @@ export const ProblemBank: React.FC = () => {
       ),
     },
     {
-      id: 'topic',
-      label: t('student.problems.columns.topic'),
-      render: (row: Problem) => (
-        <Chip
-          label={row.topic}
-          size="small"
-          sx={{
-            bgcolor: '#f1f5f9',
-            color: '#475569',
-            fontWeight: 600,
-            fontSize: '11px',
-            borderRadius: '8px',
-          }}
-        />
-      ),
-    },
-    {
       id: 'action',
       label: t('student.problems.columns.action'),
-      render: (row: Problem) => (
-        <Button
-          variantType={row.userSubmitted ? 'outline' : 'default'}
-          size="small"
-          sx={{ py: 0.5, px: 2, fontSize: '12px', '&:hover': {  color: 'white',backgroundColor: '#8B1D23'} }}
-        >
-          {row.userSubmitted ? t('student.problems.reviewSolution') : t('student.problems.solve')}
-        </Button>
-      ),
+      render: (row: ProblemRow) => {
+        const submitted = gradeByProblem.has(row.raw.id);
+        const grade = submitted ? gradeByProblem.get(row.raw.id) : undefined;
+        if (!submitted) {
+          return (
+            <Button
+              variantType="default"
+              size="small"
+              onClick={() => setModalProblem(row.raw)}
+              sx={{ py: 0.5, px: 2, fontSize: '12px', '&:hover': { color: 'white', backgroundColor: '#8B1D23' } }}
+            >
+              {t('student.problems.solve')}
+            </Button>
+          );
+        }
+        // Submitted: show the grade if it's been graded, otherwise a pending chip.
+        return grade != null ? (
+          <Chip
+            label={t('student.problems.gradeValue', { grade })}
+            size="small"
+            sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
+          />
+        ) : (
+          <Chip
+            label={t('student.problems.submitted')}
+            size="small"
+            sx={{ bgcolor: '#fff7e0', color: '#92400e', fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
+          />
+        );
+      },
     },
   ];
 
   return (
     <PageContainer>
-      {/* Welcome Banner */}
       <WelcomeBanner>
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
@@ -325,21 +310,17 @@ export const ProblemBank: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2 }}>
-              <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>
-                  {allProblemsData.length}
-                </Typography>
-                <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
-                  {t('student.problems.totalProblems')}
-                </Typography>
-              </Box>
+            <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{problems.length}</Typography>
+              <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
+                {t('student.problems.totalProblems')}
+              </Typography>
             </Box>
           </Box>
         </Box>
       </WelcomeBanner>
 
-      {/* Filter Section */}
+      {/* Filters */}
       <FilterCard elevation={0}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -351,90 +332,37 @@ export const ProblemBank: React.FC = () => {
             </Typography>
           </Box>
           {hasActiveFilters && (
-            <Button
-              variantType="ghost"
-              size="small"
-              startIcon={<RotateCcw size={14} />}
-              onClick={resetFilters}
-              sx={{ color: '#8B1D23', '&:hover': { color: '#6B141A' } }}
-            >
+            <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: '#8B1D23' }}>
               {t('student.problems.resetAll')}
             </Button>
           )}
         </Box>
 
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FilterGroup>
               <FilterLabel>
-                <Calendar size={14} color="#8B1D23" />
-                {t('student.problems.year')}
+                <Gauge size={14} color="#8B1D23" />
+                {t('student.problems.columns.difficulty')}
               </FilterLabel>
               <FilterChipsStack>
-                <StyledChip
-                  label={t('common.all')}
-                  onClick={() => setSelectedYear('All')}
-                  active={selectedYear === 'All'}
-                  size="small"
-                />
-                {allYears.map(year => (
-                  <StyledChip
-                    key={year}
-                    label={year}
-                    onClick={() => setSelectedYear(year)}
-                    active={selectedYear === year}
-                    size="small"
-                  />
+                <StyledChip label={t('common.all')} onClick={() => setSelectedDifficulty('All')} active={selectedDifficulty === 'All'} size="small" />
+                {DIFFICULTIES.map((d) => (
+                  <StyledChip key={d} label={d} onClick={() => setSelectedDifficulty(d)} active={selectedDifficulty === d} size="small" />
                 ))}
               </FilterChipsStack>
             </FilterGroup>
           </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
-            <FilterGroup>
-              <FilterLabel>
-                <Globe size={14} color="#8B1D23" />
-                {t('student.problems.country')}
-              </FilterLabel>
-              <FilterChipsStack>
-                <StyledChip
-                  label={t('common.all')}
-                  onClick={() => setSelectedCountry('All')}
-                  active={selectedCountry === 'All'}
-                  size="small"
-                />
-                {allCountries.map(country => (
-                  <StyledChip
-                    key={country}
-                    label={country}
-                    onClick={() => setSelectedCountry(country)}
-                    active={selectedCountry === country}
-                    size="small"
-                  />
-                ))}
-              </FilterChipsStack>
-            </FilterGroup>
-          </Grid>
-          <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+          <Grid size={{ xs: 12, md: 6 }}>
             <FilterGroup>
               <FilterLabel>
                 <Tag size={14} color="#8B1D23" />
                 {t('student.problems.topic')}
               </FilterLabel>
               <FilterChipsStack>
-                <StyledChip
-                  label={t('common.all')}
-                  onClick={() => setSelectedTopic('All')}
-                  active={selectedTopic === 'All'}
-                  size="small"
-                />
-                {allTopics.map(topic => (
-                  <StyledChip
-                    key={topic}
-                    label={topic}
-                    onClick={() => setSelectedTopic(topic)}
-                    active={selectedTopic === topic}
-                    size="small"
-                  />
+                <StyledChip label={t('common.all')} onClick={() => setSelectedTopic('All')} active={selectedTopic === 'All'} size="small" />
+                {allTopics.map((topic) => (
+                  <StyledChip key={topic} label={topic} onClick={() => setSelectedTopic(topic)} active={selectedTopic === topic} size="small" />
                 ))}
               </FilterChipsStack>
             </FilterGroup>
@@ -442,53 +370,28 @@ export const ProblemBank: React.FC = () => {
         </Grid>
       </FilterCard>
 
-      {/* Active Filters Indicator */}
-      {hasActiveFilters && (
-        <ActiveFiltersBar>
-          <Filter size={16} color="#8B1D23" />
-          <Typography sx={{ fontWeight: 600, color: '#8B1D23', fontSize: '13px' }}>
-            {t('student.problems.activeFilters')}
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1, flex: 1 }}>
-            {selectedYear !== 'All' && (
-              <Chip
-                label={t('student.problems.yearFilter', { value: selectedYear })}
-                size="small"
-                onDelete={() => setSelectedYear('All')}
-                sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
-              />
-            )}
-            {selectedCountry !== 'All' && (
-              <Chip
-                label={t('student.problems.countryFilter', { value: selectedCountry })}
-                size="small"
-                onDelete={() => setSelectedCountry('All')}
-                sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
-              />
-            )}
-            {selectedTopic !== 'All' && (
-              <Chip
-                label={t('student.problems.topicFilter', { value: selectedTopic })}
-                size="small"
-                onDelete={() => setSelectedTopic('All')}
-                sx={{ bgcolor: '#fff', fontWeight: 600, fontSize: '11px', color: '#8B1D23' }}
-              />
-            )}
-          </Box>
-          <Typography variant="body2" sx={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>
-            {t('student.problems.results', { count: filteredData.length })}
-          </Typography>
-        </ActiveFiltersBar>
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
       )}
 
-      {/* Table Section */}
-      <TableSection>
-        <SharedTable
-          data={filteredData}
-          columns={columns}
-          searchPlaceholder={t('student.problems.searchPlaceholder')}
-        />
-      </TableSection>
+      {loading ? (
+        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+          <CircularProgress sx={{ color: '#8B1D23' }} />
+        </Box>
+      ) : (
+        <TableSection>
+          <SharedTable data={rows} columns={columns} searchPlaceholder={t('student.problems.searchPlaceholder')} />
+        </TableSection>
+      )}
+
+      <SubmitSolutionModal
+        open={!!modalProblem}
+        onClose={() => setModalProblem(null)}
+        problem={modalProblem}
+        onSubmitted={handleSubmitted}
+      />
     </PageContainer>
   );
 };

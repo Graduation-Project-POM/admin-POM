@@ -1,6 +1,5 @@
 import { api } from "./authService";
 
-// Mirrors the backend User entity returned by GET /User
 export interface BackendUser {
   id: number;
   firstName: string;
@@ -17,7 +16,6 @@ export interface BackendUser {
   roleID: number;
 }
 
-// Matches MIO.Core.Enums.Role on the backend
 export const RoleId = {
   Admin: 1,
   SuperUser: 2,
@@ -49,7 +47,6 @@ export interface UpdateUserPayload {
   profileImageUrl?: string;
 }
 
-// Backend route is [Route("[Controller]")] -> /User
 export const getUsers = async (): Promise<BackendUser[]> => {
   const response = await api.get<BackendUser[]>("/User");
   return response.data;
@@ -57,6 +54,16 @@ export const getUsers = async (): Promise<BackendUser[]> => {
 
 export const getUserById = async (id: number): Promise<BackendUser> => {
   const response = await api.get<BackendUser>(`/User/${id}`);
+  return response.data;
+};
+
+export const getCurrentUser = async (): Promise<BackendUser> => {
+  const response = await api.get<BackendUser>("/User/me");
+  return response.data;
+};
+
+export const updateCurrentUser = async (data: UpdateUserPayload) => {
+  const response = await api.put("/User/me", data);
   return response.data;
 };
 
@@ -75,7 +82,6 @@ export const deleteUser = async (id: number) => {
   return response.data;
 };
 
-// Map the numeric backend role to the lowercase label used by the UI form/table.
 export const roleIdToLabel = (roleId: number): string => {
   switch (roleId) {
     case RoleId.Admin:
@@ -91,7 +97,6 @@ export const roleIdToLabel = (roleId: number): string => {
   }
 };
 
-// Map the form role string (STUDENT/TRAINER/ADMIN) to the numeric backend role.
 export const roleNameToId = (roleName: string): number => {
   switch (roleName?.toUpperCase()) {
     case "ADMIN":

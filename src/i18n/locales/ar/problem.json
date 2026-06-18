@@ -11,15 +11,18 @@
       "columns": {
         "title": "العنوان",
         "category": "الفئة",
+        "topic": "الموضوع",
         "difficulty": "الصعوبة",
         "tags": "التصنيفات",
         "visibility": "الظهور",
+        "status": "الحالة",
         "stats": "الإحصائيات"
       },
       "stats": {
         "submissions": "{{count}} محاولة",
         "success": "{{rate}}% نسبة النجاح"
-      }
+      },
+      "loadError": "فشل تحميل المسائل. حاول مرة أخرى."
     },
     "difficulty": {
       "Easy": "سهل",
@@ -29,6 +32,10 @@
     "visibility": {
       "general": "عام",
       "groupSpecific": "خاص بمجموعة"
+    },
+    "status": {
+      "published": "منشورة",
+      "draft": "مسودة"
     },
     "delete": {
       "singleTitle": "حذف المسألة",
@@ -43,12 +50,23 @@
       "problemTitlePlaceholder": "مثال: مجموع رقمين",
       "category": "الفئة",
       "categoryPlaceholder": "مثال: مصفوفة",
+      "topic": "الموضوع",
+      "topicPlaceholder": "مثال: المصفوفات",
+      "description": "الوصف",
+      "descriptionPlaceholder": "اكتب وصف المسألة...",
+      "statement": "نص المسألة",
+      "statementPlaceholder": "اكتب وصف المسألة...",
+      "solution": "الحل (اختياري)",
+      "solutionPlaceholder": "الحل المرجعي...",
       "difficulty": "الصعوبة",
       "visibility": "الظهور",
+      "published": "منشورة",
       "tags": "التصنيفات (مفصولة بفواصل)",
       "tagsPlaceholder": "مثال: مصفوفة، جدول تجزئة",
       "createSubmit": "إنشاء المسألة",
-      "saveChanges": "حفظ التغييرات"
+      "saveChanges": "حفظ التغييرات",
+      "saveError": "فشل حفظ المسألة. حاول مرة أخرى.",
+      "deleteError": "فشل حذف المسألة. حاول مرة أخرى."
     }
   }
 }

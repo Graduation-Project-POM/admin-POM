@@ -82,7 +82,32 @@
         "action": "Action"
       },
       "reviewSolution": "Review Solution",
-      "solve": "Solve"
+      "solve": "Solve",
+      "submitted": "Submitted",
+      "gradeValue": "Grade: {{grade}}/100",
+      "loadError": "Failed to load problems. Please try again.",
+      "submit": {
+        "title": "Submit Solution",
+        "solutionLabel": "Your Solution",
+        "solutionPlaceholder": "Write your solution here...",
+        "textSolution": "Text Solution",
+        "textSolutionHint": "Write your solution as text.",
+        "imageSolution": "Image Solution",
+        "imageSolutionHint": "Upload a photo of your handwritten solution.",
+        "imageAlt": "Solution image",
+        "clickToUpload": "Click to upload an image",
+        "uploadHint": "PNG or JPG",
+        "replaceImage": "Replace",
+        "remove": "Remove",
+        "provideAtLeastOne": "Provide a text solution or an image.",
+        "readyToSubmit": "Ready to submit.",
+        "submitButton": "Submit Solution",
+        "cancel": "Cancel",
+        "required": "Please write your solution before submitting.",
+        "success": "Solution submitted successfully.",
+        "alreadySubmitted": "You have already submitted a solution for this problem.",
+        "error": "Failed to submit solution. Please try again."
+      }
     },
     "submissions": {
       "title": "My Submissions",
@@ -115,7 +140,18 @@
       },
       "pending": "Pending",
       "statusSubmitted": "Submitted",
-      "statusDraft": "Draft"
+      "statusDraft": "Draft",
+      "loadError": "Failed to load your submissions. Please try again."
+    },
+    "problemDetails": {
+      "back": "Back",
+      "notFound": "Submission not found.",
+      "noStatement": "No description available for this problem.",
+      "mySolution": "My Solution",
+      "grade": "Grade: {{grade}}/100",
+      "pending": "Pending grade",
+      "submittedAt": "Submitted: {{date}}",
+      "noSolution": "No solution text submitted."
     },
     "groups": {
       "title": "My Groups",

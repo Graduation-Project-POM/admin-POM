@@ -101,6 +101,8 @@ export interface SharedTableProps {
   onSingleDelete?: (id: string) => void;
   addButtonLabel?: string;
   searchPlaceholder?: string;
+  canEditRow?: (row: any) => boolean;
+  canDeleteRow?: (row: any) => boolean;
 }
 
 
