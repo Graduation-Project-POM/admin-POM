@@ -1,5 +1,3 @@
-// Types for the backend Problems API (route: /api/Problems).
-// Difficulty serializes as a NUMBER: Easy=1, Medium=2, Hard=3.
 
 export const Difficulty = {
   Easy: 1,
@@ -21,7 +19,6 @@ export const DIFFICULTY_FROM_LABEL: Record<string, Difficulty> = {
   Hard: 3,
 };
 
-/** Body for POST /api/Problems (CreateProblemDto). */
 export interface CreateProblemInput {
   title: string;
   statement: string;
@@ -33,12 +30,21 @@ export interface CreateProblemInput {
   isPublished?: boolean;
 }
 
-/** Body for PUT /api/Problems/{id} (UpdateProblemDto). */
+export interface ProblemDetail {
+  id: number;
+  title: string;
+  statement: string | null;
+  difficulty: Difficulty;
+  topic: string;
+  photoUrl: string | null;
+  isPublished: boolean;
+}
+
 export interface UpdateProblemInput {
   title: string;
   statement: string;
   difficulty: Difficulty;
   topic: string;
-  photoFileKey?: string;
+  photoFileKey?: string | null;
   isPublished: boolean;
 }

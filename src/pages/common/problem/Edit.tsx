@@ -7,11 +7,14 @@ import {
 } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
+import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Button } from '../../../components/ui/button/Button';
 
 interface ProblemFormData {
   id: string;
   title: string;
+  description: string;
+  imageUrl: string;
   category: string;
   difficulty: string;
   visibility: string;
@@ -30,6 +33,8 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
   const [formData, setFormData] = useState<ProblemFormData>({
     id: '',
     title: '',
+    description: '',
+    imageUrl: '',
     category: '',
     difficulty: 'Easy',
     visibility: 'general',
@@ -40,6 +45,8 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
     if (problem) {
       setFormData({
         ...problem,
+        description: problem.description ?? '',
+        imageUrl: problem.imageUrl ?? '',
         tags: Array.isArray(problem.tags) ? problem.tags.join(', ') : '',
       });
     }
@@ -83,6 +90,23 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
             value={formData.title}
             onChange={handleChange}
             required
+          />
+
+          <FormField
+            label={t("problem.form.description", "Description")}
+            name="description"
+            placeholder={t("problem.form.descriptionPlaceholder", "Describe the problem...")}
+            value={formData.description}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            required
+          />
+
+          <ImageUploadField
+            label={t("problem.form.image", "Image (optional)")}
+            value={formData.imageUrl}
+            onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
           />
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>

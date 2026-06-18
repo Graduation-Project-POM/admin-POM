@@ -1,37 +1,63 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Stack, MenuItem } from '@mui/material';
+import {
+  Stack,
+  MenuItem,
+  Select,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
+  InputLabel,
+  FormControl,
+  Chip,
+  Box,
+} from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { Button } from '../../../components/ui/button/Button';
+import { studentService } from '../../../services/studentService';
+import type { StudentOption } from '../../../services/studentService';
+import { trainerService } from '../../../services/trainerService';
+import type { TrainerOption } from '../../../services/trainerService';
 
 interface CreateGroupProps {
   open: boolean;
   onClose: () => void;
-  onSave: (group: any) => void;
+  onSave: (group: {
+    title: string;
+    description: string;
+    trainerId: number;
+    studentIds: number[];
+  }) => void;
 }
 
 const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    trainerName: '',
-  });
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [trainerId, setTrainerId] = useState<number | ''>('');
+  const [studentIds, setStudentIds] = useState<number[]>([]);
+  const [trainers, setTrainers] = useState<TrainerOption[]>([]);
+  const [students, setStudents] = useState<StudentOption[]>([]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  // Load trainers + students each time the dialog opens; reset the form.
+  useEffect(() => {
+    if (!open) return;
+    setTitle('');
+    setDescription('');
+    setTrainerId('');
+    setStudentIds([]);
+    trainerService.getAll().then(setTrainers).catch(() => setTrainers([]));
+    studentService.getAll().then(setStudents).catch(() => setStudents([]));
+  }, [open]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
-      ...formData,
-      id: Math.random().toString(36).substr(2, 9),
-      studentsCount: 0,
-      trainerCount: 1,
-      createdDate: new Date().toISOString().split('T')[0],
+      title,
+      description,
+      trainerId: trainerId === '' ? 0 : trainerId,
+      studentIds,
     });
     onClose();
   };
@@ -44,35 +70,71 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
             label={t('group.create.groupTitle')}
             name="title"
             placeholder={t('group.create.groupTitlePlaceholder')}
-            value={formData.title}
-            onChange={handleChange}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
             required
           />
           <FormField
             label={t('form.labels.description')}
             name="description"
             placeholder={t('group.create.descriptionPlaceholder')}
-            value={formData.description}
-            onChange={handleChange}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             multiline
             rows={3}
             required
           />
-          <FormField
-            select
-            label={t('group.create.assignTrainer')}
-            name="trainerName"
-            value={formData.trainerName}
-            onChange={handleChange}
-            required
-          >
-            <MenuItem value="Jane Smith">Jane Smith</MenuItem>
-            <MenuItem value="Emily Davis">Emily Davis</MenuItem>
-            <MenuItem value="Ahmad Omar">Ahmad Omar</MenuItem>
-          </FormField>
+
+          {/* Trainer — single select from all trainers */}
+          <FormControl fullWidth size="small">
+            <InputLabel>{t('group.create.assignTrainer')}</InputLabel>
+            <Select
+              label={t('group.create.assignTrainer')}
+              value={trainerId === '' ? '' : String(trainerId)}
+              onChange={(e) => setTrainerId(Number(e.target.value))}
+            >
+              {trainers.map((tr) => (
+                <MenuItem key={tr.id} value={String(tr.id)}>
+                  {tr.name}
+                  {tr.specialization ? ` — ${tr.specialization}` : ''}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth size="small">
+            <InputLabel>{t('group.create.members', 'Members')}</InputLabel>
+            <Select
+              multiple
+              value={studentIds}
+              onChange={(e) =>
+                setStudentIds(
+                  typeof e.target.value === 'string'
+                    ? []
+                    : (e.target.value as number[]),
+                )
+              }
+              input={<OutlinedInput label={t('group.create.members', 'Members')} />}
+              renderValue={(selected) => (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                  {(selected as number[]).map((id) => {
+                    const s = students.find((x) => x.id === id);
+                    return <Chip key={id} size="small" label={s ? s.name : id} />;
+                  })}
+                </Box>
+              )}
+            >
+              {students.map((s) => (
+                <MenuItem key={s.id} value={s.id}>
+                  <Checkbox checked={studentIds.includes(s.id)} />
+                  <ListItemText primary={s.name} secondary={s.email} />
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
-            {t('group.list.createGroup')}
+          {t('group.list.createGroup')}
         </Button>
       </form>
     </ModalWrapper>

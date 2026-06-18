@@ -7,14 +7,17 @@ import {
 } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
+import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Button } from '../../../components/ui/button/Button';
 
 interface ProblemFormData {
   title: string;
+  description: string;
+  imageUrl: string; 
   category: string;
   difficulty: string;
   visibility: string;
-  tags: string; // We'll handle tags as a comma-separated string for simplicity in the form
+  tags: string; 
 }
 
 interface CreateProblemProps {
@@ -27,6 +30,8 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<ProblemFormData>({
     title: '',
+    description: '',
+    imageUrl: '',
     category: '',
     difficulty: 'Easy',
     visibility: 'general',
@@ -46,7 +51,6 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Process tags from string to array
     const problemData = {
       ...formData,
       id: Math.random().toString(36).substr(2, 9),
@@ -58,6 +62,8 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
     onSave(problemData);
     setFormData({
       title: '',
+      description: '',
+      imageUrl: '',
       category: '',
       difficulty: 'Easy',
       visibility: 'general',
@@ -82,6 +88,23 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
             value={formData.title}
             onChange={handleChange}
             required
+          />
+
+          <FormField
+            label={t("problem.form.description", "Description")}
+            name="description"
+            placeholder={t("problem.form.descriptionPlaceholder", "Describe the problem...")}
+            value={formData.description}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            required
+          />
+
+          <ImageUploadField
+            label={t("problem.form.image", "Image (optional)")}
+            value={formData.imageUrl}
+            onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
           />
 
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>

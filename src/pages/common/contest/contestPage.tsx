@@ -18,6 +18,7 @@ import type {
   CreateContestInput,
 } from "../../../types/contest";
 import { problemsService } from "../../../services/problemsService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 import { DIFFICULTY_FROM_LABEL, DIFFICULTY_LABEL } from "../../../types/problem";
 
 import {
@@ -134,6 +135,11 @@ export const ContestsPage: React.FC = () => {
   const loadContestProblems = async (contestId: string) => {
     setProblemsLoading(true);
     setActionError(null);
+    // Clear any previously-open contest's problems so a contest never shows
+    // another contest's questions while loading (a newly created contest
+    // stays empty until its own fetch returns []).
+    setContestProblemIds([]);
+    setProblemsMap((m) => ({ ...m, [contestId]: [] }));
     try {
       const data = await contestService.getProblems(Number(contestId));
       const ids: number[] = [];
@@ -153,11 +159,14 @@ export const ContestsPage: React.FC = () => {
       });
       setContestProblemIds(ids);
       setProblemsMap((m) => ({ ...m, [contestId]: mapped }));
-    } catch {
+    } catch (err) {
       setContestProblemIds([]);
       setProblemsMap((m) => ({ ...m, [contestId]: [] }));
       setActionError(
-        t("contest.errors.loadProblemsFailed", "Failed to load contest problems"),
+        getApiErrorMessage(
+          err,
+          t("contest.errors.loadProblemsFailed", "Failed to load contest problems"),
+        ),
       );
     } finally {
       setProblemsLoading(false);
@@ -209,9 +218,9 @@ export const ContestsPage: React.FC = () => {
     };
     try {
       await create(input);
-    } catch {
+    } catch (err) {
       setActionError(
-        t("contest.errors.createFailed", "Failed to create contest"),
+        getApiErrorMessage(err, t("contest.errors.createFailed", "Failed to create contest")),
       );
     }
   };
@@ -225,9 +234,9 @@ export const ContestsPage: React.FC = () => {
         startAt: toIso(updatedContest.startDate),
         endAt: toIso(updatedContest.endDate),
       });
-    } catch {
+    } catch (err) {
       setActionError(
-        t("contest.errors.updateFailed", "Failed to update contest"),
+        getApiErrorMessage(err, t("contest.errors.updateFailed", "Failed to update contest")),
       );
     }
   };
@@ -242,9 +251,9 @@ export const ContestsPage: React.FC = () => {
         setActionError(null);
         try {
           await remove(Number(id));
-        } catch {
+        } catch (err) {
           setActionError(
-            t("contest.errors.deleteFailed", "Failed to delete contest"),
+            getApiErrorMessage(err, t("contest.errors.deleteFailed", "Failed to delete contest")),
           );
         }
       },
@@ -257,10 +266,11 @@ export const ContestsPage: React.FC = () => {
     try {
       const newId = await problemsService.create({
         title: form.title,
-        statement: form.title,
-        solution: form.title,
+        statement: form.description || "",
+        solution: form.description || form.title,
         difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
         topic: form.category || "General",
+        photoFileKey: form.imageUrl || null,
         isPublished: form.visibility !== "group-specific",
       });
       const ids = [...contestProblemIds, newId];
@@ -279,9 +289,9 @@ export const ContestsPage: React.FC = () => {
         ...m,
         [selectedContestId]: [newProblem, ...(m[selectedContestId] || [])],
       }));
-    } catch {
+    } catch (err) {
       setActionError(
-        t("contest.errors.addProblemFailed", "Failed to add problem to the contest"),
+        getApiErrorMessage(err, t("contest.errors.addProblemFailed", "Failed to add problem to the contest")),
       );
     }
   };
@@ -322,9 +332,9 @@ export const ContestsPage: React.FC = () => {
               (p) => p.id !== id,
             ),
           }));
-        } catch {
+        } catch (err) {
           setActionError(
-            t("contest.errors.removeProblemFailed", "Failed to remove problem"),
+            getApiErrorMessage(err, t("contest.errors.removeProblemFailed", "Failed to remove problem")),
           );
         }
       },
@@ -355,9 +365,9 @@ export const ContestsPage: React.FC = () => {
               (p) => !ids.includes(p.id),
             ),
           }));
-        } catch {
+        } catch (err) {
           setActionError(
-            t("contest.errors.removeProblemFailed", "Failed to remove problems"),
+            getApiErrorMessage(err, t("contest.errors.removeProblemFailed", "Failed to remove problems")),
           );
         }
       },
