@@ -163,7 +163,8 @@
       "searchPlaceholder": "Search groups by title, description, or trainer...",
       "noGroupsFound": "No groups found",
       "adjustSearch": "Try adjusting your search terms",
-      "notEnrolled": "You are not enrolled in any groups yet"
+      "notEnrolled": "You are not enrolled in any groups yet",
+      "loadFailed": "Failed to load your groups"
     },
     "groupDetails": {
       "backToGroup": "Back to Group Details",
@@ -227,7 +228,15 @@
       "viewProfile": "View Profile",
       "studentsTrained": "• {{count}} students trained",
       "bio": "Bio",
-      "expertise": "Expertise"
+      "expertise": "Expertise",
+      "imageUploadFailed": "Failed to upload image",
+      "loadContestsFailed": "Failed to load contests",
+      "loadProblemsFailed": "Failed to load problems",
+      "loadStudentsFailed": "Failed to load students",
+      "noStudents": "No students in this group",
+      "noTrainer": "No trainer assigned to this group",
+      "solutionRequired": "Provide a text solution or an image",
+      "submitFailed": "Failed to submit solution"
     }
   }
 }

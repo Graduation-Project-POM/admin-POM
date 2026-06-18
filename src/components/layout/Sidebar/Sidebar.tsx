@@ -170,7 +170,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <LogoContainer>
           <img
             src="/logoPOM.png"
-            alt="PMO Logo"
+            alt={t("ui.common.logoAlt")}
             style={{
               maxWidth: "100%",
               height: "auto",

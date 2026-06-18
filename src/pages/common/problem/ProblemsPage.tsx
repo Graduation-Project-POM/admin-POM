@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createProblem, deleteProblem, difficultyIdToLabel, difficultyLabelToId, getProblems, updateProblem, type BackendProblem, type DifficultyLabel } from "../../../services/problemService";
 import type { ProblemFormValues } from "./Create";
@@ -102,6 +103,7 @@ const toTableRow = (p: BackendProblem): Problem => ({
 });
 
 export const ProblemsPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const [rawProblems, setRawProblems] = useState<BackendProblem[]>([]);
@@ -157,6 +159,7 @@ export const ProblemsPage = () => {
       difficulty: difficultyLabelToId(data.difficulty),
       topic: data.category,
       isPublished: data.isPublished,
+      photoFileKey: data.imageUrl || undefined,
     });
     await loadProblems();
   };
@@ -168,6 +171,7 @@ export const ProblemsPage = () => {
       difficulty: difficultyLabelToId(data.difficulty),
       topic: data.category,
       isPublished: data.isPublished,
+      photoFileKey: data.imageUrl || undefined,
     });
     await loadProblems();
   };
@@ -177,15 +181,15 @@ export const ProblemsPage = () => {
       await Promise.all(ids.map((id) => deleteProblem(Number(id))));
       await loadProblems();
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to delete problem.");
+      setError(err?.response?.data?.message || t("problem.list.loadError"));
     }
   };
 
   const handleDelete = (id: string) => {
     setConfirmConfig({
       open: true,
-      title: "Delete Problem",
-      message: "Are you sure you want to delete this problem?",
+      title: t("problem.delete.singleTitle"),
+      message: t("problem.delete.singleMessage"),
       onConfirm: () => removeProblems([id]),
     });
   };
@@ -194,8 +198,8 @@ export const ProblemsPage = () => {
     if (ids.length === 0) return;
     setConfirmConfig({
       open: true,
-      title: "Delete Problems",
-      message: `Are you sure you want to delete ${ids.length} selected problems?`,
+      title: t("problem.delete.bulkTitle"),
+      message: t("problem.delete.bulkMessage", { count: ids.length }),
       onConfirm: () => removeProblems(ids),
     });
   };
@@ -210,7 +214,7 @@ export const ProblemsPage = () => {
   const columns = [
     {
       id: "title",
-      label: "Title",
+      label: t("problem.list.columns.title"),
       render: (row: Problem) => (
         <Typography 
           onClick={() => navigate(`${location.pathname.replace(/\/$/, "")}/${row.id}`)}
@@ -225,10 +229,10 @@ export const ProblemsPage = () => {
         </Typography>
       ),
     },
-    { id: "category", label: "Category" },
+    { id: "category", label: t("problem.list.columns.category") },
     {
       id: "difficulty",
-      label: "Difficulty",
+      label: t("problem.list.columns.difficulty"),
       render: (row: Problem) => (
         <DifficultyChip
           label={row.difficulty}
@@ -236,10 +240,10 @@ export const ProblemsPage = () => {
         />
       ),
     },
-    { id: "publisher", label: "Publisher" },
+    { id: "publisher", label: t("problem.list.columns.publisher") },
     {
       id: "status",
-      label: "Status",
+      label: t("problem.list.columns.status"),
       render: (row: Problem) => (
         <Chip
           label={row.status}
@@ -258,10 +262,10 @@ export const ProblemsPage = () => {
     <Box sx={{ p: 0 }}>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-          Problem Bank
+          {t("problem.list.title")}
         </Typography>
         <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-          Manage your collection of math problems
+          {t("problem.list.subtitle")}
         </Typography>
 
         <SearchFilterBox>
@@ -272,10 +276,10 @@ export const ProblemsPage = () => {
               displayEmpty
               size="small"
             >
-              <MenuItem value="all">All Levels</MenuItem>
-              <MenuItem value="Easy">Easy</MenuItem>
-              <MenuItem value="Medium">Medium</MenuItem>
-              <MenuItem value="Hard">Hard</MenuItem>
+              <MenuItem value="all">{t("problem.list.filter.allLevels")}</MenuItem>
+              <MenuItem value="Easy">{t("problem.difficulty.Easy")}</MenuItem>
+              <MenuItem value="Medium">{t("problem.difficulty.Medium")}</MenuItem>
+              <MenuItem value="Hard">{t("problem.difficulty.Hard")}</MenuItem>
             </Select>
           </StyledFormControl>
         </SearchFilterBox>
@@ -301,8 +305,8 @@ export const ProblemsPage = () => {
           onDelete={handleBulkDelete}
           canEditRow={(row: Problem) => row.canModify}
           canDeleteRow={(row: Problem) => row.canModify}
-          addButtonLabel="Create Problem"
-          searchPlaceholder="Search problems..."
+          addButtonLabel={t("problem.list.addButton")}
+          searchPlaceholder={t("problem.list.searchPlaceholder")}
         />
       )}
 

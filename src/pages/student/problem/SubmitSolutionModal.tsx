@@ -9,6 +9,7 @@ import {
   difficultyIdToLabel,
   type BackendProblem,
 } from '../../../services/problemService';
+import { resolveMediaUrl } from '../../../utils/media';
 
 interface SubmitSolutionModalProps {
   open: boolean;
@@ -93,6 +94,11 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
           <Typography sx={{ color: '#475569', lineHeight: 1.7, whiteSpace: 'pre-wrap', fontSize: '14px' }}>
             {problem.statement}
           </Typography>
+        )}
+        {problem.photoUrl && (
+          <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
+            <img src={resolveMediaUrl(problem.photoUrl) ?? undefined} alt={problem.title} style={{ maxWidth: '100%', display: 'block' }} />
+          </Box>
         )}
       </Box>
 

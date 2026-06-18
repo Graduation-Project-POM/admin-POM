@@ -49,6 +49,13 @@
       "announcements": "Announcements",
       "systemReports": "System Reports",
       "accountSettings": "Account Settings"
+    },
+    "errors": {
+      "renderError": "Something crashed while rendering this page"
+    },
+    "common": {
+      "imagePreview": "preview",
+      "logoAlt": "PMO Logo"
     }
   }
 }

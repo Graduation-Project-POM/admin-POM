@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -20,6 +21,7 @@ import {
   type BackendProblem,
   type Submission,
 } from '../../../services/problemService';
+import { resolveMediaUrl } from '../../../utils/media';
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
@@ -31,6 +33,7 @@ const SubmissionCard = ({
   submission: Submission;
   onGraded: (s: Submission) => void;
 }) => {
+  const { t } = useTranslation();
   const [grade, setGrade] = useState<string>(
     submission.grade != null ? String(submission.grade) : '',
   );
@@ -40,7 +43,7 @@ const SubmissionCard = ({
   const handleSave = async () => {
     const value = Number(grade);
     if (grade === '' || Number.isNaN(value) || value < 0 || value > 100) {
-      setError('Enter a grade between 0 and 100.');
+      setError(t('problem.details.gradeRange'));
       return;
     }
     setError(null);
@@ -49,7 +52,7 @@ const SubmissionCard = ({
       const updated = await gradeSubmission(submission.id, value);
       onGraded(updated);
     } catch (err: any) {
-      setError(err?.response?.data?.message || 'Failed to save grade.');
+      setError(err?.response?.data?.message || t('problem.details.saveGradeError'));
     } finally {
       setSaving(false);
     }
@@ -72,9 +75,9 @@ const SubmissionCard = ({
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>Status</Typography>
+              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.status')}</Typography>
               <Chip
-                label={submission.grade != null ? 'Graded' : 'Pending'}
+                label={submission.grade != null ? t('problem.details.graded') : t('problem.details.pending')}
                 size="small"
                 sx={{
                   fontWeight: 700,
@@ -85,7 +88,7 @@ const SubmissionCard = ({
               />
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>Grade</Typography>
+              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.grade')}</Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                 <TextField
                   type="number"
@@ -98,7 +101,7 @@ const SubmissionCard = ({
               </Box>
             </Box>
             <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'right' }}>
-              Submitted: {new Date(submission.submittedAt).toLocaleString()}
+              {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
             </Typography>
           </Box>
           {error && (
@@ -114,22 +117,21 @@ const SubmissionCard = ({
             onClick={handleSave}
             disabled={saving}
           >
-            {saving ? 'Saving...' : 'Save Grade'}
+            {saving ? t('problem.details.saving') : t('problem.details.saveGrade')}
           </Button>
         </Box>
 
-        <Box sx={{ bgcolor: '#1e293b', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, color: '#94a3b8' }}>
+        <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, color: '#8B1D23' }}>
             <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
-              Solution
+              {t('problem.details.solution')}
             </Typography>
             <FileCode size={16} />
           </Box>
           <Typography
             component="pre"
             sx={{
-              color: '#e2e8f0',
-              fontFamily: 'monospace',
+              color: '#8B1D23',
               fontSize: '13px',
               lineHeight: 1.6,
               m: 0,
@@ -137,7 +139,7 @@ const SubmissionCard = ({
               whiteSpace: 'pre-wrap',
             }}
           >
-            {submission.solutionText || 'No text solution submitted.'}
+            {submission.solutionText || t('problem.details.noSolution')}
           </Typography>
           {submission.photoUrl && (
             <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
@@ -151,6 +153,7 @@ const SubmissionCard = ({
 };
 
 export const ProblemDetailsPage = () => {
+  const { t } = useTranslation();
   const { problemId } = useParams();
   const navigate = useNavigate();
   const [problem, setProblem] = useState<BackendProblem | null>(null);
@@ -171,7 +174,7 @@ export const ProblemDetailsPage = () => {
         setProblem(prob);
         setSubmissions(subs);
       } catch (err: any) {
-        setError(err?.response?.data?.message || 'Problem not found.');
+        setError(err?.response?.data?.message || t('problem.details.notFound'));
       } finally {
         setLoading(false);
       }
@@ -191,7 +194,7 @@ export const ProblemDetailsPage = () => {
     );
   }
   if (error || !problem) {
-    return <Box sx={{ p: 4 }}>{error || 'Problem not found.'}</Box>;
+    return <Box sx={{ p: 4 }}>{error || t('problem.details.notFound')}</Box>;
   }
 
   const difficulty = difficultyIdToLabel(problem.difficulty);
@@ -204,7 +207,7 @@ export const ProblemDetailsPage = () => {
         onClick={() => navigate(-1)}
         sx={{ mb: 3 }}
       >
-        Back
+        {t('problem.details.back')}
       </Button>
 
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
@@ -216,7 +219,7 @@ export const ProblemDetailsPage = () => {
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
               <Chip label={problem.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
               <Chip
-                label={problem.isPublished ? 'Published' : 'Draft'}
+                label={problem.isPublished ? t('problem.details.published') : t('problem.details.draft')}
                 size="small"
                 sx={{
                   fontWeight: 600,
@@ -237,19 +240,19 @@ export const ProblemDetailsPage = () => {
         </Box>
 
         <Typography sx={{ color: '#475569', lineHeight: 1.8, fontSize: '16px', mb: 2, whiteSpace: 'pre-wrap' }}>
-          {problem.statement || 'No statement available for this problem.'}
+          {problem.statement || t('problem.details.noStatement')}
         </Typography>
 
         {problem.photoUrl && (
           <Box sx={{ mb: 2, borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
-            <img src={problem.photoUrl} alt={problem.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
+            <img src={resolveMediaUrl(problem.photoUrl) ?? undefined} alt={problem.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
           </Box>
         )}
       </Paper>
 
       <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
         <FileCode size={24} color="#8B1D23" />
-        Student Submissions ({submissions.length})
+        {t('problem.details.submissionsTitle', { count: submissions.length })}
       </Typography>
 
       {submissions.length === 0 ? (
@@ -257,8 +260,8 @@ export const ProblemDetailsPage = () => {
           elevation={0}
           sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
         >
-          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>No submissions yet</Typography>
-          <Typography variant="body2">No students have submitted a solution for this problem.</Typography>
+          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
+          <Typography variant="body2">{t('problem.details.noSubmissionsHint')}</Typography>
         </Paper>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>

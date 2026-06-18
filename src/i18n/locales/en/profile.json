@@ -32,6 +32,23 @@
       "saved": "Profile updated successfully.",
       "validation": "Please fill in grade level, city, and a valid school name.",
       "nationalIdLength": "National ID must be exactly 9 characters."
+    },
+    "view": {
+      "city": "City",
+      "email": "Email",
+      "gradeLevel": "Grade level",
+      "invalid": "Invalid profile",
+      "joinYear": "Join year",
+      "loadFailed": "Failed to load profile",
+      "nationalId": "National ID",
+      "phone": "Phone",
+      "problemsSolved": "Problems solved",
+      "roleStudent": "Student",
+      "roleTrainer": "Trainer",
+      "school": "School",
+      "score": "Score",
+      "specialization": "Specialization",
+      "username": "Username"
     }
   }
 }

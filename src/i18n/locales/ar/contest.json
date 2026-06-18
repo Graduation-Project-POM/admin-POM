@@ -63,6 +63,16 @@
       "easy": "سهل",
       "medium": "متوسط",
       "hard": "صعب"
+    },
+    "errors": {
+      "addProblemFailed": "فشل إضافة المسألة إلى المسابقة",
+      "createFailed": "فشل إنشاء المسابقة",
+      "deleteFailed": "فشل حذف المسابقة",
+      "gradeFailed": "فشل حفظ الدرجة",
+      "loadProblemsFailed": "فشل تحميل مسائل المسابقة",
+      "loadSubmissionsFailed": "فشل تحميل الحلول",
+      "removeProblemFailed": "فشل إزالة المسألة",
+      "updateFailed": "فشل تحديث المسابقة"
     }
   }
 }

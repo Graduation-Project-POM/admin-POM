@@ -16,7 +16,8 @@
         "tags": "Tags",
         "visibility": "Visibility",
         "status": "Status",
-        "stats": "Stats"
+        "stats": "Stats",
+        "publisher": "Publisher"
       },
       "stats": {
         "submissions": "{{count}} submissions",
@@ -66,7 +67,40 @@
       "createSubmit": "Create Problem",
       "saveChanges": "Save Changes",
       "saveError": "Failed to save problem. Please try again.",
-      "deleteError": "Failed to delete problem. Please try again."
+      "deleteError": "Failed to delete problem. Please try again.",
+      "image": "Problem image (optional)",
+      "imageChoose": "Choose image",
+      "imageChange": "Change image",
+      "imageRemove": "Remove",
+      "imageUploading": "Uploading...",
+      "imageUploadFailed": "Failed to upload image"
+    },
+    "details": {
+      "back": "Back",
+      "notFound": "Problem not found.",
+      "published": "Published",
+      "draft": "Draft",
+      "noStatement": "No statement available for this problem.",
+      "submissionsTitle": "Student Submissions ({{count}})",
+      "noSubmissions": "No submissions yet",
+      "noSubmissionsHint": "No students have submitted a solution for this problem.",
+      "status": "Status",
+      "graded": "Graded",
+      "pending": "Pending",
+      "grade": "Grade",
+      "submittedAt": "Submitted: {{date}}",
+      "saveGrade": "Save Grade",
+      "saving": "Saving...",
+      "solution": "Solution",
+      "noSolution": "No text solution submitted.",
+      "gradeRange": "Enter a grade between 0 and 100.",
+      "saveGradeError": "Failed to save grade."
+    },
+    "detail": {
+      "description": "Description",
+      "loadFailed": "Failed to load problem details",
+      "noDescription": "No description provided.",
+      "title": "Problem Details"
     }
   }
 }

@@ -19,7 +19,8 @@
     "passwordShortError": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
     "passwordMismatchError": "كلمتا المرور غير متطابقتين",
     "accountCreated": "تم إنشاء الحساب بنجاح! جارٍ التحويل إلى تسجيل الدخول...",
-    "signupFailed": "فشل إنشاء الحساب"
+    "signupFailed": "فشل إنشاء الحساب",
+    "successMessage": "تم إنشاء الحساب بنجاح"
   },
   "errors": {
     "USERNAME_EXISTS": "اسم المستخدم مستخدم بالفعل",

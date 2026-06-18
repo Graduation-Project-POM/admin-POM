@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
+import i18n from "../../i18n";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -37,7 +38,7 @@ export class ErrorBoundary extends React.Component<
     return (
       <Box sx={{ p: 4 }}>
         <Typography variant="h5" sx={{ fontWeight: 800, color: "#dc2626", mb: 2 }}>
-          Something crashed while rendering this page
+          {i18n.t("ui.errors.renderError")}
         </Typography>
         <Typography sx={{ fontWeight: 700, mb: 1 }}>{error.message}</Typography>
         <Box

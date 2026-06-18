@@ -56,7 +56,10 @@
     "passwordMismatch": "Passwords do not match",
     "unauthorized": "You are not authorized to perform this action",
     "network": "A network error occurred. Please try again",
-    "generic": "Something went wrong. Please try again"
+    "generic": "Something went wrong. Please try again",
+    "USERNAME_EXISTS": "This username is already taken",
+    "INVALID_CREDENTIALS": "Invalid username or password",
+    "USER_NOT_FOUND": "User not found"
   },
   "success": {
     "saved": "Changes saved successfully",

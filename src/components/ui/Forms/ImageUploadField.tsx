@@ -90,7 +90,7 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
         <Box
           component="img"
           src={preview}
-          alt="preview"
+          alt={t("ui.common.imagePreview")}
           sx={{
             mt: 1.5,
             maxHeight: 140,

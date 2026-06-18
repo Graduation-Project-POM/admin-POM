@@ -49,6 +49,13 @@
       "announcements": "الإعلانات",
       "systemReports": "تقارير النظام",
       "accountSettings": "إعدادات الحساب"
+    },
+    "errors": {
+      "renderError": "حدث خطأ أثناء عرض هذه الصفحة"
+    },
+    "common": {
+      "imagePreview": "معاينة",
+      "logoAlt": "شعار PMO"
     }
   }
 }

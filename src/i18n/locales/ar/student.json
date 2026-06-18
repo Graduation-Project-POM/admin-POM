@@ -163,7 +163,8 @@
       "searchPlaceholder": "ابحث في المجموعات بالعنوان أو الوصف أو المدرّب...",
       "noGroupsFound": "لم يتم العثور على مجموعات",
       "adjustSearch": "حاول تعديل كلمات البحث",
-      "notEnrolled": "لست مسجَّلاً في أي مجموعة بعد"
+      "notEnrolled": "لست مسجَّلاً في أي مجموعة بعد",
+      "loadFailed": "فشل تحميل مجموعاتك"
     },
     "groupDetails": {
       "backToGroup": "العودة إلى تفاصيل المجموعة",
@@ -227,7 +228,15 @@
       "viewProfile": "عرض الملف الشخصي",
       "studentsTrained": "• {{count}} طالب تم تدريبهم",
       "bio": "نبذة",
-      "expertise": "الخبرات"
+      "expertise": "الخبرات",
+      "imageUploadFailed": "فشل رفع الصورة",
+      "loadContestsFailed": "فشل تحميل المسابقات",
+      "loadProblemsFailed": "فشل تحميل المسائل",
+      "loadStudentsFailed": "فشل تحميل الطلاب",
+      "noStudents": "لا يوجد طلاب في هذه المجموعة",
+      "noTrainer": "لا يوجد مدرب معيّن لهذه المجموعة",
+      "solutionRequired": "قدّم حلًّا نصيًّا أو صورة",
+      "submitFailed": "فشل إرسال الحل"
     }
   }
 }

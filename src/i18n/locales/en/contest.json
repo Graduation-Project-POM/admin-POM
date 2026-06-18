@@ -63,6 +63,16 @@
       "easy": "Easy",
       "medium": "Medium",
       "hard": "Hard"
+    },
+    "errors": {
+      "addProblemFailed": "Failed to add problem to the contest",
+      "createFailed": "Failed to create contest",
+      "deleteFailed": "Failed to delete contest",
+      "gradeFailed": "Failed to save mark",
+      "loadProblemsFailed": "Failed to load contest problems",
+      "loadSubmissionsFailed": "Failed to load submissions",
+      "removeProblemFailed": "Failed to remove problem",
+      "updateFailed": "Failed to update contest"
     }
   }
 }

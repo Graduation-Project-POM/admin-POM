@@ -16,6 +16,10 @@
     "passwordShortError": "Password must be at least 6 characters",
     "allFieldsRequired": "All fields are required",
     "successMessage": "Account created successfully",
-    "signupFailed": "Signup failed"
+    "signupFailed": "Signup failed",
+    "accountCreated": "Account created successfully! Redirecting to login...",
+    "invalidEmailError": "Please enter a valid email address",
+    "nameShortError": "First and last name must be at least 2 characters",
+    "usernameShortError": "Username must be at least 4 characters"
   }
 }

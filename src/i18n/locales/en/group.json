@@ -39,14 +39,28 @@
       "viewStudentProfile": "View Student Profile",
       "messageTrainer": "Message Trainer",
       "bio": "Bio",
-      "expertise": "Expertise"
+      "expertise": "Expertise",
+      "addProblemFailed": "Failed to add problem",
+      "createContestFailed": "Failed to create contest",
+      "loadFailed": "Failed to load group details",
+      "loadProblemFailed": "Failed to load problem",
+      "loadProblemsFailed": "Failed to load contest problems",
+      "noStudents": "No students in this group",
+      "noTrainer": "No trainer assigned to this group",
+      "removeContestFailed": "Failed to remove contest from group",
+      "removeProblemFailed": "Failed to remove problem",
+      "removeProblemsFailed": "Failed to remove problems",
+      "updateContestFailed": "Failed to update contest",
+      "updateProblemFailed": "Failed to update problem",
+      "viewProfile": "View Profile"
     },
     "create": {
       "title": "Create Training Group",
       "groupTitle": "Group Title",
       "groupTitlePlaceholder": "e.g., Geometry Masters",
       "descriptionPlaceholder": "Enter group purpose and goals...",
-      "assignTrainer": "Assign Trainer"
+      "assignTrainer": "Assign Trainer",
+      "members": "Members"
     },
     "edit": {
       "title": "Edit Training Group",
@@ -64,7 +78,18 @@
       "title": "Members - {{title}}",
       "addNewMember": "Add New Member",
       "selectUser": "Select a user...",
-      "remove": "Remove"
+      "remove": "Remove",
+      "addFailed": "Failed to add members",
+      "joined": "Joined",
+      "loadFailed": "Failed to load members",
+      "noAvailable": "No students available to add",
+      "noMembers": "No members in this group yet",
+      "removeFailed": "Failed to remove member"
+    },
+    "errors": {
+      "createFailed": "Failed to create group",
+      "deleteFailed": "Failed to delete group",
+      "updateFailed": "Failed to update group"
     }
   }
 }

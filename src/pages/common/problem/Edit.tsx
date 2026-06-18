@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Box, Stack, Alert, Switch } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
+import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Label } from '../../../components/ui/label/Label';
 import { Button } from '../../../components/ui/button/Button';
 
@@ -13,6 +14,8 @@ export interface ProblemEditValues {
   description: string;
   difficulty: string;
   isPublished: boolean;
+  // Optional problem image (stored path/key); empty string when none.
+  imageUrl: string;
 }
 
 interface EditProblemProps {
@@ -39,6 +42,7 @@ const emptyForm: ProblemEditValues = {
   description: '',
   difficulty: 'Easy',
   isPublished: false,
+  imageUrl: '',
 };
 
 const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
@@ -56,6 +60,7 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
         description: problem.description ?? problem.statement ?? '',
         difficulty: problem.difficulty ?? 'Easy',
         isPublished: problem.isPublished ?? false,
+        imageUrl: problem.photoUrl ?? problem.imageUrl ?? '',
       });
     }
   }, [problem]);
@@ -156,6 +161,11 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
               />
             ),
           )}
+          <ImageUploadField
+            label={t("problem.form.image", "Problem image (optional)")}
+            value={formData.imageUrl}
+            onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
+          />
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting}>
           {submitting ? t("common.loading") : t("problem.form.saveChanges")}

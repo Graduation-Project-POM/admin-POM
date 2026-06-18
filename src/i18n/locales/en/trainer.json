@@ -45,14 +45,20 @@
       "noSubmissionFound": "No submission found.",
       "noSubmissionHint": "This student has not submitted a solution yet.",
       "result": "Result:",
-      "markAsDone": "Mark as Done"
+      "markAsDone": "Mark as Done",
+      "feedback": "Feedback",
+      "feedbackPlaceholder": "Optional feedback for the student"
     },
     "studentProgress": {
       "titleSuffix": "Student Progress",
       "allStudents": "All Students",
       "solved": "Solved",
       "notSolved": "Not Solved",
-      "viewSolution": "View Solution"
+      "viewSolution": "View Solution",
+      "graded": "Graded",
+      "noSubmissions": "No submissions yet",
+      "pending": "Pending",
+      "submittedOn": "Submitted"
     }
   }
 }

@@ -45,14 +45,20 @@
       "noSubmissionFound": "لم يتم العثور على تسليم.",
       "noSubmissionHint": "لم يقم هذا الطالب بتسليم حل بعد.",
       "result": "النتيجة:",
-      "markAsDone": "وضع علامة كمنجز"
+      "markAsDone": "وضع علامة كمنجز",
+      "feedback": "ملاحظات",
+      "feedbackPlaceholder": "ملاحظات اختيارية للطالب"
     },
     "studentProgress": {
       "titleSuffix": "تقدم الطلاب",
       "allStudents": "جميع الطلاب",
       "solved": "تم الحل",
       "notSolved": "لم يُحل",
-      "viewSolution": "عرض الحل"
+      "viewSolution": "عرض الحل",
+      "graded": "مُقيَّم",
+      "noSubmissions": "لا توجد حلول بعد",
+      "pending": "قيد الانتظار",
+      "submittedOn": "أُرسل"
     }
   }
 }

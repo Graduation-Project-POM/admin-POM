@@ -39,14 +39,28 @@
       "viewStudentProfile": "عرض ملف الطالب",
       "messageTrainer": "مراسلة المدرب",
       "bio": "نبذة",
-      "expertise": "الخبرات"
+      "expertise": "الخبرات",
+      "addProblemFailed": "فشل إضافة المسألة",
+      "createContestFailed": "فشل إنشاء المسابقة",
+      "loadFailed": "فشل تحميل تفاصيل المجموعة",
+      "loadProblemFailed": "فشل تحميل المسألة",
+      "loadProblemsFailed": "فشل تحميل مسائل المسابقة",
+      "noStudents": "لا يوجد طلاب في هذه المجموعة",
+      "noTrainer": "لا يوجد مدرب معيّن لهذه المجموعة",
+      "removeContestFailed": "فشل إزالة المسابقة من المجموعة",
+      "removeProblemFailed": "فشل إزالة المسألة",
+      "removeProblemsFailed": "فشل إزالة المسائل",
+      "updateContestFailed": "فشل تحديث المسابقة",
+      "updateProblemFailed": "فشل تحديث المسألة",
+      "viewProfile": "عرض الملف الشخصي"
     },
     "create": {
       "title": "إنشاء مجموعة تدريب",
       "groupTitle": "عنوان المجموعة",
       "groupTitlePlaceholder": "مثال: محترفو الهندسة",
       "descriptionPlaceholder": "أدخل غرض المجموعة وأهدافها...",
-      "assignTrainer": "تعيين مدرب"
+      "assignTrainer": "تعيين مدرب",
+      "members": "الأعضاء"
     },
     "edit": {
       "title": "تعديل مجموعة التدريب",
@@ -64,7 +78,18 @@
       "title": "الأعضاء - {{title}}",
       "addNewMember": "إضافة عضو جديد",
       "selectUser": "اختر مستخدمًا...",
-      "remove": "إزالة"
+      "remove": "إزالة",
+      "addFailed": "فشل إضافة الأعضاء",
+      "joined": "انضمّ في",
+      "loadFailed": "فشل تحميل الأعضاء",
+      "noAvailable": "لا يوجد طلاب متاحون للإضافة",
+      "noMembers": "لا يوجد أعضاء في هذه المجموعة بعد",
+      "removeFailed": "فشل إزالة العضو"
+    },
+    "errors": {
+      "createFailed": "فشل إنشاء المجموعة",
+      "deleteFailed": "فشل حذف المجموعة",
+      "updateFailed": "فشل تحديث المجموعة"
     }
   }
 }

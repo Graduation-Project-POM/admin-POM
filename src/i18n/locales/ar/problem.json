@@ -16,7 +16,8 @@
         "tags": "التصنيفات",
         "visibility": "الظهور",
         "status": "الحالة",
-        "stats": "الإحصائيات"
+        "stats": "الإحصائيات",
+        "publisher": "الناشر"
       },
       "stats": {
         "submissions": "{{count}} محاولة",
@@ -66,7 +67,40 @@
       "createSubmit": "إنشاء المسألة",
       "saveChanges": "حفظ التغييرات",
       "saveError": "فشل حفظ المسألة. حاول مرة أخرى.",
-      "deleteError": "فشل حذف المسألة. حاول مرة أخرى."
+      "deleteError": "فشل حذف المسألة. حاول مرة أخرى.",
+      "image": "صورة المسألة (اختياري)",
+      "imageChoose": "اختيار صورة",
+      "imageChange": "تغيير الصورة",
+      "imageRemove": "إزالة",
+      "imageUploading": "جارٍ الرفع...",
+      "imageUploadFailed": "فشل رفع الصورة"
+    },
+    "details": {
+      "back": "رجوع",
+      "notFound": "المسألة غير موجودة.",
+      "published": "منشورة",
+      "draft": "مسودة",
+      "noStatement": "لا يوجد نص لهذه المسألة.",
+      "submissionsTitle": "حلول الطلاب ({{count}})",
+      "noSubmissions": "لا توجد حلول بعد",
+      "noSubmissionsHint": "لم يُرسل أي طالب حلًّا لهذه المسألة.",
+      "status": "الحالة",
+      "graded": "مُقيَّم",
+      "pending": "قيد الانتظار",
+      "grade": "الدرجة",
+      "submittedAt": "أُرسل في: {{date}}",
+      "saveGrade": "حفظ الدرجة",
+      "saving": "جارٍ الحفظ...",
+      "solution": "الحل",
+      "noSolution": "لم يُرسل حل نصي.",
+      "gradeRange": "أدخل درجة بين 0 و 100.",
+      "saveGradeError": "فشل حفظ الدرجة."
+    },
+    "detail": {
+      "description": "الوصف",
+      "loadFailed": "فشل تحميل تفاصيل المسألة",
+      "noDescription": "لا يوجد وصف.",
+      "title": "تفاصيل المسألة"
     }
   }
 }
