@@ -32,8 +32,8 @@ const toGroupData = (g: Group): GroupData => ({
   status: 'active',
   progress: 0,
   studentsCount: g.studentCount,
-  trainerCount: 1,
-  trainerName: '',
+  trainerCount: g.trainerName ? 1 : 0,
+  trainerName: g.trainerName ?? '',
   createdDate: g.startDate,
 });
 

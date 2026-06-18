@@ -76,13 +76,10 @@ interface Student {
     solvedProblems: number;
 }
 
-interface Trainer {
-    id: string;
+interface TrainerInfo {
     name: string;
     email: string;
-    avatar: string;
-    expertise: string[];
-    bio: string;
+    specialization: string;
 }
 
 
@@ -94,15 +91,6 @@ const mockGroupDetails: GroupData = {
     trainerCount: 1,
     trainerName: 'Jane Smith',
     createdDate: '2026-01-15',
-};
-
-const mockTrainer: Trainer = {
-    id: 'trainer-1',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    avatar: 'JS',
-    expertise: ['Algorithms', 'Data Structures', 'Competitive Programming'],
-    bio: 'Experienced trainer with 8+ years in programming education',
 };
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
@@ -127,6 +115,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
 
     const [contests, setContests] = useState<ContestData[]>([]);
     const [students, setStudents] = useState<Student[]>([]);
+    const [trainer, setTrainer] = useState<TrainerInfo | null>(null);
     const [tabsLoading, setTabsLoading] = useState(true);
     const [tabsError, setTabsError] = useState<string | null>(null);
     const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
@@ -162,10 +151,20 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         setTabsLoading(true);
         setTabsError(null);
         try {
-            const [s, c] = await Promise.all([
+            const [s, c, g] = await Promise.all([
                 groupService.getStudents(Number(group.id)),
                 groupService.getContests(Number(group.id)),
+                groupService.getById(Number(group.id)),
             ]);
+            setTrainer(
+                g.trainerName
+                    ? {
+                        name: g.trainerName,
+                        email: g.trainerEmail ?? '',
+                        specialization: g.trainerSpecialization ?? '',
+                    }
+                    : null,
+            );
             setStudents(
                 s.map((x) => ({
                     id: String(x.studentId),
@@ -613,30 +612,40 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
 
                     {/* Trainer Tab */}
                     <TabPanel value={tabValue} index={2}>
+                        {tabsLoading ? (
+                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                                <CircularProgress sx={{ color: '#8B1D23' }} />
+                            </Box>
+                        ) : !trainer ? (
+                            <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>
+                                {t('group.details.noTrainer', 'No trainer assigned to this group')}
+                            </Typography>
+                        ) : (
                         <Paper elevation={0} sx={{ p: 4, maxWidth: 600, borderRadius: '16px', border: '1px solid #e5e7eb', bgcolor: '#f8fafc' }}>
                             <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
-                                <Avatar sx={{ width: 80, height: 88, bgcolor: '#8B1D23', fontSize: 30, fontWeight: 700, borderRadius: '16px' }}>{mockTrainer.avatar}</Avatar>
+                                <Avatar sx={{ width: 80, height: 88, bgcolor: '#8B1D23', fontSize: 30, fontWeight: 700, borderRadius: '16px' }}>
+                                    {trainer.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
+                                </Avatar>
                                 <Box>
-                                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{mockTrainer.name}</Typography>
-                                    <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{mockTrainer.email}</Typography>
+                                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{trainer.name}</Typography>
+                                    {trainer.email && (
+                                        <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{trainer.email}</Typography>
+                                    )}
                                     <Button variantType="default">
                                         {t('group.details.messageTrainer')}
                                     </Button>
                                 </Box>
                             </Box>
-                            <Box sx={{ mb: 4 }}>
-                                <Typography sx={{ fontWeight: 700, mb: 1, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.bio')}</Typography>
-                                <Typography variant="body2" sx={{ color: '#64748b', lineHeight: 1.8, fontWeight: 500 }}>{mockTrainer.bio}</Typography>
-                            </Box>
-                            <Box>
-                                <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
-                                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                    {mockTrainer.expertise.map((skill) => (
-                                        <Chip key={skill} label={skill} sx={{ bgcolor: '#ffffff', color: '#1e293b', fontWeight: 700, border: '1px solid #e2e8f0' }} />
-                                    ))}
+                            {trainer.specialization && (
+                                <Box>
+                                    <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                                        <Chip label={trainer.specialization} sx={{ bgcolor: '#ffffff', color: '#1e293b', fontWeight: 700, border: '1px solid #e2e8f0' }} />
+                                    </Box>
                                 </Box>
-                            </Box>
+                            )}
                         </Paper>
+                        )}
                     </TabPanel>
                 </TabContentWrapper>
             </Paper>

@@ -5,6 +5,9 @@ export interface Group {
   startDate: string;
   trainerId: number;
   studentCount: number;
+  trainerName: string | null;
+  trainerEmail: string | null;
+  trainerSpecialization: string | null;
 }
 
 export interface CreateGroupInput {
