@@ -12,7 +12,10 @@
         "completionRate": "{{rate}}% نسبة الإكمال",
         "averageGrade": "متوسط الدرجات",
         "globalRank": "الترتيب العام",
-        "outOfStudents": "من أصل {{count}} طالب"
+        "outOfStudents": "من أصل {{count}} طالب",
+        "gradedCount": "{{count}} مُقيَّمة",
+        "myGroups": "مجموعاتي",
+        "totalProblems": "المسائل المتاحة"
       },
       "quickActions": {
         "title": "إجراءات سريعة",
@@ -27,7 +30,8 @@
         "title": "مجموعاتي",
         "students": "{{count}} طالب",
         "rank": "الترتيب #{{rank}}",
-        "progress": "التقدم"
+        "progress": "التقدم",
+        "empty": "لم تنضم إلى أي مجموعة بعد"
       },
       "recentActivity": {
         "title": "النشاط الأخير"
@@ -41,8 +45,10 @@
         "title": "الدرجات الأخيرة",
         "problem": "المسألة",
         "grade": "الدرجة",
-        "feedback": "الملاحظات"
-      }
+        "feedback": "الملاحظات",
+        "empty": "لا توجد حلول مُقيَّمة بعد"
+      },
+      "loadFailed": "فشل تحميل لوحة التحكم"
     },
     "contests": {
       "tableTitle": "مسائل هذه المسابقة",

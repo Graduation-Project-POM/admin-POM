@@ -24,7 +24,10 @@
       "pendingApprovals": {
         "title": "الموافقات المعلقة",
         "trainer": "مدرب",
-        "approve": "موافقة"
+        "approve": "موافقة",
+        "approveFailed": "فشلت الموافقة",
+        "empty": "لا توجد موافقات معلقة",
+        "student": "طالب"
       },
       "announcements": {
         "title": "الإعلانات",
@@ -35,6 +38,15 @@
         "draft": "مسودة",
         "addAnnouncement": "إعلان",
         "addUser": "إضافة مستخدم"
+      },
+      "loadFailed": "فشل تحميل لوحة التحكم",
+      "overview": {
+        "title": "نظرة عامة على المنصة",
+        "metric": "المقياس",
+        "count": "العدد",
+        "groups": "المجموعات",
+        "contests": "المسابقات",
+        "problems": "المسائل"
       }
     },
     "users": {

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -12,35 +12,32 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Chip,
   Paper,
   Avatar,
-  IconButton,
   Stack,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
 import {
   Users,
   UserCheck,
-  TrendingUp,
+  GraduationCap,
   AlertCircle,
-  UserPlus,
   UserCog,
-  Megaphone,
   Briefcase,
   Trophy,
   BarChart3,
   CheckCircle,
-  Edit,
-  Plus,
-  ArrowUp,
+  BookOpen,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   dashboardContainer,
   pageTitle,
   statCard,
   statTitle,
   statValue,
-  statTrendBox,
   statIconBox,
   sectionCard,
   sectionTitle,
@@ -51,94 +48,89 @@ import {
   tableContainer,
   tableHeadCell,
   tableBodyCell,
-  tableDateCell,
-  addAnnouncementButton,
-  addUserButton,
-  publishedChip,
-  draftChip,
 } from "./dashboardStyle";
-
-import type { StatCardData, PendingTrainer, Announcement } from "../../../types/index"
-import { useTranslation } from "react-i18next";
-
+import { dashboardService, type AdminDashboardData } from "../../../services/dashboardService";
+import { studentService } from "../../../services/studentService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const stats: StatCardData[] = [
-    {
-      title: t("admin.dashboard.stats.totalUsers"),
-      value: 386,
-      trend: { value: 12, label: t("admin.dashboard.stats.thisWeek"), direction: "up" },
-      icon: Users,
-      iconBg: "#fee2e2",
-      iconColor: "#8B1D23",
-    },
-    {
-      title: t("admin.dashboard.stats.activeTrainers"),
-      value: 318,
-      subtitle: t("admin.dashboard.stats.ofTotal", { percent: 83 }),
-      icon: UserCheck,
-      iconBg: "#e0f2e9",
-      iconColor: "#1f6e43",
-    },
-    {
-      title: t("admin.dashboard.stats.totalStudents"),
-      value: 4821,
-      trend: { value: 204, label: t("admin.dashboard.stats.today"), direction: "up" },
-      icon: TrendingUp,
-      iconBg: "#fff0db",
-      iconColor: "#b45309",
-    },
-    {
-      title: t("admin.dashboard.stats.pendingApprovals"),
-      value: 3,
-      subtitle: t("admin.dashboard.stats.needsAction"),
-      icon: AlertCircle,
-      iconBg: "#fee2e2",
-      iconColor: "#b91c1c",
-    },
+  const [data, setData] = useState<AdminDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [approving, setApproving] = useState<number | null>(null);
+
+  const load = () => {
+    setLoading(true);
+    setError(null);
+    dashboardService
+      .getAdminData()
+      .then(setData)
+      .catch((err) => setError(getApiErrorMessage(err, t("admin.dashboard.loadFailed", "Failed to load dashboard"))))
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleApprove = async (id: number) => {
+    setApproving(id);
+    try {
+      await studentService.accept(id);
+      setData((prev) =>
+        prev ? { ...prev, pendingStudents: prev.pendingStudents.filter((s) => s.id !== id) } : prev,
+      );
+    } catch (err) {
+      setError(getApiErrorMessage(err, t("admin.dashboard.pendingApprovals.approveFailed", "Failed to approve")));
+    } finally {
+      setApproving(null);
+    }
+  };
+
+  const stats = [
+    { title: t("admin.dashboard.stats.totalUsers"), value: data?.totalUsers ?? 0, icon: Users, iconBg: "#fee2e2", iconColor: "#8B1D23" },
+    { title: t("admin.dashboard.stats.activeTrainers"), value: data?.totalTrainers ?? 0, icon: UserCheck, iconBg: "#e0f2e9", iconColor: "#1f6e43" },
+    { title: t("admin.dashboard.stats.totalStudents"), value: data?.totalStudents ?? 0, icon: GraduationCap, iconBg: "#fff0db", iconColor: "#b45309" },
+    { title: t("admin.dashboard.stats.pendingApprovals"), value: data?.pendingStudents.length ?? 0, subtitle: t("admin.dashboard.stats.needsAction"), icon: AlertCircle, iconBg: "#fee2e2", iconColor: "#b91c1c" },
   ];
 
-  const pendingTrainers: PendingTrainer[] = [
-    { id: 1, name: "Dr. Rania Al-Wanan", title: t("admin.dashboard.pendingApprovals.trainer"), university: "Khadoori University" },
-    { id: 2, name: "Ahmad Nasser", title: t("admin.dashboard.pendingApprovals.trainer"), university: "Birzeit University" },
-    { id: 3, name: "Layla Haddad", title: t("admin.dashboard.pendingApprovals.trainer"), university: "An-Najah University" },
-  ];
-
-  const announcements: Announcement[] = [
-    { id: 1, title: "Winter Camp 2026 Results", date: "Jan 15", status: "Published" },
-    { id: 2, title: "Registration Open – PMO 2026", date: "Jan 10", status: "Published" },
-    { id: 3, title: "Monthly Contest – February", date: "Jan 8", status: "Draft" },
-    { id: 4, title: "New Training Materials", date: "Jan 5", status: "Published" },
+  const overview = [
+    { label: t("admin.dashboard.overview.groups", "Groups"), value: data?.groups ?? 0, icon: Briefcase },
+    { label: t("admin.dashboard.overview.contests", "Contests"), value: data?.contests ?? 0, icon: Trophy },
+    { label: t("admin.dashboard.overview.problems", "Problems"), value: data?.problems ?? 0, icon: BookOpen },
   ];
 
   const quickActions = [
     { label: t("admin.dashboard.quickActions.manageUsers"), icon: Users, path: "/admin/users" },
     { label: t("admin.dashboard.quickActions.reviewTrainers"), icon: UserCog, path: "/admin/approvals" },
-    { label: t("admin.dashboard.quickActions.postNews"), icon: Megaphone, path: "/admin/announcements" },
-    { label: t("admin.dashboard.quickActions.partners"), icon: Briefcase, path: "/admin/partners" },
     { label: t("admin.dashboard.quickActions.contests"), icon: Trophy, path: "/admin/contests" },
-    { label: t("admin.dashboard.quickActions.reports"), icon: BarChart3, path: "/admin/reports" },
+    { label: t("admin.dashboard.quickActions.partners"), icon: Briefcase, path: "/admin/groups" },
+    { label: t("admin.dashboard.quickActions.reports"), icon: BarChart3, path: "/admin/problems" },
   ];
 
-  const handleApprove = (id: number) => console.log(`Approve trainer ${id}`);
-  const handleEdit = (id: number) => console.log(`Edit trainer ${id}`);
-  const handleAddAnnouncement = () => console.log("Add announcement");
-  const handleAddUser = () => console.log("Add user");
-
-  const getStatusChip = (status: string) => {
-    if (status === "Published") {
-      return <Chip label={t("admin.dashboard.announcements.published")} size="small" sx={publishedChip} />;
-    }
-    return <Chip label={t("admin.dashboard.announcements.draft")} size="small" sx={draftChip} />;
-  };
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
+        <CircularProgress sx={{ color: "#8B1D23" }} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={dashboardContainer}>
       <Typography variant="h4" sx={pageTitle}>
         {t("admin.dashboard.title")}
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {stats.map((stat, index) => (
@@ -149,17 +141,6 @@ const AdminDashboard: React.FC = () => {
                   <Box>
                     <Typography sx={statTitle}>{stat.title}</Typography>
                     <Typography sx={statValue}>{stat.value.toLocaleString()}</Typography>
-                    {stat.trend && (
-                      <Box sx={statTrendBox}>
-                        <ArrowUp size={14} color="#1f6e43" />
-                        <Typography variant="caption" sx={{ color: "#1f6e43", fontWeight: 500 }}>
-                          ↑ {stat.trend.value}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "#64748b" }}>
-                          {stat.trend.label}
-                        </Typography>
-                      </Box>
-                    )}
                     {stat.subtitle && (
                       <Typography variant="caption" sx={{ color: "#64748b", mt: 1, display: "block" }}>
                         {stat.subtitle}
@@ -186,7 +167,13 @@ const AdminDashboard: React.FC = () => {
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
                   <Grid size={{ xs: 6, sm: 4 }} key={idx}>
-                    <Button fullWidth variant="outlined" startIcon={<action.icon size={16} />} sx={quickActionButton}>
+                    <Button
+                      fullWidth
+                      variant="outlined"
+                      startIcon={<action.icon size={16} />}
+                      sx={quickActionButton}
+                      onClick={() => navigate(action.path)}
+                    >
                       {action.label}
                     </Button>
                   </Grid>
@@ -200,74 +187,72 @@ const AdminDashboard: React.FC = () => {
               <Typography variant="h6" sx={sectionTitle}>
                 {t("admin.dashboard.pendingApprovals.title")}
               </Typography>
-              <Stack spacing={2}>
-                {pendingTrainers.map((trainer) => (
-                  <Paper key={trainer.id} elevation={0} sx={pendingTrainerPaper}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Avatar sx={trainerAvatar}>{trainer.name.charAt(0)}</Avatar>
-                      <Box>
-                        <Typography sx={{ fontWeight: 600, color: "#0f172a" }}>{trainer.name}</Typography>
-                        <Typography variant="caption" sx={{ color: "#64748b" }}>
-                          {trainer.title} - {trainer.university}
-                        </Typography>
+              {data && data.pendingStudents.length === 0 ? (
+                <Typography sx={{ color: "#94a3b8", fontWeight: 600, py: 2 }}>
+                  {t("admin.dashboard.pendingApprovals.empty", "No pending approvals")}
+                </Typography>
+              ) : (
+                <Stack spacing={2}>
+                  {data?.pendingStudents.slice(0, 6).map((student) => (
+                    <Paper key={student.id} elevation={0} sx={pendingTrainerPaper}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Avatar sx={trainerAvatar}>{student.name.charAt(0)}</Avatar>
+                        <Box>
+                          <Typography sx={{ fontWeight: 600, color: "#0f172a" }}>{student.name}</Typography>
+                          <Typography variant="caption" sx={{ color: "#64748b" }}>
+                            {student.email || t("admin.dashboard.pendingApprovals.student", "Student")}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
                       <Button
                         size="small"
                         variant="contained"
                         startIcon={<CheckCircle size={14} />}
-                        onClick={() => handleApprove(trainer.id)}
+                        onClick={() => handleApprove(student.id)}
+                        disabled={approving === student.id}
                         sx={approveButton}
                       >
                         {t("admin.dashboard.pendingApprovals.approve")}
                       </Button>
-                      <IconButton size="small" onClick={() => handleEdit(trainer.id)} sx={{ color: "#64748b" }}>
-                        <Edit size={16} />
-                      </IconButton>
-                    </Box>
-                  </Paper>
-                ))}
-              </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              )}
             </CardContent>
           </Card>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ ...sectionCard, height: "100%", display: "flex", flexDirection: "column" }}>
-            <CardContent sx={{ p: 3, flex: 1 }}>
+          <Card sx={{ ...sectionCard, height: "100%" }}>
+            <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                {t("admin.dashboard.announcements.title")}
+                {t("admin.dashboard.overview.title", "Platform Overview")}
               </Typography>
               <TableContainer component={Paper} elevation={0} sx={tableContainer}>
                 <Table sx={{ minWidth: 300 }}>
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#f8fafc" }}>
-                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.announcements.tableTitle")}</TableCell>
-                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.announcements.tableDate")}</TableCell>
-                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.announcements.tableStatus")}</TableCell>
+                      <TableCell sx={tableHeadCell}>{t("admin.dashboard.overview.metric", "Metric")}</TableCell>
+                      <TableCell sx={tableHeadCell} align="right">{t("admin.dashboard.overview.count", "Count")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {announcements.map((announcement) => (
-                      <TableRow key={announcement.id} hover>
-                        <TableCell sx={tableBodyCell}>{announcement.title}</TableCell>
-                        <TableCell sx={tableDateCell}>{announcement.date}</TableCell>
-                        <TableCell>{getStatusChip(announcement.status)}</TableCell>
+                    {overview.map((row) => (
+                      <TableRow key={row.label} hover>
+                        <TableCell sx={tableBodyCell}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
+                            <row.icon size={16} color="#8B1D23" />
+                            {row.label}
+                          </Box>
+                        </TableCell>
+                        <TableCell align="right" sx={{ ...tableBodyCell, fontWeight: 800 }}>
+                          {row.value.toLocaleString()}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TableContainer>
-
-              <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-                <Button variant="contained" startIcon={<Plus size={16} />} onClick={handleAddAnnouncement} sx={addAnnouncementButton}>
-                  {t("admin.dashboard.announcements.addAnnouncement")}
-                </Button>
-                <Button variant="outlined" startIcon={<UserPlus size={16} />} onClick={handleAddUser} sx={addUserButton}>
-                  {t("admin.dashboard.announcements.addUser")}
-                </Button>
-              </Box>
             </CardContent>
           </Card>
         </Grid>

@@ -10,7 +10,10 @@
         "nextSession": "Next: Today 4:00 PM",
         "needsReview": "Needs review",
         "thisMonth": "this month",
-        "thisWeek": "this week"
+        "thisWeek": "this week",
+        "myContests": "My Contests",
+        "myGroups": "My Groups",
+        "myProblems": "My Problems"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -36,6 +39,18 @@
         "draft": "Draft",
         "addAnnouncement": "Announcement",
         "addStudent": "Add Student"
+      },
+      "loadFailed": "Failed to load dashboard",
+      "myContests": {
+        "empty": "No contests yet",
+        "tableStatus": "Status",
+        "tableTitle": "Contest",
+        "title": "My Contests"
+      },
+      "myGroups": {
+        "empty": "You don't own any groups yet",
+        "students": "{{count}} students",
+        "title": "My Groups"
       }
     },
     "solutionDetail": {

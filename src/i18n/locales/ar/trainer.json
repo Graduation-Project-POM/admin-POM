@@ -10,7 +10,10 @@
         "nextSession": "التالية: اليوم 4:00 مساءً",
         "needsReview": "بحاجة إلى مراجعة",
         "thisMonth": "هذا الشهر",
-        "thisWeek": "هذا الأسبوع"
+        "thisWeek": "هذا الأسبوع",
+        "myContests": "مسابقاتي",
+        "myGroups": "مجموعاتي",
+        "myProblems": "مسائلي"
       },
       "quickActions": {
         "title": "إجراءات سريعة",
@@ -36,6 +39,18 @@
         "draft": "مسودة",
         "addAnnouncement": "إعلان",
         "addStudent": "إضافة طالب"
+      },
+      "loadFailed": "فشل تحميل لوحة التحكم",
+      "myContests": {
+        "empty": "لا توجد مسابقات بعد",
+        "tableStatus": "الحالة",
+        "tableTitle": "المسابقة",
+        "title": "مسابقاتي"
+      },
+      "myGroups": {
+        "empty": "لا تملك أي مجموعات بعد",
+        "students": "{{count}} طلاب",
+        "title": "مجموعاتي"
       }
     },
     "solutionDetail": {

@@ -84,6 +84,18 @@ export const studentService = {
     return data.map(toStudentOption);
   },
 
+  // GET /Student — full list including acceptance status (Admin), for the
+  // admin dashboard's pending-approvals section.
+  getAllDetailed: async (): Promise<(StudentOption & { isAccepted: boolean })[]> => {
+    const { data } = await api.get<Record<string, any>[]>("/Student");
+    return data.map((s) => ({ ...toStudentOption(s), isAccepted: Boolean(s.isAccepted) }));
+  },
+
+  // POST /Student/{id}/accept — admin approves a pending student.
+  accept: async (id: number): Promise<void> => {
+    await api.post(`/Student/${id}/accept`);
+  },
+
   // GET /Student/{id} — full profile by id. Backend authorizes via the
   // StudentOwnerOrAdminOrTrainer policy (Admin, any Trainer, or the student
   // themselves); other callers get 403.

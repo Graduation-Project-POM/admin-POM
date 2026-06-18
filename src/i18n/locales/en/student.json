@@ -12,7 +12,10 @@
         "completionRate": "{{rate}}% completion rate",
         "averageGrade": "Average Grade",
         "globalRank": "Global Rank",
-        "outOfStudents": "out of {{count}} students"
+        "outOfStudents": "out of {{count}} students",
+        "gradedCount": "{{count}} graded",
+        "myGroups": "My Groups",
+        "totalProblems": "Available Problems"
       },
       "quickActions": {
         "title": "Quick Actions",
@@ -27,7 +30,8 @@
         "title": "My Groups",
         "students": "{{count}} students",
         "rank": "Rank #{{rank}}",
-        "progress": "Progress"
+        "progress": "Progress",
+        "empty": "You're not enrolled in any group yet"
       },
       "recentActivity": {
         "title": "Recent Activity"
@@ -41,8 +45,10 @@
         "title": "Recent Grades",
         "problem": "Problem",
         "grade": "Grade",
-        "feedback": "Feedback"
-      }
+        "feedback": "Feedback",
+        "empty": "No graded submissions yet"
+      },
+      "loadFailed": "Failed to load dashboard"
     },
     "contests": {
       "tableTitle": "Problems in this contest",

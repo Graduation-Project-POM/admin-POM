@@ -24,7 +24,10 @@
       "pendingApprovals": {
         "title": "Pending Approvals",
         "trainer": "Trainer",
-        "approve": "Approve"
+        "approve": "Approve",
+        "approveFailed": "Failed to approve",
+        "empty": "No pending approvals",
+        "student": "Student"
       },
       "announcements": {
         "title": "Announcements",
@@ -35,6 +38,15 @@
         "draft": "Draft",
         "addAnnouncement": "Announcement",
         "addUser": "Add User"
+      },
+      "loadFailed": "Failed to load dashboard",
+      "overview": {
+        "title": "Platform Overview",
+        "metric": "Metric",
+        "count": "Count",
+        "groups": "Groups",
+        "contests": "Contests",
+        "problems": "Problems"
       }
     },
     "users": {

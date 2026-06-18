@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
@@ -16,127 +17,87 @@ import {
   Chip,
   Paper,
   Avatar,
-  IconButton,
   Stack,
+  CircularProgress,
+  Alert,
 } from "@mui/material";
-import {
-  Users,
-  Calendar,
-  CheckCircle,
-  MessageSquare,
-  UserPlus,
-  Video,
-  Megaphone,
-  BarChart3,
-  Edit,
-  Plus,
-  ArrowUp,
-  Clock,
-  FileText,
-} from "lucide-react";
+import { Users, Briefcase, Trophy, BookOpen } from "lucide-react";
 import {
   dashboardContainer,
   pageTitle,
   statCard,
   statTitle,
   statValue,
-  statTrendBox,
   statIconBox,
   sectionCard,
   sectionTitle,
   quickActionButton,
   pendingItemPaper,
   itemAvatar,
-  approveButton,
   tableContainer as tableContainerStyle,
   tableHeadCell,
   tableBodyCell,
-  tableDateCell,
-  addAnnouncementButton,
-  addUserButton,
-  publishedChip,
-  draftChip,
 } from "./dashboardStyle";
+import { dashboardService, type TrainerDashboardData } from "../../../services/dashboardService";
+import { getContestStatus } from "../../../utils/contestStatus";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
-import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../../../types/trainerTypes";
+const statusChipSx = (status: string) => ({
+  fontWeight: 700,
+  fontSize: "11px",
+  bgcolor: status === "Ongoing" ? "#ecfdf5" : status === "Upcoming" ? "#fffbeb" : "#f1f5f9",
+  color: status === "Ongoing" ? "#059669" : status === "Upcoming" ? "#d97706" : "#64748b",
+});
 
- const TrainerDashboard: React.FC = () => {
+const TrainerDashboard: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
-  const stats: TrainerStatCard[] = [
-    {
-      title: t("trainer.dashboard.stats.totalStudents"),
-      value: 124,
-      trend: { value: 8, label: t("trainer.dashboard.stats.thisMonth"), direction: "up" },
-      icon: Users,
-      iconBg: "#fee2e2",
-      iconColor: "#8B1D23",
-    },
-    {
-      title: t("trainer.dashboard.stats.upcomingSessions"),
-      value: 6,
-      subtitle: t("trainer.dashboard.stats.nextSession"),
-      icon: Calendar,
-      iconBg: "#e0f2e9",
-      iconColor: "#1f6e43",
-    },
-    {
-      title: t("trainer.dashboard.stats.completedSessions"),
-      value: 42,
-      trend: { value: 12, label: t("trainer.dashboard.stats.thisWeek"), direction: "up" },
-      icon: CheckCircle,
-      iconBg: "#fff0db",
-      iconColor: "#b45309",
-    },
-    {
-      title: t("trainer.dashboard.stats.pendingFeedback"),
-      value: 3,
-      subtitle: t("trainer.dashboard.stats.needsReview"),
-      icon: MessageSquare,
-      iconBg: "#fee2e2",
-      iconColor: "#b91c1c",
-    },
-  ];
+  const [data, setData] = useState<TrainerDashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const pendingRequests: PendingRequest[] = [
-    { id: 1, name: "Omar Khalil", type: t("trainer.dashboard.pendingRequests.enrollmentRequest"), course: "Data Structures", date: "Feb 18" },
-    { id: 2, name: "Sara Mousa", type: t("trainer.dashboard.pendingRequests.assignmentSubmission"), course: "Algorithms", date: "Feb 17" },
-    { id: 3, name: "Lina Taha", type: t("trainer.dashboard.pendingRequests.enrollmentRequest"), course: "Web Development", date: "Feb 16" },
-  ];
+  useEffect(() => {
+    setLoading(true);
+    dashboardService
+      .getTrainerData()
+      .then(setData)
+      .catch((err) => setError(getApiErrorMessage(err, t("trainer.dashboard.loadFailed", "Failed to load dashboard"))))
+      .finally(() => setLoading(false));
+  }, [t]);
 
-  const announcements: TrainerAnnouncement[] = [
-    { id: 1, title: "Midterm Exam Schedule", date: "Feb 19", status: "Published" },
-    { id: 2, title: "Office Hours Changed", date: "Feb 15", status: "Published" },
-    { id: 3, title: "New Reading Materials", date: "Feb 10", status: "Draft" },
-    { id: 4, title: "Guest Lecture Next Week", date: "Feb 8", status: "Published" },
+  const stats = [
+    { title: t("trainer.dashboard.stats.totalStudents"), value: data?.students ?? 0, icon: Users, iconBg: "#fee2e2", iconColor: "#8B1D23" },
+    { title: t("trainer.dashboard.stats.myGroups", "My Groups"), value: data?.groups.length ?? 0, icon: Briefcase, iconBg: "#e0f2e9", iconColor: "#1f6e43" },
+    { title: t("trainer.dashboard.stats.myContests", "My Contests"), value: data?.contests.length ?? 0, icon: Trophy, iconBg: "#fff0db", iconColor: "#b45309" },
+    { title: t("trainer.dashboard.stats.myProblems", "My Problems"), value: data?.myProblems ?? 0, icon: BookOpen, iconBg: "#fee2e2", iconColor: "#b91c1c" },
   ];
 
   const quickActions = [
-    { label: t("trainer.dashboard.quickActions.manageStudents"), icon: Users, path: "/trainer/students" },
-    { label: t("trainer.dashboard.quickActions.createSession"), icon: Video, path: "/trainer/sessions/new" },
-    { label: t("trainer.dashboard.quickActions.postAnnouncement"), icon: Megaphone, path: "/trainer/announcements" },
-    { label: t("trainer.dashboard.quickActions.viewReports"), icon: BarChart3, path: "/trainer/reports" },
-    { label: t("trainer.dashboard.quickActions.assignments"), icon: FileText, path: "/trainer/assignments" },
-    { label: t("trainer.dashboard.quickActions.schedule"), icon: Clock, path: "/trainer/schedule" },
+    { label: t("navbar.groups"), icon: Briefcase, path: "/trainer/groups" },
+    { label: t("navbar.contests"), icon: Trophy, path: "/trainer/contests" },
+    { label: t("navbar.problemsShort"), icon: BookOpen, path: "/trainer/problems" },
   ];
 
-  const handleApprove = (id: number) => console.log(`Approve request ${id}`);
-  const handleEdit = (id: number) => console.log(`Edit request ${id}`);
-  const handleAddAnnouncement = () => console.log("Add announcement");
-  const handleAddStudent = () => console.log("Add student");
-
-  const getStatusChip = (status: string) => {
-    if (status === "Published") {
-      return <Chip label={t("trainer.dashboard.announcements.published")} size="small" sx={publishedChip} />;
-    }
-    return <Chip label={t("trainer.dashboard.announcements.draft")} size="small" sx={draftChip} />;
-  };
+  if (loading) {
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
+        <CircularProgress sx={{ color: "#8B1D23" }} />
+      </Box>
+    );
+  }
 
   return (
     <Box sx={dashboardContainer}>
       <Typography variant="h4" sx={pageTitle}>
         {t("trainer.dashboard.title")}
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {stats.map((stat, index) => (
@@ -147,22 +108,6 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
                   <Box>
                     <Typography sx={statTitle}>{stat.title}</Typography>
                     <Typography sx={statValue}>{stat.value.toLocaleString()}</Typography>
-                    {stat.trend && (
-                      <Box sx={statTrendBox}>
-                        <ArrowUp size={14} color="#1f6e43" />
-                        <Typography variant="caption" sx={{ color: "#1f6e43", fontWeight: 500 }}>
-                          ↑ {stat.trend.value}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "#64748b" }}>
-                          {stat.trend.label}
-                        </Typography>
-                      </Box>
-                    )}
-                    {stat.subtitle && (
-                      <Typography variant="caption" sx={{ color: "#64748b", mt: 1, display: "block" }}>
-                        {stat.subtitle}
-                      </Typography>
-                    )}
                   </Box>
                   <Box sx={statIconBox(stat.iconBg)}>
                     <stat.icon size={24} color={stat.iconColor} />
@@ -175,7 +120,6 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
       </Grid>
 
       <Grid container spacing={4}>
-        {/* Left Column */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Card sx={{ ...sectionCard, mb: 4 }}>
             <CardContent sx={{ p: 3 }}>
@@ -185,12 +129,7 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
                   <Grid size={{ xs: 6, sm: 4 }} key={idx}>
-                    <Button
-                      fullWidth
-                      variant="outlined"
-                      startIcon={<action.icon size={16} />}
-                      sx={quickActionButton}
-                    >
+                    <Button fullWidth variant="outlined" startIcon={<action.icon size={16} />} sx={quickActionButton} onClick={() => navigate(action.path)}>
                       {action.label}
                     </Button>
                   </Grid>
@@ -202,89 +141,71 @@ import type { TrainerStatCard, PendingRequest, TrainerAnnouncement } from "../..
           <Card sx={sectionCard}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                {t("trainer.dashboard.pendingRequests.title")}
+                {t("trainer.dashboard.myGroups.title", "My Groups")}
               </Typography>
-              <Stack spacing={2}>
-                {pendingRequests.map((request) => (
-                  <Paper key={request.id} elevation={0} sx={pendingItemPaper}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                      <Avatar sx={itemAvatar}>{request.name.charAt(0)}</Avatar>
-                      <Box>
-                        <Typography sx={{ fontWeight: 600, color: "#0f172a" }}>
-                          {request.name}
-                        </Typography>
-                        <Typography variant="caption" sx={{ color: "#64748b" }}>
-                          {request.type} – {request.course} • {request.date}
-                        </Typography>
+              {data && data.groups.length === 0 ? (
+                <Typography sx={{ color: "#94a3b8", fontWeight: 600, py: 2 }}>
+                  {t("trainer.dashboard.myGroups.empty", "You don't own any groups yet")}
+                </Typography>
+              ) : (
+                <Stack spacing={2}>
+                  {data?.groups.slice(0, 6).map((group) => (
+                    <Paper key={group.id} elevation={0} sx={pendingItemPaper}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                        <Avatar sx={itemAvatar}>{group.name.charAt(0)}</Avatar>
+                        <Box>
+                          <Typography sx={{ fontWeight: 600, color: "#0f172a" }}>{group.name}</Typography>
+                          <Typography variant="caption" sx={{ color: "#64748b" }}>
+                            {t("trainer.dashboard.myGroups.students", { count: group.studentCount ?? 0 })}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                    <Box sx={{ display: "flex", gap: 1 }}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        startIcon={<CheckCircle size={14} />}
-                        onClick={() => handleApprove(request.id)}
-                        sx={approveButton}
-                      >
-                        {t("trainer.dashboard.pendingRequests.review")}
+                      <Button size="small" variant="outlined" sx={quickActionButton} onClick={() => navigate("/trainer/groups")}>
+                        {t("buttons.view")}
                       </Button>
-                      <IconButton size="small" onClick={() => handleEdit(request.id)} sx={{ color: "#64748b" }}>
-                        <Edit size={16} />
-                      </IconButton>
-                    </Box>
-                  </Paper>
-                ))}
-              </Stack>
+                    </Paper>
+                  ))}
+                </Stack>
+              )}
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Right Column */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ ...sectionCard, height: "100%", display: "flex", flexDirection: "column" }}>
-            <CardContent sx={{ p: 3, flex: 1 }}>
+          <Card sx={{ ...sectionCard, height: "100%" }}>
+            <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>
-                {t("trainer.dashboard.announcements.title")}
+                {t("trainer.dashboard.myContests.title", "My Contests")}
               </Typography>
-              <TableContainer component={Paper} elevation={0} sx={tableContainerStyle}>
-                <Table sx={{ minWidth: 300 }}>
-                  <TableHead>
-                    <TableRow sx={{ bgcolor: "#f8fafc" }}>
-                      <TableCell sx={tableHeadCell}>{t("trainer.dashboard.announcements.tableTitle")}</TableCell>
-                      <TableCell sx={tableHeadCell}>{t("trainer.dashboard.announcements.tableDate")}</TableCell>
-                      <TableCell sx={tableHeadCell}>{t("trainer.dashboard.announcements.tableStatus")}</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {announcements.map((announcement) => (
-                      <TableRow key={announcement.id} hover>
-                        <TableCell sx={tableBodyCell}>{announcement.title}</TableCell>
-                        <TableCell sx={tableDateCell}>{announcement.date}</TableCell>
-                        <TableCell>{getStatusChip(announcement.status)}</TableCell>
+              {data && data.contests.length === 0 ? (
+                <Typography sx={{ color: "#94a3b8", fontWeight: 600, py: 2 }}>
+                  {t("trainer.dashboard.myContests.empty", "No contests yet")}
+                </Typography>
+              ) : (
+                <TableContainer component={Paper} elevation={0} sx={tableContainerStyle}>
+                  <Table sx={{ minWidth: 300 }}>
+                    <TableHead>
+                      <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                        <TableCell sx={tableHeadCell}>{t("trainer.dashboard.myContests.tableTitle", "Contest")}</TableCell>
+                        <TableCell sx={tableHeadCell}>{t("trainer.dashboard.myContests.tableStatus", "Status")}</TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              <Box sx={{ display: "flex", gap: 2, mt: 3 }}>
-                <Button
-                  variant="contained"
-                  startIcon={<Plus size={16} />}
-                  onClick={handleAddAnnouncement}
-                  sx={addAnnouncementButton}
-                >
-                  {t("trainer.dashboard.announcements.addAnnouncement")}
-                </Button>
-                <Button
-                  variant="outlined"
-                  startIcon={<UserPlus size={16} />}
-                  onClick={handleAddStudent}
-                  sx={addUserButton}
-                >
-                  {t("trainer.dashboard.announcements.addStudent")}
-                </Button>
-              </Box>
+                    </TableHead>
+                    <TableBody>
+                      {data?.contests.slice(0, 8).map((contest) => {
+                        const status = getContestStatus(contest.startAt, contest.endAt);
+                        return (
+                          <TableRow key={contest.id} hover>
+                            <TableCell sx={tableBodyCell}>{contest.title}</TableCell>
+                            <TableCell>
+                              <Chip label={status} size="small" sx={statusChipSx(status)} />
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+              )}
             </CardContent>
           </Card>
         </Grid>
