@@ -35,6 +35,8 @@ export const getMyStudentProfile = async (): Promise<MyStudentProfile> => {
 export const updateMyStudentProfile = async (data: UpdateMyStudentPayload) => {
   const response = await api.put("/Student/me", data);
   return response.data;
+};
+
 export interface StudentOption {
   id: number;
   name: string;

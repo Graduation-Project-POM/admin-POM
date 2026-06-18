@@ -4,24 +4,20 @@ import { Box, Stack, Alert, Switch } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { Label } from '../../../components/ui/label/Label';
-import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Button } from '../../../components/ui/button/Button';
 
 export interface ProblemFormValues {
   title: string;
-  description: string;
-  imageUrl: string; 
   category: string;
   description: string;
   difficulty: string;
   isPublished: boolean;
-  visibility: string;
-  tags: string; 
 }
 
 interface CreateProblemProps {
   open: boolean;
   onClose: () => void;
+  // The parent decides what to do with the collected data (e.g. call the API).
   onSave: (data: ProblemFormValues) => void | Promise<void>;
 }
 
@@ -48,15 +44,6 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
   const [formData, setFormData] = useState<ProblemFormValues>(initialFormData);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<ProblemFormData>({
-    title: '',
-    description: '',
-    imageUrl: '',
-    category: '',
-    difficulty: 'Easy',
-    visibility: 'general',
-    tags: '',
-  });
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -75,27 +62,6 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
   const handleClose = () => {
     setFormData(initialFormData);
     setError(null);
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    const problemData = {
-      ...formData,
-      id: Math.random().toString(36).substr(2, 9),
-      tags: formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag !== ''),
-      submissions: 0,
-      successRate: 0,
-    };
-
-    onSave(problemData);
-    setFormData({
-      title: '',
-      description: '',
-      imageUrl: '',
-      category: '',
-      difficulty: 'Easy',
-      visibility: 'general',
-      tags: '',
-    });
     onClose();
   };
 

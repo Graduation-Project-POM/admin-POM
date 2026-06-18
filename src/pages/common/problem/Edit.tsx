@@ -4,14 +4,11 @@ import { Box, Stack, Alert, Switch } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { Label } from '../../../components/ui/label/Label';
-import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Button } from '../../../components/ui/button/Button';
 
 export interface ProblemEditValues {
   id: number | string;
   title: string;
-  description: string;
-  imageUrl: string;
   category: string;
   description: string;
   difficulty: string;
