@@ -44,7 +44,6 @@ export const SharedTable: React.FC<SharedTableProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  // Per-row capabilities (default: allowed when the handler exists).
   const rowCanEdit = (row: any) => !!onEdit && (canEditRow ? canEditRow(row) : true);
   const rowCanDelete = (row: any) => !!onSingleDelete && (canDeleteRow ? canDeleteRow(row) : true);
   const rowSelectable = (row: any) => (canDeleteRow ? canDeleteRow(row) : true);

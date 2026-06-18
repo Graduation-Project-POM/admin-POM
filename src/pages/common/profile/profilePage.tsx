@@ -78,7 +78,6 @@ const ProfilePage: React.FC = () => {
     getCurrentUser()
       .then(applyUser)
       .catch(() => setSaveError(t("profile.loadError")));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (field: keyof ProfileData) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -92,7 +91,6 @@ const ProfilePage: React.FC = () => {
     }
     setSaveError(null);
     setSaving(true);
-    // Split the full name; fall back to the existing values when needed.
     const parts = profile.fullName.trim().split(/\s+/).filter(Boolean);
     const firstName = parts[0] || loadedUser.firstName;
     const lastName = parts.slice(1).join(" ") || loadedUser.lastName;

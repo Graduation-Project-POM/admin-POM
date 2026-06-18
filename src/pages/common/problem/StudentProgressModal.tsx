@@ -29,7 +29,6 @@ interface StudentProgressModalProps {
   open: boolean;
   onClose: () => void;
   problemTitle: string;
-  // Submissions come from the parent (e.g. a future submissions API).
   submissions?: StudentSubmission[];
   onViewSolution: (submission: StudentSubmission) => void;
 }

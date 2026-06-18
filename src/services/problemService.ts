@@ -1,11 +1,10 @@
 import { api } from "./authService";
 
-// Mirrors the backend ProblemResponseDTO returned by GET /api/Problems
 export interface BackendProblem {
   id: number;
   title: string;
   statement: string;
-  difficulty: number; // 1 = Easy, 2 = Medium, 3 = Hard
+  difficulty: number; 
   topic: string;
   photoUrl?: string | null;
   isPublished: boolean;
@@ -13,7 +12,6 @@ export interface BackendProblem {
   canModify?: boolean;
 }
 
-// Matches MIO.Core.Enums.Difficulty on the backend
 export const Difficulty = {
   Easy: 1,
   Medium: 2,
@@ -41,7 +39,6 @@ export interface UpdateProblemPayload {
   isPublished: boolean;
 }
 
-// Controller route is [Route("api/[controller]")] on ProblemsController -> /api/Problems
 const BASE = "/api/Problems";
 
 export const getProblems = async (): Promise<BackendProblem[]> => {
@@ -74,7 +71,6 @@ export interface SubmitSolutionPayload {
   photoFileKey?: string;
 }
 
-// A student submits their own solution to a problem.
 export const submitSolution = async (
   problemId: number,
   data: SubmitSolutionPayload,
@@ -83,7 +79,6 @@ export const submitSolution = async (
   return response.data;
 };
 
-// A student's submission for a problem (as seen by trainer/admin, or the student).
 export interface Submission {
   id: number;
   problemId: number;
@@ -94,7 +89,6 @@ export interface Submission {
   photoUrl?: string | null;
   grade?: number | null;
   submittedAt: string;
-  // Problem details (populated for the student's own submissions).
   problemTitle?: string | null;
   problemTopic?: string | null;
   problemStatement?: string | null;
@@ -117,13 +111,11 @@ export const gradeSubmission = async (
   return response.data;
 };
 
-// The current student's own submissions (used to know which problems they solved).
 export const getMySubmissions = async (): Promise<Submission[]> => {
   const response = await api.get<Submission[]>(`${BASE}/my/submissions`);
   return response.data;
 };
 
-// Map the numeric backend difficulty to the label used by the UI.
 export const difficultyIdToLabel = (difficulty: number): DifficultyLabel => {
   switch (difficulty) {
     case Difficulty.Medium:
@@ -136,7 +128,6 @@ export const difficultyIdToLabel = (difficulty: number): DifficultyLabel => {
   }
 };
 
-// Map the UI difficulty label to the numeric backend difficulty.
 export const difficultyLabelToId = (label: string): number => {
   switch (label) {
     case "Medium":

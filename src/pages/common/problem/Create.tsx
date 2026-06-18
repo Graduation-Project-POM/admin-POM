@@ -17,7 +17,6 @@ export interface ProblemFormValues {
 interface CreateProblemProps {
   open: boolean;
   onClose: () => void;
-  // The parent decides what to do with the collected data (e.g. call the API).
   onSave: (data: ProblemFormValues) => void | Promise<void>;
 }
 

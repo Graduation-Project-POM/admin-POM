@@ -91,7 +91,6 @@ type Problem = {
   canModify: boolean;
 };
 
-// Convert a backend problem record into the row shape the table renders.
 const toTableRow = (p: BackendProblem): Problem => ({
   id: String(p.id),
   title: p.title,

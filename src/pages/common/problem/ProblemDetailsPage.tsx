@@ -118,7 +118,6 @@ const SubmissionCard = ({
           </Button>
         </Box>
 
-        {/* Solution */}
         <Box sx={{ bgcolor: '#1e293b', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, color: '#94a3b8' }}>
             <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
@@ -208,7 +207,6 @@ export const ProblemDetailsPage = () => {
         Back
       </Button>
 
-      {/* Problem Header & Statement */}
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
           <Box>

@@ -18,7 +18,6 @@ export interface ProblemEditValues {
 interface EditProblemProps {
   open: boolean;
   onClose: () => void;
-  // Loose type so existing callers (contest/group) keep working.
   problem: any | null;
   onSave: (data: ProblemEditValues) => void | Promise<void>;
 }
@@ -48,7 +47,6 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync the form whenever a different problem is opened for editing.
   useEffect(() => {
     if (problem) {
       setFormData({

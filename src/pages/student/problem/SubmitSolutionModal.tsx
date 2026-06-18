@@ -25,7 +25,6 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Reset whenever a different problem is opened.
   useEffect(() => {
     if (open) {
       setSolutionText('');
@@ -74,7 +73,6 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
 
   return (
     <ModalWrapper open={open} onClose={onClose} title={t('student.problems.submit.title')} maxWidth="md">
-      {/* Problem summary */}
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
           <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b' }}>
@@ -132,7 +130,6 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
         />
       </Box>
 
-      {/* Image solution */}
       <Box sx={{ mb: 3 }}>
         <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
           <Camera size={16} color="#8B1D23" />

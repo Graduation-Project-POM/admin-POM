@@ -99,8 +99,6 @@ export interface SharedTableProps {
   onSingleDelete?: (id: string) => void;
   addButtonLabel?: string;
   searchPlaceholder?: string;
-  // Optional per-row permission predicates. When provided and they return false,
-  // the row's Edit / Delete actions (and its selection checkbox) are hidden.
   canEditRow?: (row: any) => boolean;
   canDeleteRow?: (row: any) => boolean;
 }

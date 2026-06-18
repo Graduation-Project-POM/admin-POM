@@ -70,7 +70,6 @@ export const StudentProblemDetailsPage = () => {
         {t('student.problemDetails.back')}
       </Button>
 
-      {/* Problem header + statement */}
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
           <Box>
@@ -95,7 +94,6 @@ export const StudentProblemDetailsPage = () => {
         </Typography>
       </Paper>
 
-      {/* The student's own solution + grade (read-only) */}
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
           <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 1 }}>

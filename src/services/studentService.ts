@@ -1,6 +1,5 @@
 import { api } from "./authService";
 
-// Mirrors StudentResponseDTO from the backend (GET /Student/me)
 export interface MyStudentProfile {
   id: number;
   gradeLevel: string;
@@ -21,7 +20,6 @@ export interface MyStudentProfile {
   } | null;
 }
 
-// Matches UpdateStudentDTO (the fields a student may edit themselves)
 export interface UpdateMyStudentPayload {
   gradeLevel: string;
   city: string;

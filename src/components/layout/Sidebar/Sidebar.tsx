@@ -115,15 +115,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
     setOpenItem(openItem === path ? null : path);
   };
 
-  // Active if the path matches exactly or is an ancestor segment of the current
-  // route (so e.g. /student/problems/3 still highlights the Problems item).
   const matchesPath = (path: string) =>
     !!path &&
     path !== "#" &&
     (location.pathname === path || location.pathname.startsWith(path + "/"));
 
-  // Among an item's children, the active one is the longest matching path
-  // (so /student/problems/submissions activates "My Submissions", not "All Problems").
   const activeChildPath = (item: any): string | undefined => {
     if (!item.items) return undefined;
     return item.items
@@ -133,13 +129,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   const isChildActive = (item: any) => !!activeChildPath(item);
 
-  // Keep the submenu of the active route expanded (e.g. on a problem details page).
   useEffect(() => {
     const parent = sections
       .flatMap((s) => s.items)
       .find((item: any) => item.items && isChildActive(item));
     if (parent) setOpenItem(parent.path);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
   const handleLanguageToggle = () => {
@@ -194,8 +188,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {section.items.map((item: any) => {
                   const hasChildren = item.items && item.items.length > 0;
                   const isOpen = openItem === item.path;
-                  // Parent items with children shouldn't self-highlight from a prefix
-                  // match (the child handles it); leaf items use the segment match.
                   const hasChildItems = item.items && item.items.length > 0;
                   const isActive = hasChildItems
                     ? location.pathname === item.path
