@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
     Box,
@@ -62,6 +63,7 @@ interface Student {
 }
 
 interface TrainerInfo {
+    id: number;
     name: string;
     email: string;
     specialization: string;
@@ -94,6 +96,7 @@ interface GroupDetailsPageProps {
 
 export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mockGroupDetails, onBack }) => {
     const { t } = useTranslation();
+    const navigate = useNavigate();
     const [tabValue, setTabValue] = useState(0);
     const [studentSearchQuery, setStudentSearchQuery] = useState('');
     const [contestSearchQuery, setContestSearchQuery] = useState('');
@@ -144,6 +147,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             setTrainer(
                 g.trainerName
                     ? {
+                        id: g.trainerId,
                         name: g.trainerName,
                         email: g.trainerEmail ?? '',
                         specialization: g.trainerSpecialization ?? '',
@@ -156,7 +160,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     name: x.fullName,
                     email: '',
                     joinDate: x.joinDate,
-                    solvedProblems: 0,
+                    solvedProblems: x.problemSolved,
                 })),
             );
             
@@ -590,7 +594,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                             {t('group.details.solvedProblems')} <span style={{ fontWeight: 700, color: '#1e293b' }}>{student.solvedProblems}</span>
                                         </Typography>
                                     </Box>
-                                    <Button variantType="outline" fullWidth>
+                                    <Button
+                                        variantType="outline"
+                                        fullWidth
+                                        onClick={() => navigate(`/profile/student/${student.id}`)}
+                                    >
                                         {t('group.details.viewStudentProfile')}
                                     </Button>
                                 </StudentCardStyled>
@@ -620,8 +628,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                     {trainer.email && (
                                         <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{trainer.email}</Typography>
                                     )}
-                                    <Button variantType="default">
-                                        {t('group.details.messageTrainer')}
+                                    <Button
+                                        variantType="default"
+                                        onClick={() => navigate(`/profile/trainer/${trainer.id}`)}
+                                    >
+                                        {t('group.details.viewProfile', 'View Profile')}
                                     </Button>
                                 </Box>
                             </Box>

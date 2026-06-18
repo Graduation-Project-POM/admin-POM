@@ -29,6 +29,7 @@ const toGroupData = (g: Group): GroupData => ({
   trainerName: g.trainerName ?? '',
   trainerEmail: g.trainerEmail ?? '',
   trainerSpecialization: g.trainerSpecialization ?? '',
+  trainerId: g.trainerId,
   createdDate: g.startDate,
   status: 'active',
   progress: 0,

@@ -64,19 +64,27 @@ export const problemsService = {
       studentId: Number(s.studentId),
       studentName: String(s.studentName ?? ""),
       solutionText: s.solutionText ?? null,
-      solutionPhotoUrl: s.solutionPhotoUrl ?? null,
+      // Backend (SubmissionResponseDto) exposes the photo as `photoUrl` and the
+      // mark as `grade`; map them onto the UI's submission shape.
+      solutionPhotoUrl: s.photoUrl ?? s.solutionPhotoUrl ?? null,
       submittedAt: s.submittedAt ?? "",
-      score: s.score ?? null,
+      score: s.grade ?? s.score ?? null,
       feedback: s.feedback ?? null,
       gradedAt: s.gradedAt ?? null,
     }));
   },
 
+  // PUT /api/Problems/submissions/{id}/grade — the backend expects `grade`
+  // (0-100) plus optional `feedback`. The UI still works in terms of `score`,
+  // so translate here.
   gradeSubmission: async (
     submissionId: number,
     body: { score: number; feedback?: string },
   ): Promise<void> => {
-    await api.post(`${BASE}/submissions/${submissionId}/grade`, body);
+    await api.put(`${BASE}/submissions/${submissionId}/grade`, {
+      grade: body.score,
+      feedback: body.feedback,
+    });
   },
 
   update: async (id: number, input: UpdateProblemInput): Promise<void> => {

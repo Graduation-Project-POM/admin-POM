@@ -36,6 +36,7 @@ import {
 import type { ContestData, GroupData } from '../../../types';
 import { Button } from '../../../components/ui/button/studentButton';
 import { SharedTable } from '../../../components/ui/table/studentTable';
+import { UserProfile } from '../../common/profile/UserProfilePage';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -122,7 +123,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             name: x.fullName,
             email: '',
             joinDate: x.joinDate,
-            solvedProblems: 0,
+            solvedProblems: x.problemSolved,
           })),
         );
       })
@@ -168,20 +169,20 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             if (cancelled) return;
             const difficulty = problems.length
               ? DIFFICULTY_LABEL[
-                  Math.round(
-                    problems.reduce((sum, p) => sum + (Number(p.difficulty) || 2), 0) / problems.length,
-                  )
-                ] ?? 'Medium'
+              Math.round(
+                problems.reduce((sum, p) => sum + (Number(p.difficulty) || 2), 0) / problems.length,
+              )
+              ] ?? 'Medium'
               : 'Medium';
             setContests((prev) =>
               prev.map((p) =>
                 p.id === c.id
                   ? {
-                      ...p,
-                      participants: group.studentsCount,
-                      problemsCount: info?.problemCount ?? problems.length,
-                      difficulty,
-                    }
+                    ...p,
+                    participants: group.studentsCount,
+                    problemsCount: info?.problemCount ?? problems.length,
+                    difficulty,
+                  }
                   : p,
               ),
             );
@@ -1094,98 +1095,60 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noStudents', 'No students in this group')}</Typography>
               </Box>
             ) : (
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
-              {filteredStudents.map((student) => (
-                <StudentCardStyled key={student.id}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', width: 48, height: 48, fontWeight: 700, fontSize: '16px' }}>
-                      {student.name.split(' ').map(n => n[0]).join('')}
-                    </Avatar>
-                    <Box>
-                      <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{student.name}</Typography>
-                      <Typography variant="body2" sx={{ color: '#64748b', fontSize: '12px' }}>{student.email}</Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
+                {filteredStudents.map((student) => (
+                  <StudentCardStyled key={student.id}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                      <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', width: 48, height: 48, fontWeight: 700, fontSize: '16px' }}>
+                        {student.name.split(' ').map(n => n[0]).join('')}
+                      </Avatar>
+                      <Box>
+                        <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{student.name}</Typography>
+                        <Typography variant="body2" sx={{ color: '#64748b', fontSize: '12px' }}>{student.email}</Typography>
+                      </Box>
                     </Box>
-                  </Box>
-                  <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
-                  <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                      {t('student.groupDetails.joined')} <span style={{ fontWeight: 600, color: '#1e293b' }}>{new Date(student.joinDate).toLocaleDateString()}</span>
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', fontSize: '12px', mb: 2 }}>
-                      {t('student.groupDetails.solved')} <span style={{ fontWeight: 700, color: '#8B1D23' }}>{student.solvedProblems}</span>
-                    </Typography>
-                  </Box>
-                  <Button
-                    variantType="outline"
-                    size="small"
-                    fullWidth
-                    onClick={() => navigate(`/profile/${student.id}`)}
-                    sx={{
-                      mt: 1,
-                      borderColor: '#8B1D23',
-                      color: '#ffffff',
-                      '&:hover': {
-                        borderColor: '#6B141A',
-                        backgroundColor: '#fef2f2',
-                        color: '#8B1D23'
-                      }
-                    }}
-                  >
-                    {t('student.groupDetails.viewProfile')}
-                  </Button>
-                </StudentCardStyled>
-              ))}
-            </Box>
+                    <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
+                    <Box sx={{ flexGrow: 1 }}>
+                      <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                        {t('student.groupDetails.joined')} <span style={{ fontWeight: 600, color: '#1e293b' }}>{new Date(student.joinDate).toLocaleDateString()}</span>
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', fontSize: '12px', mb: 2 }}>
+                        {t('student.groupDetails.solved')} <span style={{ fontWeight: 700, color: '#8B1D23' }}>{student.solvedProblems}</span>
+                      </Typography>
+                    </Box>
+                    <Button
+                      variantType="outline"
+                      size="small"
+                      fullWidth
+                      onClick={() => navigate(`/profile/student/${student.id}`)}
+                      sx={{
+                        mt: 1,
+                        borderColor: '#8B1D23',
+                        color: '#8B1D23',
+                        '&:hover': {
+                          borderColor: '#6B141A',
+                          backgroundColor: '#fef2f2',
+                          color: '#8B1D23'
+                        }
+                      }}
+                    >
+                      {t('student.groupDetails.viewProfile')}
+                    </Button>
+                  </StudentCardStyled>
+                ))}
+              </Box>
             )}
           </TabPanel>
-          {/* Trainer Tab */}
+          {/* Trainer Tab — reuses the shared UserProfile view, fetched by the
+              group's assigned trainerId (not the logged-in user). */}
           <TabPanel value={tabValue} index={2}>
-            {!group.trainerName ? (
+            {!group.trainerId ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
                 <Award size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
                 <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noTrainer', 'No trainer assigned to this group')}</Typography>
               </Box>
             ) : (
-            <Paper elevation={0} sx={{ p: 4, maxWidth: 600, borderRadius: '16px', border: '1px solid #e5e7eb', bgcolor: '#f8fafc' }}>
-              <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
-                <Avatar
-                  sx={{
-                    width: 80,
-                    height: 88,
-                    bgcolor: '#8B1D23',
-                    fontSize: 30,
-                    fontWeight: 700,
-                    borderRadius: '16px',
-                  }}
-                >
-                  {group.trainerName.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
-                </Avatar>
-                <Box>
-                  <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{group.trainerName}</Typography>
-                  {group.trainerEmail && (
-                    <Typography variant="body2" sx={{ color: '#64748b', mb: 1, fontWeight: 500 }}>{group.trainerEmail}</Typography>
-                  )}
-                </Box>
-              </Box>
-              {group.trainerSpecialization && (
-                <Box>
-                  <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
-                    {t('student.groupDetails.expertise')}
-                  </Typography>
-                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                    <Chip
-                      label={group.trainerSpecialization}
-                      sx={{
-                        bgcolor: '#ffffff',
-                        color: '#1e293b',
-                        fontWeight: 700,
-                        border: '1px solid #e2e8f0',
-                      }}
-                    />
-                  </Box>
-                </Box>
-              )}
-            </Paper>
+              <UserProfile type="trainer" id={group.trainerId} />
             )}
           </TabPanel>
         </TabContentWrapper>

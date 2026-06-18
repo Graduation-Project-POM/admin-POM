@@ -20,6 +20,7 @@ import StudentContestsPage from "./pages/student/contest/ContestsPage";
 import { ProblemBank } from "./pages/student/problem/ProblemsPage";
 import { MySubmissions } from "./pages/student/problem/SubmissonsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
+import UserProfilePage from "./pages/common/profile/UserProfilePage";
 import StudentGroupsPage from "./pages/student/group/GroupsPage";
 import StudentDashboardPage from "./pages/student/dashboard/dashboard";
 import Signup from "./components/Credentials/signup/signup";
@@ -112,6 +113,9 @@ function AppRoutes() {
                   path="/settings"
                   element={<Page title="Account Settings" />}
                 />
+                {/* View a student's or trainer's profile by id. Access is
+                    enforced by the backend; the page surfaces 403s gracefully. */}
+                <Route path="/profile/:type/:id" element={<UserProfilePage />} />
 
                 <Route
                   path="/"

@@ -23,6 +23,8 @@ export interface GroupData {
   trainerName: string;
   trainerEmail?: string;
   trainerSpecialization?: string;
+  // Id of the group's assigned trainer (Trainer.Id); 0/undefined when none.
+  trainerId?: number;
   createdDate: string;
 }
 

@@ -6,6 +6,18 @@ export interface TrainerOption {
   specialization: string;
 }
 
+// Full trainer profile (GET /Trainer/{id}) for the View Profile screen.
+export interface TrainerProfile {
+  id: number;
+  firstName: string;
+  lastName: string;
+  fullName: string;
+  email: string;
+  userName: string;
+  phoneNumber: string | null;
+  specialization: string;
+}
+
 export const trainerService = {
   getAll: async (): Promise<TrainerOption[]> => {
     const { data } = await api.get<Record<string, any>[]>("/Trainer");
@@ -18,5 +30,22 @@ export const trainerService = {
         specialization: tr.specialization ?? "",
       };
     });
+  },
+
+  // GET /Trainer/{id} — full profile by id. Backend restricts this to Admin;
+  // other callers get 403.
+  getById: async (id: number): Promise<TrainerProfile> => {
+    const { data } = await api.get<Record<string, any>>(`/Trainer/${id}`);
+    const u = data.basicUser ?? {};
+    return {
+      id: Number(data.id ?? data.iD ?? data.ID),
+      firstName: u.firstName ?? "",
+      lastName: u.lastName ?? "",
+      fullName: `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim(),
+      email: u.email ?? "",
+      userName: u.userName ?? "",
+      phoneNumber: u.phoneNumber ?? null,
+      specialization: data.specialization ?? "",
+    };
   },
 };

@@ -24,6 +24,8 @@ export interface GroupStudent {
   studentId: number;
   fullName: string;
   joinDate: string;
+  // Problems in this group's contests the student has solved (real, from backend).
+  problemSolved: number;
 }
 
 export interface GroupContest {
