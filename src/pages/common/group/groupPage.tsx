@@ -23,6 +23,7 @@ import { GroupDetailsPage } from './groupDetailsPage';
 import { useGroups } from '../../../hooks/useGroups';
 import { groupService } from '../../../services/groupService';
 import { getApiErrorMessage } from '../../../utils/apiError';
+import { useAuth } from '../../../services/AuthContext';
 import type { Group } from '../../../types/group';
 
 const toGroupData = (g: Group): GroupData => ({
@@ -39,9 +40,16 @@ const toGroupData = (g: Group): GroupData => ({
 
 export const GroupsPage: React.FC = () => {
   const { t } = useTranslation();
+  const { role, trainerId } = useAuth();
   const { groups: apiGroups, loading, error, remove, reload } = useGroups();
   const [actionError, setActionError] = useState<string | null>(null);
-  const groups = apiGroups.map(toGroupData);
+  // A trainer only ever sees the groups they own (backend already enforces this;
+  // this client-side filter mirrors it as defense-in-depth). Admins see all.
+  const scopedGroups =
+    role === 'Trainer' && trainerId != null
+      ? apiGroups.filter((g) => g.trainerId === trainerId)
+      : apiGroups;
+  const groups = scopedGroups.map(toGroupData);
   const [searchQuery, setSearchQuery] = useState('');
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);

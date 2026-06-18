@@ -30,4 +30,6 @@ export interface GroupContest {
   contestId: number;
   title: string;
   addDate: string;
+  startAt: string;
+  endAt: string;
 }

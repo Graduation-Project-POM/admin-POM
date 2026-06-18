@@ -9,10 +9,16 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
 
     const status = err.response.status;
     const data = err.response.data as
-      | { message?: string; title?: string }
+      | { message?: string; title?: string; errors?: Record<string, string[]> }
       | undefined;
 
     if (data?.message) return data.message;
+
+    if (data?.errors) {
+      const messages = Object.values(data.errors).flat().filter(Boolean);
+      if (messages.length) return messages.join(" ");
+    }
+
     if (data?.title) return data.title;
 
     if (status === 401)

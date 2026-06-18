@@ -1,4 +1,5 @@
 import { api } from "./authService";
+import { contestService } from "./contestService";
 import type {
   Group,
   CreateGroupInput,
@@ -14,6 +15,11 @@ export const groupService = {
   
   getAll: async (): Promise<Group[]> => {
     const { data } = await api.get<Group[]>(BASE);
+    return data;
+  },
+
+  getMyGroups: async (): Promise<Group[]> => {
+    const { data } = await api.get<Group[]>(`${BASE}/my`);
     return data;
   },
 
@@ -65,5 +71,20 @@ export const groupService = {
   },
   removeStudent: async (id: number, studentId: number): Promise<void> => {
     await api.delete(`${BASE}/${id}/students/${studentId}`);
+  },
+
+  getProgress: async (id: number): Promise<number> => {
+    const contests = await groupService.getContests(id);
+    if (contests.length === 0) return 0;
+    const results = await Promise.all(
+      contests.map((c) => contestService.getMyProblems(c.contestId).catch(() => [])),
+    );
+    let total = 0;
+    let submitted = 0;
+    for (const problems of results) {
+      total += problems.length;
+      submitted += problems.filter((p) => p.submitted).length;
+    }
+    return total > 0 ? Math.round((submitted / total) * 100) : 0;
   },
 };

@@ -7,6 +7,18 @@ import type {
 } from "../types/problem";
 
 const BASE = "/api/Problems";
+export interface ProblemSubmission {
+  id: number;
+  problemId: number;
+  studentId: number;
+  studentName: string;
+  solutionText: string | null;
+  solutionPhotoUrl: string | null;
+  submittedAt: string;
+  score: number | null;
+  feedback: string | null;
+  gradedAt: string | null;
+}
 
 export const problemsService = {
   create: async (input: CreateProblemInput): Promise<number> => {
@@ -35,6 +47,36 @@ export const problemsService = {
       form,
     );
     return data.url;
+  },
+
+  submitSolution: async (
+    problemId: number,
+    body: { solutionText?: string; photoFileKey?: string },
+  ): Promise<void> => {
+    await api.post(`${BASE}/${problemId}/submit`, body);
+  },
+
+  getSubmissions: async (problemId: number): Promise<ProblemSubmission[]> => {
+    const { data } = await api.get<Record<string, any>[]>(`${BASE}/${problemId}/submissions`);
+    return data.map((s) => ({
+      id: Number(s.id ?? s.iD ?? s.ID),
+      problemId: Number(s.problemId),
+      studentId: Number(s.studentId),
+      studentName: String(s.studentName ?? ""),
+      solutionText: s.solutionText ?? null,
+      solutionPhotoUrl: s.solutionPhotoUrl ?? null,
+      submittedAt: s.submittedAt ?? "",
+      score: s.score ?? null,
+      feedback: s.feedback ?? null,
+      gradedAt: s.gradedAt ?? null,
+    }));
+  },
+
+  gradeSubmission: async (
+    submissionId: number,
+    body: { score: number; feedback?: string },
+  ): Promise<void> => {
+    await api.post(`${BASE}/submissions/${submissionId}/grade`, body);
   },
 
   update: async (id: number, input: UpdateProblemInput): Promise<void> => {

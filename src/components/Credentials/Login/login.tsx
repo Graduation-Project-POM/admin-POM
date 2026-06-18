@@ -75,6 +75,7 @@ export default function Login() {
         refreshToken: response.refreshToken,
         role: response.role,
         userName: response.userName,
+        trainerId: response.trainerId ?? null,
       });
 
       if (response.role === "Admin") navigate("/admin/dashboard");

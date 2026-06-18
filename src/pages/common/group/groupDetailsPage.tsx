@@ -36,22 +36,7 @@ import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL } from '../../../types/problem';
-import type { ContestStatus } from '../../../types/contest';
-
-const STATUS_LABEL_TO_NUMBER: Record<string, ContestStatus> = {
-  Upcoming: 1,
-  Ongoing: 2,
-  Running: 2,
-  Ended: 3,
-  Cancelled: 4,
-};
-
-const STATUS_NUMBER_TO_LABEL: Record<number, string> = {
-  1: 'Upcoming',
-  2: 'Ongoing',
-  3: 'Ended',
-  4: 'Cancelled',
-};
+import { getContestStatus, getContestStatusNumber } from '../../../utils/contestStatus';
 
 const toIso = (value: string): string => {
   const d = new Date(value);
@@ -184,7 +169,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     return {
                         id: String(x.contestId),
                         title: x.title,
-                        status: d ? (STATUS_NUMBER_TO_LABEL[d.status] ?? 'Upcoming') : 'Upcoming',
+                        status: getContestStatus(d?.startAt ?? x.addDate, d?.endAt ?? x.addDate),
                         difficulty: 'Medium',
                         participants: d?.studentCount ?? 0,
                         problemsCount: d?.problemCount ?? 0,
@@ -342,12 +327,14 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         if (!group) return;
         setTabsError(null);
         try {
+            const startAt = toIso(newContest.startDate);
+            const endAt = toIso(newContest.endDate);
             const res = await contestService.create({
                 title: newContest.title,
                 description: '',
-                status: STATUS_LABEL_TO_NUMBER[newContest.status] ?? 1,
-                startAt: toIso(newContest.startDate),
-                endAt: toIso(newContest.endDate),
+                status: getContestStatusNumber(startAt, endAt),
+                startAt,
+                endAt,
                 problemIds: [],
             });
             await groupService.addContest(Number(group.id), res.contestID);
@@ -360,11 +347,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const handleUpdateContest = async (updated: ContestData) => {
         setTabsError(null);
         try {
+            const startAt = toIso(updated.startDate);
+            const endAt = toIso(updated.endDate);
             await contestService.update(Number(updated.id), {
                 title: updated.title,
-                status: STATUS_LABEL_TO_NUMBER[updated.status] ?? 1,
-                startAt: toIso(updated.startDate),
-                endAt: toIso(updated.endDate),
+                status: getContestStatusNumber(startAt, endAt),
+                startAt,
+                endAt,
             });
             await loadGroupData();
         } catch (err) {

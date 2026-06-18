@@ -15,7 +15,6 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
-    status: "Upcoming",
     difficulty: "Medium",
     startDate: "",
     endDate: "",
@@ -57,32 +56,18 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
             required
           />
 
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
-            <FormField
-              select
-              label={t("contest.fields.status")}
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              required
-            >
-              <MenuItem value="Upcoming">{t("contest.status.upcoming")}</MenuItem>
-              <MenuItem value="Ongoing">{t("contest.status.ongoing")}</MenuItem>
-              <MenuItem value="Ended">{t("contest.status.ended")}</MenuItem>
-            </FormField>
-            <FormField
-              select
-              label={t("contest.fields.difficulty")}
-              name="difficulty"
-              value={formData.difficulty}
-              onChange={handleChange}
-              required
-            >
-              <MenuItem value="Easy">{t("contest.difficulty.easy")}</MenuItem>
-              <MenuItem value="Medium">{t("contest.difficulty.medium")}</MenuItem>
-              <MenuItem value="Hard">{t("contest.difficulty.hard")}</MenuItem>
-            </FormField>
-          </Box>
+          <FormField
+            select
+            label={t("contest.fields.difficulty")}
+            name="difficulty"
+            value={formData.difficulty}
+            onChange={handleChange}
+            required
+          >
+            <MenuItem value="Easy">{t("contest.difficulty.easy")}</MenuItem>
+            <MenuItem value="Medium">{t("contest.difficulty.medium")}</MenuItem>
+            <MenuItem value="Hard">{t("contest.difficulty.hard")}</MenuItem>
+          </FormField>
 
           <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
             <FormField

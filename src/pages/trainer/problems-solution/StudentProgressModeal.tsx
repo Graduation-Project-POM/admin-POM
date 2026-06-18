@@ -11,61 +11,43 @@ import {
   Divider,
   Stack,
   Chip,
+  CircularProgress,
 } from '@mui/material';
-import { CheckCircle2, XCircle, FileText } from 'lucide-react';
+import { CheckCircle2, Clock, FileText } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
-
-
-interface StudentSubmission {
-  id: string;
-  name: string;
-  email: string;
-  status: 'Solved' | 'Not Solved' | 'Checked';
-  solutionCode?: string;
-  score?: number;
-  result?: string;
-}
-
-const mockSubmissions: StudentSubmission[] = [
-  { 
-    id: '1', 
-    name: 'Alice Johnson', 
-    email: 'alice@example.com', 
-    status: 'Solved',
-    solutionCode: 'def twoSum(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []',
-    result: 'Correct - All test cases passed',
-    score: 100
-  },
-  { 
-    id: '2', 
-    name: 'Bob Williams', 
-    email: 'bob@example.com', 
-    status: 'Solved',
-    solutionCode: 'def twoSum(nums, target):\n    # suboptimal solution\n    for i in range(len(nums)):\n        for j in range(i+1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]',
-    result: 'Correct - All test cases passed',
-    score: 85
-  },
-  { id: '3', name: 'Charlie Lee', email: 'charlie@example.com', status: 'Not Solved' },
-  { id: '4', name: 'Diana Prince', email: 'diana@example.com', status: 'Solved' },
-  { id: '5', name: 'Ethan Hunt', email: 'ethan@example.com', status: 'Solved' },
-];
+import type { ProblemSubmission } from '../../../services/problemsService';
 
 interface StudentProgressModalProps {
   open: boolean;
   onClose: () => void;
   problemTitle: string;
-  onViewSolution: (submission: StudentSubmission) => void;
+  submissions: ProblemSubmission[];
+  loading?: boolean;
+  onViewSolution: (submission: ProblemSubmission) => void;
 }
 
-export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSolution }: StudentProgressModalProps) => {
-  const { t } = useTranslation();
-  const [filter, setFilter] = useState<'All' | 'Solved' | 'Not Solved'>('All');
+const isGraded = (s: ProblemSubmission) => s.gradedAt != null || s.score != null;
 
-  const filteredSubmissions = mockSubmissions.filter(s => {
+export const StudentProgressModal = ({
+  open,
+  onClose,
+  problemTitle,
+  submissions,
+  loading = false,
+  onViewSolution,
+}: StudentProgressModalProps) => {
+  const { t } = useTranslation();
+  const [filter, setFilter] = useState<'All' | 'Graded' | 'Pending'>('All');
+
+  const filtered = submissions.filter((s) => {
     if (filter === 'All') return true;
-    return s.status === filter;
+    if (filter === 'Graded') return isGraded(s);
+    return !isGraded(s);
   });
+
+  const initials = (name: string) =>
+    name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 
   return (
     <ModalWrapper
@@ -77,78 +59,103 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, onViewSoluti
       <Box sx={{ mt: 1 }}>
         {/* Filters */}
         <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
-          <Button 
-            variantType={filter === 'All' ? 'default' : 'outline'} 
+          <Button
+            variantType={filter === 'All' ? 'default' : 'outline'}
             onClick={() => setFilter('All')}
             size="small"
           >
             {t('trainer.studentProgress.allStudents')}
           </Button>
-          <Button 
-            variantType={filter === 'Solved' ? 'default' : 'outline'} 
-            onClick={() => setFilter('Solved')}
+          <Button
+            variantType={filter === 'Graded' ? 'default' : 'outline'}
+            onClick={() => setFilter('Graded')}
             size="small"
-            startIcon={<CheckCircle2 size={16} color={filter === 'Solved' ? 'white' : '#166534'} />}
-            sx={filter !== 'Solved' ? { color: '#166534', bgcolor: '#e7f7ec', border: 'none' } : {}}
+            startIcon={<CheckCircle2 size={16} color={filter === 'Graded' ? 'white' : '#166534'} />}
+            sx={filter !== 'Graded' ? { color: '#166534', bgcolor: '#e7f7ec', border: 'none' } : {}}
           >
-            {t('trainer.studentProgress.solved')}
+            {t('trainer.studentProgress.graded', 'Graded')}
           </Button>
-          <Button 
-            variantType={filter === 'Not Solved' ? 'default' : 'outline'} 
-            onClick={() => setFilter('Not Solved')}
+          <Button
+            variantType={filter === 'Pending' ? 'default' : 'outline'}
+            onClick={() => setFilter('Pending')}
             size="small"
-            startIcon={<XCircle size={16} color={filter === 'Not Solved' ? 'white' : '#991b1b'} />}
-            sx={filter !== 'Not Solved' ? { color: '#991b1b', bgcolor: '#fdecec', border: 'none' } : {}}
+            startIcon={<Clock size={16} color={filter === 'Pending' ? 'white' : '#92400e'} />}
+            sx={filter !== 'Pending' ? { color: '#92400e', bgcolor: '#fef3c7', border: 'none' } : {}}
           >
-            {t('trainer.studentProgress.notSolved')}
+            {t('trainer.studentProgress.pending', 'Pending')}
           </Button>
         </Stack>
 
         <Divider sx={{ mb: 2 }} />
 
-        <List>
-          {filteredSubmissions.map((student, index) => (
-            <Box key={student.id}>
-              <ListItem
-                sx={{ px: 0, py: 2 }}
-                secondaryAction={
-                  <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, alignItems: 'center' }}>
-                    <Chip 
-                      label={student.status} 
-                      size="small"
-                      sx={{ 
-                        fontWeight: 700, 
-                        fontSize: '11px',
-                        bgcolor: student.status === 'Solved' ? '#e7f7ec' : '#fdecec',
-                        color: student.status === 'Solved' ? '#166534' : '#991b1b',
-                      }} 
+        {loading ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <CircularProgress sx={{ color: '#8B1D23' }} />
+          </Box>
+        ) : filtered.length === 0 ? (
+          <Box sx={{ py: 6, textAlign: 'center' }}>
+            <FileText size={40} color="#cbd5e1" style={{ marginBottom: 12 }} />
+            <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>
+              {t('trainer.studentProgress.noSubmissions', 'No submissions yet')}
+            </Typography>
+          </Box>
+        ) : (
+          <List>
+            {filtered.map((submission, index) => {
+              const graded = isGraded(submission);
+              return (
+                <Box key={submission.id}>
+                  <ListItem
+                    sx={{ px: 0, py: 2 }}
+                    secondaryAction={
+                      <Box sx={{ display: 'flex', flexDirection: 'row', gap: 3, alignItems: 'center' }}>
+                        <Chip
+                          label={
+                            graded
+                              ? `${t('trainer.studentProgress.graded', 'Graded')} · ${submission.score ?? 0}`
+                              : t('trainer.studentProgress.pending', 'Pending')
+                          }
+                          size="small"
+                          sx={{
+                            fontWeight: 700,
+                            fontSize: '11px',
+                            bgcolor: graded ? '#e7f7ec' : '#fef3c7',
+                            color: graded ? '#166534' : '#92400e',
+                          }}
+                        />
+                        <Button
+                          variantType="outline"
+                          size="small"
+                          startIcon={<FileText size={16} />}
+                          onClick={() => onViewSolution(submission)}
+                          sx={{ fontSize: '12px', fontWeight: 600 }}
+                        >
+                          {t('trainer.studentProgress.viewSolution')}
+                        </Button>
+                      </Box>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar sx={{ bgcolor: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', fontSize: '14px', fontWeight: 700 }}>
+                        {initials(submission.studentName)}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={<Typography sx={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>{submission.studentName}</Typography>}
+                      secondary={
+                        <Typography sx={{ fontSize: '13px', color: '#94a3b8' }}>
+                          {t('trainer.studentProgress.submittedOn', 'Submitted')}{' '}
+                          {submission.submittedAt ? new Date(submission.submittedAt).toLocaleString() : '—'}
+                        </Typography>
+                      }
                     />
-                    <Button 
-                      variantType="outline" 
-                      size="small"
-                      startIcon={<FileText size={16} />}
-                      onClick={() => onViewSolution(student)}
-                      sx={{ fontSize: '12px', fontWeight: 600 }}
-                    >
-                      {t('trainer.studentProgress.viewSolution')}
-                    </Button>
-                  </Box>
-                }
-              >
-                <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', fontSize: '14px', fontWeight: 700 }}>
-                    {student.name.split(' ').map(n => n[0]).join('')}
-                  </Avatar>
-                </ListItemAvatar>
-                <ListItemText
-                  primary={<Typography sx={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>{student.name}</Typography>}
-                  secondary={<Typography sx={{ fontSize: '13px', color: '#94a3b8' }}>{student.email}</Typography>}
-                />
-              </ListItem>
-              {index < filteredSubmissions.length - 1 && <Divider component="li" />}
-            </Box>
-          ))}
-        </List>
+                  </ListItem>
+                  {index < filtered.length - 1 && <Divider component="li" />}
+                </Box>
+              );
+            })}
+          </List>
+        )}
 
         <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 4 }}>
           <Button variantType="outline" onClick={onClose}>

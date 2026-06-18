@@ -38,7 +38,7 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
     if (!open || !group) return;
     setTitle(group.title);
     setDescription(group.description);
-    studentService.getAll().then(setStudents).catch(() => setStudents([]));
+    studentService.getAccepted().then(setStudents).catch(() => setStudents([]));
     groupService
       .getStudents(Number(group.id))
       .then((m) => setStudentIds(m.map((x) => x.studentId)))

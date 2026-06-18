@@ -25,6 +25,13 @@ export const contestService = {
     return data;
   },
 
+  getMyProblems: async (id: number): Promise<Record<string, any>[]> => {
+    const { data } = await api.get<Record<string, any>[]>(
+      `${BASE}/${id}/my-problems`,
+    );
+    return data;
+  },
+
   create: async (input: CreateContestInput): Promise<CreateContestResult> => {
     const { data } = await api.post<CreateContestResult>(BASE, input);
     return data;

@@ -40,7 +40,6 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [students, setStudents] = useState<StudentOption[]>([]);
 
-  // Load trainers + students each time the dialog opens; reset the form.
   useEffect(() => {
     if (!open) return;
     setTitle('');
@@ -48,7 +47,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
     setTrainerId('');
     setStudentIds([]);
     trainerService.getAll().then(setTrainers).catch(() => setTrainers([]));
-    studentService.getAll().then(setStudents).catch(() => setStudents([]));
+    studentService.getAccepted().then(setStudents).catch(() => setStudents([]));
   }, [open]);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -85,7 +84,6 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
             required
           />
 
-          {/* Trainer — single select from all trainers */}
           <FormControl fullWidth size="small">
             <InputLabel>{t('group.create.assignTrainer')}</InputLabel>
             <Select

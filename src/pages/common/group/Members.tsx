@@ -51,7 +51,7 @@ const Members = ({ open, onClose, group, onMembersChanged }: MembersProps) => {
     try {
       const [m, s] = await Promise.all([
         groupService.getStudents(Number(group.id)),
-        studentService.getAll(),
+        studentService.getAccepted(),
       ]);
       setMembers(m);
       setAllStudents(s);

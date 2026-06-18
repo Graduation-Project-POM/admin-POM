@@ -5,6 +5,7 @@ import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { useTranslation } from "react-i18next";
 import { updateUser } from "../../../services/userService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 interface UserFormData {
   id: number;
@@ -91,8 +92,8 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
       });
       onSuccess?.();
       onClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("admin.users.form.saveError"));
+    } catch (err) {
+      setError(getApiErrorMessage(err, t("admin.users.form.saveError")));
     } finally {
       setSubmitting(false);
     }
