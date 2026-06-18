@@ -57,7 +57,6 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Sync the form whenever a different user is opened for editing.
   useEffect(() => {
     if (userData) setFormData(userData);
   }, [userData]);
@@ -77,11 +76,8 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
     setError(null);
     setSubmitting(true);
     try {
-      // Note: the backend UpdateUserDTO does not accept the role; role changes
-      // are handled elsewhere, so it is intentionally excluded from the payload.
       await updateUser(formData.id, {
         firstName: formData.firstName,
-        // MiddleName is NOT NULL in the DB, so always send a string (never null).
         middleName: formData.middleName || "",
         lastName: formData.lastName,
         userName: formData.userName,

@@ -64,10 +64,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   const [viewingProblems, setViewingProblems] = useState(false);
   const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
 
-  // Live problems for the contest being viewed, fetched by contest ID. Each row
-  // carries the current student's submission + grade. No mock data.
   const [contestProblems, setContestProblems] = useState<any[]>([]);
-  const [problemsLoading, setProblemsLoading] = useState(false);
+  const [, setProblemsLoading] = useState(false);
   const [problemsError, setProblemsError] = useState<string | null>(null);
 
   const loadContestProblems = async (contestId: string) => {

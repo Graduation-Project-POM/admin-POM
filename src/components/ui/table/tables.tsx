@@ -39,8 +39,14 @@ export const SharedTable: React.FC<SharedTableProps> = ({
   onSingleDelete,
   addButtonLabel,
   searchPlaceholder,
+  canEditRow,
+  canDeleteRow,
 }) => {
   const { t } = useTranslation();
+
+  const rowCanEdit = (row: any) => !!onEdit && (canEditRow ? canEditRow(row) : true);
+  const rowCanDelete = (row: any) => !!onSingleDelete && (canDeleteRow ? canDeleteRow(row) : true);
+  const rowSelectable = (row: any) => (canDeleteRow ? canDeleteRow(row) : true);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -72,9 +78,11 @@ export const SharedTable: React.FC<SharedTableProps> = ({
     ),
   );
 
+  const selectableData = filteredData.filter(rowSelectable);
+
   const handleSelectAll = (checked: boolean) => {
     const newSelected = checked
-      ? new Set(filteredData.map((row) => row.id))
+      ? new Set(selectableData.map((row) => row.id))
       : new Set();
     setSelectedRows(newSelected);
     onRowSelect?.(Array.from(newSelected));
@@ -167,12 +175,12 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                 <StyledTableCell padding="checkbox">
                   <Checkbox
                     checked={
-                      selectedRows.size === filteredData.length &&
-                      filteredData.length > 0
+                      selectedRows.size === selectableData.length &&
+                      selectableData.length > 0
                     }
                     indeterminate={
                       selectedRows.size > 0 &&
-                      selectedRows.size < filteredData.length
+                      selectedRows.size < selectableData.length
                     }
                     onChange={(e) => handleSelectAll(e.target.checked)}
                     sx={{
@@ -198,6 +206,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                   <StyledTableCell padding="checkbox">
                     <Checkbox
                       checked={selectedRows.has(row.id)}
+                      disabled={!rowSelectable(row)}
                       onChange={(e) =>
                         handleSelectRow(row.id, e.target.checked)
                       }
@@ -215,12 +224,14 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                     </StyledTableCell>
                   ))}
                   <StyledTableCell align="center">
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleActionClick(e, row)}
-                    >
-                      <MoreVertical size={18} color="#64748b" />
-                    </IconButton>
+                    {(rowCanEdit(row) || rowCanDelete(row)) && (
+                      <IconButton
+                        size="small"
+                        onClick={(e) => handleActionClick(e, row)}
+                      >
+                        <MoreVertical size={18} color="#64748b" />
+                      </IconButton>
+                    )}
                   </StyledTableCell>
                 </StyledTableRow>
               ))}
@@ -242,6 +253,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
             },
           }}
         >
+          {currentRow && rowCanEdit(currentRow) && (
           <MenuItem onClick={handleEdit} sx={{ py: 1, px: 2 }}>
             <ListItemIcon sx={{ minWidth: "32px !important" }}>
               <Pencil size={16} color="#64748b" />
@@ -255,6 +267,8 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               }}
             />
           </MenuItem>
+          )}
+          {currentRow && rowCanDelete(currentRow) && (
           <MenuItem
             onClick={handleDelete}
             sx={{ py: 1, px: 2, "&:hover": { bgcolor: "#fef2f2" } }}
@@ -271,6 +285,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
               }}
             />
           </MenuItem>
+          )}
         </Menu>
       </Box>
     </ThemeProvider>

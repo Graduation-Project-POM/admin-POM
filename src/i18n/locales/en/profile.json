@@ -4,6 +4,8 @@
     "subtitle": "Manage your personal information and account settings",
     "editProfile": "Edit Profile",
     "personalInformation": "Personal Information",
+    "loadError": "Failed to load your profile. Please try again.",
+    "saveError": "Failed to save your profile. Please try again.",
     "fields": {
       "fullName": "Full Name",
       "displayName": "Display Name",
@@ -16,6 +18,20 @@
       "totalContents": "Total Contents",
       "enrolledStudents": "Enrolled Students",
       "yearsOfExperience": "Years of Experience"
+    },
+    "student": {
+      "title": "Academic Information",
+      "gradeLevel": "Grade Level",
+      "city": "City",
+      "schoolName": "School Name",
+      "nationalId": "National ID",
+      "score": "Score: {{score}}",
+      "solved": "Solved: {{count}}",
+      "loadError": "Failed to load your profile. Please try again.",
+      "saveError": "Failed to save your profile. Please try again.",
+      "saved": "Profile updated successfully.",
+      "validation": "Please fill in grade level, city, and a valid school name.",
+      "nationalIdLength": "National ID must be exactly 9 characters."
     }
   }
 }

@@ -14,11 +14,13 @@ import AdminDashboard from "./pages/admin/dashboard/dashboardPage";
 import { AdminUsersPage } from "./pages/admin/users/UsersPage";
 import TrainerDashboard from "./pages/trainer/dashboard/dashboard";
 import { ProblemsPage } from "./pages/common/problem/ProblemsPage";
+import { ProblemDetailsPage } from "./pages/common/problem/ProblemDetailsPage";
 import GroupsPage from "./pages/common/group/groupPage";
 import ContestsPage from "./pages/common/contest/contestPage";
 import StudentContestsPage from "./pages/student/contest/ContestsPage";
 import { ProblemBank } from "./pages/student/problem/ProblemsPage";
 import { MySubmissions } from "./pages/student/problem/SubmissonsPage";
+import { StudentProblemDetailsPage } from "./pages/student/problem/StudentProblemDetailsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
 import UserProfilePage from "./pages/common/profile/UserProfilePage";
 import StudentGroupsPage from "./pages/student/group/GroupsPage";
@@ -68,6 +70,10 @@ function AppRoutes() {
                   <Route path="/admin/contests" element={<ContestsPage />} />
                   <Route path="/admin/problems" element={<ProblemsPage />} />
                   <Route
+                    path="/admin/problems/:problemId"
+                    element={<ProblemDetailsPage />}
+                  />
+                  <Route
                     path="/admin/reports"
                     element={<Page title="System Reports" />}
                   />
@@ -83,6 +89,10 @@ function AppRoutes() {
                   <Route path="/trainer/groups" element={<GroupsPage />} />
                   <Route path="/trainer/contests" element={<ContestsPage />} />
                   <Route path="/trainer/problems" element={<ProblemsPage />} />
+                  <Route
+                    path="/trainer/problems/:problemId"
+                    element={<ProblemDetailsPage />}
+                  />
                   <Route path="/trainer/profile" element={<ProfilePage />} />
                 </Route>
 
@@ -104,6 +114,10 @@ function AppRoutes() {
                   <Route
                     path="/student/problems/submissions"
                     element={<MySubmissions />}
+                  />
+                  <Route
+                    path="/student/problems/:problemId"
+                    element={<StudentProblemDetailsPage />}
                   />
                   <Route path="/student/profile" element={<ProfilePage />} />
                 </Route>
