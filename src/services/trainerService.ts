@@ -18,6 +18,25 @@ export interface TrainerProfile {
   specialization: string;
 }
 
+// The current trainer's own profile (self-service, GET/PUT /Trainer/me).
+export interface MyTrainerProfile {
+  id: number;
+  specialization: string;
+}
+
+export const getMyTrainerProfile = async (): Promise<MyTrainerProfile> => {
+  const { data } = await api.get<Record<string, any>>("/Trainer/me");
+  return {
+    id: Number(data.id ?? data.iD ?? data.ID),
+    specialization: data.specialization ?? "",
+  };
+};
+
+export const updateMyTrainerProfile = async (specialization: string) => {
+  const { data } = await api.put("/Trainer/me", { specialization });
+  return data;
+};
+
 export const trainerService = {
   getAll: async (): Promise<TrainerOption[]> => {
     const { data } = await api.get<Record<string, any>[]>("/Trainer");

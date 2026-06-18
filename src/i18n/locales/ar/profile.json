@@ -8,16 +8,36 @@
     "saveError": "فشل حفظ ملفك الشخصي. حاول مرة أخرى.",
     "fields": {
       "fullName": "الاسم الكامل",
-      "displayName": "الاسم المعروض",
+      "displayName": "اسم المستخدم",
       "emailAddress": "البريد الإلكتروني",
       "department": "القسم",
       "position": "المنصب",
       "bio": "نبذة"
     },
+    "saved": "تم تحديث الملف الشخصي بنجاح.",
+    "validation": {
+      "fullNameRequired": "الاسم الكامل مطلوب.",
+      "fullNameInvalid": "أدخل الاسم الأول واسم العائلة (حرفان على الأقل لكل منهما).",
+      "usernameRequired": "اسم المستخدم مطلوب.",
+      "usernameShort": "يجب أن يتكون اسم المستخدم من 4 أحرف على الأقل.",
+      "emailRequired": "البريد الإلكتروني مطلوب.",
+      "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح.",
+      "phoneInvalid": "يرجى إدخال رقم هاتف صحيح."
+    },
     "stats": {
       "totalContents": "إجمالي المحتويات",
       "enrolledStudents": "الطلاب المسجلون",
       "yearsOfExperience": "سنوات الخبرة"
+    },
+    "trainer": {
+      "title": "معلومات المدرب",
+      "specialization": "التخصص",
+      "loadError": "فشل تحميل ملفك الشخصي. حاول مرة أخرى.",
+      "saveError": "فشل حفظ ملفك الشخصي. حاول مرة أخرى.",
+      "saved": "تم تحديث الملف الشخصي بنجاح.",
+      "validation": {
+        "specializationRequired": "التخصص مطلوب."
+      }
     },
     "student": {
       "title": "المعلومات الأكاديمية",
@@ -30,8 +50,14 @@
       "loadError": "فشل تحميل ملفك الشخصي. حاول مرة أخرى.",
       "saveError": "فشل حفظ ملفك الشخصي. حاول مرة أخرى.",
       "saved": "تم تحديث الملف الشخصي بنجاح.",
-      "validation": "يرجى تعبئة المستوى الدراسي والمدينة واسم مدرسة صحيح.",
-      "nationalIdLength": "يجب أن يتكون رقم الهوية من 9 أحرف بالضبط."
+      "validation": {
+        "gradeLevelRequired": "المستوى الدراسي مطلوب.",
+        "cityRequired": "المدينة مطلوبة.",
+        "schoolNameRequired": "اسم المدرسة مطلوب.",
+        "schoolNameShort": "يجب أن يتكون اسم المدرسة من حرفين على الأقل.",
+        "nationalIdRequired": "رقم الهوية مطلوب.",
+        "nationalIdLength": "يجب أن يتكون رقم الهوية من 9 أحرف بالضبط."
+      }
     },
     "view": {
       "city": "المدينة",
