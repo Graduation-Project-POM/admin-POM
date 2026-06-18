@@ -10,67 +10,57 @@ import {
   Divider,
   Avatar,
   Chip,
-  Stack,
   Alert,
 } from "@mui/material";
-import { Edit, Save, BookOpen, Users, TrendingUp } from "lucide-react";
+import { Edit, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../services/AuthContext";
 import { StudentAcademicInfo } from "./StudentAcademicInfo";
 import { getCurrentUser, updateCurrentUser, type BackendUser } from "../../../services/userService";
-
+import { getMyTrainerProfile, updateMyTrainerProfile } from "../../../services/trainerService";
 
 interface ProfileData {
   fullName: string;
   displayName: string;
   email: string;
   phone: string;
-  department: string;
-  position: string;
+  specialization: string;
   bio: string;
 }
 
-interface StatsData {
-  contents: number;
-  students: number;
-  years: number;
-}
-
+type FieldErrors = Partial<Record<keyof ProfileData, string>>;
 
 const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
   const { role } = useAuth();
   const isStudent = (role ?? "").toLowerCase() === "student";
+  const isTrainer = (role ?? "").toLowerCase() === "trainer";
+
   const [profile, setProfile] = useState<ProfileData>({
     fullName: "",
     displayName: "",
     email: "",
     phone: "",
-    department: "",
-    position: role ?? "",
+    specialization: "",
     bio: "",
   });
   const [loadedUser, setLoadedUser] = useState<BackendUser | null>(null);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
-
-  const [stats] = useState<StatsData>({
-    contents: 67,
-    students: 1024,
-    years: 3,
-  });
-
   const [isEditing, setIsEditing] = useState(false);
 
   const applyUser = (u: BackendUser) => {
     setLoadedUser(u);
+    // Merge (don't clobber the trainer's specialization, which is loaded separately).
     setProfile((prev) => ({
       ...prev,
       fullName: `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim(),
       displayName: u.userName ?? "",
       email: u.email ?? "",
       phone: u.phoneNumber ?? "",
-      position: role ?? prev.position,
+      bio: u.bio ?? "",
     }));
   };
 
@@ -78,36 +68,82 @@ const ProfilePage: React.FC = () => {
     getCurrentUser()
       .then(applyUser)
       .catch(() => setSaveError(t("profile.loadError")));
+    // Trainers also have a Specialization (stored on the Trainer profile).
+    if (isTrainer) {
+      getMyTrainerProfile()
+        .then((tr) => setProfile((prev) => ({ ...prev, specialization: tr.specialization ?? "" })))
+        .catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleChange = (field: keyof ProfileData) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setProfile({ ...profile, [field]: event.target.value });
+    setProfile((prev) => ({ ...prev, [field]: event.target.value }));
+    // Clear that field's error as the user corrects it.
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setSaveSuccess(null);
+  };
+
+  // Per-field validation with clear, translated messages.
+  const validate = (): FieldErrors => {
+    const e: FieldErrors = {};
+
+    const name = profile.fullName.trim();
+    const parts = name.split(/\s+/).filter(Boolean);
+    if (!name) e.fullName = t("profile.validation.fullNameRequired");
+    else if (parts.length < 2 || parts.some((p) => p.length < 2))
+      e.fullName = t("profile.validation.fullNameInvalid");
+
+    const username = profile.displayName.trim();
+    if (!username) e.displayName = t("profile.validation.usernameRequired");
+    else if (username.length < 4) e.displayName = t("profile.validation.usernameShort");
+
+    const email = profile.email.trim();
+    if (!email) e.email = t("profile.validation.emailRequired");
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) e.email = t("profile.validation.emailInvalid");
+
+    const phone = profile.phone.trim();
+    if (phone && !/^[+0-9][0-9\s\-()]{6,}$/.test(phone)) e.phone = t("profile.validation.phoneInvalid");
+
+    if (isTrainer && !profile.specialization.trim())
+      e.specialization = t("profile.trainer.validation.specializationRequired");
+
+    return e;
   };
 
   const handleSave = async () => {
-    if (!loadedUser) {
-      setIsEditing(false);
-      return;
-    }
+    if (!loadedUser) return;
     setSaveError(null);
+    setSaveSuccess(null);
+
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
     setSaving(true);
     const parts = profile.fullName.trim().split(/\s+/).filter(Boolean);
-    const firstName = parts[0] || loadedUser.firstName;
-    const lastName = parts.slice(1).join(" ") || loadedUser.lastName;
+    const firstName = parts[0];
+    const lastName = parts.slice(1).join(" ");
     try {
       await updateCurrentUser({
         firstName,
         middleName: loadedUser.middleName ?? "",
         lastName,
-        email: profile.email,
-        userName: profile.displayName || loadedUser.userName,
-        phoneNumber: profile.phone || undefined,
+        email: profile.email.trim(),
+        userName: profile.displayName.trim(),
+        phoneNumber: profile.phone.trim() || undefined,
         gender: loadedUser.gender,
         profileImageUrl: loadedUser.profileImageUrl ?? "",
+        bio: profile.bio,
       });
+      // Trainers also persist their Specialization (separate Trainer profile).
+      if (isTrainer) {
+        await updateMyTrainerProfile(profile.specialization.trim());
+      }
       const fresh = await getCurrentUser();
       applyUser(fresh);
       setIsEditing(false);
+      setSaveSuccess(t("profile.saved"));
     } catch (err: any) {
       setSaveError(err?.response?.data?.message || t("profile.saveError"));
     } finally {
@@ -117,8 +153,14 @@ const ProfilePage: React.FC = () => {
 
   const handleCancel = () => {
     if (loadedUser) applyUser(loadedUser);
+    setErrors({});
     setSaveError(null);
+    setSaveSuccess(null);
     setIsEditing(false);
+  };
+
+  const fieldSx = {
+    "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: "#fff" },
   };
 
   return (
@@ -132,32 +174,22 @@ const ProfilePage: React.FC = () => {
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="h4"
-          sx={{
-            fontWeight: 800,
-            color: "#0f172a",
-            letterSpacing: "-0.02em",
-            mb: 1,
-          }}
+          sx={{ fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em", mb: 1 }}
         >
-          {t('profile.title')}
+          {t("profile.title")}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
           <Typography
             variant="body1"
-            sx={{
-              color: "#64748b",
-              borderLeft: "3px solid #8B1D23",
-              pl: 2,
-              fontWeight: 500,
-            }}
+            sx={{ color: "#64748b", borderLeft: "3px solid #8B1D23", pl: 2, fontWeight: 500 }}
           >
-            {t('profile.subtitle')}
+            {t("profile.subtitle")}
           </Typography>
         </Box>
       </Box>
 
       <Grid container spacing={4}>
-        <Grid size={{ xs: 12, md: 8 }}>
+        <Grid size={{ xs: 12, md: 10 }}>
           <Card
             sx={{
               borderRadius: "20px",
@@ -185,25 +217,30 @@ const ProfilePage: React.FC = () => {
                     <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
                       {profile.displayName}
                     </Typography>
-                    <Chip
-                      label={profile.position}
-                      size="small"
-                      sx={{
-                        bgcolor: "#f1f5f9",
-                        color: "#1e293b",
-                        fontWeight: 500,
-                        fontSize: "0.7rem",
-                        borderRadius: "30px",
-                        mt: 0.5,
-                      }}
-                    />
+                    {role && (
+                      <Chip
+                        label={role}
+                        size="small"
+                        sx={{
+                          bgcolor: "#f1f5f9",
+                          color: "#1e293b",
+                          fontWeight: 500,
+                          fontSize: "0.7rem",
+                          borderRadius: "30px",
+                          mt: 0.5,
+                        }}
+                      />
+                    )}
                   </Box>
                 </Box>
                 {!isEditing ? (
                   <Button
                     variant="outlined"
                     startIcon={<Edit size={16} />}
-                    onClick={() => setIsEditing(true)}
+                    onClick={() => {
+                      setSaveSuccess(null);
+                      setIsEditing(true);
+                    }}
                     sx={{
                       borderRadius: "40px",
                       textTransform: "none",
@@ -212,7 +249,7 @@ const ProfilePage: React.FC = () => {
                       color: "#1e293b",
                     }}
                   >
-                    {t('profile.editProfile')}
+                    {t("profile.editProfile")}
                   </Button>
                 ) : (
                   <Box sx={{ display: "flex", gap: 1 }}>
@@ -229,7 +266,7 @@ const ProfilePage: React.FC = () => {
                         "&:hover": { bgcolor: "#6d1620" },
                       }}
                     >
-                      {saving ? t('common.loading') : t('buttons.save')}
+                      {saving ? t("common.loading") : t("buttons.save")}
                     </Button>
                     <Button
                       variant="outlined"
@@ -242,7 +279,7 @@ const ProfilePage: React.FC = () => {
                         color: "#64748b",
                       }}
                     >
-                      {t('buttons.cancel')}
+                      {t("buttons.cancel")}
                     </Button>
                   </Box>
                 )}
@@ -255,108 +292,97 @@ const ProfilePage: React.FC = () => {
                   {saveError}
                 </Alert>
               )}
+              {saveSuccess && (
+                <Alert severity="success" sx={{ mb: 2 }} onClose={() => setSaveSuccess(null)}>
+                  {saveSuccess}
+                </Alert>
+              )}
 
               <Typography
                 variant="subtitle1"
-                sx={{
-                  fontWeight: 700,
-                  color: "#0f172a",
-                  mb: 2,
-                  fontSize: "1.1rem",
-                }}
+                sx={{ fontWeight: 700, color: "#0f172a", mb: 2, fontSize: "1.1rem" }}
               >
-                {t('profile.personalInformation')}
+                {t("profile.personalInformation")}
               </Typography>
 
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label={t('profile.fields.fullName')}
+                    required
+                    label={t("profile.fields.fullName")}
                     value={profile.fullName}
                     onChange={handleChange("fullName")}
                     disabled={!isEditing}
+                    error={!!errors.fullName}
+                    helperText={errors.fullName}
                     variant="outlined"
                     size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": {
-                        borderRadius: "12px",
-                        backgroundColor: "#fff",
-                      },
-                    }}
+                    sx={fieldSx}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label={t('profile.fields.displayName')}
+                    required
+                    label={t("profile.fields.displayName")}
                     value={profile.displayName}
                     onChange={handleChange("displayName")}
                     disabled={!isEditing}
+                    error={!!errors.displayName}
+                    helperText={errors.displayName}
                     variant="outlined"
                     size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
+                    sx={fieldSx}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label={t('profile.fields.emailAddress')}
+                    required
+                    label={t("profile.fields.emailAddress")}
                     type="email"
                     value={profile.email}
                     onChange={handleChange("email")}
                     disabled={!isEditing}
+                    error={!!errors.email}
+                    helperText={errors.email}
                     variant="outlined"
                     size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
+                    sx={fieldSx}
                   />
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6 }}>
                   <TextField
                     fullWidth
-                    label={t('form.labels.phone')}
+                    label={t("form.labels.phone")}
                     value={profile.phone}
                     onChange={handleChange("phone")}
                     disabled={!isEditing}
+                    error={!!errors.phone}
+                    helperText={errors.phone}
                     variant="outlined"
                     size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
+                    sx={fieldSx}
                   />
                 </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label={t('profile.fields.department')}
-                    value={profile.department}
-                    onChange={handleChange("department")}
-                    disabled={!isEditing}
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
-                  />
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6 }}>
-                  <TextField
-                    fullWidth
-                    label={t('profile.fields.position')}
-                    value={profile.position}
-                    onChange={handleChange("position")}
-                    disabled={!isEditing}
-                    variant="outlined"
-                    size="small"
-                    sx={{
-                      "& .MuiOutlinedInput-root": { borderRadius: "12px" },
-                    }}
-                  />
-                </Grid>
+                {isTrainer && (
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <TextField
+                      fullWidth
+                      required
+                      label={t("profile.trainer.specialization")}
+                      value={profile.specialization}
+                      onChange={handleChange("specialization")}
+                      disabled={!isEditing}
+                      error={!!errors.specialization}
+                      helperText={errors.specialization}
+                      variant="outlined"
+                      size="small"
+                      sx={fieldSx}
+                    />
+                  </Grid>
+                )}
               </Grid>
 
               <Box sx={{ mt: 3 }}>
@@ -399,113 +425,6 @@ const ProfilePage: React.FC = () => {
               )}
             </CardContent>
           </Card>
-        </Grid>
-
-        {/* Right Column: Stats Cards */}
-        <Grid size={{ xs: 12, md: 4 }}>
-          <Stack spacing={3}>
-            <Card
-              sx={{
-                borderRadius: "20px",
-                border: "1px solid #eef2f6",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-                  <Box
-                    sx={{
-                      bgcolor: "#fee2e2",
-                      p: 1,
-                      borderRadius: "14px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <BookOpen size={24} color="#8B1D23" />
-                  </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
-                    {stats.contents}
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#64748b", fontWeight: 500 }}
-                >
-                  {t('profile.stats.totalContents')}
-                </Typography>
-              </CardContent>
-            </Card>
-
-            <Card
-              sx={{
-                borderRadius: "20px",
-                border: "1px solid #eef2f6",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-                  <Box
-                    sx={{
-                      bgcolor: "#e0f2e9",
-                      p: 1,
-                      borderRadius: "14px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Users size={24} color="#1f6e43" />
-                  </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
-                    {stats.students.toLocaleString()}
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#64748b", fontWeight: 500 }}
-                >
-                  {t('profile.stats.enrolledStudents')}
-                </Typography>
-              </CardContent>
-            </Card>
-
-            <Card
-              sx={{
-                borderRadius: "20px",
-                border: "1px solid #eef2f6",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
-              }}
-            >
-              <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
-                  <Box
-                    sx={{
-                      bgcolor: "#fff0db",
-                      p: 1,
-                      borderRadius: "14px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <TrendingUp size={24} color="#b45309" />
-                  </Box>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
-                    {stats.years}
-                  </Typography>
-                </Box>
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#64748b", fontWeight: 500 }}
-                >
-                  {t('profile.stats.yearsOfExperience')}
-                </Typography>
-              </CardContent>
-            </Card>
-          </Stack>
         </Grid>
       </Grid>
 
