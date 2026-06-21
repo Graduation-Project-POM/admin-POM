@@ -4,11 +4,12 @@ import { Stack, MenuItem, Box } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Button } from "../../../components/ui/button/Button";
+import type { ContestData } from "../../../types";
 
 interface CreateContestProps {
   open: boolean;
   onClose: () => void;
-  onSave: (contest: any) => void;
+  onSave: (contest: ContestData) => void;
 }
 
 const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
@@ -30,8 +31,12 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
-      ...formData,
-      id: Math.floor(Math.random() * 10000),
+      id: String(Math.floor(Math.random() * 10000)),
+      title: formData.title,
+      status: "Upcoming",
+      difficulty: formData.difficulty,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
       participants: 0,
       problemsCount: 0,
     });

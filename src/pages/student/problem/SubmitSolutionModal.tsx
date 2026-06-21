@@ -2,8 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Typography, Alert, Chip, TextField, Paper, Divider } from '@mui/material';
 import { FileText, Camera, Upload, X, Send } from 'lucide-react';
+import { isAxiosError } from 'axios';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   submitSolution,
   difficultyIdToLabel,
@@ -58,11 +60,11 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
       });
       onSubmitted(problem.id);
       onClose();
-    } catch (err: any) {
-      if (err?.response?.status === 409) {
+    } catch (err: unknown) {
+      if (isAxiosError(err) && err.response?.status === 409) {
         setError(t('student.problems.submit.alreadySubmitted'));
       } else {
-        setError(err?.response?.data?.message || t('student.problems.submit.error'));
+        setError(getApiErrorMessage(err, t('student.problems.submit.error')));
       }
     } finally {
       setSubmitting(false);

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getMySubmissions,
   difficultyIdToLabel,
@@ -126,8 +127,8 @@ export const MySubmissions: React.FC = () => {
     setError(null);
     try {
       setSubmissions(await getMySubmissions());
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t('student.submissions.loadError'));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t('student.submissions.loadError')));
     } finally {
       setLoading(false);
     }

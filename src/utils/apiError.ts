@@ -4,7 +4,7 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
   if (axios.isAxiosError(err)) {
    
     if (!err.response) {
-      return "Cannot reach the server. Make sure the backend is running on https://localhost:7205 and the dev certificate is trusted.";
+      return "Cannot reach the server. Make sure the backend is running and reachable (and, in local development, that the dev certificate is trusted).";
     }
 
     const status = err.response.status;

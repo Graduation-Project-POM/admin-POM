@@ -54,6 +54,22 @@ interface GroupDetailsPageProps {
   onBack: () => void;
 }
 
+interface StudentContestProblem {
+  id: string;
+  title: string;
+  category: string;
+  difficulty: string;
+  status: string;
+  submittedAt: string;
+  textSolution: string;
+  imageSolution: string;
+  questionText: string;
+  questionImage: string;
+  grade: number;
+  maxGrade: number;
+  feedback: string;
+}
+
 export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBack }) => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(0);
@@ -64,7 +80,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   const [viewingProblems, setViewingProblems] = useState(false);
   const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
 
-  const [contestProblems, setContestProblems] = useState<any[]>([]);
+  const [contestProblems, setContestProblems] = useState<StudentContestProblem[]>([]);
   const [, setProblemsLoading] = useState(false);
   const [problemsError, setProblemsError] = useState<string | null>(null);
 
@@ -217,20 +233,17 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     };
   }, [group?.id]);
 
-  // Submit solution modal
   const [submitModalOpen, setSubmitModalOpen] = useState(false);
-  const [selectedProblem, setSelectedProblem] = useState<any>(null);
+  const [selectedProblem, setSelectedProblem] = useState<StudentContestProblem | null>(null);
   const [solutionText, setSolutionText] = useState('');
   const [solutionImage, setSolutionImage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // View question modal
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
-  const [questionProblem, setQuestionProblem] = useState<any>(null);
+  const [questionProblem, setQuestionProblem] = useState<StudentContestProblem | null>(null);
 
-  // View feedback modal
   const [feedbackModalOpen, setFeedbackModalOpen] = useState(false);
-  const [feedbackProblem, setFeedbackProblem] = useState<any>(null);
+  const [feedbackProblem, setFeedbackProblem] = useState<StudentContestProblem | null>(null);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => setTabValue(newValue);
 
@@ -278,7 +291,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     }
   };
 
-  const openSubmitModal = (problem: any) => {
+  const openSubmitModal = (problem: StudentContestProblem) => {
     setSelectedProblem(problem);
     setSolutionText(problem.textSolution || '');
     setSolutionImage(problem.imageSolution || null);
@@ -291,7 +304,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     return '#dc2626';
   };
 
-  // Problems view for ongoing contest
   if (viewingProblems && selectedContest?.status === 'Ongoing') {
     return (
       <StyledContainer>
@@ -451,7 +463,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             </IconButton>
           </DialogTitle>
           <DialogContent>
-            {/* Question Text */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.question')}
@@ -463,7 +474,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Paper>
             </Box>
 
-            {/* Question Image */}
             {questionProblem?.questionImage && (
               <Box sx={{ mb: 3 }}>
                 <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -488,7 +498,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 startIcon={<Send size={16} />}
                 onClick={() => {
                   setQuestionModalOpen(false);
-                  openSubmitModal(questionProblem);
+                  if (questionProblem) openSubmitModal(questionProblem);
                 }}
               >
                 {t('student.groupDetails.submitSolution')}
@@ -497,7 +507,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           </DialogContent>
         </Dialog>
 
-        {/* Submit Solution Modal */}
         <Dialog
           open={submitModalOpen}
           onClose={() => setSubmitModalOpen(false)}
@@ -523,7 +532,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             </IconButton>
           </DialogTitle>
           <DialogContent>
-            {/* Question Summary */}
             <Box sx={{ mb: 3, p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
               <Typography sx={{ fontWeight: 600, color: '#64748b', fontSize: '12px', mb: 1, textTransform: 'uppercase' }}>
                 {t('student.groupDetails.question')}
@@ -543,7 +551,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
             <Divider sx={{ mb: 3 }} />
 
-            {/* Text Solution */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
                 <FileText size={16} color="#8B1D23" />
@@ -569,7 +576,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               />
             </Box>
 
-            {/* Image Solution */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
                 <Camera size={16} color="#8B1D23" />
@@ -648,7 +654,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
             <Divider sx={{ mb: 3 }} />
 
-            {/* Submit Actions */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px' }}>
                 {!solutionText && !solutionImage ? t('student.groupDetails.provideAtLeastOne') : t('student.groupDetails.readyToSubmit')}
@@ -674,7 +679,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     );
   }
 
-  // Problems view for ended contest (graded by trainer)
   if (viewingProblems && selectedContest?.status === 'Ended') {
     const totalGrade = contestProblems.reduce((sum, p) => sum + (p.grade || 0), 0);
     const maxTotalGrade = contestProblems.reduce((sum, p) => sum + (p.maxGrade || 0), 0);
@@ -830,7 +834,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             </IconButton>
           </DialogTitle>
           <DialogContent>
-            {/* Question Text */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.question')}
@@ -842,7 +845,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Paper>
             </Box>
 
-            {/* Question Image */}
             {questionProblem?.questionImage && (
               <Box sx={{ mb: 3 }}>
                 <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
@@ -858,7 +860,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Box>
             )}
 
-            {/* Your Solution */}
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.yourSolution')}
@@ -878,7 +879,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           </DialogContent>
         </Dialog>
 
-        {/* Feedback Modal */}
         <Dialog
           open={feedbackModalOpen}
           onClose={() => setFeedbackModalOpen(false)}
@@ -939,7 +939,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Typography>
               <Paper elevation={0} sx={{ p: 2.5, bgcolor: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px' }}>
                 <Typography variant="body1" sx={{ color: '#374151', lineHeight: 1.8 }}>
-                  {feedbackProblem?.trainerFeedback}
+                  {feedbackProblem?.feedback}
                 </Typography>
               </Paper>
             </Box>
@@ -955,7 +955,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     );
   }
 
-  // Main group details view
   return (
     <StyledContainer>
       <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={onBack} sx={{ mb: 3 }}>
@@ -1037,7 +1036,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         </Tabs>
 
         <TabContentWrapper>
-          {/* Contests Tab */}
           <TabPanel value={tabValue} index={0}>
             <Box sx={{ mb: 3 }}>
               <SearchInput
@@ -1073,7 +1071,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             )}
           </TabPanel>
 
-          {/* Students Tab */}
           <TabPanel value={tabValue} index={1}>
             <SearchInput
               type="text"
@@ -1137,9 +1134,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Box>
             )}
           </TabPanel>
-          {/* Trainer Tab — reuses the shared UserProfile view, fetched by the
-              group's assigned trainerId (not the logged-in user). */}
-          <TabPanel value={tabValue} index={2}>
+              <TabPanel value={tabValue} index={2}>
             {!group.trainerId ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
                 <Award size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />

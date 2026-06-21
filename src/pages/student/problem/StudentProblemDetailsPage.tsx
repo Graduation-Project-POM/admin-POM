@@ -11,6 +11,7 @@ import {
 import { ArrowLeft, FileCode, Award } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getMySubmissions,
   difficultyIdToLabel,
@@ -34,8 +35,8 @@ export const StudentProblemDetailsPage = () => {
         const found = mine.find((s) => s.problemId === Number(problemId)) || null;
         if (!found) setError(t('student.problemDetails.notFound'));
         setSubmission(found);
-      } catch (err: any) {
-        setError(err?.response?.data?.message || t('student.problemDetails.notFound'));
+      } catch (err: unknown) {
+        setError(getApiErrorMessage(err, t('student.problemDetails.notFound')));
       } finally {
         setLoading(false);
       }

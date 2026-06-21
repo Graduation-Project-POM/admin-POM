@@ -85,26 +85,29 @@ export interface SContestProblem {
   userSolutionId?: string;
 }
 
-
-export interface Column {
-  id: string;
-  label: string;
-  render?: (row: any) => React.ReactNode;
+export interface TableRowBase {
+  id: string | number;
 }
 
-export interface SharedTableProps {
+export interface Column<TRow extends TableRowBase = TableRowBase> {
+  id: string;
+  label: string;
+  render?: (row: TRow) => React.ReactNode;
+}
+
+export interface SharedTableProps<TRow extends TableRowBase = TableRowBase> {
   title?: string;
-  data: any[];
-  columns: Column[];
+  data: TRow[];
+  columns: Column<TRow>[];
   onRowSelect?: (selectedIds: string[]) => void;
   onAdd?: () => void;
   onDelete?: (selectedIds: string[]) => void;
-  onEdit?: (row: any) => void;
+  onEdit?: (row: TRow) => void;
   onSingleDelete?: (id: string) => void;
   addButtonLabel?: string;
   searchPlaceholder?: string;
-  canEditRow?: (row: any) => boolean;
-  canDeleteRow?: (row: any) => boolean;
+  canEditRow?: (row: TRow) => boolean;
+  canDeleteRow?: (row: TRow) => boolean;
 }
 
 

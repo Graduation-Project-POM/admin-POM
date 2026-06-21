@@ -40,8 +40,8 @@ import { ConfirmationModal } from "../../../components/common/modal/Confirmation
 import EditContest from "./Edit";
 import CreateContest from "./Create";
 import ViewContest from "./View";
-import CreateProblem from "../problem/Create";
-import EditProblem from "../problem/Edit";
+import CreateProblem, { type ProblemFormValues } from "../problem/Create";
+import EditProblem, { type ProblemEditValues } from "../problem/Edit";
 import { StudentProgressModal } from "../../trainer/problems-solution/StudentProgressModeal";
 import { SolutionDetailModal } from "../../trainer/problems-solution/SolutionDetailsModal";
 
@@ -328,7 +328,7 @@ export const ContestsPage: React.FC = () => {
     });
   };
 
-  const handleAddProblem = async (form: any) => {
+  const handleAddProblem = async (form: ProblemFormValues) => {
     if (selectedContestId === null) return;
     setActionError(null);
     try {
@@ -339,7 +339,7 @@ export const ContestsPage: React.FC = () => {
         difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
         topic: form.category || "General",
         photoFileKey: form.imageUrl || null,
-        isPublished: form.visibility !== "group-specific",
+        isPublished: form.isPublished,
       });
       const ids = [...contestProblemIds, newId];
       await update(Number(selectedContestId), { problemIds: ids });
@@ -364,7 +364,7 @@ export const ContestsPage: React.FC = () => {
     }
   };
 
-  const handleUpdateProblem = (form: any) => {
+  const handleUpdateProblem = (form: ProblemEditValues) => {
     if (selectedContestId === null) return;
     setProblemsMap((m) => ({
       ...m,
@@ -580,8 +580,6 @@ export const ContestsPage: React.FC = () => {
                   title: selectedProblem.name,
                   category: "",
                   difficulty: selectedProblem.difficulty,
-                  visibility: "general",
-                  tags: [],
                 }
               : null
           }

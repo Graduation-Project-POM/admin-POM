@@ -25,6 +25,15 @@ type ConfirmState = {
   ids?: number[];
 };
 
+interface ApprovalHistoryRow {
+  id: string;
+  name: string;
+  email: string;
+  gradeLevel: string;
+  joinYear: string;
+  status: string;
+}
+
 export const AdminApprovalsPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -71,7 +80,7 @@ export const AdminApprovalsPage = () => {
     }
   };
 
-  const historyRows = accepted.map((s) => ({
+  const historyRows: ApprovalHistoryRow[] = accepted.map((s) => ({
     id: String(s.id),
     name: s.name,
     email: s.email,
@@ -84,7 +93,7 @@ export const AdminApprovalsPage = () => {
     {
       id: "name",
       label: t("admin.approvals.columns.name"),
-      render: (row: any) => (
+      render: (row: ApprovalHistoryRow) => (
         <UserCell>
           <Avatar sx={{ width: 36, height: 36, backgroundColor: "#8B1D23", fontSize: "12px", fontWeight: 700 }}>
             {row.name.split(" ").map((n: string) => n[0]).join("")}
@@ -101,7 +110,7 @@ export const AdminApprovalsPage = () => {
     {
       id: "status",
       label: t("admin.approvals.columns.status"),
-      render: (row: any) => <StatusChip label={row.status} status={row.status} />,
+      render: (row: ApprovalHistoryRow) => <StatusChip label={row.status} status={row.status} />,
     },
   ];
 
@@ -182,7 +191,7 @@ export const AdminApprovalsPage = () => {
       <SharedTable
         data={historyRows}
         columns={columns}
-        onEdit={(row: any) => navigate(`/profile/student/${row.id}`)}
+        onEdit={(row: ApprovalHistoryRow) => navigate(`/profile/student/${row.id}`)}
         onDelete={(ids: string[]) => setConfirm({ open: true, type: "bulk_delete", ids: ids.map(Number) })}
         onSingleDelete={(id: string) =>
           setConfirm({ open: true, type: "delete", student: accepted.find((s) => String(s.id) === id) })

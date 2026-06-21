@@ -1,6 +1,8 @@
 import axios from "axios";
 
-export const API_URL = "https://localhost:7205";
+// Configurable per environment. Set VITE_API_URL in .env / .env.production.
+// Falls back to the local dev backend so existing local workflows keep working.
+export const API_URL = import.meta.env.VITE_API_URL ?? "https://localhost:7205";
 
 export const api = axios.create({ baseURL: API_URL });
 
@@ -36,7 +38,20 @@ export const loginUser = async (userName: string, password: string) => {
   return response.data;
 };
 
-export const signupUser = async (data: any) => {
+export interface SignupInput {
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+  email: string;
+  userName: string;
+  phoneNumber?: string | null;
+  gender: string;
+  profileImageUrl?: string;
+  password: string;
+  roleID: number;
+}
+
+export const signupUser = async (data: SignupInput) => {
   const response = await api.post("/User/register", data);
   return response.data;
 };

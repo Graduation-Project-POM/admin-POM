@@ -10,11 +10,21 @@ import {
   containerStyles, paperStyles, titleStyles, subtitleStyles,
   formStyles, textFieldStyles, buttonStyles, linkStyles,
 } from "./signupStyle";
+import { isAxiosError } from "axios";
+import type { TFunction } from "i18next";
 import { signupUser } from "../../../services/authService";
 import { LanguageToggle } from "../../common/LanguageToggle";
 
-function getApiErrorMessage(err: any, t: any, fallback: string): string {
-  const data = err?.response?.data;
+interface ApiErrorBody {
+  code?: string;
+  message?: string;
+  errors?: Record<string, string[]>;
+}
+
+function getApiErrorMessage(err: unknown, t: TFunction, fallback: string): string {
+  const data = (isAxiosError(err) ? err.response?.data : undefined) as
+    | ApiErrorBody
+    | undefined;
   if (!data) return fallback;
 
   if (data.code && data.code !== "ERROR" && data.code !== "SERVER_ERROR") {
@@ -92,7 +102,7 @@ export default function Signup() {
 
       setSuccess(t("signup.accountCreated", { defaultValue: "Account created successfully! Redirecting to login..." }));
       setTimeout(() => navigate("/credentials/login"), 1500);
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(getApiErrorMessage(err, t, t("signup.signupFailed")));
     }
   };

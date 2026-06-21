@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
 import { Users, User, Calendar, Info } from 'lucide-react';
+import type { ReactNode } from 'react';
 import type { GroupData } from '../../../types';
 
 interface ViewGroupProps {
@@ -11,7 +12,7 @@ interface ViewGroupProps {
   group: GroupData | null;
 }
 
-const DetailItem = ({ icon, label, value }: { icon: any; label: string; value?: string | number }) => (
+const DetailItem = ({ icon, label, value }: { icon: ReactNode; label: string; value?: string | number }) => (
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
     <Box sx={{ p: 1, bgcolor: '#f8fafc', borderRadius: '8px', color: '#8B1D23' }}>
       {icon}

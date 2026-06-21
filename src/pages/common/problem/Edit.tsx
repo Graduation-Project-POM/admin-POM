@@ -6,6 +6,7 @@ import { FormField } from '../../../components/ui/Forms/FormField';
 import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Label } from '../../../components/ui/label/Label';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export interface ProblemEditValues {
   id: number | string;
@@ -17,10 +18,25 @@ export interface ProblemEditValues {
   imageUrl: string;
 }
 
+/** Loose pre-fill source: accepts either a backend problem or a table row,
+ *  hence every field is optional and a couple of aliases are allowed. */
+export interface EditProblemSource {
+  id?: number | string;
+  title?: string;
+  category?: string;
+  topic?: string;
+  description?: string;
+  statement?: string | null;
+  difficulty?: string;
+  isPublished?: boolean;
+  photoUrl?: string | null;
+  imageUrl?: string;
+}
+
 interface EditProblemProps {
   open: boolean;
   onClose: () => void;
-  problem: any | null;
+  problem: EditProblemSource | null;
   onSave: (data: ProblemEditValues) => void | Promise<void>;
 }
 
@@ -85,8 +101,8 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
     try {
       await onSave(formData);
       onClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t('problem.form.saveError'));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t('problem.form.saveError')));
     } finally {
       setSubmitting(false);
     }

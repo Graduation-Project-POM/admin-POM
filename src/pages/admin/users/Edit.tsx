@@ -152,7 +152,7 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
               type={field.type}
               label={field.label}
               name={field.name}
-              value={formData[field.name]}
+              value={formData[field.name] ?? ""}
               onChange={handleChange}
               required={field.required}
               placeholder={field.placeholder}

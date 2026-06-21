@@ -34,7 +34,7 @@ import {
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { useTranslation } from 'react-i18next';
-import { getVisibleNavigation } from "../../../config/navigation";
+import { getVisibleNavigation, type NavItem } from "../../../config/navigation";
 import type { UserRole } from "../../../types";
 
 import {
@@ -120,19 +120,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
     path !== "#" &&
     (location.pathname === path || location.pathname.startsWith(path + "/"));
 
-  const activeChildPath = (item: any): string | undefined => {
+  const activeChildPath = (item: NavItem): string | undefined => {
     if (!item.items) return undefined;
     return item.items
-      .filter((subItem: any) => matchesPath(subItem.path))
-      .sort((a: any, b: any) => b.path.length - a.path.length)[0]?.path;
+      .filter((subItem: NavItem) => matchesPath(subItem.path))
+      .sort((a: NavItem, b: NavItem) => b.path.length - a.path.length)[0]?.path;
   };
 
-  const isChildActive = (item: any) => !!activeChildPath(item);
+  const isChildActive = (item: NavItem) => !!activeChildPath(item);
 
   useEffect(() => {
     const parent = sections
       .flatMap((s) => s.items)
-      .find((item: any) => item.items && isChildActive(item));
+      .find((item: NavItem) => item.items && isChildActive(item));
     if (parent) setOpenItem(parent.path);
   }, [location.pathname]);
 
@@ -185,7 +185,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {sections.map((section, index) => (
             <Box key={index} sx={{ mb: 1 }}>
               <List disablePadding>
-                {section.items.map((item: any) => {
+                {section.items.map((item: NavItem) => {
                   const hasChildren = item.items && item.items.length > 0;
                   const isOpen = openItem === item.path;
                   const hasChildItems = item.items && item.items.length > 0;
@@ -261,7 +261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <List disablePadding>
                             {(() => {
                               const currentActiveChild = activeChildPath(item);
-                              return item.items.map((subItem: any) => {
+                              return item.items?.map((subItem: NavItem) => {
                               const isSubActive = subItem.path === currentActiveChild;
                               return (
                                 <ListItem key={subItem.path} disablePadding>

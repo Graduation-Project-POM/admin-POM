@@ -27,9 +27,9 @@ import {
   StyledTableRow,
   StyledTableCell,
 } from "./tableStyle";
-import type { SharedTableProps } from "../../../types/index";
+import type { SharedTableProps, TableRowBase } from "../../../types/index";
 
-export const SharedTable: React.FC<SharedTableProps> = ({
+export function SharedTable<TRow extends TableRowBase>({
   data,
   columns,
   onRowSelect,
@@ -41,18 +41,18 @@ export const SharedTable: React.FC<SharedTableProps> = ({
   searchPlaceholder,
   canEditRow,
   canDeleteRow,
-}) => {
+}: SharedTableProps<TRow>) {
   const { t } = useTranslation();
 
-  const rowCanEdit = (row: any) => !!onEdit && (canEditRow ? canEditRow(row) : true);
-  const rowCanDelete = (row: any) => !!onSingleDelete && (canDeleteRow ? canDeleteRow(row) : true);
-  const rowSelectable = (row: any) => (canDeleteRow ? canDeleteRow(row) : true);
+  const rowCanEdit = (row: TRow) => !!onEdit && (canEditRow ? canEditRow(row) : true);
+  const rowCanDelete = (row: TRow) => !!onSingleDelete && (canDeleteRow ? canDeleteRow(row) : true);
+  const rowSelectable = (row: TRow) => (canDeleteRow ? canDeleteRow(row) : true);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [currentRow, setCurrentRow] = useState<any | null>(null);
+  const [currentRow, setCurrentRow] = useState<TRow | null>(null);
 
-  const handleActionClick = (event: React.MouseEvent<HTMLElement>, row: any) => {
+  const handleActionClick = (event: React.MouseEvent<HTMLElement>, row: TRow) => {
     setAnchorEl(event.currentTarget);
     setCurrentRow(row);
   };
@@ -81,8 +81,8 @@ export const SharedTable: React.FC<SharedTableProps> = ({
   const selectableData = filteredData.filter(rowSelectable);
 
   const handleSelectAll = (checked: boolean) => {
-    const newSelected = checked
-      ? new Set(selectableData.map((row) => row.id))
+    const newSelected: Set<string> = checked
+      ? new Set(selectableData.map((row) => String(row.id)))
       : new Set();
     setSelectedRows(newSelected);
     onRowSelect?.(Array.from(newSelected));
@@ -205,10 +205,10 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                 <StyledTableRow key={row.id}>
                   <StyledTableCell padding="checkbox">
                     <Checkbox
-                      checked={selectedRows.has(row.id)}
+                      checked={selectedRows.has(String(row.id))}
                       disabled={!rowSelectable(row)}
                       onChange={(e) =>
-                        handleSelectRow(row.id, e.target.checked)
+                        handleSelectRow(String(row.id), e.target.checked)
                       }
                       sx={{
                         color: "#cbd5e1",
@@ -220,7 +220,9 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                   </StyledTableCell>
                   {columns.map((col) => (
                     <StyledTableCell key={col.id}>
-                      {col.render ? col.render(row) : row[col.id]}
+                      {col.render
+                        ? col.render(row)
+                        : ((row as Record<string, unknown>)[col.id] as React.ReactNode)}
                     </StyledTableCell>
                   ))}
                   <StyledTableCell align="center">
@@ -290,4 +292,4 @@ export const SharedTable: React.FC<SharedTableProps> = ({
       </Box>
     </ThemeProvider>
   );
-};
+}
