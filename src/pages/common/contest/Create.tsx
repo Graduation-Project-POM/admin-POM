@@ -4,18 +4,12 @@ import { Stack, MenuItem, Box } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Button } from "../../../components/ui/button/Button";
-import { groupService } from "../../../services/groupService";
-import type { Group } from "../../../types/group";
+import type { ContestData } from "../../../types";
 
 interface CreateContestProps {
   open: boolean;
   onClose: () => void;
-  onSave: (contest: any) => void;
-  /**
-   * When the contest is created from within a group, the group is fixed and the
-   * selector is hidden. Otherwise a (role-filtered) group selector is shown.
-   */
-  fixedGroupId?: number;
+  onSave: (contest: ContestData) => void;
 }
 
 const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestProps) => {
@@ -26,20 +20,6 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
     startDate: "",
     endDate: "",
   });
-  const [groupId, setGroupId] = useState<number | "">("");
-  const [groups, setGroups] = useState<Group[]>([]);
-
-  useEffect(() => {
-    if (!open) return;
-    setFormData({ title: "", difficulty: "Medium", startDate: "", endDate: "" });
-    setGroupId("");
-    // Only load selectable groups when the group isn't fixed by context.
-    // getAll() is already role-scoped by the backend: admins see every group,
-    // trainers see only the groups they own.
-    if (fixedGroupId == null) {
-      groupService.getAll().then(setGroups).catch(() => setGroups([]));
-    }
-  }, [open, fixedGroupId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -54,9 +34,12 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
     // Group is required — guard even though the field is marked required.
     if (!finalGroupId) return;
     onSave({
-      ...formData,
-      groupId: finalGroupId,
-      id: Math.floor(Math.random() * 10000),
+      id: String(Math.floor(Math.random() * 10000)),
+      title: formData.title,
+      status: "Upcoming",
+      difficulty: formData.difficulty,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
       participants: 0,
       problemsCount: 0,
     });

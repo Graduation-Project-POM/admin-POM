@@ -3,6 +3,7 @@ import { Stack, Typography, Box, Divider, Chip } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { Calendar, Users, Trophy, Clock } from "lucide-react";
+import type { ReactNode } from "react";
 import type { ContestData } from "../../../types";
 import { formatDateTime } from "../../../utils/datetime";
 
@@ -18,7 +19,7 @@ const DetailItem = ({
   value,
   ltr = false,
 }: {
-  icon: any;
+  icon: ReactNode;
   label: string;
   value?: string | number;
   ltr?: boolean;

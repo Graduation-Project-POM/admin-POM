@@ -18,6 +18,7 @@ import { useAuth } from "../../../services/AuthContext";
 import { StudentAcademicInfo } from "./StudentAcademicInfo";
 import { getCurrentUser, updateCurrentUser, type BackendUser } from "../../../services/userService";
 import { getMyTrainerProfile, updateMyTrainerProfile } from "../../../services/trainerService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 interface ProfileData {
   fullName: string;
@@ -144,8 +145,8 @@ const ProfilePage: React.FC = () => {
       applyUser(fresh);
       setIsEditing(false);
       setSaveSuccess(t("profile.saved"));
-    } catch (err: any) {
-      setSaveError(err?.response?.data?.message || t("profile.saveError"));
+    } catch (err: unknown) {
+      setSaveError(getApiErrorMessage(err, t("profile.saveError")));
     } finally {
       setSaving(false);
     }

@@ -18,5 +18,12 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // The app intentionally fetches data on mount inside effects (setting
+      // loading/error/data state). The React Compiler rule flags this common
+      // pattern as an error; downgrade to a warning until/unless we adopt a
+      // data layer (e.g. React Query) that removes the effect entirely.
+      'react-hooks/set-state-in-effect': 'warn',
+    },
   },
 ])

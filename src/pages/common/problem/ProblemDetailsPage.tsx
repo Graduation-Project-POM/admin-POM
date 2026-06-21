@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import { ArrowLeft, CheckCircle2, FileCode } from 'lucide-react';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getProblemById,
   getSubmissions,
@@ -51,8 +52,8 @@ const SubmissionCard = ({
     try {
       const updated = await gradeSubmission(submission.id, value);
       onGraded(updated);
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t('problem.details.saveGradeError'));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t('problem.details.saveGradeError')));
     } finally {
       setSaving(false);
     }
@@ -173,8 +174,8 @@ export const ProblemDetailsPage = () => {
         ]);
         setProblem(prob);
         setSubmissions(subs);
-      } catch (err: any) {
-        setError(err?.response?.data?.message || t('problem.details.notFound'));
+      } catch (err: unknown) {
+        setError(getApiErrorMessage(err, t('problem.details.notFound')));
       } finally {
         setLoading(false);
       }

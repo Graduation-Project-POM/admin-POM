@@ -8,18 +8,13 @@ import {
 import { styled } from '@mui/material/styles';
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import type { Column, TableRowBase } from '../../../types/index';
 
-interface Column {
-  id: string;
-  label: string;
-  render?: (row: any) => React.ReactNode;
-}
-
-interface SharedTableProps {
-  data: any[];
-  columns: Column[];
+interface StudentTableProps<TRow extends TableRowBase = TableRowBase> {
+  data: TRow[];
+  columns: Column<TRow>[];
   searchPlaceholder?: string;
-  onRowClick?: (row: any) => void;
+  onRowClick?: (row: TRow) => void;
 }
 
 const TableWrapper = styled(Box)({
@@ -50,18 +45,18 @@ const TableRow = styled(Box)<{ clickable?: boolean }>(({ clickable }) => ({
   },
 }));
 
-export const SharedTable: React.FC<SharedTableProps> = ({
+export function SharedTable<TRow extends TableRowBase>({
   data,
   columns,
   searchPlaceholder,
   onRowClick,
-}) => {
+}: StudentTableProps<TRow>) {
   const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filtered = data.filter((row) =>
     columns.some((col) => {
-      const value = row[col.id];
+      const value = (row as Record<string, unknown>)[col.id];
       if (typeof value === 'string') {
         return value.toLowerCase().includes(searchQuery.toLowerCase());
       }
@@ -137,7 +132,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
                     col.render(row)
                   ) : (
                     <Typography sx={{ fontSize: '14px', color: '#1e293b', fontWeight: 500 }}>
-                      {row[col.id]}
+                      {(row as Record<string, unknown>)[col.id] as React.ReactNode}
                     </Typography>
                   )}
                 </Box>
@@ -157,4 +152,4 @@ export const SharedTable: React.FC<SharedTableProps> = ({
       )}
     </Box>
   );
-};
+}

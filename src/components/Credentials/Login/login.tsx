@@ -24,26 +24,22 @@ import {
   buttonStyles,
   linkStyles,
 } from "./loginStyle";
+import { isAxiosError } from "axios";
+import type { TFunction } from "i18next";
 import { loginUser } from "../../../services/authService";
 import { useAuth } from "../../../services/AuthContext";
 import { LanguageToggle } from "../../common/LanguageToggle";
 
-function getApiErrorMessage(err: any, t: any, fallback: string): string {
-  if (err?.response === undefined) {
-    return t("errors.network", {
-      defaultValue: "A network error occurred. Please try again",
-    });
-  }
+interface ApiErrorBody {
+  code?: string;
+  message?: string;
+  errors?: Record<string, string[]>;
+}
 
-  const status = err?.response?.status;
-  const data = err?.response?.data;
-
-  if (status === 429) {
-    return t("errors.RATE_LIMITED", {
-      defaultValue:
-        data?.message || "Too many login attempts. Please try again in a minute.",
-    });
-  }
+function getApiErrorMessage(err: unknown, t: TFunction, fallback: string): string {
+  const data = (isAxiosError(err) ? err.response?.data : undefined) as
+    | ApiErrorBody
+    | undefined;
 
   if (!data) return fallback;
 
@@ -96,7 +92,7 @@ export default function Login() {
       if (response.role === "Admin") navigate("/admin/dashboard");
       else if (response.role === "Trainer") navigate("/trainer/dashboard");
       else navigate("/student/dashboard");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(getApiErrorMessage(err, t, t("login.loginFailed")));
     }
   };

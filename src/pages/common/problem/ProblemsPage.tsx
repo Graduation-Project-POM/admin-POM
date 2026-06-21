@@ -18,6 +18,7 @@ import { ConfirmationModal } from "../../../components/common/modal/Confirmation
 import CreateProblem from "./Create";
 import EditProblem, { type ProblemEditValues } from "./Edit";
 import { SharedTable } from "../../../components/ui/table/tables";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 const primaryColor = "#7A1E1E";
 
@@ -136,8 +137,8 @@ export const ProblemsPage = () => {
       const data = await getProblems();
       setRawProblems(data);
       setProblems(data.map(toTableRow));
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Failed to load problems.");
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, "Failed to load problems."));
     } finally {
       setLoading(false);
     }
@@ -180,8 +181,8 @@ export const ProblemsPage = () => {
     try {
       await Promise.all(ids.map((id) => deleteProblem(Number(id))));
       await loadProblems();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("problem.list.loadError"));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t("problem.list.loadError")));
     }
   };
 

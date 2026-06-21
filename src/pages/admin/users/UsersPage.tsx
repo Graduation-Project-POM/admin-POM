@@ -12,6 +12,7 @@ import {
   roleIdToLabel,
   type BackendUser,
 } from "../../../services/userService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 type User = {
   id: string;
@@ -22,6 +23,21 @@ type User = {
   group?: string;
   joinedDate: string;
 };
+
+/** Shape passed to the Edit user modal. */
+interface EditUserData {
+  id: number;
+  firstName: string;
+  middleName: string;
+  lastName: string;
+  userName: string;
+  email: string;
+  phone: string;
+  gender: string;
+  role: string;
+  profileImageUrl: string;
+  isActive: boolean;
+}
 
 const UserCell = styled(Box)({
   display: "flex",
@@ -65,7 +81,7 @@ export const AdminUsersPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<EditUserData | null>(null);
 
   const [confirmConfig, setConfirmConfig] = useState<{
     open: boolean;
@@ -86,8 +102,8 @@ export const AdminUsersPage = () => {
       const data = await getUsers();
       setRawUsers(data);
       setUsers(data.map(toTableRow));
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("admin.users.form.loadError"));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t("admin.users.form.loadError")));
     } finally {
       setLoading(false);
     }
@@ -101,8 +117,8 @@ export const AdminUsersPage = () => {
     try {
       await Promise.all(ids.map((id) => deleteUser(Number(id))));
       await loadUsers();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("admin.users.form.deleteError"));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t("admin.users.form.deleteError")));
     }
   };
 
@@ -136,7 +152,7 @@ export const AdminUsersPage = () => {
       userName: raw.userName,
       email: raw.email,
       phone: raw.phoneNumber ?? "",
-      gender: raw.gender ?? "",
+      gender: (raw.gender ?? "").toLowerCase(),
       role: roleIdToLabel(raw.roleID).toUpperCase(),
       profileImageUrl: raw.profileImageUrl ?? "",
       isActive: raw.isActive,

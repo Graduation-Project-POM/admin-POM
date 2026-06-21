@@ -11,9 +11,8 @@ interface FormFieldOption {
 interface FormFieldProps {
   label: string;
   name: string;
-  value: any;
-  // Loose event type so the same field works for text inputs, selects and switches.
-  onChange: (e: any) => void;
+  value: string | number | boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   type?: string;
   placeholder?: string;
   required?: boolean;
@@ -43,7 +42,6 @@ export const FormField: React.FC<FormFieldProps> = ({
   children,
 }) => {
   const isSelect = select || type === 'select' || Boolean(options);
-  // 'select'/'switch' aren't valid <input type> values — render as a text field.
   const inputType = type === 'select' || type === 'switch' ? 'text' : type;
 
   return (

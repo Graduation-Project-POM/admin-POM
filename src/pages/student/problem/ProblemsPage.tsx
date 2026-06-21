@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getProblems,
   getMySubmissions,
@@ -162,8 +163,8 @@ export const ProblemBank: React.FC = () => {
       const [data, mine] = await Promise.all([getProblems(), getMySubmissions()]);
       setProblems(data);
       setGradeByProblem(new Map(mine.map((s) => [s.problemId, s.grade ?? null])));
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t('student.problems.loadError'));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t('student.problems.loadError')));
     } finally {
       setLoading(false);
     }

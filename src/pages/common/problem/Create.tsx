@@ -6,6 +6,7 @@ import { FormField } from '../../../components/ui/Forms/FormField';
 import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
 import { Label } from '../../../components/ui/label/Label';
 import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export interface ProblemFormValues {
   title: string;
@@ -74,8 +75,8 @@ const CreateProblem = ({ open, onClose, onSave }: CreateProblemProps) => {
     try {
       await onSave(formData);
       handleClose();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t('problem.form.saveError'));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t('problem.form.saveError')));
     } finally {
       setSubmitting(false);
     }

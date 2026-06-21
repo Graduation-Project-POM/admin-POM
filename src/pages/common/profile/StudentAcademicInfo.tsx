@@ -19,6 +19,7 @@ import {
   updateMyStudentProfile,
   type MyStudentProfile,
 } from "../../../services/studentService";
+import { getApiErrorMessage } from "../../../utils/apiError";
 
 interface FormState {
   gradeLevel: string;
@@ -54,8 +55,8 @@ export const StudentAcademicInfo = () => {
         schoolName: data.schoolName ?? "",
         nationalId: data.nationalId ?? "",
       });
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("profile.student.loadError"));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t("profile.student.loadError")));
     } finally {
       setLoading(false);
     }
@@ -104,8 +105,8 @@ export const StudentAcademicInfo = () => {
       setSuccess(t("profile.student.saved"));
       setIsEditing(false);
       await load();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || t("profile.student.saveError"));
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t("profile.student.saveError")));
     } finally {
       setSaving(false);
     }

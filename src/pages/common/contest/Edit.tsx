@@ -46,7 +46,7 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     if (contest) {
       onSave({
         ...contest,
-        ...(formData as any),
+        ...formData,
       });
     }
     onClose();

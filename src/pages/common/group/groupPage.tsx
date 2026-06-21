@@ -68,7 +68,12 @@ export const GroupsPage: React.FC = () => {
     id: '',
   });
 
-  const handleCreate = async (newGroup: any) => {
+  const handleCreate = async (newGroup: {
+    title: string;
+    description: string;
+    trainerId: number;
+    studentIds: number[];
+  }) => {
     setActionError(null);
     try {
       const res = await groupService.create({
@@ -85,7 +90,7 @@ export const GroupsPage: React.FC = () => {
     }
   };
 
-  const handleUpdate = async (updatedGroup: any) => {
+  const handleUpdate = async (updatedGroup: GroupData & { studentIds: number[] }) => {
     setActionError(null);
     const id = Number(updatedGroup.id);
     try {

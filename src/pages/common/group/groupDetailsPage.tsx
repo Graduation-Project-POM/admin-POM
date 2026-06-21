@@ -30,8 +30,8 @@ import CreateContest from '../contest/Create';
 import EditContest from '../contest/Edit';
 import ViewContest from '../contest/View';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
-import CreateProblem from '../problem/Create';
-import EditProblem from '../problem/Edit';
+import CreateProblem, { type ProblemFormValues } from '../problem/Create';
+import EditProblem, { type ProblemEditValues } from '../problem/Edit';
 import ProblemDetailModal from '../problem/ProblemDetailModal';
 import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
@@ -67,6 +67,27 @@ interface TrainerInfo {
     name: string;
     email: string;
     specialization: string;
+}
+
+// A problem row shown in a contest's problem table within the group view.
+interface GroupContestProblem {
+    id: string;
+    title: string;
+    category: string;
+    difficulty: string;
+    successRate: number;
+}
+
+// Prefill object handed to the EditProblem modal.
+interface ProblemEditPrefill {
+    id: string;
+    title: string;
+    description: string;
+    imageUrl: string;
+    category: string;
+    difficulty: string;
+    visibility: string;
+    tags: string[];
 }
 
 
@@ -113,11 +134,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [isViewOpen, setIsViewOpen] = useState(false);
     
     const [viewingProblems, setViewingProblems] = useState(false);
-    const [contestProblems, setContestProblems] = useState<any[]>([]);
+    const [contestProblems, setContestProblems] = useState<GroupContestProblem[]>([]);
     const [contestProblemIds, setContestProblemIds] = useState<number[]>([]);
     const [isCreateProblemOpen, setIsCreateProblemOpen] = useState(false);
     const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
-    const [selectedProblem, setSelectedProblem] = useState<any>(null);
+    const [selectedProblem, setSelectedProblem] = useState<ProblemEditPrefill | null>(null);
     const [detailProblemId, setDetailProblemId] = useState<number | null>(null);
     const [isDetailOpen, setIsDetailOpen] = useState(false);
 
@@ -134,15 +155,16 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     });
 
     
+    const groupId = group?.id;
     const loadGroupData = useCallback(async () => {
-        if (!group?.id) return;
+        if (!groupId) return;
         setTabsLoading(true);
         setTabsError(null);
         try {
             const [s, c, g] = await Promise.all([
-                groupService.getStudents(Number(group.id)),
-                groupService.getContests(Number(group.id)),
-                groupService.getById(Number(group.id)),
+                groupService.getStudents(Number(groupId)),
+                groupService.getContests(Number(groupId)),
+                groupService.getById(Number(groupId)),
             ]);
             setTrainer(
                 g.trainerName
@@ -187,7 +209,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         } finally {
             setTabsLoading(false);
         }
-    }, [group?.id, t]);
+    }, [groupId, t]);
 
     useEffect(() => {
         void loadGroupData();
@@ -218,7 +240,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         }
     };
 
-    const handleCreateProblem = async (form: any) => {
+    const handleCreateProblem = async (form: ProblemFormValues) => {
         if (!selectedContest) return;
         try {
             const newId = await problemsService.create({
@@ -228,7 +250,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
                 topic: form.category || 'General',
                 photoFileKey: form.imageUrl || null,
-                isPublished: form.visibility !== 'group-specific',
+                isPublished: form.isPublished,
             });
             await contestService.update(Number(selectedContest.id), {
                 problemIds: [...contestProblemIds, newId],
@@ -239,7 +261,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         }
     };
 
-    const handleUpdateProblem = async (form: any) => {
+    const handleUpdateProblem = async (form: ProblemEditValues) => {
         if (!selectedContest) return;
         try {
             await problemsService.update(Number(form.id), {
@@ -248,7 +270,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
                 topic: form.category || 'General',
                 photoFileKey: form.imageUrl || null,
-                isPublished: form.visibility !== 'group-specific',
+                isPublished: form.isPublished,
             });
             await loadContestQuestions(selectedContest.id);
         } catch (err) {
@@ -256,8 +278,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         }
     };
 
-    
-    const handleOpenEditProblem = async (row: any) => {
+
+    const handleOpenEditProblem = async (row: GroupContestProblem) => {
         try {
             const detail = await problemsService.getById(Number(row.id));
             setSelectedProblem({
