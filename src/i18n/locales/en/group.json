@@ -60,7 +60,16 @@
       "groupTitlePlaceholder": "e.g., Geometry Masters",
       "descriptionPlaceholder": "Enter group purpose and goals...",
       "assignTrainer": "Assign Trainer",
-      "members": "Members"
+      "selectTrainer": "Select a trainer...",
+      "noTrainers": "No trainers available",
+      "members": "Members",
+      "autoCoachNote": "You'll be assigned as this group's coach.",
+      "membersSelected": "{{count}} selected",
+      "selectAll": "Select all",
+      "clearAll": "Clear",
+      "searchMembers": "Search students by name or email...",
+      "noMembersAvailable": "No students available",
+      "noSearchResults": "No students match your search"
     },
     "edit": {
       "title": "Edit Training Group",

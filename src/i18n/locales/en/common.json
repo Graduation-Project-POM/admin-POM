@@ -60,7 +60,8 @@
     "USERNAME_EXISTS": "This username is already taken",
     "INVALID_CREDENTIALS": "Invalid username or password",
     "USER_NOT_FOUND": "User not found",
-    "ACCOUNT_PENDING": "Your account is pending admin approval"
+    "ACCOUNT_PENDING": "Your account is pending admin approval",
+    "RATE_LIMITED": "Too many login attempts. Please try again in a minute"
   },
   "success": {
     "saved": "Changes saved successfully",

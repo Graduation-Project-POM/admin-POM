@@ -52,7 +52,6 @@ export const AdminApprovalsPage = () => {
   const pending = students.filter((s) => !s.isAccepted);
   const accepted = students.filter((s) => s.isAccepted);
 
-  // Refresh the list from the server after every action — no page reload.
   const runConfirmedAction = async () => {
     const { type, student, ids } = confirm;
     setConfirm({ open: false, type: null });

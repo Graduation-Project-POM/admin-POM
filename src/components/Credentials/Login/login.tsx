@@ -29,7 +29,22 @@ import { useAuth } from "../../../services/AuthContext";
 import { LanguageToggle } from "../../common/LanguageToggle";
 
 function getApiErrorMessage(err: any, t: any, fallback: string): string {
+  if (err?.response === undefined) {
+    return t("errors.network", {
+      defaultValue: "A network error occurred. Please try again",
+    });
+  }
+
+  const status = err?.response?.status;
   const data = err?.response?.data;
+
+  if (status === 429) {
+    return t("errors.RATE_LIMITED", {
+      defaultValue:
+        data?.message || "Too many login attempts. Please try again in a minute.",
+    });
+  }
+
   if (!data) return fallback;
 
   if (data.code && data.code !== "ERROR" && data.code !== "SERVER_ERROR") {

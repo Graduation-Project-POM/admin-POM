@@ -60,7 +60,16 @@
       "groupTitlePlaceholder": "مثال: محترفو الهندسة",
       "descriptionPlaceholder": "أدخل غرض المجموعة وأهدافها...",
       "assignTrainer": "تعيين مدرب",
-      "members": "الأعضاء"
+      "selectTrainer": "اختر مدربًا...",
+      "noTrainers": "لا يوجد مدربون متاحون",
+      "members": "الأعضاء",
+      "autoCoachNote": "سيتم تعيينك كمدرّب لهذه المجموعة.",
+      "membersSelected": "{{count}} محدد",
+      "selectAll": "تحديد الكل",
+      "clearAll": "إلغاء التحديد",
+      "searchMembers": "ابحث عن الطلاب بالاسم أو البريد الإلكتروني...",
+      "noMembersAvailable": "لا يوجد طلاب متاحون",
+      "noSearchResults": "لا يوجد طلاب مطابقون لبحثك"
     },
     "edit": {
       "title": "تعديل مجموعة التدريب",
