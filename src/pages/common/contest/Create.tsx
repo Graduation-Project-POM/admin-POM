@@ -4,12 +4,16 @@ import { Stack, MenuItem, Box } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Button } from "../../../components/ui/button/Button";
+import { groupService } from "../../../services/groupService";
 import type { ContestData } from "../../../types";
+import type { Group } from "../../../types/group";
 
 interface CreateContestProps {
   open: boolean;
   onClose: () => void;
-  onSave: (contest: ContestData) => void;
+  onSave: (contest: ContestData & { groupId: number }) => void;
+
+  fixedGroupId?: number;
 }
 
 const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestProps) => {
@@ -20,6 +24,18 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
     startDate: "",
     endDate: "",
   });
+  const [groupId, setGroupId] = useState<number | "">("");
+  const [groups, setGroups] = useState<Group[]>([]);
+
+  useEffect(() => {
+    if (!open || fixedGroupId != null) return;
+    let ignore = false;
+    groupService
+      .getAll()
+      .then((data) => { if (!ignore) setGroups(data); })
+      .catch(() => { if (!ignore) setGroups([]); });
+    return () => { ignore = true; };
+  }, [open, fixedGroupId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -31,7 +47,6 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const finalGroupId = fixedGroupId ?? (groupId === "" ? 0 : groupId);
-    // Group is required — guard even though the field is marked required.
     if (!finalGroupId) return;
     onSave({
       id: String(Math.floor(Math.random() * 10000)),
@@ -42,6 +57,7 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
       endDate: formData.endDate,
       participants: 0,
       problemsCount: 0,
+      groupId: finalGroupId,
     });
     onClose();
   };
