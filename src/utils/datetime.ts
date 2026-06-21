@@ -17,7 +17,6 @@ export const formatDateTime = (value?: string | number | Date | null): string =>
   return `${date} - ${time}`;
 };
 
-/** "19 Jun 2026" (no time). Returns "" for invalid/empty input. */
 export const formatDate = (value?: string | number | Date | null): string => {
   if (value === null || value === undefined || value === "") return "";
   const d = new Date(value);

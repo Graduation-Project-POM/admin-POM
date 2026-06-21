@@ -270,7 +270,7 @@ export const ContestsPage: React.FC = () => {
     onConfirm: () => {},
   });
 
-  const handleCreateContest = async (newContest: ContestData) => {
+  const handleCreateContest = async (newContest: any) => {
     setActionError(null);
     const startAt = toIso(newContest.startDate);
     const endAt = toIso(newContest.endDate);
@@ -281,6 +281,7 @@ export const ContestsPage: React.FC = () => {
       startAt,
       endAt,
       problemIds: [],
+      groupId: Number(newContest.groupId) || 0,
     };
     try {
       await create(input);

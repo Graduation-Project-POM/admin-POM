@@ -7,7 +7,6 @@ import { getProblems, getMySubmissions, type Submission } from "./problemService
 import type { Group } from "./../types/group";
 import type { Contest } from "./../types/contest";
 
-/** Live admin metrics, all derived from real backend list endpoints. */
 export interface AdminDashboardData {
   totalUsers: number;
   totalStudents: number;
@@ -23,16 +22,24 @@ export interface TrainerDashboardData {
   contests: Contest[];
   totalProblems: number;
   myProblems: number;
-  students: number; // total students across the trainer's own groups
+  students: number; 
 }
 
 export interface StudentDashboardData {
   groups: Group[];
   totalProblems: number;
-  problemsSolved: number; // problems the student has submitted a solution to
+  problemsSolved: number; 
   gradedCount: number;
   averageGrade: number;
   submissions: Submission[];
+}
+
+export interface StudentContestAlert {
+  contestId: number;
+  title: string;
+  endAt: string; 
+  totalProblems: number;
+  unsolvedCount: number;
 }
 
 export const dashboardService = {
@@ -57,10 +64,8 @@ export const dashboardService = {
   },
 
   getTrainerData: async (): Promise<TrainerDashboardData> => {
-    // The backend already scopes these to the trainer (own groups/contests,
-    // published + own problems).
     const [groups, contests, problems] = await Promise.all([
-      groupService.getAll().catch(() => []),
+      groupService.getAll().catch(() => [] as Group[]),
       contestService.getAll().catch(() => []),
       getProblems().catch(() => []),
     ]);
@@ -69,7 +74,7 @@ export const dashboardService = {
       contests,
       totalProblems: problems.length,
       myProblems: problems.filter((p) => p.canModify).length,
-      students: groups.reduce((sum, g) => sum + (g.studentCount ?? 0), 0),
+      students: groups.reduce<number>((sum, g) => sum + (g.studentCount ?? 0), 0),
     };
   },
 
@@ -91,5 +96,48 @@ export const dashboardService = {
       averageGrade,
       submissions,
     };
+  },
+
+  getStudentContestAlerts: async (): Promise<StudentContestAlert[]> => {
+    const groups = await groupService.getMyGroups().catch(() => []);
+    const contestLists = await Promise.all(
+      groups.map((g) => groupService.getContests(g.id).catch(() => [])),
+    );
+
+    const byId = new Map<
+      number,
+      { contestId: number; title: string; startAt: string; endAt: string }
+    >();
+    for (const c of contestLists.flat()) byId.set(c.contestId, c);
+
+    const now = Date.now();
+    const running = [...byId.values()].filter((c) => {
+      const start = new Date(c.startAt).getTime();
+      const end = new Date(c.endAt).getTime();
+      return (
+        !Number.isNaN(start) &&
+        !Number.isNaN(end) &&
+        now >= start &&
+        now < end
+      );
+    });
+
+    const alerts = await Promise.all(
+      running.map(async (c) => {
+        const problems = await contestService
+          .getMyProblems(c.contestId)
+          .catch(() => [] as Record<string, any>[]);
+        const unsolvedCount = problems.filter((p) => !p.submitted).length;
+        return {
+          contestId: c.contestId,
+          title: c.title,
+          endAt: c.endAt,
+          totalProblems: problems.length,
+          unsolvedCount,
+        };
+      }),
+    );
+
+    return alerts.filter((a) => a.unsolvedCount > 0);
   },
 };

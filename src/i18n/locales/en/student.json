@@ -4,6 +4,16 @@
       "greeting": "Hello, {{name}}! 👋",
       "streakMessage": "You are on a {{count}} day streak – keep it up!",
       "roleBadge": "Student",
+      "contestWarning": {
+        "title": "Hurry up! You still have unsolved problems and the contest is almost ending.",
+        "detail": "\"{{title}}\" ends in {{minutes}} min — {{count}} problem(s) left",
+        "minutesLeft": "{{minutes}} min left",
+        "unsolved": "{{count}} unsolved",
+        "compact": "Almost up — {{count}} unsolved, {{minutes}} min left",
+        "heading": "Contest ending soon",
+        "summary": "{{count}} unsolved · {{minutes}} min left",
+        "cta": "Go to contest"
+      },
       "stats": {
         "problemsSolved": "Problems Solved",
         "thisWeek": "this week",

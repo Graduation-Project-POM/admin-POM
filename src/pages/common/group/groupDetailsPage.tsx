@@ -327,21 +327,22 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         contest.title.toLowerCase().includes(contestSearchQuery.toLowerCase())
     );
 
-    const handleCreateContest = async (newContest: ContestData) => {
+    const handleCreateContest = async (newContest: any) => {
         if (!group) return;
         setTabsError(null);
         try {
             const startAt = toIso(newContest.startDate);
             const endAt = toIso(newContest.endDate);
-            const res = await contestService.create({
+            // The backend links the contest to this group atomically on create.
+            await contestService.create({
                 title: newContest.title,
                 description: '',
                 status: getContestStatusNumber(startAt, endAt),
                 startAt,
                 endAt,
                 problemIds: [],
+                groupId: Number(group.id),
             });
-            await groupService.addContest(Number(group.id), res.contestID);
             await loadGroupData();
         } catch (err) {
             setTabsError(getApiErrorMessage(err, t('group.details.createContestFailed', 'Failed to create contest')));
@@ -654,7 +655,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             </Paper>
 
             {/* Reuse Contest Modals */}
-            <CreateContest open={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSave={handleCreateContest} />
+            <CreateContest open={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSave={handleCreateContest} fixedGroupId={group ? Number(group.id) : undefined} />
             <EditContest open={isEditOpen} onClose={() => setIsEditOpen(false)} contest={selectedContest} onSave={handleUpdateContest} />
             <ViewContest open={isViewOpen} onClose={() => setIsViewOpen(false)} contest={selectedContest} />
             

@@ -49,6 +49,8 @@
       "contestTitlePlaceholder": "مثال: برمجة الربيع 2026",
       "status": "الحالة",
       "difficulty": "الصعوبة",
+      "group": "المجموعة",
+      "noGroups": "لا توجد مجموعات متاحة",
       "startDateTime": "تاريخ ووقت البدء",
       "endDateTime": "تاريخ ووقت الانتهاء",
       "startDatePlaceholder": "15 أبريل 2026 الساعة 09:00 صباحًا",

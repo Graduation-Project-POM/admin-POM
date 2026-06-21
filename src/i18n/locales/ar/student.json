@@ -4,6 +4,16 @@
       "greeting": "مرحباً، {{name}}! 👋",
       "streakMessage": "أنت في موجة مستمرة لمدة {{count}} يوماً – لا تتوقف!",
       "roleBadge": "طالب",
+      "contestWarning": {
+        "title": "أسرع! لا تزال لديك مسائل غير محلولة والمسابقة على وشك الانتهاء.",
+        "detail": "تنتهي \"{{title}}\" خلال {{minutes}} دقيقة — تبقّى {{count}} مسألة",
+        "minutesLeft": "{{minutes}} دقيقة متبقية",
+        "unsolved": "{{count}} غير محلولة",
+        "compact": "الوقت أوشك — {{count}} غير محلولة، {{minutes}} دقيقة متبقية",
+        "heading": "المسابقة على وشك الانتهاء",
+        "summary": "{{count}} غير محلولة · {{minutes}} دقيقة متبقية",
+        "cta": "الذهاب إلى المسابقة"
+      },
       "stats": {
         "problemsSolved": "المسائل المحلولة",
         "thisWeek": "هذا الأسبوع",

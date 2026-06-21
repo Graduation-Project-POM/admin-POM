@@ -158,14 +158,17 @@ export const ContestCard: React.FC<ContestCardProps> = ({
           >
             {t('buttons.view')}
           </Button>
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={() => onEdit?.(Number(contest.id))}
-            sx={{ borderColor: '#cbd5e1', color: '#475569' }}
-          >
-            {t('buttons.edit')}
-          </Button>
+          {/* Ended contests are read-only — no edit action (backend enforces too). */}
+          {contest.status !== 'Ended' && (
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={() => onEdit?.(Number(contest.id))}
+              sx={{ borderColor: '#cbd5e1', color: '#475569' }}
+            >
+              {t('buttons.edit')}
+            </Button>
+          )}
           <Button
             variant="contained"
             size="small"

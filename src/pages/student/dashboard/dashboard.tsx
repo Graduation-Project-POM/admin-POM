@@ -38,9 +38,10 @@ import {
   tableBodyCell,
   gradeChip,
 } from "./dashboardStyle";
-import { dashboardService, type StudentDashboardData } from "../../../services/dashboardService";
+import { dashboardService, type StudentDashboardData, type StudentContestAlert } from "../../../services/dashboardService";
 import { useAuth } from "../../../services/AuthContext";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { ContestDeadlineWarning } from "../../../components/student/ContestDeadlineWarning";
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "S";
@@ -51,6 +52,7 @@ const StudentDashboardPage: React.FC = () => {
   const { userName } = useAuth();
 
   const [data, setData] = useState<StudentDashboardData | null>(null);
+  const [contestAlerts, setContestAlerts] = useState<StudentContestAlert[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +64,13 @@ const StudentDashboardPage: React.FC = () => {
       .catch((err) => setError(getApiErrorMessage(err, t("student.dashboard.loadFailed", "Failed to load dashboard"))))
       .finally(() => setLoading(false));
   }, [t]);
+
+  useEffect(() => {
+    dashboardService
+      .getStudentContestAlerts()
+      .then(setContestAlerts)
+      .catch(() => setContestAlerts([]));
+  }, []);
 
   const solveRate =
     data && data.totalProblems > 0 ? Math.round((data.problemsSolved / data.totalProblems) * 100) : 0;
@@ -220,6 +229,8 @@ const StudentDashboardPage: React.FC = () => {
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
+          <ContestDeadlineWarning alerts={contestAlerts} />
+
           <Card sx={sectionCard}>
             <CardContent sx={{ p: 3 }}>
               <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.recentGrades.title")}</Typography>

@@ -4,6 +4,7 @@ import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { Calendar, Users, Trophy, Clock } from "lucide-react";
 import type { ContestData } from "../../../types";
+import { formatDateTime } from "../../../utils/datetime";
 
 interface ViewContestProps {
   open: boolean;
@@ -15,10 +16,12 @@ const DetailItem = ({
   icon,
   label,
   value,
+  ltr = false,
 }: {
   icon: any;
   label: string;
   value?: string | number;
+  ltr?: boolean;
 }) => (
   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
     <Box
@@ -26,7 +29,7 @@ const DetailItem = ({
     >
       {icon}
     </Box>
-    <Box>
+    <Box sx={{ minWidth: 0 }}>
       <Typography
         sx={{
           fontSize: "11px",
@@ -38,7 +41,15 @@ const DetailItem = ({
       >
         {label}
       </Typography>
-      <Typography sx={{ color: "#1e293b", fontWeight: 700, fontSize: "14px" }}>
+      <Typography
+        dir={ltr ? "ltr" : undefined}
+        sx={{
+          color: "#1e293b",
+          fontWeight: 700,
+          fontSize: "14px",
+          ...(ltr && { unicodeBidi: "isolate" }),
+        }}
+      >
         {value}
       </Typography>
     </Box>
@@ -115,12 +126,14 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
           <DetailItem
             icon={<Calendar size={18} />}
             label={t("contest.view.startDate")}
-            value={contest.startDate}
+            value={formatDateTime(contest.startDate)}
+            ltr
           />
           <DetailItem
             icon={<Clock size={18} />}
             label={t("contest.view.endDate")}
-            value={contest.endDate}
+            value={formatDateTime(contest.endDate)}
+            ltr
           />
         </Box>
 
