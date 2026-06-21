@@ -21,6 +21,8 @@ interface FormFieldProps {
   rows?: number;
   select?: boolean;
   options?: FormFieldOption[];
+  error?: boolean;
+  helperText?: string;
   children?: React.ReactNode;
 }
 
@@ -36,6 +38,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   rows = 1,
   select = false,
   options,
+  error = false,
+  helperText,
   children,
 }) => {
   const isSelect = select || type === 'select' || Boolean(options);
@@ -52,6 +56,8 @@ export const FormField: React.FC<FormFieldProps> = ({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        error={error}
+        helperText={helperText}
         multiline={multiline}
         rows={rows}
         select={isSelect}

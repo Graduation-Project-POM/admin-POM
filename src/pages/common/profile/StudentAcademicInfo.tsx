@@ -27,6 +27,8 @@ interface FormState {
   nationalId: string;
 }
 
+type FieldErrors = Partial<Record<keyof FormState, string>>;
+
 const emptyForm: FormState = { gradeLevel: "", city: "", schoolName: "", nationalId: "" };
 
 export const StudentAcademicInfo = () => {
@@ -38,6 +40,7 @@ export const StudentAcademicInfo = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FieldErrors>({});
 
   const load = async () => {
     setLoading(true);
@@ -64,19 +67,37 @@ export const StudentAcademicInfo = () => {
 
   const handleChange = (field: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    // Clear that field's error as the user corrects it.
+    setErrors((prev) => ({ ...prev, [field]: undefined }));
+    setSuccess(null);
+  };
+
+  // Per-field validation with clear, translated messages.
+  const validate = (): FieldErrors => {
+    const e: FieldErrors = {};
+
+    if (!form.gradeLevel.trim()) e.gradeLevel = t("profile.student.validation.gradeLevelRequired");
+    if (!form.city.trim()) e.city = t("profile.student.validation.cityRequired");
+
+    const school = form.schoolName.trim();
+    if (!school) e.schoolName = t("profile.student.validation.schoolNameRequired");
+    else if (school.length < 2) e.schoolName = t("profile.student.validation.schoolNameShort");
+
+    const nid = form.nationalId.trim();
+    if (!nid) e.nationalId = t("profile.student.validation.nationalIdRequired");
+    else if (nid.length !== 9) e.nationalId = t("profile.student.validation.nationalIdLength");
+
+    return e;
   };
 
   const handleSave = async () => {
     setError(null);
     setSuccess(null);
-    if (!form.gradeLevel.trim() || !form.city.trim() || form.schoolName.trim().length < 2) {
-      setError(t("profile.student.validation"));
-      return;
-    }
-    if (form.nationalId.trim().length !== 9) {
-      setError(t("profile.student.nationalIdLength"));
-      return;
-    }
+
+    const validationErrors = validate();
+    setErrors(validationErrors);
+    if (Object.keys(validationErrors).length > 0) return;
+
     setSaving(true);
     try {
       await updateMyStudentProfile(form);
@@ -101,6 +122,7 @@ export const StudentAcademicInfo = () => {
     }
     setIsEditing(false);
     setError(null);
+    setErrors({});
   };
 
   const fieldSx = { "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: "#fff" } };
@@ -158,20 +180,24 @@ export const StudentAcademicInfo = () => {
             {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
             <Grid container spacing={3}>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField fullWidth size="small" label={t("profile.student.gradeLevel")} value={form.gradeLevel}
-                  onChange={handleChange("gradeLevel")} disabled={!isEditing} sx={fieldSx} />
+                <TextField fullWidth required size="small" label={t("profile.student.gradeLevel")} value={form.gradeLevel}
+                  onChange={handleChange("gradeLevel")} disabled={!isEditing}
+                  error={!!errors.gradeLevel} helperText={errors.gradeLevel} sx={fieldSx} />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField fullWidth size="small" label={t("profile.student.city")} value={form.city}
-                  onChange={handleChange("city")} disabled={!isEditing} sx={fieldSx} />
+                <TextField fullWidth required size="small" label={t("profile.student.city")} value={form.city}
+                  onChange={handleChange("city")} disabled={!isEditing}
+                  error={!!errors.city} helperText={errors.city} sx={fieldSx} />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField fullWidth size="small" label={t("profile.student.schoolName")} value={form.schoolName}
-                  onChange={handleChange("schoolName")} disabled={!isEditing} sx={fieldSx} />
+                <TextField fullWidth required size="small" label={t("profile.student.schoolName")} value={form.schoolName}
+                  onChange={handleChange("schoolName")} disabled={!isEditing}
+                  error={!!errors.schoolName} helperText={errors.schoolName} sx={fieldSx} />
               </Grid>
               <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField fullWidth size="small" label={t("profile.student.nationalId")} value={form.nationalId}
-                  onChange={handleChange("nationalId")} disabled={!isEditing} sx={fieldSx} />
+                <TextField fullWidth required size="small" label={t("profile.student.nationalId")} value={form.nationalId}
+                  onChange={handleChange("nationalId")} disabled={!isEditing}
+                  error={!!errors.nationalId} helperText={errors.nationalId} sx={fieldSx} />
               </Grid>
             </Grid>
           </>

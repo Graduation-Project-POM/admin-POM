@@ -10,6 +10,7 @@ export interface BackendUser {
   phoneNumber?: string | null;
   gender: string;
   profileImageUrl?: string | null;
+  bio?: string | null;
   isActive: boolean;
   createdAt: string;
   lastUpdatedAt: string;
@@ -45,6 +46,7 @@ export interface UpdateUserPayload {
   phoneNumber?: string;
   gender: string;
   profileImageUrl?: string;
+  bio?: string;
 }
 
 export const getUsers = async (): Promise<BackendUser[]> => {

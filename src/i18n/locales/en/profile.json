@@ -8,16 +8,36 @@
     "saveError": "Failed to save your profile. Please try again.",
     "fields": {
       "fullName": "Full Name",
-      "displayName": "Display Name",
+      "displayName": "Username",
       "emailAddress": "Email Address",
       "department": "Department",
       "position": "Position",
       "bio": "Bio"
     },
+    "saved": "Profile updated successfully.",
+    "validation": {
+      "fullNameRequired": "Full name is required.",
+      "fullNameInvalid": "Enter both first and last name (at least 2 letters each).",
+      "usernameRequired": "Username is required.",
+      "usernameShort": "Username must be at least 4 characters.",
+      "emailRequired": "Email is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "phoneInvalid": "Please enter a valid phone number."
+    },
     "stats": {
       "totalContents": "Total Contents",
       "enrolledStudents": "Enrolled Students",
       "yearsOfExperience": "Years of Experience"
+    },
+    "trainer": {
+      "title": "Trainer Information",
+      "specialization": "Specialization",
+      "loadError": "Failed to load your profile. Please try again.",
+      "saveError": "Failed to save your profile. Please try again.",
+      "saved": "Profile updated successfully.",
+      "validation": {
+        "specializationRequired": "Specialization is required."
+      }
     },
     "student": {
       "title": "Academic Information",
@@ -30,8 +50,14 @@
       "loadError": "Failed to load your profile. Please try again.",
       "saveError": "Failed to save your profile. Please try again.",
       "saved": "Profile updated successfully.",
-      "validation": "Please fill in grade level, city, and a valid school name.",
-      "nationalIdLength": "National ID must be exactly 9 characters."
+      "validation": {
+        "gradeLevelRequired": "Grade level is required.",
+        "cityRequired": "City is required.",
+        "schoolNameRequired": "School name is required.",
+        "schoolNameShort": "School name must be at least 2 characters.",
+        "nationalIdRequired": "National ID is required.",
+        "nationalIdLength": "National ID must be exactly 9 characters."
+      }
     },
     "view": {
       "city": "City",

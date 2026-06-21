@@ -87,6 +87,22 @@
         "saveError": "فشل حفظ المستخدم. حاول مرة أخرى.",
         "deleteError": "فشل حذف المستخدم. حاول مرة أخرى.",
         "passwordMismatch": "كلمتا المرور غير متطابقتين",
+        "validation": {
+          "firstNameRequired": "الاسم الأول مطلوب.",
+          "firstNameShort": "يجب أن يتكون الاسم الأول من حرفين على الأقل.",
+          "lastNameRequired": "اسم العائلة مطلوب.",
+          "lastNameShort": "يجب أن يتكون اسم العائلة من حرفين على الأقل.",
+          "userNameRequired": "اسم المستخدم مطلوب.",
+          "userNameShort": "يجب أن يتكون اسم المستخدم من 4 أحرف على الأقل.",
+          "emailRequired": "البريد الإلكتروني مطلوب.",
+          "emailInvalid": "يرجى إدخال بريد إلكتروني صحيح.",
+          "phoneInvalid": "يرجى إدخال رقم هاتف صحيح.",
+          "roleRequired": "يرجى اختيار الدور.",
+          "genderRequired": "يرجى اختيار الجنس.",
+          "passwordRequired": "كلمة المرور مطلوبة.",
+          "passwordShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
+          "confirmPasswordRequired": "يرجى تأكيد كلمة المرور."
+        },
         "roles": {
           "student": "طالب",
           "trainer": "مدرب",
