@@ -126,7 +126,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
 
       <Box>
         <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
           <Box sx={{ display: 'flex', gap: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Users size={14} color="#94a3b8" />

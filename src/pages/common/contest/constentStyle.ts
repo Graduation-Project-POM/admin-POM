@@ -23,12 +23,14 @@ export const SubtitleWrapper = styled(Box)({
 export const SearchWrapper = styled(Box)({
   marginBottom: 32,
   display: "flex",
+  flexWrap: "wrap",
   justifyContent: "space-between",
   alignItems: "center",
   gap: "16px",
 });
 
 export const StyledSearchField = styled(TextField)({
+  flex: "1 1 260px",
   maxWidth: 400,
   "& .MuiOutlinedInput-root": {
     borderRadius: "10px",

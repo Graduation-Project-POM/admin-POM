@@ -69,7 +69,7 @@ const CreateContest = ({ open, onClose, onSave }: CreateContestProps) => {
             <MenuItem value="Hard">{t("contest.difficulty.hard")}</MenuItem>
           </FormField>
 
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
             <FormField
               label={t("contest.fields.startDateTime")}
               name="startDate"

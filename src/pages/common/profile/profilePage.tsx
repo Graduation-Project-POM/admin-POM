@@ -199,7 +199,7 @@ const ProfilePage: React.FC = () => {
             }}
           >
             <CardContent sx={{ p: 3 }}>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3 }}>
+              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", mb: 3, flexWrap: "wrap", gap: 2 }}>
                 <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                   <Avatar
                     sx={{
@@ -252,7 +252,7 @@ const ProfilePage: React.FC = () => {
                     {t("profile.editProfile")}
                   </Button>
                 ) : (
-                  <Box sx={{ display: "flex", gap: 1 }}>
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                     <Button
                       variant="contained"
                       startIcon={<Save size={16} />}

@@ -42,10 +42,11 @@ const StatBox = styled(Box)({
 
 const ActionButtons = styled(Box)({
   display: 'flex',
+  flexWrap: 'wrap',
   gap: '8px',
   marginTop: '16px',
   '& button': {
-    flex: 1,
+    flex: '1 1 auto',
     textTransform: 'none',
     fontWeight: 600,
     fontSize: '13px',
@@ -94,7 +95,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({
       </CardHeader>
 
       <CardContent sx={{ pt: 0, flex: 1 }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
           <StatBox>
             <Users size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>

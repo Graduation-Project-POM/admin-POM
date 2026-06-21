@@ -77,7 +77,7 @@ const EditTrainerRequest = ({
             required
           />
 
-          <Stack direction="row" spacing={2}>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
             <FormField
               type="email"
               label={t("admin.approvals.edit.email")}

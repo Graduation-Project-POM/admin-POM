@@ -11,8 +11,6 @@ interface DashboardLayoutProps {
   userEmail?: string;
 }
 
-// Theme/direction handling lives in <DirectionProvider> at the app root, so this
-// layout only arranges the sidebar + content.
 export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   children,
   role,
@@ -20,18 +18,23 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   userEmail = ""
 }) => {
   return (
-    <Box sx={{ display: 'flex', height: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ display: 'flex', minHeight: '100vh', bgcolor: 'background.default' }}>
       <Sidebar role={role} userName={userName} userEmail={userEmail} />
       <Box
         component="main"
         sx={{
           flexGrow: 1,
+          minWidth: 0,
           height: '100vh',
           overflow: 'auto',
-          p: 4,
+          px: { xs: 2, sm: 3, md: 4 },
+          pb: { xs: 3, md: 4 },
+          // Clear the fixed hamburger button on mobile so the page title isn't
+          // hidden beneath it; normal top padding on desktop.
+          pt: { xs: 8, md: 4 },
         }}
       >
-        <Container maxWidth="lg">
+        <Container maxWidth="lg" disableGutters>
           <ErrorBoundary>{children}</ErrorBoundary>
         </Container>
       </Box>

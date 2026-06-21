@@ -74,7 +74,6 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleApprove = async (id: number) => {
@@ -228,7 +227,7 @@ const AdminDashboard: React.FC = () => {
               <Typography variant="h6" sx={sectionTitle}>
                 {t("admin.dashboard.overview.title", "Platform Overview")}
               </Typography>
-              <TableContainer component={Paper} elevation={0} sx={tableContainer}>
+              <TableContainer component={Paper} elevation={0} sx={{ ...tableContainer, overflowX: "auto" }}>
                 <Table sx={{ minWidth: 300 }}>
                   <TableHead>
                     <TableRow sx={{ bgcolor: "#f8fafc" }}>

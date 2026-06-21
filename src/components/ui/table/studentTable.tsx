@@ -101,7 +101,8 @@ export const SharedTable: React.FC<SharedTableProps> = ({
       />
 
       <TableWrapper>
-        <TableHeader sx={{ gridTemplateColumns: gridCols }}>
+       <Box sx={{ overflowX: 'auto' }}>
+        <TableHeader sx={{ gridTemplateColumns: gridCols, minWidth: 640 }}>
           {columns.map((col) => (
             <Typography
               key={col.id}
@@ -126,7 +127,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
           filtered.map((row) => (
             <TableRow
               key={row.id}
-              sx={{ gridTemplateColumns: gridCols }}
+              sx={{ gridTemplateColumns: gridCols, minWidth: 640 }}
               clickable={!!onRowClick}
               onClick={() => onRowClick?.(row)}
             >
@@ -144,6 +145,7 @@ export const SharedTable: React.FC<SharedTableProps> = ({
             </TableRow>
           ))
         )}
+       </Box>
       </TableWrapper>
 
       {filtered.length > 0 && (

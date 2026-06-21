@@ -20,6 +20,8 @@
       "problemsStat": "{{count}} Problems",
       "start": "Start: {{date}}",
       "end": "End: {{date}}",
+      "startLabel": "Start",
+      "endLabel": "End",
       "problems": "Problems"
     },
     "groupCard": {
@@ -34,7 +36,9 @@
       "participants": "{{count}} Participants",
       "solveProblems": "Solve Problems",
       "viewProblemsGrades": "View Problems & Grades",
-      "comingSoon": "Coming Soon"
+      "comingSoon": "Coming Soon",
+      "startShort": "Start",
+      "endShort": "End"
     },
     "studentGroupCard": {
       "trainerLabel": "Trainer: {{name}}",

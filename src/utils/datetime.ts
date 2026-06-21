@@ -1,0 +1,30 @@
+
+export const formatDateTime = (value?: string | number | Date | null): string => {
+  if (value === null || value === undefined || value === "") return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+
+  const date = d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const time = d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+  return `${date} - ${time}`;
+};
+
+/** "19 Jun 2026" (no time). Returns "" for invalid/empty input. */
+export const formatDate = (value?: string | number | Date | null): string => {
+  if (value === null || value === undefined || value === "") return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};

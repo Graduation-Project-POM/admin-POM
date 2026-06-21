@@ -157,7 +157,7 @@ export const AdminApprovalsPage = () => {
                     </Box>
                   </Box>
 
-                  <Stack direction="row" spacing={1.5}>
+                  <Stack direction="row" spacing={1.5} useFlexGap sx={{ flexWrap: "wrap" }}>
                     <ActionButton variant="outlined" startIcon={<Eye size={16} />} onClick={() => navigate(`/profile/student/${student.id}`)}>
                       {t("admin.approvals.actions.view")}
                     </ActionButton>

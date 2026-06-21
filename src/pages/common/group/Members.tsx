@@ -9,19 +9,13 @@ import {
   ListItemAvatar,
   ListItemText,
   Divider,
-  MenuItem,
-  Select,
-  Checkbox,
-  OutlinedInput,
-  InputLabel,
-  FormControl,
-  Chip,
   CircularProgress,
   Alert,
 } from '@mui/material';
 import { UserPlus } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
+import { MemberPicker } from '../../../components/ui/MemberPicker/MemberPicker';
 import type { GroupData } from '../../../types';
 import { groupService } from '../../../services/groupService';
 import { studentService } from '../../../services/studentService';
@@ -164,52 +158,18 @@ const Members = ({ open, onClose, group, onMembersChanged }: MembersProps) => {
         )}
 
         <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: '#1e293b' }}>
-            {t('group.members.addNewMember')}
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'flex-end' }}>
-            <FormControl size="small" sx={{ flex: 1 }}>
-              <InputLabel>{t('group.members.selectUser')}</InputLabel>
-              <Select
-                multiple
-                value={selectedIds}
-                onChange={(e) =>
-                  setSelectedIds(
-                    typeof e.target.value === 'string'
-                      ? []
-                      : (e.target.value as number[]),
-                  )
-                }
-                input={<OutlinedInput label={t('group.members.selectUser')} />}
-                renderValue={(selected) => (
-                  <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                    {(selected as number[]).map((id) => {
-                      const s = allStudents.find((x) => x.id === id);
-                      return <Chip key={id} size="small" label={s ? s.name : id} />;
-                    })}
-                  </Box>
-                )}
-              >
-                {available.length === 0 ? (
-                  <MenuItem disabled value="">
-                    {t('group.members.noAvailable', 'No students available to add')}
-                  </MenuItem>
-                ) : (
-                  available.map((s) => (
-                    <MenuItem key={s.id} value={s.id}>
-                      <Checkbox checked={selectedIds.includes(s.id)} />
-                      <ListItemText primary={s.name} secondary={s.email} />
-                    </MenuItem>
-                  ))
-                )}
-              </Select>
-            </FormControl>
+          <MemberPicker
+            options={available}
+            selectedIds={selectedIds}
+            onChange={setSelectedIds}
+            label={t('group.members.addNewMember')}
+          />
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
             <Button
               variantType="default"
               onClick={handleAdd}
               startIcon={<UserPlus size={16} />}
               disabled={selectedIds.length === 0}
-              sx={{ mb: 0.5, height: '42px' }}
             >
               {t('buttons.add')}
             </Button>

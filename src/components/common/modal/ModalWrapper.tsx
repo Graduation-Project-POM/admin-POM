@@ -36,6 +36,13 @@ export const ModalWrapper: React.FC<Props> = ({
             backdropFilter: "blur(7px)",
           },
         },
+        paper: {
+          sx: {
+            m: { xs: 2, sm: 4 },
+            width: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+            maxHeight: { xs: "calc(100% - 32px)", sm: "calc(100% - 64px)" },
+          },
+        },
       }}
     >
       <DialogTitle

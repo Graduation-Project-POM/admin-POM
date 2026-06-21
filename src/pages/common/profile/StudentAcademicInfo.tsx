@@ -130,7 +130,7 @@ export const StudentAcademicInfo = () => {
   return (
     <Card sx={{ borderRadius: "20px", border: "1px solid #eef2f6", boxShadow: "0 4px 12px rgba(0,0,0,0.03)", mt: 4 }}>
       <CardContent sx={{ p: 3 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Box sx={{ bgcolor: "#fee2e2", p: 1, borderRadius: "12px", display: "flex" }}>
               <GraduationCap size={22} color="#8B1D23" />
@@ -149,7 +149,7 @@ export const StudentAcademicInfo = () => {
           </Box>
           {!loading && (
             isEditing ? (
-              <Box sx={{ display: "flex", gap: 1 }}>
+              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Button variant="contained" startIcon={<Save size={16} />} onClick={handleSave} disabled={saving}
                   sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, bgcolor: "#8B1D23", "&:hover": { bgcolor: "#6d1620" } }}>
                   {saving ? t("common.loading") : t("buttons.save")}

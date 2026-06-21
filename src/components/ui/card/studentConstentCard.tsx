@@ -5,6 +5,7 @@ import { Calendar, Users, Target, ChevronRight, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ContestData } from '../../../types';
 import { Button } from '../button/Button';
+import { formatDateTime } from '../../../utils/datetime';
 
 const CardWrapper = styled(Box)({
   padding: '24px',
@@ -97,7 +98,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
           </Box>
         </Box>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 2 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Target size={14} color="#94a3b8" />
             <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
@@ -110,16 +111,25 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
               {t('ui.studentContestCard.participants', { count: contest.participants })}
             </Typography>
           </Box>
+        </Box>
+
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Calendar size={14} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
-              {new Date(contest.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '12px', minWidth: 34 }}>
+              {t('ui.studentContestCard.startShort', 'Start')}
+            </Typography>
+            <Typography variant="body2" dir="ltr" sx={{ color: '#475569', fontWeight: 600, fontSize: '12px', unicodeBidi: 'isolate' }}>
+              {formatDateTime(contest.startDate)}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Clock size={14} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
-              {new Date(contest.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '12px', minWidth: 34 }}>
+              {t('ui.studentContestCard.endShort', 'End')}
+            </Typography>
+            <Typography variant="body2" dir="ltr" sx={{ color: '#475569', fontWeight: 600, fontSize: '12px', unicodeBidi: 'isolate' }}>
+              {formatDateTime(contest.endDate)}
             </Typography>
           </Box>
         </Box>

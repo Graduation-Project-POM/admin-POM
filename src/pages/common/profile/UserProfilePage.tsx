@@ -104,7 +104,7 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
   }
 
   return (
-    <Paper elevation={0} sx={{ p: 4, maxWidth: 720, borderRadius: "16px", border: "1px solid #e5e7eb", bgcolor: "#fff" }}>
+    <Paper elevation={0} sx={{ p: { xs: 2, sm: 4 }, width: "100%", maxWidth: 720, borderRadius: "16px", border: "1px solid #e5e7eb", bgcolor: "#fff" }}>
       {/* Header */}
       <Box sx={{ display: "flex", gap: 3, mb: 3, alignItems: "center", flexWrap: "wrap" }}>
         <Avatar sx={{ width: 80, height: 80, bgcolor: "#8B1D23", fontSize: 28, fontWeight: 700, borderRadius: "16px" }}>
@@ -159,7 +159,6 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
   );
 };
 
-/** Route page (/profile/:type/:id): reads the params and wraps the shared view. */
 export const UserProfilePage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();

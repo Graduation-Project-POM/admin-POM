@@ -12,6 +12,7 @@ import {
 import { Calendar, Users, Trophy, Clock, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { ContestData } from '../../../types';
+import { formatDateTime } from '../../../utils/datetime';
 
 const StyledCard = styled(Card)({
   borderRadius: '16px',
@@ -42,10 +43,11 @@ const StatBox = styled(Box)({
 
 const ActionButtons = styled(Box)({
   display: 'flex',
+  flexWrap: 'wrap',
   gap: '8px',
   marginTop: '16px',
   '& button': {
-    flex: 1,
+    flex: '1 1 auto',
     textTransform: 'none',
     fontWeight: 600,
     fontSize: '13px',
@@ -83,8 +85,8 @@ export const ContestCard: React.FC<ContestCardProps> = ({
   const title = contest.title ?? t('ui.contestCard.untitled');
   const participants = contest.participants ?? 0;
   const problemsCount = contest.problemsCount ?? 0;
-  const startDate = contest.startDate ?? '';
-  const endDate = contest.endDate ?? '';
+  const startDate = formatDateTime(contest.startDate);
+  const endDate = formatDateTime(contest.endDate);
 
   return (
     <StyledCard>
@@ -109,7 +111,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
       </CardHeader>
 
       <CardContent sx={{ pt: 0, flex: 1 }}>
-        <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 2, mb: 2, flexWrap: 'wrap' }}>
           <StatBox>
             <Users size={16} color="#8B1D23" />
             <Typography variant="body2" sx={{ fontWeight: 600 }}>
@@ -129,14 +131,20 @@ export const ContestCard: React.FC<ContestCardProps> = ({
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Calendar size={14} color="#94a3b8" />
-            <Typography variant="caption" sx={{ color: '#64748b' }}>
-              {t('ui.contestCard.start', { date: startDate })}
+            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+              {t('ui.contestCard.startLabel', 'Start')}
+            </Typography>
+            <Typography variant="caption" dir="ltr" sx={{ color: '#64748b', unicodeBidi: 'isolate' }}>
+              {startDate}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Clock size={14} color="#94a3b8" />
-            <Typography variant="caption" sx={{ color: '#64748b' }}>
-              {t('ui.contestCard.end', { date: endDate })}
+            <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>
+              {t('ui.contestCard.endLabel', 'End')}
+            </Typography>
+            <Typography variant="caption" dir="ltr" sx={{ color: '#64748b', unicodeBidi: 'isolate' }}>
+              {endDate}
             </Typography>
           </Box>
         </Box>

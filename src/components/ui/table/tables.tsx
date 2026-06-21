@@ -104,6 +104,8 @@ export const SharedTable: React.FC<SharedTableProps> = ({
         sx={{
           mb: 2,
           display: "flex",
+          flexWrap: "wrap",
+          gap: 1.5,
           justifyContent: "space-between",
           alignItems: "center",
         }}
@@ -114,7 +116,8 @@ export const SharedTable: React.FC<SharedTableProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{
-            width: 320,
+            flex: "1 1 240px",
+            maxWidth: 320,
             "& .MuiOutlinedInput-root": {
               borderRadius: "10px",
               backgroundColor: "#fff",

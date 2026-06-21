@@ -151,17 +151,14 @@ export const ProblemBank: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
-  // problemId -> grade (null = submitted but not graded yet). Absent = not submitted.
   const [gradeByProblem, setGradeByProblem] = useState<Map<number, number | null>>(new Map());
   const [modalProblem, setModalProblem] = useState<BackendProblem | null>(null);
-  // Read-only problem details modal (opened by clicking a problem name).
   const [viewProblem, setViewProblem] = useState<BackendProblem | null>(null);
 
   const loadProblems = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // Published problems + the student's existing submissions (to mark solved + show grade).
       const [data, mine] = await Promise.all([getProblems(), getMySubmissions()]);
       setProblems(data);
       setGradeByProblem(new Map(mine.map((s) => [s.problemId, s.grade ?? null])));
@@ -268,7 +265,6 @@ export const ProblemBank: React.FC = () => {
             </Button>
           );
         }
-        // Submitted: show the grade if it's been graded, otherwise a pending chip.
         return grade != null ? (
           <Chip
             label={t('student.problems.gradeValue', { grade })}
@@ -327,7 +323,7 @@ export const ProblemBank: React.FC = () => {
 
       {/* Filters */}
       <FilterCard elevation={0}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Filter size={18} color="#8B1D23" />

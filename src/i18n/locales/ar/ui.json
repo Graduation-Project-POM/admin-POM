@@ -20,6 +20,8 @@
       "problemsStat": "{{count}} مسألة",
       "start": "البداية: {{date}}",
       "end": "النهاية: {{date}}",
+      "startLabel": "البداية",
+      "endLabel": "النهاية",
       "problems": "المسائل"
     },
     "groupCard": {
@@ -34,7 +36,9 @@
       "participants": "{{count}} مشارك",
       "solveProblems": "حل المسائل",
       "viewProblemsGrades": "عرض المسائل والدرجات",
-      "comingSoon": "قريباً"
+      "comingSoon": "قريباً",
+      "startShort": "البداية",
+      "endShort": "النهاية"
     },
     "studentGroupCard": {
       "trainerLabel": "المدرب: {{name}}",

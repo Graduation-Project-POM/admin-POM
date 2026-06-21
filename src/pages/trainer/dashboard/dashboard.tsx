@@ -182,7 +182,7 @@ const TrainerDashboard: React.FC = () => {
                   {t("trainer.dashboard.myContests.empty", "No contests yet")}
                 </Typography>
               ) : (
-                <TableContainer component={Paper} elevation={0} sx={tableContainerStyle}>
+                <TableContainer component={Paper} elevation={0} sx={{ ...tableContainerStyle, overflowX: "auto" }}>
                   <Table sx={{ minWidth: 300 }}>
                     <TableHead>
                       <TableRow sx={{ bgcolor: "#f8fafc" }}>

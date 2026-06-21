@@ -649,7 +649,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             <Divider sx={{ mb: 3 }} />
 
             {/* Submit Actions */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
               <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px' }}>
                 {!solutionText && !solutionImage ? t('student.groupDetails.provideAtLeastOne') : t('student.groupDetails.readyToSubmit')}
               </Typography>
@@ -674,7 +674,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     );
   }
 
-  // Problems view for ended contest (graded by trainer)
   if (viewingProblems && selectedContest?.status === 'Ended') {
     const totalGrade = contestProblems.reduce((sum, p) => sum + (p.grade || 0), 0);
     const maxTotalGrade = contestProblems.reduce((sum, p) => sum + (p.maxGrade || 0), 0);
@@ -1018,6 +1017,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
           sx={{
             px: 2,
             borderBottom: '1px solid #e5e7eb',

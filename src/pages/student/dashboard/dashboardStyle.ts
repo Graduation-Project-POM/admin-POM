@@ -137,6 +137,7 @@ export const badgeItem = (colorBg: string, borderColor: string) => ({
 export const tableContainer: SxProps<Theme> = {
   borderRadius: '16px',
   border: '1px solid #eef2f6',
+  overflowX: 'auto',
 };
 
 export const tableHeadCell: SxProps<Theme> = {

@@ -1,20 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Stack,
-  MenuItem,
-  Select,
-  Checkbox,
-  ListItemText,
-  OutlinedInput,
-  InputLabel,
-  FormControl,
-  Chip,
-  Box,
-} from '@mui/material';
+import { Stack } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { Button } from '../../../components/ui/button/Button';
+import { MemberPicker } from '../../../components/ui/MemberPicker/MemberPicker';
 import type { GroupData } from '../../../types';
 import { studentService } from '../../../services/studentService';
 import type { StudentOption } from '../../../services/studentService';
@@ -74,36 +64,11 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
             required
           />
 
-          <FormControl fullWidth size="small">
-            <InputLabel>{t('group.create.members', 'Members')}</InputLabel>
-            <Select
-              multiple
-              value={studentIds}
-              onChange={(e) =>
-                setStudentIds(
-                  typeof e.target.value === 'string'
-                    ? []
-                    : (e.target.value as number[]),
-                )
-              }
-              input={<OutlinedInput label={t('group.create.members', 'Members')} />}
-              renderValue={(selected) => (
-                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {(selected as number[]).map((id) => {
-                    const s = students.find((x) => x.id === id);
-                    return <Chip key={id} size="small" label={s ? s.name : id} />;
-                  })}
-                </Box>
-              )}
-            >
-              {students.map((s) => (
-                <MenuItem key={s.id} value={s.id}>
-                  <Checkbox checked={studentIds.includes(s.id)} />
-                  <ListItemText primary={s.name} secondary={s.email} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <MemberPicker
+            options={students}
+            selectedIds={studentIds}
+            onChange={setStudentIds}
+          />
         </Stack>
         <Button sx={{ mt: 3 }} variantType="default" type="submit">
           {t('buttons.save')}

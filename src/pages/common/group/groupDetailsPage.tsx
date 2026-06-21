@@ -506,6 +506,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <Tabs
                     value={tabValue}
                     onChange={handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    allowScrollButtonsMobile
                     sx={{
                         px: 2,
                         borderBottom: '1px solid #e5e7eb',
@@ -521,13 +524,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <TabContentWrapper>
                     {/* Contests Tab */}
                     <TabPanel value={tabValue} index={0}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 3, gap: 2, flexWrap: 'wrap' }}>
                             <SearchInput
                                 type="text"
                                 placeholder={t('group.details.searchGroupContests')}
                                 value={contestSearchQuery}
                                 onChange={(e) => setContestSearchQuery(e.target.value)}
-                                style={{ marginBottom: 0, flex: 1, maxWidth: '400px' }}
+                                style={{ marginBottom: 0, flex: '1 1 240px', maxWidth: '400px' }}
                             />
                             <Button variantType="default" startIcon={<Clock size={18} />} onClick={() => setIsCreateOpen(true)}>
                                 {t('group.details.createContest')}

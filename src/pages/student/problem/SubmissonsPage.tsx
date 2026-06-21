@@ -273,7 +273,7 @@ export const MySubmissions: React.FC = () => {
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
               <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
                 <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{stats.totalSubmitted}</Typography>
                 <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>{t('student.submissions.submitted')}</Typography>
@@ -333,7 +333,7 @@ export const MySubmissions: React.FC = () => {
 
       {/* Filters */}
       <FilterCard elevation={0}>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 5, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Filter size={18} color="#8B1D23" />

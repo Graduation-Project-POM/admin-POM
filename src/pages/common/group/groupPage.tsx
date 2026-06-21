@@ -162,13 +162,13 @@ export const GroupsPage: React.FC = () => {
         </Typography>
       </SubtitleWrapper>
 
-      <SearchWrapper sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+      <SearchWrapper sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <StyledSearchField
           size="small"
           placeholder={t('group.list.searchPlaceholder')}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{ width: 400 }}
+          sx={{ width: { xs: '100%', sm: 400 } }}
           slotProps={{
             input: {
               startAdornment: (
