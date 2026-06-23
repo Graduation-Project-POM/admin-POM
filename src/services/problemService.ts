@@ -101,6 +101,7 @@ export interface Submission {
   grade?: number | null;
   submittedAt: string;
   isMine?: boolean;
+  isPublished?: boolean;
   problemTitle?: string | null;
   problemTopic?: string | null;
   problemStatement?: string | null;
@@ -157,10 +158,22 @@ export const getMyProblemSolutions = async (
   return response.data;
 };
 
+// Community details: published rows only for students; trainers/admins see all.
+// Own drafts come through getMyDraftsForProblem so the community payload stays
+// strictly public.
 export const getAllProblemSolutions = async (
   problemId: number,
 ): Promise<MyProblemSolutions> => {
   const response = await api.get<MyProblemSolutions>(`${BASE}/${problemId}/all-solutions`);
+  return response.data;
+};
+
+// Caller's own DRAFT submissions for a problem (bank + contest). Strict
+// studentId scope on the backend — a draft never leaks to anyone else.
+export const getMyDraftsForProblem = async (
+  problemId: number,
+): Promise<MyProblemSolutions> => {
+  const response = await api.get<MyProblemSolutions>(`${BASE}/${problemId}/my-drafts`);
   return response.data;
 };
 
@@ -185,4 +198,30 @@ export const difficultyLabelToId = (label: string): number => {
     default:
       return Difficulty.Easy;
   }
+};
+
+// ── Submission management (own submissions only) ───────────────────────
+// Backend enforces ownership via studentId; these calls are 403 if the
+// submission belongs to someone else.
+
+export const deleteBankSubmission = async (submissionId: number): Promise<void> => {
+  await api.delete(`${BASE}/bank-submissions/${submissionId}`);
+};
+
+export const setBankSubmissionVisibility = async (
+  submissionId: number,
+  isPublished: boolean,
+): Promise<void> => {
+  await api.patch(`${BASE}/bank-submissions/${submissionId}/visibility`, { isPublished });
+};
+
+export const deleteContestSubmission = async (submissionId: number): Promise<void> => {
+  await api.delete(`${BASE}/submissions/${submissionId}`);
+};
+
+export const setContestSubmissionVisibility = async (
+  submissionId: number,
+  isPublished: boolean,
+): Promise<void> => {
+  await api.patch(`${BASE}/submissions/${submissionId}/visibility`, { isPublished });
 };

@@ -14,6 +14,7 @@ import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getAllProblemSolutions,
+  getMyDraftsForProblem,
   difficultyIdToLabel,
   type MyProblemSolutions,
   type Submission,
@@ -138,6 +139,7 @@ export const StudentMySolutionDetailsPage = () => {
                   key={`${x.source}-${x.submission.id}`}
                   submission={x.submission}
                   source={x.source}
+                  onChanged={load}
                 />
               ))}
               {others.length > 0 && <Divider sx={{ my: 1 }} />}
@@ -153,6 +155,7 @@ export const StudentMySolutionDetailsPage = () => {
                   key={`${x.source}-${x.submission.id}`}
                   submission={x.submission}
                   source={x.source}
+                  onChanged={load}
                 />
               ))}
             </>

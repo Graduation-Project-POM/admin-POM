@@ -1,8 +1,18 @@
-import { Avatar, Box, Chip, Paper, Typography } from '@mui/material';
-import { Layers, Trophy, User } from 'lucide-react';
+import { useState } from 'react';
+import { Avatar, Box, Chip, Paper, Stack, Typography } from '@mui/material';
+import { Eye, EyeOff, Layers, Trash2, Trophy, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { resolveMediaUrl } from '../../../utils/media';
-import type { Submission } from '../../../services/problemService';
+import { Button } from '../../../components/ui/button/Button';
+import { getApiErrorMessage } from '../../../utils/apiError';
+import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
+import {
+  deleteBankSubmission,
+  deleteContestSubmission,
+  setBankSubmissionVisibility,
+  setContestSubmissionVisibility,
+  type Submission,
+} from '../../../services/problemService';
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
@@ -10,13 +20,49 @@ const initials = (name: string) =>
 interface Props {
   submission: Submission;
   source: 'bank' | 'contest';
+  onChanged?: () => void;
 }
 
-export const CommunitySubmissionCard = ({ submission, source }: Props) => {
+export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props) => {
   const { t } = useTranslation();
   const isContest = source === 'contest';
   const hasPoints = isContest && submission.grade != null;
   const isPending = isContest && submission.grade == null;
+  const isDraft = submission.isPublished === false;
+
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
+  const onPublishToggle = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const next = !isDraft ? false : true; 
+      if (source === 'bank') await setBankSubmissionVisibility(submission.id, next);
+      else await setContestSubmissionVisibility(submission.id, next);
+      onChanged?.();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('student.problemDetails.visibilityError')));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const onConfirmDelete = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      if (source === 'bank') await deleteBankSubmission(submission.id);
+      else await deleteContestSubmission(submission.id);
+      setConfirmOpen(false);
+      onChanged?.();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('student.problemDetails.deleteError')));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <Paper
@@ -25,6 +71,7 @@ export const CommunitySubmissionCard = ({ submission, source }: Props) => {
         p: 3,
         borderRadius: '16px',
         border: '1px solid #e2e8f0',
+        bgcolor: isDraft ? '#fafafa' : '#fff',
         position: 'relative',
       }}
     >
@@ -35,7 +82,7 @@ export const CommunitySubmissionCard = ({ submission, source }: Props) => {
               {initials(submission.studentName)}
             </Avatar>
             <Box sx={{ minWidth: 0 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
                 <Typography sx={{ fontWeight: 700, color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {submission.studentName}
                 </Typography>
@@ -66,6 +113,18 @@ export const CommunitySubmissionCard = ({ submission, source }: Props) => {
                 sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '10px', height: 22 }}
               />
             )}
+            <Chip
+              icon={isDraft ? <EyeOff size={11} /> : <Eye size={11} />}
+              label={isDraft ? t('student.problemDetails.draftBadge') : t('student.problemDetails.publishedBadge')}
+              size="small"
+              sx={{
+                bgcolor: isDraft ? '#f1f5f9' : '#ecfdf5',
+                color: isDraft ? '#475569' : '#166534',
+                fontWeight: 700,
+                fontSize: '10px',
+                height: 22,
+              }}
+            />
             {hasPoints && (
               <Chip
                 label={t('student.problemDetails.points', { score: submission.grade })}
@@ -84,6 +143,38 @@ export const CommunitySubmissionCard = ({ submission, source }: Props) => {
           <Typography variant="caption" sx={{ color: '#94a3b8' }}>
             {new Date(submission.submittedAt).toLocaleString()}
           </Typography>
+
+          {submission.isMine && (
+            <Stack direction="row" spacing={1} sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}>
+              <Button
+                variantType="outline"
+                size="small"
+                startIcon={isDraft ? <Eye size={14} /> : <EyeOff size={14} />}
+                onClick={() => void onPublishToggle()}
+                disabled={busy}
+                sx={{ fontSize: '12px' }}
+              >
+                {isDraft
+                  ? t('student.problemDetails.publishAction')
+                  : t('student.problemDetails.saveAsDraftAction')}
+              </Button>
+              <Button
+                variantType="outline"
+                size="small"
+                startIcon={<Trash2 size={14} />}
+                onClick={() => setConfirmOpen(true)}
+                disabled={busy}
+                sx={{ fontSize: '12px', color: '#dc2626', borderColor: '#fecaca' }}
+              >
+                {t('student.problemDetails.deleteAction')}
+              </Button>
+            </Stack>
+          )}
+          {error && (
+            <Typography variant="caption" sx={{ color: '#dc2626', display: 'block', mt: 1 }}>
+              {error}
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
@@ -100,6 +191,14 @@ export const CommunitySubmissionCard = ({ submission, source }: Props) => {
           )}
         </Box>
       </Box>
+
+      <ConfirmationModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={() => void onConfirmDelete()}
+        title={t('student.problemDetails.deleteTitle')}
+        message={t('student.problemDetails.deleteMessage')}
+      />
     </Paper>
   );
 };
