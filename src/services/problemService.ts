@@ -4,12 +4,14 @@ export interface BackendProblem {
   id: number;
   title: string;
   statement: string;
-  difficulty: number; 
+  difficulty: number;
   topic: string;
   photoUrl?: string | null;
   isPublished: boolean;
   publisherName?: string | null;
   canModify?: boolean;
+  points: number;       
+  solvedCount: number;  
 }
 
 export const Difficulty = {
@@ -28,6 +30,8 @@ export interface CreateProblemPayload {
   solution?: string;
   photoFileKey?: string;
   isPublished: boolean;
+  points: number;               
+  isBankVisible?: boolean;       
 }
 
 export interface UpdateProblemPayload {
@@ -37,6 +41,7 @@ export interface UpdateProblemPayload {
   topic: string;
   photoFileKey?: string;
   isPublished: boolean;
+  points: number;                
 }
 
 const BASE = "/api/Problems";
@@ -93,6 +98,7 @@ export interface Submission {
   problemTopic?: string | null;
   problemStatement?: string | null;
   problemDifficulty?: number;
+  problemPoints?: number;   
 }
 
 export const getSubmissions = async (problemId: number): Promise<Submission[]> => {

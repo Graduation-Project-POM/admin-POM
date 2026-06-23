@@ -16,6 +16,7 @@ export interface ProblemEditValues {
   difficulty: string;
   isPublished: boolean;
   imageUrl: string;
+  points: number;   
 }
 
 /** Loose pre-fill source: accepts either a backend problem or a table row,
@@ -31,6 +32,7 @@ export interface EditProblemSource {
   isPublished?: boolean;
   photoUrl?: string | null;
   imageUrl?: string;
+  points?: number;
 }
 
 interface EditProblemProps {
@@ -58,6 +60,7 @@ const emptyForm: ProblemEditValues = {
   difficulty: 'Easy',
   isPublished: false,
   imageUrl: '',
+  points: 100,
 };
 
 const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
@@ -76,6 +79,7 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
         difficulty: problem.difficulty ?? 'Easy',
         isPublished: problem.isPublished ?? false,
         imageUrl: problem.photoUrl ?? problem.imageUrl ?? '',
+        points: problem.points ?? 100,
       });
     }
   }, [problem]);
@@ -176,6 +180,18 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
               />
             ),
           )}
+          <FormField
+            type="number"
+            label={t("problem.form.points", "Points")}
+            name="points"
+            value={formData.points}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, points: Number(e.target.value) }))
+            }
+            required
+            placeholder="100"
+            helperText={t("problem.form.pointsHelp", "Between 1 and 1000")}
+          />
           <ImageUploadField
             label={t("problem.form.image", "Problem image (optional)")}
             value={formData.imageUrl}

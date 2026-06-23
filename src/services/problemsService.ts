@@ -18,6 +18,7 @@ export interface ProblemSubmission {
   score: number | null;
   feedback: string | null;
   gradedAt: string | null;
+  problemPoints: number;   
 }
 
 export const problemsService = {
@@ -36,6 +37,8 @@ export const problemsService = {
       topic: String(data.topic ?? ""),
       photoUrl: data.photoUrl ?? data.photoURL ?? null,
       isPublished: Boolean(data.isPublished),
+      points: Number(data.points ?? 100),
+      solvedCount: Number(data.solvedCount ?? 0),
     };
   },
 
@@ -64,19 +67,14 @@ export const problemsService = {
       studentId: Number(s.studentId),
       studentName: String(s.studentName ?? ""),
       solutionText: s.solutionText ?? null,
-      // Backend (SubmissionResponseDto) exposes the photo as `photoUrl` and the
-      // mark as `grade`; map them onto the UI's submission shape.
       solutionPhotoUrl: s.photoUrl ?? s.solutionPhotoUrl ?? null,
       submittedAt: s.submittedAt ?? "",
       score: s.grade ?? s.score ?? null,
       feedback: s.feedback ?? null,
       gradedAt: s.gradedAt ?? null,
+      problemPoints: Number(s.problemPoints ?? 100),
     }));
   },
-
-  // PUT /api/Problems/submissions/{id}/grade — the backend expects `grade`
-  // (0-100) plus optional `feedback`. The UI still works in terms of `score`,
-  // so translate here.
   gradeSubmission: async (
     submissionId: number,
     body: { score: number; feedback?: string },

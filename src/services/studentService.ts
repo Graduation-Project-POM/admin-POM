@@ -8,6 +8,8 @@ export interface MyStudentProfile {
   nationalId: string;
   problemSolved: number;
   score: number;
+  totalPoints: number;   
+  rank: number;         
   joinYear: string;
   isAccepted: boolean;
   basicUser?: {
@@ -66,6 +68,8 @@ export interface StudentProfile {
   nationalId: string;
   problemSolved: number;
   score: number;
+  totalPoints: number;   
+  rank: number;         
   joinYear: string;
   isAccepted: boolean;
 }
@@ -133,6 +137,8 @@ export const studentService = {
       nationalId: data.nationalId ?? "",
       problemSolved: Number(data.problemSolved ?? 0),
       score: Number(data.score ?? 0),
+      totalPoints: Number(data.totalPoints ?? 0),
+      rank: Number(data.rank ?? 0),
       joinYear: data.joinYear ?? "",
       isAccepted: Boolean(data.isAccepted),
     };

@@ -341,6 +341,8 @@ export const ContestsPage: React.FC = () => {
         topic: form.category || "General",
         photoFileKey: form.imageUrl || null,
         isPublished: form.isPublished,
+        points: form.points,         
+        isBankVisible: false,        
       });
       const ids = [...contestProblemIds, newId];
       await update(Number(selectedContestId), { problemIds: ids });

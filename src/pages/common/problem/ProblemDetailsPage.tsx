@@ -40,11 +40,12 @@ const SubmissionCard = ({
   );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const maxPts = submission.problemPoints ?? 100;
 
   const handleSave = async () => {
     const value = Number(grade);
-    if (grade === '' || Number.isNaN(value) || value < 0 || value > 100) {
-      setError(t('problem.details.gradeRange'));
+    if (grade === '' || Number.isNaN(value) || value < 0 || value > maxPts) {
+      setError(t('problem.details.gradeRange', `Grade must be between 0 and ${maxPts}.`));
       return;
     }
     setError(null);
@@ -96,9 +97,9 @@ const SubmissionCard = ({
                   size="small"
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
-                  slotProps={{ htmlInput: { min: 0, max: 100, style: { width: 60, textAlign: 'center', fontWeight: 700 } } }}
+                  slotProps={{ htmlInput: { min: 0, max: maxPts, style: { width: 60, textAlign: 'center', fontWeight: 700 } } }}
                 />
-                <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>/ 100</Typography>
+                <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>/ {maxPts}</Typography>
               </Box>
             </Box>
             <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'right' }}>
@@ -153,10 +154,16 @@ const SubmissionCard = ({
   );
 };
 
-export const ProblemDetailsPage = () => {
+interface ProblemDetailsPageProps {
+  problemId?: number;
+  onBack?: () => void;
+}
+
+export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: ProblemDetailsPageProps = {}) => {
   const { t } = useTranslation();
-  const { problemId } = useParams();
+  const { problemId: routeProblemId } = useParams();
   const navigate = useNavigate();
+  const problemId = problemIdProp != null ? String(problemIdProp) : routeProblemId;
   const [problem, setProblem] = useState<BackendProblem | null>(null);
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -168,12 +175,14 @@ export const ProblemDetailsPage = () => {
       setError(null);
       try {
         const id = Number(problemId);
-        const [prob, subs] = await Promise.all([
-          getProblemById(id),
-          getSubmissions(id),
-        ]);
+        const prob = await getProblemById(id);
         setProblem(prob);
-        setSubmissions(subs);
+        const isBankView = problemIdProp == null;
+        if (!isBankView || (prob.canModify ?? false)) {
+          setSubmissions(await getSubmissions(id));
+        } else {
+          setSubmissions([]);
+        }
       } catch (err: unknown) {
         setError(getApiErrorMessage(err, t('problem.details.notFound')));
       } finally {
@@ -181,7 +190,7 @@ export const ProblemDetailsPage = () => {
       }
     };
     fetchData();
-  }, [problemId]);
+  }, [problemId, problemIdProp]);
 
   const handleGraded = (updated: Submission) => {
     setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
@@ -199,13 +208,14 @@ export const ProblemDetailsPage = () => {
   }
 
   const difficulty = difficultyIdToLabel(problem.difficulty);
+  const canViewSubmissions = problemIdProp != null || (problem.canModify ?? false);
 
   return (
     <Box sx={{ pb: 8 }}>
       <Button
         variantType="outline"
         startIcon={<ArrowLeft size={18} />}
-        onClick={() => navigate(-1)}
+        onClick={() => (onBack ? onBack() : navigate(-1))}
         sx={{ mb: 3 }}
       >
         {t('problem.details.back')}
@@ -251,25 +261,29 @@ export const ProblemDetailsPage = () => {
         )}
       </Paper>
 
-      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <FileCode size={24} color="#8B1D23" />
-        {t('problem.details.submissionsTitle', { count: submissions.length })}
-      </Typography>
+      {canViewSubmissions && (
+        <>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <FileCode size={24} color="#8B1D23" />
+            {t('problem.details.submissionsTitle', { count: submissions.length })}
+          </Typography>
 
-      {submissions.length === 0 ? (
-        <Paper
-          elevation={0}
-          sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
-        >
-          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
-          <Typography variant="body2">{t('problem.details.noSubmissionsHint')}</Typography>
-        </Paper>
-      ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {submissions.map((sub) => (
-            <SubmissionCard key={sub.id} submission={sub} onGraded={handleGraded} />
-          ))}
-        </Box>
+          {submissions.length === 0 ? (
+            <Paper
+              elevation={0}
+              sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
+            >
+              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
+              <Typography variant="body2">{t('problem.details.noSubmissionsHint')}</Typography>
+            </Paper>
+          ) : (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              {submissions.map((sub) => (
+                <SubmissionCard key={sub.id} submission={sub} onGraded={handleGraded} />
+              ))}
+            </Box>
+          )}
+        </>
       )}
     </Box>
   );

@@ -10,7 +10,6 @@ import {
   Button,
   Alert,
   CircularProgress,
-  Chip,
 } from "@mui/material";
 import { Edit, Save, GraduationCap } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -140,12 +139,6 @@ export const StudentAcademicInfo = () => {
               <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#0f172a", fontSize: "1.1rem" }}>
                 {t("profile.student.title")}
               </Typography>
-              {profile && (
-                <Box sx={{ display: "flex", gap: 1, mt: 0.5 }}>
-                  <Chip label={t("profile.student.score", { score: profile.score })} size="small" sx={{ bgcolor: "#f1f5f9", color: "#475569", fontWeight: 600, fontSize: "0.7rem" }} />
-                  <Chip label={t("profile.student.solved", { count: profile.problemSolved })} size="small" sx={{ bgcolor: "#f1f5f9", color: "#475569", fontWeight: 600, fontSize: "0.7rem" }} />
-                </Box>
-              )}
             </Box>
           </Box>
           {!loading && (
