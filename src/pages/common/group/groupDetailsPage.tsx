@@ -416,6 +416,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <ProblemDetailsPage
                     problemId={detailProblemId}
                     onBack={() => setDetailProblemId(null)}
+                    source="contest"
                 />
             </StyledContainer>
         );

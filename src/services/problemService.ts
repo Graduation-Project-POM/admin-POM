@@ -104,6 +104,7 @@ export interface Submission {
   solutionText?: string | null;
   photoUrl?: string | null;
   grade?: number | null;
+  feedback?: string | null;
   submittedAt: string;
   isMine?: boolean;
   isPublished?: boolean;

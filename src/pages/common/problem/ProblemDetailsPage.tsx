@@ -9,8 +9,9 @@ import {
   Avatar,
   Chip,
   CircularProgress,
+  TextField,
 } from '@mui/material';
-import { ArrowLeft, FileCode } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, FileCode } from 'lucide-react';
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
@@ -20,13 +21,57 @@ import {
   type BackendProblem,
   type Submission,
 } from '../../../services/problemService';
+import { problemsService, type ProblemSubmission } from '../../../services/problemsService';
 import { resolveMediaUrl } from '../../../utils/media';
+
+const contestToSubmission = (s: ProblemSubmission): Submission => ({
+  id: s.id,
+  problemId: s.problemId,
+  studentName: s.studentName,
+  studentEmail: null,
+  solutionText: s.solutionText,
+  photoUrl: s.solutionPhotoUrl,
+  grade: s.score,
+  feedback: s.feedback,
+  submittedAt: s.submittedAt,
+  problemPoints: s.problemPoints,
+});
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-const SubmissionCard = ({ submission }: { submission: Submission }) => {
+const SubmissionCard = ({
+  submission,
+  canGrade = false,
+  onGrade,
+}: {
+  submission: Submission;
+  canGrade?: boolean;
+  onGrade?: (submissionId: number, score: number, feedback: string) => Promise<void>;
+}) => {
   const { t } = useTranslation();
+  const maxPts = submission.problemPoints ?? 100;
+  const [grade, setGrade] = useState<string>(submission.grade != null ? String(submission.grade) : '');
+  const [feedback, setFeedback] = useState<string>(submission.feedback ?? '');
+  const [saving, setSaving] = useState(false);
+  const [gradeError, setGradeError] = useState<string | null>(null);
+
+  const handleSave = async () => {
+    const value = Number(grade);
+    if (grade === '' || Number.isNaN(value) || value < 0 || value > maxPts) {
+      setGradeError(t('problem.details.gradeRange', `Grade must be between 0 and ${maxPts}.`));
+      return;
+    }
+    setGradeError(null);
+    setSaving(true);
+    try {
+      await onGrade?.(submission.id, value, feedback);
+    } catch (err: unknown) {
+      setGradeError(getApiErrorMessage(err, t('problem.details.saveGradeError', 'Failed to save grade.')));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
@@ -44,9 +89,64 @@ const SubmissionCard = ({ submission }: { submission: Submission }) => {
             </Box>
           </Box>
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-          <Typography variant="caption" sx={{ color: '#94a3b8' }}>
-            {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
-          </Typography>
+          {canGrade ? (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.status', 'Status')}</Typography>
+                <Chip
+                  label={submission.grade != null ? t('problem.details.graded', 'Graded') : t('problem.details.pending', 'Pending')}
+                  size="small"
+                  sx={{
+                    fontWeight: 700,
+                    fontSize: '11px',
+                    bgcolor: submission.grade != null ? '#e7f7ec' : '#fef3c7',
+                    color: submission.grade != null ? '#166534' : '#92400e',
+                  }}
+                />
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.grade', 'Grade')}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <TextField
+                    type="number"
+                    size="small"
+                    value={grade}
+                    onChange={(e) => setGrade(e.target.value)}
+                    slotProps={{ htmlInput: { min: 0, max: maxPts, style: { width: 60, textAlign: 'center', fontWeight: 700 } } }}
+                  />
+                  <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>/ {maxPts}</Typography>
+                </Box>
+              </Box>
+              <TextField
+                size="small"
+                multiline
+                minRows={2}
+                placeholder={t('problem.details.feedbackPlaceholder', 'Feedback (optional)')}
+                value={feedback}
+                onChange={(e) => setFeedback(e.target.value)}
+              />
+              {gradeError && (
+                <Typography variant="caption" sx={{ color: '#dc2626' }}>{gradeError}</Typography>
+              )}
+              <Button
+                variantType="default"
+                fullWidth
+                startIcon={<CheckCircle2 size={16} />}
+                sx={{ bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' } }}
+                onClick={handleSave}
+                disabled={saving}
+              >
+                {saving ? t('problem.details.saving', 'Saving...') : t('problem.details.saveGrade', 'Save grade')}
+              </Button>
+              <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+                {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+              {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
+            </Typography>
+          )}
         </Box>
 
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
@@ -74,14 +174,13 @@ const SubmissionCard = ({ submission }: { submission: Submission }) => {
 };
 
 interface ProblemDetailsPageProps {
-  /** When provided, render inline for this problem instead of reading the route
-   *  param. Lets the same page be reused inside the group/contest view. */
+
   problemId?: number;
-  /** Custom back handler (defaults to router back). */
   onBack?: () => void;
+  source?: 'bank' | 'contest';
 }
 
-export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: ProblemDetailsPageProps = {}) => {
+export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 'bank' }: ProblemDetailsPageProps = {}) => {
   const { t } = useTranslation();
   const { problemId: routeProblemId } = useParams();
   const navigate = useNavigate();
@@ -103,7 +202,16 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
         // the problem's creator can see the details but not the submissions.
         const isBankView = problemIdProp == null;
         if (!isBankView || (prob.canModify ?? false)) {
-          setSubmissions(await getSubmissions(id));
+          try {
+            if (source === 'contest') {
+              const subs = await problemsService.getSubmissions(id);
+              setSubmissions(subs.map(contestToSubmission));
+            } else {
+              setSubmissions(await getSubmissions(id));
+            }
+          } catch {
+            setSubmissions([]);
+          }
         } else {
           setSubmissions([]);
         }
@@ -114,7 +222,7 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
       }
     };
     fetchData();
-  }, [problemId, problemIdProp, t]);
+  }, [problemId, problemIdProp, source, t]);
 
   if (loading) {
     return (
@@ -128,8 +236,19 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
   }
 
   const difficulty = difficultyIdToLabel(problem.difficulty);
-  // Hide submissions in the Problem Bank view when the trainer isn't the creator.
   const canViewSubmissions = problemIdProp != null || (problem.canModify ?? false);
+  // Grading is contest-only. The backend's GET /submissions and PUT .../grade share
+  // the same authorization (contest owner or admin), so if these submissions loaded,
+  // the current user is allowed to grade them.
+  const canGrade = source === 'contest';
+
+  const handleGrade = async (submissionId: number, score: number, feedback: string) => {
+    await problemsService.gradeSubmission(submissionId, { score, feedback });
+    // Reflect the new grade/feedback locally without a full refetch.
+    setSubmissions((prev) =>
+      prev.map((s) => (s.id === submissionId ? { ...s, grade: score, feedback } : s)),
+    );
+  };
 
   return (
     <Box sx={{ pb: 8 }}>
@@ -200,7 +319,7 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
           ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               {submissions.map((sub) => (
-                <SubmissionCard key={sub.id} submission={sub} />
+                <SubmissionCard key={sub.id} submission={sub} canGrade={canGrade} onGrade={handleGrade} />
               ))}
             </Box>
           )}
