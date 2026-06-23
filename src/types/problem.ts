@@ -36,6 +36,8 @@ export interface CreateProblemInput {
   photoFileKey?: string | null;
   trainerID?: number;
   isPublished?: boolean;
+  points: number;               
+  isBankVisible?: boolean;      
   // false ⇒ contest problem (kept out of the Problem Bank). Defaults to bank on the server.
   isBankProblem?: boolean;
 }
@@ -50,6 +52,8 @@ export interface ProblemDetail {
   topic: string;
   photoUrl: string | null;
   isPublished: boolean;
+  points: number;                
+  solvedCount: number;         
 }
 
 export interface UpdateProblemInput {
@@ -61,4 +65,5 @@ export interface UpdateProblemInput {
   topic: string;
   photoFileKey?: string | null;
   isPublished: boolean;
+  points: number;               
 }

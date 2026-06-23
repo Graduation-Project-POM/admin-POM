@@ -91,6 +91,8 @@ type Problem = {
   publisher: string;
   status: "published" | "draft";
   canModify: boolean;
+  points: number;   
+  solved: number;   
 };
 
 const toTableRow = (p: BackendProblem): Problem => ({
@@ -101,6 +103,8 @@ const toTableRow = (p: BackendProblem): Problem => ({
   publisher: p.publisherName || "—",
   status: p.isPublished ? "published" : "draft",
   canModify: p.canModify ?? false,
+  points: p.points,
+  solved: p.solvedCount,
 });
 
 export const ProblemsPage = () => {
@@ -163,6 +167,7 @@ export const ProblemsPage = () => {
       topic: data.category,
       isPublished: data.isPublished,
       photoFileKey: data.imageUrl || undefined,
+      points: data.points,
     });
     await loadProblems();
   };
@@ -177,6 +182,7 @@ export const ProblemsPage = () => {
       topic: data.category,
       isPublished: data.isPublished,
       photoFileKey: data.imageUrl || undefined,
+      points: data.points,
     });
     await loadProblems();
   };
@@ -243,6 +249,22 @@ export const ProblemsPage = () => {
           label={row.difficulty}
           difficulty={row.difficulty}
         />
+      ),
+    },
+    {
+      id: "points",
+      label: t("problem.list.columns.points", "Points"),
+      render: (row: Problem) => (
+        <Typography sx={{ fontWeight: 700, color: "#8B1D23", fontSize: "13px" }}>{row.points}</Typography>
+      ),
+    },
+    {
+      id: "solved",
+      label: t("problem.list.columns.solved", "Solved"),
+      render: (row: Problem) => (
+        <Typography sx={{ fontWeight: 600, color: "#166534", fontSize: "13px" }}>
+          {row.solved} {t("problem.list.solvedSuffix", "solved")}
+        </Typography>
       ),
     },
     { id: "publisher", label: t("problem.list.columns.publisher") },

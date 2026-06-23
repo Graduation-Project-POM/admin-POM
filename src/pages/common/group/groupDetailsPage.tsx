@@ -32,7 +32,7 @@ import ViewContest from '../contest/View';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import CreateProblem, { type ProblemFormValues } from '../problem/Create';
 import EditProblem, { type ProblemEditValues } from '../problem/Edit';
-import ProblemDetailModal from '../problem/ProblemDetailModal';
+import { ProblemDetailsPage } from '../problem/ProblemDetailsPage';
 import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
 import { getApiErrorMessage } from '../../../utils/apiError';
@@ -69,7 +69,6 @@ interface TrainerInfo {
     specialization: string;
 }
 
-// A problem row shown in a contest's problem table within the group view.
 interface GroupContestProblem {
     id: string;
     title: string;
@@ -78,7 +77,6 @@ interface GroupContestProblem {
     successRate: number;
 }
 
-// Prefill object handed to the EditProblem modal.
 interface ProblemEditPrefill {
     id: string;
     title: string;
@@ -88,6 +86,7 @@ interface ProblemEditPrefill {
     difficulty: string;
     visibility: string;
     tags: string[];
+    points: number;
 }
 
 
@@ -140,7 +139,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState<ProblemEditPrefill | null>(null);
     const [detailProblemId, setDetailProblemId] = useState<number | null>(null);
-    const [isDetailOpen, setIsDetailOpen] = useState(false);
 
     const [confirmConfig, setConfirmConfig] = useState<{
         open: boolean;
@@ -253,6 +251,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 topic: form.category || 'General',
                 photoFileKey: form.imageUrl || null,
                 isPublished: form.isPublished,
+                points: form.points,          // Req 3
+                isBankVisible: false,         // Req 1: group/contest-scoped
             });
             await contestService.update(Number(selectedContest.id), {
                 problemIds: [...contestProblemIds, newId],
@@ -275,6 +275,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 topic: form.category || 'General',
                 photoFileKey: form.imageUrl || null,
                 isPublished: form.isPublished,
+                points: form.points,          // Req 3/4
             });
             await loadContestQuestions(selectedContest.id);
         } catch (err) {
@@ -295,6 +296,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 difficulty: DIFFICULTY_LABEL[detail.difficulty] ?? 'Medium',
                 visibility: detail.isPublished ? 'general' : 'group-specific',
                 tags: [],
+                points: detail.points,
             });
             setIsEditProblemOpen(true);
         } catch (err) {
@@ -408,6 +410,17 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         });
     };
 
+    if (viewingProblems && selectedContest && detailProblemId != null) {
+        return (
+            <StyledContainer maxWidth="xl">
+                <ProblemDetailsPage
+                    problemId={detailProblemId}
+                    onBack={() => setDetailProblemId(null)}
+                />
+            </StyledContainer>
+        );
+    }
+
     if (viewingProblems && selectedContest) {
         return (
             <StyledContainer maxWidth="xl">
@@ -427,7 +440,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             label: t('group.details.problemName'),
                             render: (row) => (
                                 <Typography
-                                    onClick={() => { setDetailProblemId(Number(row.id)); setIsDetailOpen(true); }}
+                                    onClick={() => setDetailProblemId(Number(row.id))}
                                     sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
                                 >
                                     {row.title}
@@ -463,12 +476,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     onDelete={handleBulkDeleteProblems}
                     addButtonLabel={t('group.details.addProblem')}
                     searchPlaceholder={t('group.details.searchProblems')}
-                />
-
-                <ProblemDetailModal
-                    open={isDetailOpen}
-                    onClose={() => { setIsDetailOpen(false); setDetailProblemId(null); }}
-                    problemId={detailProblemId}
                 />
 
                 <CreateProblem
