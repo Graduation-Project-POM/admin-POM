@@ -14,7 +14,6 @@ import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getAllProblemSolutions,
-  getMyDraftsForProblem,
   difficultyIdToLabel,
   type MyProblemSolutions,
   type Submission,
