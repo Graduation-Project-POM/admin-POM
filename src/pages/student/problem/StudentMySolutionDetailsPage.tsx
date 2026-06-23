@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -8,81 +8,19 @@ import {
   CircularProgress,
   Divider,
 } from '@mui/material';
-import { ArrowLeft, BookOpen, Layers, Trophy } from 'lucide-react';
+import { ArrowLeft, BookOpen, FileCode } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
-  getMyProblemSolutions,
+  getAllProblemSolutions,
   difficultyIdToLabel,
   type MyProblemSolutions,
   type Submission,
 } from '../../../services/problemService';
-import { resolveMediaUrl } from '../../../utils/media';
+import { CommunitySubmissionCard } from './CommunitySubmissionCard';
 
-const SubmissionCard = ({
-  submission,
-  source,
-}: {
-  submission: Submission;
-  source: 'bank' | 'contest';
-}) => {
-  const { t } = useTranslation();
-  const showPoints = source === 'contest' && submission.grade != null;
-  const showPending = source === 'contest' && submission.grade == null;
-
-  return (
-    <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          {source === 'bank' ? (
-            <Chip
-              icon={<Layers size={12} />}
-              label={t('student.mySolutionDetails.bankBadge')}
-              size="small"
-              sx={{ bgcolor: '#eef2ff', color: '#4338ca', fontWeight: 700, fontSize: '11px' }}
-            />
-          ) : (
-            <Chip
-              icon={<Trophy size={12} />}
-              label={t('student.mySolutionDetails.contestBadge')}
-              size="small"
-              sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '11px' }}
-            />
-          )}
-          <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
-            {t('student.mySolutionDetails.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
-          </Typography>
-        </Box>
-        {showPoints && (
-          <Chip
-            label={t('student.mySolutionDetails.points', { score: submission.grade })}
-            sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700 }}
-          />
-        )}
-        {showPending && (
-          <Chip
-            label={t('student.mySolutionDetails.pending')}
-            sx={{ bgcolor: '#fff7e0', color: '#92400e', fontWeight: 700 }}
-          />
-        )}
-      </Box>
-      <Box sx={{ bgcolor: '#8b1d2325', p: 2.5, borderRadius: '12px', overflow: 'hidden' }}>
-        <Typography
-          component="pre"
-          sx={{ color: '#8B1D23', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
-        >
-          {submission.solutionText || t('student.mySolutionDetails.noSolution')}
-        </Typography>
-        {submission.photoUrl && (
-          <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
-            <img src={resolveMediaUrl(submission.photoUrl) ?? undefined} alt="solution" style={{ width: '100%', display: 'block' }} />
-          </Box>
-        )}
-      </Box>
-    </Paper>
-  );
-};
+type TaggedSubmission = { submission: Submission; source: 'bank' | 'contest' };
 
 export const StudentMySolutionDetailsPage = () => {
   const { problemId } = useParams();
@@ -97,7 +35,7 @@ export const StudentMySolutionDetailsPage = () => {
     setError(null);
     try {
       const id = Number(problemId);
-      const result = await getMyProblemSolutions(id);
+      const result = await getAllProblemSolutions(id);
       setData(result);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, t('student.mySolutionDetails.notFound')));
@@ -109,6 +47,19 @@ export const StudentMySolutionDetailsPage = () => {
   useEffect(() => {
     load();
   }, [load]);
+
+  const { mine, others, totalCount } = useMemo(() => {
+    const all: TaggedSubmission[] = [];
+    if (data) {
+      data.bankSubmissions.forEach((s) => all.push({ submission: s, source: 'bank' }));
+      data.contestSubmissions.forEach((s) => all.push({ submission: s, source: 'contest' }));
+    }
+    return {
+      mine: all.filter((x) => x.submission.isMine),
+      others: all.filter((x) => !x.submission.isMine),
+      totalCount: all.length,
+    };
+  }, [data]);
 
   if (loading) {
     return (
@@ -129,7 +80,6 @@ export const StudentMySolutionDetailsPage = () => {
   }
 
   const difficulty = difficultyIdToLabel(data.difficulty);
-  const totalSubmissions = data.bankSubmissions.length + data.contestSubmissions.length;
 
   return (
     <Box sx={{ pb: 8 }}>
@@ -137,7 +87,6 @@ export const StudentMySolutionDetailsPage = () => {
         {t('student.mySolutionDetails.back')}
       </Button>
 
-      {/* ─── Problem statement (only) ────────────────────────────────── */}
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
@@ -166,41 +115,45 @@ export const StudentMySolutionDetailsPage = () => {
         </Typography>
       </Paper>
 
-      {/* ─── My solutions (bank + contest, no community) ─────────────── */}
-      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3 }}>
-        {t('student.mySolutionDetails.mySolutions', { count: totalSubmissions })}
+      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <FileCode size={24} color="#8B1D23" />
+        {t('student.problemDetails.allSubmissions', { count: totalCount })}
       </Typography>
 
-      {totalSubmissions === 0 ? (
+      {totalCount === 0 ? (
         <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}>
           <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>
-            {t('student.mySolutionDetails.noMine')}
+            {t('student.problemDetails.noSolutionsYet')}
           </Typography>
         </Paper>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {data.contestSubmissions.length > 0 && (
+          {mine.length > 0 && (
             <>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#475569', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Trophy size={16} color="#92400e" />
-                {t('student.mySolutionDetails.contestSection', { count: data.contestSubmissions.length })}
+              <Typography variant="subtitle1" sx={{ fontWeight: 700 }}>
+                {t('student.problemDetails.yourSubmissions', { count: mine.length })}
               </Typography>
-              {data.contestSubmissions.map((sub) => (
-                <SubmissionCard key={`c-${sub.id}`} submission={sub} source="contest" />
+              {mine.map((x) => (
+                <CommunitySubmissionCard
+                  key={`${x.source}-${x.submission.id}`}
+                  submission={x.submission}
+                  source={x.source}
+                />
               ))}
+              {others.length > 0 && <Divider sx={{ my: 1 }} />}
             </>
           )}
-
-          {data.contestSubmissions.length > 0 && data.bankSubmissions.length > 0 && <Divider />}
-
-          {data.bankSubmissions.length > 0 && (
+          {others.length > 0 && (
             <>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#475569', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Layers size={16} color="#4338ca" />
-                {t('student.mySolutionDetails.bankSection', { count: data.bankSubmissions.length })}
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#475569' }}>
+                {t('student.problemDetails.communityHeading', { count: others.length })}
               </Typography>
-              {data.bankSubmissions.map((sub) => (
-                <SubmissionCard key={`b-${sub.id}`} submission={sub} source="bank" />
+              {others.map((x) => (
+                <CommunitySubmissionCard
+                  key={`${x.source}-${x.submission.id}`}
+                  submission={x.submission}
+                  source={x.source}
+                />
               ))}
             </>
           )}

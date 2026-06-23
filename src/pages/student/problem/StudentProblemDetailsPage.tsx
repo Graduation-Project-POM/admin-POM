@@ -6,9 +6,6 @@ import {
   Paper,
   Chip,
   CircularProgress,
-  MenuItem,
-  Select,
-  FormControl,
   Divider,
 } from '@mui/material';
 import { ArrowLeft, FileCode, Send, BookOpen, ListChecks } from 'lucide-react';
@@ -17,21 +14,24 @@ import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getProblemById,
-  getMyBankSubmissionsForProblem,
+  getAllProblemSolutions,
   difficultyIdToLabel,
   type BackendProblem,
   type Submission,
+  type MyProblemSolutions,
 } from '../../../services/problemService';
 import { resolveMediaUrl } from '../../../utils/media';
 import { SubmitSolutionModal } from './SubmitSolutionModal';
+import { CommunitySubmissionCard } from './CommunitySubmissionCard';
+
+type TaggedSubmission = { submission: Submission; source: 'bank' | 'contest' };
 
 export const StudentProblemDetailsPage = () => {
   const { problemId } = useParams();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [problem, setProblem] = useState<BackendProblem | null>(null);
-  const [mySubmissions, setMySubmissions] = useState<Submission[]>([]);
-  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [solutions, setSolutions] = useState<MyProblemSolutions | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [solveOpen, setSolveOpen] = useState(false);
@@ -41,13 +41,12 @@ export const StudentProblemDetailsPage = () => {
     setError(null);
     try {
       const id = Number(problemId);
-      const [prob, mine] = await Promise.all([
+      const [prob, all] = await Promise.all([
         getProblemById(id),
-        getMyBankSubmissionsForProblem(id),
+        getAllProblemSolutions(id),
       ]);
       setProblem(prob);
-      setMySubmissions(mine);
-      setSelectedIdx(0);
+      setSolutions(all);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, t('student.problemDetails.notFound')));
     } finally {
@@ -59,10 +58,16 @@ export const StudentProblemDetailsPage = () => {
     load();
   }, [load]);
 
-  const selectedSubmission = useMemo<Submission | null>(
-    () => mySubmissions[selectedIdx] ?? null,
-    [mySubmissions, selectedIdx],
-  );
+  const { mine, others, totalCount } = useMemo(() => {
+    const all: TaggedSubmission[] = [];
+    if (solutions) {
+      solutions.bankSubmissions.forEach((s) => all.push({ submission: s, source: 'bank' }));
+      solutions.contestSubmissions.forEach((s) => all.push({ submission: s, source: 'contest' }));
+    }
+    const mineList = all.filter((x) => x.submission.isMine);
+    const othersList = all.filter((x) => !x.submission.isMine);
+    return { mine: mineList, others: othersList, totalCount: all.length };
+  }, [solutions]);
 
   if (loading) {
     return (
@@ -92,7 +97,6 @@ export const StudentProblemDetailsPage = () => {
         {t('student.problemDetails.back')}
       </Button>
 
-      {/* ─── Problem description section ─────────────────────────────── */}
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
@@ -199,63 +203,51 @@ export const StudentProblemDetailsPage = () => {
         </Box>
       </Paper>
 
-      {/* ─── My submissions section ──────────────────────────────────── */}
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3, flexWrap: 'wrap', gap: 2 }}>
-        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <FileCode size={24} color="#8B1D23" />
-          {t('student.problemDetails.mySubmissions', { count: mySubmissions.length })}
-        </Typography>
-        {mySubmissions.length > 1 && (
-          <FormControl size="small" sx={{ minWidth: 240 }}>
-            <Select
-              value={selectedIdx}
-              onChange={(e) => setSelectedIdx(Number(e.target.value))}
-              sx={{ bgcolor: '#fff' }}
-            >
-              {mySubmissions.map((sub, i) => (
-                <MenuItem key={sub.id} value={i}>
-                  {i === 0
-                    ? t('student.problemDetails.latestSubmissionAt', { date: new Date(sub.submittedAt).toLocaleString() })
-                    : t('student.problemDetails.submissionAt', { date: new Date(sub.submittedAt).toLocaleString() })}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        )}
-      </Box>
+      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <FileCode size={24} color="#8B1D23" />
+        {t('student.problemDetails.allSubmissions', { count: totalCount })}
+      </Typography>
 
-      {mySubmissions.length === 0 ? (
+      {totalCount === 0 ? (
         <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}>
           <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>
-            {t('student.problemDetails.noMySubmissions')}
+            {t('student.problemDetails.noSolutionsYet')}
           </Typography>
-          <Typography variant="body2">{t('student.problemDetails.mySubmissionsHint')}</Typography>
+          <Typography variant="body2">{t('student.problemDetails.beFirst')}</Typography>
         </Paper>
-      ) : selectedSubmission ? (
-        <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2, flexWrap: 'wrap', gap: 1 }}>
-            <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
-              {t('student.problemDetails.submittedAt', { date: new Date(selectedSubmission.submittedAt).toLocaleString() })}
-            </Typography>
-            {selectedIdx === 0 && mySubmissions.length > 1 && (
-              <Chip label={t('student.problemDetails.latestBadge')} size="small" sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700 }} />
-            )}
-          </Box>
-          <Box sx={{ bgcolor: '#8b1d2325', p: 2.5, borderRadius: '12px', overflow: 'hidden' }}>
-            <Typography
-              component="pre"
-              sx={{ color: '#8B1D23', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
-            >
-              {selectedSubmission.solutionText || t('student.problemDetails.noSolution')}
-            </Typography>
-            {selectedSubmission.photoUrl && (
-              <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
-                <img src={resolveMediaUrl(selectedSubmission.photoUrl) ?? undefined} alt="solution" style={{ width: '100%', display: 'block' }} />
-              </Box>
-            )}
-          </Box>
-        </Paper>
-      ) : null}
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {mine.length > 0 && (
+            <>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#8B1D23' }}>
+                {t('student.problemDetails.yourSubmissions', { count: mine.length })}
+              </Typography>
+              {mine.map((x) => (
+                <CommunitySubmissionCard
+                  key={`${x.source}-${x.submission.id}`}
+                  submission={x.submission}
+                  source={x.source}
+                />
+              ))}
+              {others.length > 0 && <Divider sx={{ my: 1 }} />}
+            </>
+          )}
+          {others.length > 0 && (
+            <>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#475569' }}>
+                {t('student.problemDetails.communityHeading', { count: others.length })}
+              </Typography>
+              {others.map((x) => (
+                <CommunitySubmissionCard
+                  key={`${x.source}-${x.submission.id}`}
+                  submission={x.submission}
+                  source={x.source}
+                />
+              ))}
+            </>
+          )}
+        </Box>
+      )}
 
       <SubmitSolutionModal
         open={solveOpen}

@@ -87,7 +87,6 @@ export const submitSolution = async (
   problemId: number,
   data: SubmitSolutionPayload,
 ) => {
-  // Problem Bank submissions are stored separately from contest submissions.
   const response = await api.post(`${BASE}/${problemId}/bank-submit`, data);
   return response.data;
 };
@@ -95,13 +94,13 @@ export const submitSolution = async (
 export interface Submission {
   id: number;
   problemId: number;
-  studentId: number;
   studentName: string;
   studentEmail?: string | null;
   solutionText?: string | null;
   photoUrl?: string | null;
   grade?: number | null;
   submittedAt: string;
+  isMine?: boolean;
   problemTitle?: string | null;
   problemTopic?: string | null;
   problemStatement?: string | null;
@@ -155,6 +154,13 @@ export const getMyProblemSolutions = async (
   problemId: number,
 ): Promise<MyProblemSolutions> => {
   const response = await api.get<MyProblemSolutions>(`${BASE}/${problemId}/my-solutions`);
+  return response.data;
+};
+
+export const getAllProblemSolutions = async (
+  problemId: number,
+): Promise<MyProblemSolutions> => {
+  const response = await api.get<MyProblemSolutions>(`${BASE}/${problemId}/all-solutions`);
   return response.data;
 };
 
