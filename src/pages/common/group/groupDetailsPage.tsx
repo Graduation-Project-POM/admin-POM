@@ -246,6 +246,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             const newId = await problemsService.create({
                 title: form.title,
                 statement: form.description || '',
+                constraints: form.constraints || null,
+                examples: form.examples.length > 0 ? form.examples : null,
                 solution: form.description || form.title,
                 difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
                 topic: form.category || 'General',
@@ -267,6 +269,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             await problemsService.update(Number(form.id), {
                 title: form.title,
                 statement: form.description || '',
+                constraints: form.constraints || null,
+                examples: form.examples.length > 0 ? form.examples : null,
                 difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
                 topic: form.category || 'General',
                 photoFileKey: form.imageUrl || null,
@@ -471,16 +475,18 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     open={isCreateProblemOpen}
                     onClose={() => setIsCreateProblemOpen(false)}
                     onSave={handleCreateProblem}
+                    requireStatus={false}
                 />
-                
-                <EditProblem 
-                    open={isEditProblemOpen} 
+
+                <EditProblem
+                    open={isEditProblemOpen}
                     onClose={() => {
                         setIsEditProblemOpen(false);
                         setSelectedProblem(null);
-                    }} 
-                    problem={selectedProblem} 
-                    onSave={handleUpdateProblem} 
+                    }}
+                    problem={selectedProblem}
+                    onSave={handleUpdateProblem}
+                    requireStatus={false}
                 />
 
                 <ConfirmationModal 

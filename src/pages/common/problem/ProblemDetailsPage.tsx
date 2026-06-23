@@ -9,15 +9,13 @@ import {
   Avatar,
   Chip,
   CircularProgress,
-  TextField,
 } from '@mui/material';
-import { ArrowLeft, CheckCircle2, FileCode } from 'lucide-react';
+import { ArrowLeft, FileCode } from 'lucide-react';
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getProblemById,
   getSubmissions,
-  gradeSubmission,
   difficultyIdToLabel,
   type BackendProblem,
   type Submission,
@@ -27,42 +25,12 @@ import { resolveMediaUrl } from '../../../utils/media';
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-const SubmissionCard = ({
-  submission,
-  onGraded,
-}: {
-  submission: Submission;
-  onGraded: (s: Submission) => void;
-}) => {
+const SubmissionCard = ({ submission }: { submission: Submission }) => {
   const { t } = useTranslation();
-  const [grade, setGrade] = useState<string>(
-    submission.grade != null ? String(submission.grade) : '',
-  );
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSave = async () => {
-    const value = Number(grade);
-    if (grade === '' || Number.isNaN(value) || value < 0 || value > 100) {
-      setError(t('problem.details.gradeRange'));
-      return;
-    }
-    setError(null);
-    setSaving(true);
-    try {
-      const updated = await gradeSubmission(submission.id, value);
-      onGraded(updated);
-    } catch (err: unknown) {
-      setError(getApiErrorMessage(err, t('problem.details.saveGradeError')));
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '350px 1fr' }, gap: 4 }}>
-        {/* Student Info + Grading */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '300px 1fr' }, gap: 4 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', fontWeight: 700 }}>
@@ -70,56 +38,15 @@ const SubmissionCard = ({
             </Avatar>
             <Box>
               <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>{submission.studentName}</Typography>
-              <Typography variant="body2" sx={{ color: '#64748b' }}>{submission.studentEmail}</Typography>
+              {submission.studentEmail && (
+                <Typography variant="body2" sx={{ color: '#64748b' }}>{submission.studentEmail}</Typography>
+              )}
             </Box>
           </Box>
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.status')}</Typography>
-              <Chip
-                label={submission.grade != null ? t('problem.details.graded') : t('problem.details.pending')}
-                size="small"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: '11px',
-                  bgcolor: submission.grade != null ? '#e7f7ec' : '#fef3c7',
-                  color: submission.grade != null ? '#166534' : '#92400e',
-                }}
-              />
-            </Box>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.grade')}</Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <TextField
-                  type="number"
-                  size="small"
-                  value={grade}
-                  onChange={(e) => setGrade(e.target.value)}
-                  slotProps={{ htmlInput: { min: 0, max: 100, style: { width: 60, textAlign: 'center', fontWeight: 700 } } }}
-                />
-                <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>/ 100</Typography>
-              </Box>
-            </Box>
-            <Typography variant="caption" sx={{ color: '#94a3b8', textAlign: 'right' }}>
-              {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
-            </Typography>
-          </Box>
-          {error && (
-            <Typography variant="caption" sx={{ color: '#dc2626', display: 'block', mt: 1 }}>
-              {error}
-            </Typography>
-          )}
-          <Button
-            variantType="default"
-            fullWidth
-            startIcon={<CheckCircle2 size={16} />}
-            sx={{ mt: 3, bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' } }}
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saving ? t('problem.details.saving') : t('problem.details.saveGrade')}
-          </Button>
+          <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+            {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
+          </Typography>
         </Box>
 
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
@@ -131,20 +58,13 @@ const SubmissionCard = ({
           </Box>
           <Typography
             component="pre"
-            sx={{
-              color: '#8B1D23',
-              fontSize: '13px',
-              lineHeight: 1.6,
-              m: 0,
-              overflowX: 'auto',
-              whiteSpace: 'pre-wrap',
-            }}
+            sx={{ color: '#8B1D23', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
           >
             {submission.solutionText || t('problem.details.noSolution')}
           </Typography>
           {submission.photoUrl && (
             <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
-              <img src={submission.photoUrl} alt="solution" style={{ width: '100%', display: 'block' }} />
+              <img src={resolveMediaUrl(submission.photoUrl) ?? undefined} alt="solution" style={{ width: '100%', display: 'block' }} />
             </Box>
           )}
         </Box>
@@ -181,11 +101,7 @@ export const ProblemDetailsPage = () => {
       }
     };
     fetchData();
-  }, [problemId]);
-
-  const handleGraded = (updated: Submission) => {
-    setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
-  };
+  }, [problemId, t]);
 
   if (loading) {
     return (
@@ -267,7 +183,7 @@ export const ProblemDetailsPage = () => {
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {submissions.map((sub) => (
-            <SubmissionCard key={sub.id} submission={sub} onGraded={handleGraded} />
+            <SubmissionCard key={sub.id} submission={sub} />
           ))}
         </Box>
       )}

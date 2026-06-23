@@ -6,27 +6,28 @@ import {
 } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
 import {
-  RotateCcw, BookOpen, Filter, Target, Flame, CheckCircle2, Clock,
-  BarChart3, Award, Zap, Tag,
+  RotateCcw, BookOpen, Filter, Target, Flame, Clock, Tag, Zap, Layers, Trophy,
 } from 'lucide-react';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
-  getMySubmissions,
+  getMySolvedProblems,
   difficultyIdToLabel,
-  type Submission,
+  type MySolvedProblemSummary,
   type DifficultyLabel,
 } from '../../../services/problemService';
 
-interface SubmissionRow {
+interface Row {
   id: string;
   problemId: number;
   name: string;
   difficulty: DifficultyLabel;
   topic: string;
-  grade: number | null;
-  submittedAt: string;
+  hasBank: boolean;
+  hasContest: boolean;
+  contestScore: number | null;
+  latestAt: string;
 }
 
 const fadeInUp = keyframes`
@@ -54,16 +55,6 @@ const WelcomeBanner = styled(Box)({
     background: 'radial-gradient(circle, rgba(139,29,35,0.4) 0%, transparent 70%)',
   },
 });
-
-const StatsCard = styled(Box)<{ delay?: number }>(({ delay = 0 }) => ({
-  padding: '20px',
-  backgroundColor: '#fff',
-  borderRadius: '16px',
-  border: '1px solid #e5e7eb',
-  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-  animation: `${fadeInUp} 0.5s ease-out ${delay}ms both`,
-  '&:hover': { boxShadow: '0 12px 28px rgba(139,29,35,0.15)', transform: 'translateY(-4px)', borderColor: '#8B1D23' },
-}));
 
 const FilterCard = styled(Paper)({
   padding: '18px',
@@ -106,29 +97,26 @@ const DifficultyBadge = styled(Box)<{ difficulty: string }>(({ difficulty }) => 
 const TableSection = styled(Box)({ animation: `${fadeInUp} 0.5s ease-out 300ms both` });
 
 const DIFFICULTIES: DifficultyLabel[] = ['Easy', 'Medium', 'Hard'];
-
-const getGradeColor = (grade: number) => {
-  if (grade >= 90) return '#059669';
-  if (grade >= 70) return '#d97706';
-  return '#dc2626';
-};
+const SOURCES = ['All', 'Bank', 'Contest'] as const;
+type SourceFilter = (typeof SOURCES)[number];
 
 export const MySubmissions: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [items, setItems] = useState<MySolvedProblemSummary[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<string>('All');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
+  const [selectedSource, setSelectedSource] = useState<SourceFilter>('All');
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      setSubmissions(await getMySubmissions());
+      setItems(await getMySolvedProblems());
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, t('student.submissions.loadError')));
+      setError(getApiErrorMessage(err, t('student.mySolutions.loadError')));
     } finally {
       setLoading(false);
     }
@@ -139,56 +127,53 @@ export const MySubmissions: React.FC = () => {
   }, [load]);
 
   const allTopics = useMemo(
-    () => [...new Set(submissions.map((s) => s.problemTopic).filter(Boolean) as string[])].sort(),
-    [submissions],
+    () => [...new Set(items.map((s) => s.topic).filter(Boolean))].sort(),
+    [items],
   );
 
-  const rows: SubmissionRow[] = useMemo(
+  const rows: Row[] = useMemo(
     () =>
-      submissions
-        .filter((s) => (selectedTopic === 'All' ? true : s.problemTopic === selectedTopic))
+      items
+        .filter((s) => (selectedTopic === 'All' ? true : s.topic === selectedTopic))
         .filter((s) =>
-          selectedDifficulty === 'All' ? true : difficultyIdToLabel(s.problemDifficulty ?? 1) === selectedDifficulty,
+          selectedDifficulty === 'All' ? true : difficultyIdToLabel(s.difficulty) === selectedDifficulty,
+        )
+        .filter((s) =>
+          selectedSource === 'All'
+            ? true
+            : selectedSource === 'Bank'
+              ? s.hasBankSubmission
+              : s.hasContestSubmission,
         )
         .map((s) => ({
           id: String(s.problemId),
           problemId: s.problemId,
-          name: s.problemTitle ?? `#${s.problemId}`,
-          difficulty: difficultyIdToLabel(s.problemDifficulty ?? 1),
-          topic: s.problemTopic ?? '—',
-          grade: s.grade ?? null,
-          submittedAt: s.submittedAt,
+          name: s.title,
+          difficulty: difficultyIdToLabel(s.difficulty),
+          topic: s.topic || '—',
+          hasBank: s.hasBankSubmission,
+          hasContest: s.hasContestSubmission,
+          contestScore: s.latestContestScore ?? null,
+          latestAt: s.latestSubmittedAt,
         })),
-    [submissions, selectedTopic, selectedDifficulty],
+    [items, selectedTopic, selectedDifficulty, selectedSource],
   );
 
-  const hasActiveFilters = selectedTopic !== 'All' || selectedDifficulty !== 'All';
+  const hasActiveFilters = selectedTopic !== 'All' || selectedDifficulty !== 'All' || selectedSource !== 'All';
   const resetFilters = () => {
     setSelectedTopic('All');
     setSelectedDifficulty('All');
+    setSelectedSource('All');
   };
-
-  const stats = useMemo(() => {
-    const graded = submissions.filter((s) => s.grade != null);
-    const avg = graded.length
-      ? Math.round(graded.reduce((sum, s) => sum + (s.grade ?? 0), 0) / graded.length)
-      : 0;
-    return {
-      totalSubmitted: submissions.length,
-      totalGraded: graded.length,
-      averageGrade: avg,
-      perfectScores: submissions.filter((s) => s.grade === 100).length,
-    };
-  }, [submissions]);
 
   const columns = [
     {
       id: 'name',
-      label: t('student.submissions.columns.problemName'),
-      render: (row: SubmissionRow) => (
+      label: t('student.mySolutions.columns.problemName'),
+      render: (row: Row) => (
         <Box>
           <Typography
-            onClick={() => navigate(`/student/problems/${row.problemId}`)}
+            onClick={() => navigate(`/student/my-solutions/${row.problemId}`)}
             sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
           >
             {row.name}
@@ -196,7 +181,7 @@ export const MySubmissions: React.FC = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
             <Clock size={11} color="#94a3b8" />
             <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '11px' }}>
-              {new Date(row.submittedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+              {new Date(row.latestAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </Typography>
           </Box>
         </Box>
@@ -204,8 +189,8 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'difficulty',
-      label: t('student.submissions.columns.difficulty'),
-      render: (row: SubmissionRow) => (
+      label: t('student.mySolutions.columns.difficulty'),
+      render: (row: Row) => (
         <DifficultyBadge difficulty={row.difficulty}>
           {row.difficulty === 'Easy' && <Zap size={12} />}
           {row.difficulty === 'Medium' && <Target size={12} />}
@@ -216,43 +201,64 @@ export const MySubmissions: React.FC = () => {
     },
     {
       id: 'topic',
-      label: t('student.submissions.columns.topic'),
-      render: (row: SubmissionRow) => (
+      label: t('student.mySolutions.columns.topic'),
+      render: (row: Row) => (
         <Chip label={row.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600, fontSize: '11px', borderRadius: '8px' }} />
       ),
     },
     {
-      id: 'grade',
-      label: t('student.submissions.columns.grade'),
-      render: (row: SubmissionRow) =>
-        row.grade != null ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography sx={{ fontWeight: 800, color: getGradeColor(row.grade), fontSize: '16px' }}>{row.grade}</Typography>
-            <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '12px' }}>/ 100</Typography>
-            {row.grade === 100 && <Award size={14} color="#059669" />}
-          </Box>
-        ) : (
-          <Typography sx={{ color: '#94a3b8', fontSize: '13px', fontStyle: 'italic' }}>
-            {t('student.submissions.pending')}
-          </Typography>
-        ),
+      id: 'source',
+      label: t('student.mySolutions.columns.source'),
+      render: (row: Row) => (
+        <Stack direction="row" spacing={0.5} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+          {row.hasBank && (
+            <Chip
+              icon={<Layers size={12} />}
+              label={t('student.mySolutions.sources.bank')}
+              size="small"
+              sx={{ bgcolor: '#eef2ff', color: '#4338ca', fontWeight: 700, fontSize: '11px' }}
+            />
+          )}
+          {row.hasContest && (
+            <Chip
+              icon={<Trophy size={12} />}
+              label={t('student.mySolutions.sources.contest')}
+              size="small"
+              sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '11px' }}
+            />
+          )}
+        </Stack>
+      ),
     },
     {
-      id: 'status',
-      label: t('student.submissions.columns.status'),
-      render: (row: SubmissionRow) => (
-        <Chip
-          icon={row.grade != null ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-          label={row.grade != null ? t('student.submissions.graded') : t('student.submissions.statusSubmitted')}
-          size="small"
-          sx={{
-            fontWeight: 700,
-            fontSize: '11px',
-            bgcolor: row.grade != null ? '#ecfdf5' : '#fff7e0',
-            color: row.grade != null ? '#059669' : '#92400e',
-          }}
-        />
-      ),
+      id: 'points',
+      label: t('student.mySolutions.columns.points'),
+      render: (row: Row) => {
+        // Bank submissions never carry a score — the column is intentionally blank
+        // unless the student also has a contest submission with points.
+        if (!row.hasContest) {
+          return (
+            <Typography variant="body2" sx={{ color: '#cbd5e1', fontStyle: 'italic', fontSize: '12px' }}>
+              {t('student.mySolutions.noPoints')}
+            </Typography>
+          );
+        }
+        if (row.contestScore == null) {
+          return (
+            <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '12px' }}>
+              {t('student.mySolutions.pending')}
+            </Typography>
+          );
+        }
+        return (
+          <Typography sx={{ fontWeight: 800, color: '#8B1D23', fontSize: '15px' }}>
+            {row.contestScore}
+            <Typography component="span" variant="body2" sx={{ color: '#94a3b8', fontSize: '12px', ml: 0.5 }}>
+              / 100
+            </Typography>
+          </Typography>
+        );
+      },
     },
   ];
 
@@ -267,91 +273,42 @@ export const MySubmissions: React.FC = () => {
               </Box>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
-                  {t('student.submissions.title')}
+                  {t('student.mySolutions.title')}
                 </Typography>
                 <Typography sx={{ opacity: 0.9, fontWeight: 500, fontSize: '14px' }}>
-                  {t('student.submissions.subtitle')}
+                  {t('student.mySolutions.subtitle')}
                 </Typography>
               </Box>
             </Box>
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-              <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{stats.totalSubmitted}</Typography>
-                <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>{t('student.submissions.submitted')}</Typography>
-              </Box>
-              <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{stats.averageGrade}%</Typography>
-                <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>{t('student.submissions.avgGrade')}</Typography>
-              </Box>
-              <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-                <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{stats.perfectScores}</Typography>
-                <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>{t('student.submissions.perfect')}</Typography>
-              </Box>
+            <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{items.length}</Typography>
+              <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
+                {t('student.mySolutions.totalSolved')}
+              </Typography>
             </Box>
           </Box>
         </Box>
       </WelcomeBanner>
 
-      {/* Stats Cards */}
-      <Grid container spacing={2.5} sx={{ mb: 4 }}>
-        <Grid size={{ xs: 6, sm: 3 }}>
-          <StatsCard delay={0}>
-            <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5 }}>
-              <BarChart3 size={22} color="#8B1D23" />
-            </Box>
-            <Typography sx={{ fontSize: '28px', fontWeight: 800, color: '#1e293b', lineHeight: 1 }}>{stats.totalSubmitted}</Typography>
-            <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>{t('student.submissions.totalSubmitted')}</Typography>
-          </StatsCard>
-        </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
-          <StatsCard delay={50}>
-            <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5 }}>
-              <CheckCircle2 size={22} color="#059669" />
-            </Box>
-            <Typography sx={{ fontSize: '28px', fontWeight: 800, color: '#1e293b', lineHeight: 1 }}>{stats.totalGraded}</Typography>
-            <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>{t('student.submissions.graded')}</Typography>
-          </StatsCard>
-        </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
-          <StatsCard delay={100}>
-            <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5 }}>
-              <Target size={22} color="#d97706" />
-            </Box>
-            <Typography sx={{ fontSize: '28px', fontWeight: 800, color: '#d97706', lineHeight: 1 }}>{stats.averageGrade}%</Typography>
-            <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>{t('student.submissions.avgGrade')}</Typography>
-          </StatsCard>
-        </Grid>
-        <Grid size={{ xs: 6, sm: 3 }}>
-          <StatsCard delay={150}>
-            <Box sx={{ width: 44, height: 44, borderRadius: '12px', bgcolor: '#f5f3ff', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5 }}>
-              <Award size={22} color="#7c3aed" />
-            </Box>
-            <Typography sx={{ fontSize: '28px', fontWeight: 800, color: '#7c3aed', lineHeight: 1 }}>{stats.perfectScores}</Typography>
-            <Typography sx={{ fontSize: '11px', color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, mt: 0.5 }}>{t('student.submissions.perfect')}</Typography>
-          </StatsCard>
-        </Grid>
-      </Grid>
-
-      {/* Filters */}
       <FilterCard elevation={0}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 5, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Filter size={18} color="#8B1D23" />
             </Box>
-            <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px' }}>{t('student.submissions.filters')}</Typography>
+            <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px' }}>{t('student.mySolutions.filters')}</Typography>
           </Box>
           {hasActiveFilters && (
             <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: '#8B1D23' }}>
-              {t('student.submissions.resetAll')}
+              {t('student.mySolutions.resetAll')}
             </Button>
           )}
         </Box>
 
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FilterGroup>
-              <FilterLabel><Target size={14} color="#8B1D23" />{t('student.submissions.columns.difficulty')}</FilterLabel>
+              <FilterLabel><Target size={14} color="#8B1D23" />{t('student.mySolutions.columns.difficulty')}</FilterLabel>
               <FilterChipsStack>
                 <StyledChip label={t('common.all')} onClick={() => setSelectedDifficulty('All')} active={selectedDifficulty === 'All'} size="small" />
                 {DIFFICULTIES.map((d) => (
@@ -360,13 +317,29 @@ export const MySubmissions: React.FC = () => {
               </FilterChipsStack>
             </FilterGroup>
           </Grid>
-          <Grid size={{ xs: 12, md: 6 }}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <FilterGroup>
-              <FilterLabel><Tag size={14} color="#8B1D23" />{t('student.submissions.topic')}</FilterLabel>
+              <FilterLabel><Tag size={14} color="#8B1D23" />{t('student.mySolutions.topic')}</FilterLabel>
               <FilterChipsStack>
                 <StyledChip label={t('common.all')} onClick={() => setSelectedTopic('All')} active={selectedTopic === 'All'} size="small" />
                 {allTopics.map((topic) => (
                   <StyledChip key={topic} label={topic} onClick={() => setSelectedTopic(topic)} active={selectedTopic === topic} size="small" />
+                ))}
+              </FilterChipsStack>
+            </FilterGroup>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <FilterGroup>
+              <FilterLabel><Layers size={14} color="#8B1D23" />{t('student.mySolutions.columns.source')}</FilterLabel>
+              <FilterChipsStack>
+                {SOURCES.map((src) => (
+                  <StyledChip
+                    key={src}
+                    label={src === 'All' ? t('common.all') : t(`student.mySolutions.sources.${src.toLowerCase()}`)}
+                    onClick={() => setSelectedSource(src)}
+                    active={selectedSource === src}
+                    size="small"
+                  />
                 ))}
               </FilterChipsStack>
             </FilterGroup>
@@ -382,9 +355,16 @@ export const MySubmissions: React.FC = () => {
         <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
           <CircularProgress sx={{ color: '#8B1D23' }} />
         </Box>
+      ) : rows.length === 0 ? (
+        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}>
+          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>
+            {t('student.mySolutions.empty')}
+          </Typography>
+          <Typography variant="body2">{t('student.mySolutions.emptyHint')}</Typography>
+        </Paper>
       ) : (
         <TableSection>
-          <SharedTable data={rows} columns={columns} searchPlaceholder={t('student.submissions.searchPlaceholder')} />
+          <SharedTable data={rows} columns={columns} searchPlaceholder={t('student.mySolutions.searchPlaceholder')} />
         </TableSection>
       )}
     </PageContainer>

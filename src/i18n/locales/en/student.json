@@ -99,6 +99,7 @@
       },
       "reviewSolution": "Review Solution",
       "solve": "Solve",
+      "solveAgain": "Solve again",
       "submitted": "Submitted",
       "gradeValue": "Grade: {{grade}}/100",
       "loadError": "Failed to load problems. Please try again.",
@@ -124,6 +125,47 @@
         "alreadySubmitted": "You have already submitted a solution for this problem.",
         "error": "Failed to submit solution. Please try again."
       }
+    },
+    "mySolutions": {
+      "title": "My Solutions",
+      "subtitle": "Problems you've submitted solutions for, across the Problem Bank and contests",
+      "totalSolved": "Total Solved",
+      "filters": "Filters",
+      "resetAll": "Reset All",
+      "topic": "Topic",
+      "searchPlaceholder": "Search by problem name...",
+      "columns": {
+        "problemName": "Problem",
+        "difficulty": "Difficulty",
+        "topic": "Topic",
+        "source": "Source",
+        "points": "Points"
+      },
+      "sources": {
+        "bank": "Bank",
+        "contest": "Contest"
+      },
+      "noPoints": "—",
+      "pending": "Not graded",
+      "empty": "No solutions yet.",
+      "emptyHint": "Submit a solution to a problem and it will show up here.",
+      "loadError": "Failed to load your solutions. Please try again."
+    },
+    "mySolutionDetails": {
+      "back": "Back",
+      "notFound": "No solutions found for this problem.",
+      "noStatement": "No description available for this problem.",
+      "statement": "Problem Statement",
+      "mySolutions": "My Solutions ({{count}})",
+      "noMine": "You haven't submitted a solution to this problem.",
+      "bankSection": "Problem Bank — {{count}}",
+      "contestSection": "Contest — {{count}}",
+      "bankBadge": "Bank",
+      "contestBadge": "Contest",
+      "submittedAt": "{{date}}",
+      "points": "Score: {{score}}/100",
+      "pending": "Not graded",
+      "noSolution": "No solution text submitted."
     },
     "submissions": {
       "title": "My Submissions",
@@ -161,13 +203,29 @@
     },
     "problemDetails": {
       "back": "Back",
-      "notFound": "Submission not found.",
+      "notFound": "Problem not found.",
       "noStatement": "No description available for this problem.",
+      "statement": "Problem Statement",
+      "constraints": "Constraints",
+      "examples": "Examples",
+      "exampleN": "Example {{n}}",
+      "input": "Input",
+      "output": "Output",
+      "explanation": "Explanation",
       "mySolution": "My Solution",
+      "mySubmissions": "My Submissions ({{count}})",
+      "noMySubmissions": "You haven't submitted a solution yet.",
+      "mySubmissionsHint": "Submit a solution to see it here.",
+      "latestBadge": "Latest",
+      "latestSubmissionAt": "Latest — {{date}}",
+      "submissionAt": "{{date}}",
       "grade": "Grade: {{grade}}/100",
       "pending": "Pending grade",
       "submittedAt": "Submitted: {{date}}",
-      "noSolution": "No solution text submitted."
+      "noSolution": "No solution text submitted.",
+      "communitySolutions": "Community Solutions ({{count}})",
+      "noSolutionsYet": "No solutions yet.",
+      "beFirst": "Be the first to submit a solution to this problem."
     },
     "groups": {
       "title": "My Groups",

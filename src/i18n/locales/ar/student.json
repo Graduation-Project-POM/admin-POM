@@ -99,6 +99,7 @@
       },
       "reviewSolution": "مراجعة الحل",
       "solve": "حلّ",
+      "solveAgain": "حلّ مرة أخرى",
       "submitted": "تم الإرسال",
       "gradeValue": "الدرجة: {{grade}}/100",
       "loadError": "فشل تحميل المسائل. حاول مرة أخرى.",
@@ -124,6 +125,47 @@
         "alreadySubmitted": "لقد قمت بالفعل بإرسال حل لهذه المسألة.",
         "error": "فشل إرسال الحل. حاول مرة أخرى."
       }
+    },
+    "mySolutions": {
+      "title": "حلولي",
+      "subtitle": "المسائل التي أرسلت لها حلولاً، من بنك المسائل ومن المسابقات",
+      "totalSolved": "إجمالي المحلولة",
+      "filters": "الفلاتر",
+      "resetAll": "إعادة تعيين الكل",
+      "topic": "الموضوع",
+      "searchPlaceholder": "ابحث باسم المسألة...",
+      "columns": {
+        "problemName": "المسألة",
+        "difficulty": "الصعوبة",
+        "topic": "الموضوع",
+        "source": "المصدر",
+        "points": "النقاط"
+      },
+      "sources": {
+        "bank": "بنك",
+        "contest": "مسابقة"
+      },
+      "noPoints": "—",
+      "pending": "لم تُقيَّم",
+      "empty": "لا توجد حلول بعد.",
+      "emptyHint": "أرسل حلاً لأي مسألة ليظهر هنا.",
+      "loadError": "فشل تحميل حلولك. حاول مرة أخرى."
+    },
+    "mySolutionDetails": {
+      "back": "رجوع",
+      "notFound": "لم يتم العثور على حلول لهذه المسألة.",
+      "noStatement": "لا يوجد وصف لهذه المسألة.",
+      "statement": "نص المسألة",
+      "mySolutions": "حلولي ({{count}})",
+      "noMine": "لم ترسل حلاً لهذه المسألة.",
+      "bankSection": "بنك المسائل — {{count}}",
+      "contestSection": "المسابقات — {{count}}",
+      "bankBadge": "بنك",
+      "contestBadge": "مسابقة",
+      "submittedAt": "{{date}}",
+      "points": "النقاط: {{score}}/100",
+      "pending": "لم تُقيَّم",
+      "noSolution": "لم يتم إرسال نص الحل."
     },
     "submissions": {
       "title": "مشاركاتي",
@@ -161,13 +203,29 @@
     },
     "problemDetails": {
       "back": "رجوع",
-      "notFound": "لم يتم العثور على المساهمة.",
+      "notFound": "لم يتم العثور على المسألة.",
       "noStatement": "لا يوجد وصف لهذه المسألة.",
+      "statement": "نص المسألة",
+      "constraints": "القيود",
+      "examples": "أمثلة",
+      "exampleN": "مثال {{n}}",
+      "input": "المدخل",
+      "output": "المخرج",
+      "explanation": "الشرح",
       "mySolution": "الحل الخاص بي",
+      "mySubmissions": "إرسالاتي ({{count}})",
+      "noMySubmissions": "لم ترسل أي حل بعد.",
+      "mySubmissionsHint": "أرسل حلاً لتراه هنا.",
+      "latestBadge": "الأحدث",
+      "latestSubmissionAt": "الأحدث — {{date}}",
+      "submissionAt": "{{date}}",
       "grade": "الدرجة: {{grade}}/100",
       "pending": "بانتظار التقييم",
       "submittedAt": "تم الإرسال: {{date}}",
-      "noSolution": "لم يتم إرسال نص الحل."
+      "noSolution": "لم يتم إرسال نص الحل.",
+      "communitySolutions": "حلول المجتمع ({{count}})",
+      "noSolutionsYet": "لا توجد حلول بعد.",
+      "beFirst": "كن أول من يرسل حلاً لهذه المسألة."
     },
     "groups": {
       "title": "مجموعاتي",

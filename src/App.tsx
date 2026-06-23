@@ -21,6 +21,7 @@ import StudentContestsPage from "./pages/student/contest/ContestsPage";
 import { ProblemBank } from "./pages/student/problem/ProblemsPage";
 import { MySubmissions } from "./pages/student/problem/SubmissonsPage";
 import { StudentProblemDetailsPage } from "./pages/student/problem/StudentProblemDetailsPage";
+import { StudentMySolutionDetailsPage } from "./pages/student/problem/StudentMySolutionDetailsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
 import UserProfilePage from "./pages/common/profile/UserProfilePage";
 import StudentGroupsPage from "./pages/student/group/GroupsPage";
@@ -35,7 +36,6 @@ function AppRoutes() {
 
   function RequireRole({ allow }: { allow: UserRole[] }) {
     const { role } = useAuth();
-    // logged in but wrong role → send them back to their own area
     if (!role || !allow.includes(role)) {
       return <Navigate to="/" replace />;
     }
@@ -115,6 +115,11 @@ function AppRoutes() {
                     path="/student/problems/submissions"
                     element={<MySubmissions />}
                   />
+                  <Route path="/student/my-solutions" element={<MySubmissions />} />
+                  <Route
+                    path="/student/my-solutions/:problemId"
+                    element={<StudentMySolutionDetailsPage />}
+                  />
                   <Route
                     path="/student/problems/:problemId"
                     element={<StudentProblemDetailsPage />}
@@ -122,13 +127,10 @@ function AppRoutes() {
                   <Route path="/student/profile" element={<ProfilePage />} />
                 </Route>
 
-                {/* Shared - any logged-in role */}
                 <Route
                   path="/settings"
                   element={<Page title="Account Settings" />}
                 />
-                {/* View a student's or trainer's profile by id. Access is
-                    enforced by the backend; the page surfaces 403s gracefully. */}
                 <Route path="/profile/:type/:id" element={<UserProfilePage />} />
 
                 <Route
