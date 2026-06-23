@@ -33,6 +33,8 @@ export const problemsService = {
       id: Number(data.id ?? data.iD ?? data.ID),
       title: String(data.title ?? ""),
       statement: data.statement ?? null,
+      constraints: data.constraints ?? null,
+      examples: Array.isArray(data.examples) ? data.examples : null,
       difficulty: Number(data.difficulty) as Difficulty,
       topic: String(data.topic ?? ""),
       photoUrl: data.photoUrl ?? data.photoURL ?? null,
@@ -75,6 +77,7 @@ export const problemsService = {
       problemPoints: Number(s.problemPoints ?? 100),
     }));
   },
+
   gradeSubmission: async (
     submissionId: number,
     body: { score: number; feedback?: string },

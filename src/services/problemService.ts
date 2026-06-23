@@ -1,9 +1,17 @@
 import { api } from "./authService";
 
+export interface ProblemExample {
+  input: string;
+  output: string;
+  explanation?: string;
+}
+
 export interface BackendProblem {
   id: number;
   title: string;
   statement: string;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty: number;
   topic: string;
   photoUrl?: string | null;
@@ -25,6 +33,8 @@ export type DifficultyLabel = "Easy" | "Medium" | "Hard";
 export interface CreateProblemPayload {
   title: string;
   statement?: string;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty: number;
   topic: string;
   solution?: string;
@@ -37,6 +47,8 @@ export interface CreateProblemPayload {
 export interface UpdateProblemPayload {
   title: string;
   statement?: string;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty: number;
   topic: string;
   photoFileKey?: string;
@@ -80,20 +92,20 @@ export const submitSolution = async (
   problemId: number,
   data: SubmitSolutionPayload,
 ) => {
-  const response = await api.post(`${BASE}/${problemId}/submit`, data);
+  const response = await api.post(`${BASE}/${problemId}/bank-submit`, data);
   return response.data;
 };
 
 export interface Submission {
   id: number;
   problemId: number;
-  studentId: number;
   studentName: string;
   studentEmail?: string | null;
   solutionText?: string | null;
   photoUrl?: string | null;
   grade?: number | null;
   submittedAt: string;
+  isMine?: boolean;
   problemTitle?: string | null;
   problemTopic?: string | null;
   problemStatement?: string | null;
@@ -102,23 +114,59 @@ export interface Submission {
 }
 
 export const getSubmissions = async (problemId: number): Promise<Submission[]> => {
-  const response = await api.get<Submission[]>(`${BASE}/${problemId}/submissions`);
-  return response.data;
-};
-
-export const gradeSubmission = async (
-  submissionId: number,
-  grade: number,
-): Promise<Submission> => {
-  const response = await api.put<Submission>(
-    `${BASE}/submissions/${submissionId}/grade`,
-    { grade },
-  );
+  const response = await api.get<Submission[]>(`${BASE}/${problemId}/bank-submissions`);
   return response.data;
 };
 
 export const getMySubmissions = async (): Promise<Submission[]> => {
-  const response = await api.get<Submission[]>(`${BASE}/my/submissions`);
+  const response = await api.get<Submission[]>(`${BASE}/bank/my-submissions`);
+  return response.data;
+};
+
+export const getMyBankSubmissionsForProblem = async (
+  problemId: number,
+): Promise<Submission[]> => {
+  const response = await api.get<Submission[]>(`${BASE}/${problemId}/bank/my-submissions`);
+  return response.data;
+};
+
+export interface MySolvedProblemSummary {
+  problemId: number;
+  title: string;
+  topic: string;
+  difficulty: number;
+  hasBankSubmission: boolean;
+  hasContestSubmission: boolean;
+  latestContestScore?: number | null;
+  latestSubmittedAt: string;
+}
+
+export const getMySolvedProblems = async (): Promise<MySolvedProblemSummary[]> => {
+  const response = await api.get<MySolvedProblemSummary[]>(`${BASE}/my-solutions`);
+  return response.data;
+};
+
+export interface MyProblemSolutions {
+  problemId: number;
+  title: string;
+  statement: string | null;
+  topic: string;
+  difficulty: number;
+  bankSubmissions: Submission[];
+  contestSubmissions: Submission[];
+}
+
+export const getMyProblemSolutions = async (
+  problemId: number,
+): Promise<MyProblemSolutions> => {
+  const response = await api.get<MyProblemSolutions>(`${BASE}/${problemId}/my-solutions`);
+  return response.data;
+};
+
+export const getAllProblemSolutions = async (
+  problemId: number,
+): Promise<MyProblemSolutions> => {
+  const response = await api.get<MyProblemSolutions>(`${BASE}/${problemId}/all-solutions`);
   return response.data;
 };
 

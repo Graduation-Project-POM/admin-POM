@@ -336,6 +336,8 @@ export const ContestsPage: React.FC = () => {
       const newId = await problemsService.create({
         title: form.title,
         statement: form.description || "",
+        constraints: form.constraints || null,
+        examples: form.examples.length > 0 ? form.examples : null,
         solution: form.description || form.title,
         difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
         topic: form.category || "General",
@@ -343,6 +345,7 @@ export const ContestsPage: React.FC = () => {
         isPublished: form.isPublished,
         points: form.points,         
         isBankVisible: false,        
+        isBankProblem: false,
       });
       const ids = [...contestProblemIds, newId];
       await update(Number(selectedContestId), { problemIds: ids });
@@ -568,6 +571,7 @@ export const ContestsPage: React.FC = () => {
           open={isAddProblemOpen}
           onClose={() => setIsAddProblemOpen(false)}
           onSave={handleAddProblem}
+          requireStatus={false}
         />
 
         <EditProblem
@@ -576,6 +580,7 @@ export const ContestsPage: React.FC = () => {
             setIsEditProblemOpen(false);
             setSelectedProblem(null);
           }}
+          requireStatus={false}
           problem={
             selectedProblem
               ? {

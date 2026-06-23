@@ -1,26 +1,29 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Stack, Alert, Switch } from '@mui/material';
+import { Stack, Alert } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField';
-import { Label } from '../../../components/ui/label/Label';
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
+import { ProblemExamplesEditor } from './ProblemExamplesEditor';
+import type { ProblemExample } from '../../../types/problem';
 
 export interface ProblemEditValues {
   id: number | string;
   title: string;
   category: string;
   description: string;
+  constraints: string;
+  examples: ProblemExample[];
   difficulty: string;
   isPublished: boolean;
   imageUrl: string;
   points: number;   
 }
 
-/** Loose pre-fill source: accepts either a backend problem or a table row,
- *  hence every field is optional and a couple of aliases are allowed. */
+type StatusChoice = '' | 'draft' | 'published';
+
 export interface EditProblemSource {
   id?: number | string;
   title?: string;
@@ -28,6 +31,8 @@ export interface EditProblemSource {
   topic?: string;
   description?: string;
   statement?: string | null;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty?: string;
   isPublished?: boolean;
   photoUrl?: string | null;
@@ -40,32 +45,42 @@ interface EditProblemProps {
   onClose: () => void;
   problem: EditProblemSource | null;
   onSave: (data: ProblemEditValues) => void | Promise<void>;
+  requireStatus?: boolean;
 }
 
 type FieldConfig = {
   name: keyof ProblemEditValues;
   label: string;
-  type: "text" | "select" | "textarea" | "switch";
+  type: "text" | "select" | "textarea";
   required?: boolean;
   placeholder?: string;
   rows?: number;
   options?: { label: string; value: string }[];
 };
 
-const emptyForm: ProblemEditValues = {
+const emptyForm: Omit<ProblemEditValues, 'isPublished'> = {
   id: 0,
   title: '',
   category: '',
   description: '',
+  constraints: '',
+  examples: [],
   difficulty: 'Easy',
-  isPublished: false,
   imageUrl: '',
   points: 100,
 };
 
-const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
+const EditProblem = ({
+  open,
+  onClose,
+  problem,
+  onSave,
+  requireStatus = true,
+}: EditProblemProps) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState<ProblemEditValues>(emptyForm);
+  const [formData, setFormData] = useState<Omit<ProblemEditValues, 'isPublished'>>(emptyForm);
+  const [status, setStatus] = useState<StatusChoice>('');
+  const [statusTouched, setStatusTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -76,11 +91,16 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
         title: problem.title ?? '',
         category: problem.category ?? problem.topic ?? '',
         description: problem.description ?? problem.statement ?? '',
+        constraints: problem.constraints ?? '',
+        examples: Array.isArray(problem.examples) ? problem.examples : [],
         difficulty: problem.difficulty ?? 'Easy',
-        isPublished: problem.isPublished ?? false,
         imageUrl: problem.photoUrl ?? problem.imageUrl ?? '',
         points: problem.points ?? 100,
       });
+      if (problem.isPublished === true) setStatus('published');
+      else if (problem.isPublished === false) setStatus('draft');
+      else setStatus('');
+      setStatusTouched(false);
     }
   }, [problem]);
 
@@ -94,16 +114,24 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
     }));
   };
 
-  const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData((prev) => ({ ...prev, isPublished: e.target.checked }));
+  const handleStatusChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setStatus(e.target.value as StatusChoice);
+    setStatusTouched(true);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (requireStatus && status === '') {
+      setStatusTouched(true);
+      setError(t('problem.form.statusRequired'));
+      return;
+    }
     setError(null);
     setSubmitting(true);
     try {
-      await onSave(formData);
+      await onSave({ ...formData, isPublished: status === 'published' });
       onClose();
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, t('problem.form.saveError')));
@@ -116,6 +144,7 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
     { name: "title", label: t("problem.form.problemTitle"), type: "text", required: true },
     { name: "category", label: t("problem.form.category"), type: "text", required: true },
     { name: "description", label: t("problem.form.description"), type: "textarea", rows: 4, placeholder: t("problem.form.descriptionPlaceholder") },
+    { name: "constraints", label: t("problem.form.constraints"), type: "textarea", rows: 3, placeholder: t("problem.form.constraintsPlaceholder") },
     {
       name: "difficulty",
       label: t("problem.form.difficulty"),
@@ -127,8 +156,9 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
         { label: t("problem.difficulty.Hard"), value: "Hard" },
       ],
     },
-    { name: "isPublished", label: t("problem.form.published"), type: "switch" },
   ];
+
+  const statusInvalid = requireStatus && statusTouched && status === '';
 
   return (
     <ModalWrapper
@@ -144,41 +174,41 @@ const EditProblem = ({ open, onClose, problem, onSave }: EditProblemProps) => {
           </Alert>
         )}
         <Stack spacing={3} sx={{ mt: 1 }}>
-          {fields.map((field) =>
-            field.type === "switch" ? (
-              <Box key={field.name}>
-                <Label>{field.label}</Label>
-                <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 40 }}>
-                  <Switch
-                    name={field.name}
-                    checked={formData.isPublished}
-                    onChange={handleSwitchChange}
-                    sx={{
-                      "& .MuiSwitch-switchBase.Mui-checked": {
-                        color: "#8B1D23",
-                      },
-                      "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                        backgroundColor: "#8B1D23",
-                      },
-                    }}
-                  />
-                </Box>
-              </Box>
-            ) : (
-              <FormField
-                key={field.name}
-                type={field.type === "select" ? "select" : "text"}
-                label={field.label}
-                name={field.name}
-                value={formData[field.name] as string}
-                onChange={handleChange}
-                required={field.required}
-                placeholder={field.placeholder}
-                options={field.options}
-                multiline={field.type === "textarea"}
-                rows={field.rows}
-              />
-            ),
+          {fields.map((field) => (
+            <FormField
+              key={field.name}
+              type={field.type === "select" ? "select" : "text"}
+              label={field.label}
+              name={field.name}
+              value={formData[field.name] as string}
+              onChange={handleChange}
+              required={field.required}
+              placeholder={field.placeholder}
+              options={field.options}
+              multiline={field.type === "textarea"}
+              rows={field.rows}
+            />
+          ))}
+          <ProblemExamplesEditor
+            value={formData.examples}
+            onChange={(examples) => setFormData((prev) => ({ ...prev, examples }))}
+          />
+          {requireStatus && (
+            <FormField
+              type="select"
+              label={t("problem.form.statusLabel")}
+              name="status"
+              value={status}
+              onChange={handleStatusChange}
+              required
+              error={statusInvalid}
+              helperText={statusInvalid ? t('problem.form.statusRequired') : undefined}
+              options={[
+                { label: t("problem.form.statusPlaceholder"), value: '' },
+                { label: t("problem.form.statusDraft"), value: 'draft' },
+                { label: t("problem.form.statusPublish"), value: 'published' },
+              ]}
+            />
           )}
           <FormField
             type="number"

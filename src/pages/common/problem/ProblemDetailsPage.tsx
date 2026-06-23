@@ -9,15 +9,13 @@ import {
   Avatar,
   Chip,
   CircularProgress,
-  TextField,
 } from '@mui/material';
-import { ArrowLeft, CheckCircle2, FileCode } from 'lucide-react';
+import { ArrowLeft, FileCode } from 'lucide-react';
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getProblemById,
   getSubmissions,
-  gradeSubmission,
   difficultyIdToLabel,
   type BackendProblem,
   type Submission,
@@ -27,13 +25,7 @@ import { resolveMediaUrl } from '../../../utils/media';
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
 
-const SubmissionCard = ({
-  submission,
-  onGraded,
-}: {
-  submission: Submission;
-  onGraded: (s: Submission) => void;
-}) => {
+const SubmissionCard = ({ submission }: { submission: Submission }) => {
   const { t } = useTranslation();
   const [grade, setGrade] = useState<string>(
     submission.grade != null ? String(submission.grade) : '',
@@ -62,8 +54,7 @@ const SubmissionCard = ({
 
   return (
     <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '350px 1fr' }, gap: 4 }}>
-        {/* Student Info + Grading */}
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '300px 1fr' }, gap: 4 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
             <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', fontWeight: 700 }}>
@@ -71,7 +62,9 @@ const SubmissionCard = ({
             </Avatar>
             <Box>
               <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>{submission.studentName}</Typography>
-              <Typography variant="body2" sx={{ color: '#64748b' }}>{submission.studentEmail}</Typography>
+              {submission.studentEmail && (
+                <Typography variant="body2" sx={{ color: '#64748b' }}>{submission.studentEmail}</Typography>
+              )}
             </Box>
           </Box>
           <Divider sx={{ my: 2, borderStyle: 'dashed' }} />
@@ -121,6 +114,9 @@ const SubmissionCard = ({
           >
             {saving ? t('problem.details.saving') : t('problem.details.saveGrade')}
           </Button>
+          <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+            {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
+          </Typography>
         </Box>
 
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
@@ -132,20 +128,13 @@ const SubmissionCard = ({
           </Box>
           <Typography
             component="pre"
-            sx={{
-              color: '#8B1D23',
-              fontSize: '13px',
-              lineHeight: 1.6,
-              m: 0,
-              overflowX: 'auto',
-              whiteSpace: 'pre-wrap',
-            }}
+            sx={{ color: '#8B1D23', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
           >
             {submission.solutionText || t('problem.details.noSolution')}
           </Typography>
           {submission.photoUrl && (
             <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
-              <img src={submission.photoUrl} alt="solution" style={{ width: '100%', display: 'block' }} />
+              <img src={resolveMediaUrl(submission.photoUrl) ?? undefined} alt="solution" style={{ width: '100%', display: 'block' }} />
             </Box>
           )}
         </Box>
@@ -195,6 +184,7 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
   const handleGraded = (updated: Submission) => {
     setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
   };
+  }, [problemId, t]);
 
   if (loading) {
     return (
@@ -284,6 +274,20 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
             </Box>
           )}
         </>
+      {submissions.length === 0 ? (
+        <Paper
+          elevation={0}
+          sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
+        >
+          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
+          <Typography variant="body2">{t('problem.details.noSubmissionsHint')}</Typography>
+        </Paper>
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+          {submissions.map((sub) => (
+            <SubmissionCard key={sub.id} submission={sub} />
+          ))}
+        </Box>
       )}
     </Box>
   );

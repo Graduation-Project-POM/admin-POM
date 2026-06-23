@@ -161,6 +161,8 @@ export const ProblemsPage = () => {
     await createProblem({
       title: data.title,
       statement: data.description || undefined,
+      constraints: data.constraints || null,
+      examples: data.examples.length > 0 ? data.examples : null,
       difficulty: difficultyLabelToId(data.difficulty),
       topic: data.category,
       isPublished: data.isPublished,
@@ -174,6 +176,8 @@ export const ProblemsPage = () => {
     await updateProblem(Number(data.id), {
       title: data.title,
       statement: data.description || undefined,
+      constraints: data.constraints || null,
+      examples: data.examples.length > 0 ? data.examples : null,
       difficulty: difficultyLabelToId(data.difficulty),
       topic: data.category,
       isPublished: data.isPublished,

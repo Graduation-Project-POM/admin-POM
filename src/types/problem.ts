@@ -19,9 +19,17 @@ export const DIFFICULTY_FROM_LABEL: Record<string, Difficulty> = {
   Hard: 3,
 };
 
+export interface ProblemExample {
+  input: string;
+  output: string;
+  explanation?: string;
+}
+
 export interface CreateProblemInput {
   title: string;
   statement: string;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty: Difficulty;
   topic: string;
   solution?: string;
@@ -30,12 +38,16 @@ export interface CreateProblemInput {
   isPublished?: boolean;
   points: number;               
   isBankVisible?: boolean;      
+  // false ⇒ contest problem (kept out of the Problem Bank). Defaults to bank on the server.
+  isBankProblem?: boolean;
 }
 
 export interface ProblemDetail {
   id: number;
   title: string;
   statement: string | null;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty: Difficulty;
   topic: string;
   photoUrl: string | null;
@@ -47,6 +59,8 @@ export interface ProblemDetail {
 export interface UpdateProblemInput {
   title: string;
   statement: string;
+  constraints?: string | null;
+  examples?: ProblemExample[] | null;
   difficulty: Difficulty;
   topic: string;
   photoFileKey?: string | null;

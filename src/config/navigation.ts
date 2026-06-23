@@ -140,7 +140,7 @@ export const navigationConfig: NavSection[] = [
         roles: ["Student"],
         items: [
           { title: "All Problems", titleKey: "navbar.allProblems", path: "/student/problems", icon: "FileText" },
-          { title: "My Submissions", titleKey: "navbar.mySubmissions", path: "/student/problems/submissions", icon: "CheckCircle" },
+          { title: "My Solutions", titleKey: "navbar.mySolutions", path: "/student/my-solutions", icon: "CheckCircle" },
         ],
       },
       {

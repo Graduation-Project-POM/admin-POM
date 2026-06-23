@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Box, Chip, Stack, Typography, Paper, Grid, CircularProgress, Alert,
@@ -18,7 +19,6 @@ import {
   type DifficultyLabel,
 } from '../../../services/problemService';
 import { SubmitSolutionModal } from './SubmitSolutionModal';
-import { ProblemViewModal } from './ProblemViewModal';
 
 interface ProblemRow {
   id: string;
@@ -147,6 +147,7 @@ const DIFFICULTIES: DifficultyLabel[] = ['Easy', 'Medium', 'Hard'];
 
 export const ProblemBank: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [problems, setProblems] = useState<BackendProblem[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -154,7 +155,6 @@ export const ProblemBank: React.FC = () => {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('All');
   const [gradeByProblem, setGradeByProblem] = useState<Map<number, number | null>>(new Map());
   const [modalProblem, setModalProblem] = useState<BackendProblem | null>(null);
-  const [viewProblem, setViewProblem] = useState<BackendProblem | null>(null);
 
   const loadProblems = useCallback(async () => {
     setLoading(true);
@@ -212,7 +212,7 @@ export const ProblemBank: React.FC = () => {
       label: t('student.problems.columns.problemName'),
       render: (row: ProblemRow) => (
         <Typography
-          onClick={() => setViewProblem(row.raw)}
+          onClick={() => navigate(`/student/problems/${row.raw.id}`)}
           sx={{
             fontWeight: 700,
             color: '#8B1D23',
@@ -252,32 +252,27 @@ export const ProblemBank: React.FC = () => {
       id: 'action',
       label: t('student.problems.columns.action'),
       render: (row: ProblemRow) => {
+        // Practice allows multiple attempts, so the Solve action is always
+        // available; a subtle marker shows when the student has submitted before.
         const submitted = gradeByProblem.has(row.raw.id);
-        const grade = submitted ? gradeByProblem.get(row.raw.id) : undefined;
-        if (!submitted) {
-          return (
+        return (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Button
               variantType="default"
               size="small"
               onClick={() => setModalProblem(row.raw)}
               sx={{ py: 0.5, px: 2, fontSize: '12px', '&:hover': { color: 'white', backgroundColor: '#8B1D23' } }}
             >
-              {t('student.problems.solve')}
+              {submitted ? t('student.problems.solveAgain') : t('student.problems.solve')}
             </Button>
-          );
-        }
-        return grade != null ? (
-          <Chip
-            label={t('student.problems.gradeValue', { grade })}
-            size="small"
-            sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
-          />
-        ) : (
-          <Chip
-            label={t('student.problems.submitted')}
-            size="small"
-            sx={{ bgcolor: '#fff7e0', color: '#92400e', fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
-          />
+            {submitted && (
+              <Chip
+                label={t('student.problems.submitted')}
+                size="small"
+                sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
+              />
+            )}
+          </Box>
         );
       },
     },
@@ -393,12 +388,6 @@ export const ProblemBank: React.FC = () => {
         onClose={() => setModalProblem(null)}
         problem={modalProblem}
         onSubmitted={handleSubmitted}
-      />
-
-      <ProblemViewModal
-        open={!!viewProblem}
-        onClose={() => setViewProblem(null)}
-        problem={viewProblem}
       />
     </PageContainer>
   );
