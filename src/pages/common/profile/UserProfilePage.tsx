@@ -131,18 +131,15 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
 
       <Divider sx={{ mb: 1 }} />
 
-      {/* Shared account fields */}
       <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, columnGap: 3 }}>
         <DetailRow icon={<User size={18} />} label={t("profile.view.username", "Username")} value={student?.userName ?? trainer?.userName} />
         <DetailRow icon={<Mail size={18} />} label={t("profile.view.email", "Email")} value={student?.email ?? trainer?.email} />
         <DetailRow icon={<Phone size={18} />} label={t("profile.view.phone", "Phone")} value={student?.phoneNumber ?? trainer?.phoneNumber ?? ""} />
 
-        {/* Trainer-specific */}
         {trainer && (
           <DetailRow icon={<Award size={18} />} label={t("profile.view.specialization", "Specialization")} value={trainer.specialization} />
         )}
 
-        {/* Student-specific */}
         {student && (
           <>
             <DetailRow icon={<GraduationCap size={18} />} label={t("profile.view.gradeLevel", "Grade level")} value={student.gradeLevel} />
@@ -150,7 +147,8 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
             <DetailRow icon={<MapPin size={18} />} label={t("profile.view.city", "City")} value={student.city} />
             <DetailRow icon={<IdCard size={18} />} label={t("profile.view.nationalId", "National ID")} value={student.nationalId} />
             <DetailRow icon={<Target size={18} />} label={t("profile.view.problemsSolved", "Problems solved")} value={student.problemSolved} />
-            <DetailRow icon={<Award size={18} />} label={t("profile.view.score", "Score")} value={student.score} />
+            <DetailRow icon={<Award size={18} />} label={t("profile.view.totalPoints", "Total points")} value={student.totalPoints} />
+            <DetailRow icon={<Target size={18} />} label={t("profile.view.rank", "Rank")} value={`#${student.rank}`} />
             <DetailRow icon={<Calendar size={18} />} label={t("profile.view.joinYear", "Join year")} value={student.joinYear} />
           </>
         )}

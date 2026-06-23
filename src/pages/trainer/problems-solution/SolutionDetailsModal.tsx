@@ -74,9 +74,11 @@ export const SolutionDetailModal = ({
             <input
               type="number"
               min={0}
-              max={100}
+              max={submission.problemPoints}
               value={score}
-              onChange={(e) => setScore(Number(e.target.value))}
+              onChange={(e) =>
+                setScore(Math.min(Number(e.target.value), submission.problemPoints))
+              }
               style={{
                 width: '60px',
                 padding: '6px 8px',
@@ -87,7 +89,7 @@ export const SolutionDetailModal = ({
                 outline: 'none',
               }}
             />
-            <Typography sx={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>/ 100</Typography>
+            <Typography sx={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600 }}>/ {submission.problemPoints}</Typography>
           </Box>
         </Box>
 

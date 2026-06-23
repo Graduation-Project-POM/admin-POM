@@ -19,6 +19,7 @@ export interface ProblemEditValues {
   difficulty: string;
   isPublished: boolean;
   imageUrl: string;
+  points: number;   
 }
 
 type StatusChoice = '' | 'draft' | 'published';
@@ -36,6 +37,7 @@ export interface EditProblemSource {
   isPublished?: boolean;
   photoUrl?: string | null;
   imageUrl?: string;
+  points?: number;
 }
 
 interface EditProblemProps {
@@ -65,6 +67,7 @@ const emptyForm: Omit<ProblemEditValues, 'isPublished'> = {
   examples: [],
   difficulty: 'Easy',
   imageUrl: '',
+  points: 100,
 };
 
 const EditProblem = ({
@@ -92,6 +95,7 @@ const EditProblem = ({
         examples: Array.isArray(problem.examples) ? problem.examples : [],
         difficulty: problem.difficulty ?? 'Easy',
         imageUrl: problem.photoUrl ?? problem.imageUrl ?? '',
+        points: problem.points ?? 100,
       });
       if (problem.isPublished === true) setStatus('published');
       else if (problem.isPublished === false) setStatus('draft');
@@ -206,6 +210,18 @@ const EditProblem = ({
               ]}
             />
           )}
+          <FormField
+            type="number"
+            label={t("problem.form.points", "Points")}
+            name="points"
+            value={formData.points}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, points: Number(e.target.value) }))
+            }
+            required
+            placeholder="100"
+            helperText={t("problem.form.pointsHelp", "Between 1 and 1000")}
+          />
           <ImageUploadField
             label={t("problem.form.image", "Problem image (optional)")}
             value={formData.imageUrl}

@@ -16,6 +16,7 @@ import { Edit, Save } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../../../services/AuthContext";
 import { StudentAcademicInfo } from "./StudentAcademicInfo";
+import { getMyStudentProfile, type MyStudentProfile } from "../../../services/studentService";
 import { getCurrentUser, updateCurrentUser, type BackendUser } from "../../../services/userService";
 import { getMyTrainerProfile, updateMyTrainerProfile } from "../../../services/trainerService";
 import { getApiErrorMessage } from "../../../utils/apiError";
@@ -46,6 +47,7 @@ const ProfilePage: React.FC = () => {
     bio: "",
   });
   const [loadedUser, setLoadedUser] = useState<BackendUser | null>(null);
+  const [studentStats, setStudentStats] = useState<MyStudentProfile | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [saveError, setSaveError] = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
@@ -75,7 +77,11 @@ const ProfilePage: React.FC = () => {
         .then((tr) => setProfile((prev) => ({ ...prev, specialization: tr.specialization ?? "" })))
         .catch(() => {});
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    if (isStudent) {
+      getMyStudentProfile()
+        .then(setStudentStats)
+        .catch(() => {});
+    }
   }, []);
 
   const handleChange = (field: keyof ProfileData) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -85,7 +91,6 @@ const ProfilePage: React.FC = () => {
     setSaveSuccess(null);
   };
 
-  // Per-field validation with clear, translated messages.
   const validate = (): FieldErrors => {
     const e: FieldErrors = {};
 
@@ -218,20 +223,40 @@ const ProfilePage: React.FC = () => {
                     <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
                       {profile.displayName}
                     </Typography>
-                    {role && (
-                      <Chip
-                        label={role}
-                        size="small"
-                        sx={{
-                          bgcolor: "#f1f5f9",
-                          color: "#1e293b",
-                          fontWeight: 500,
-                          fontSize: "0.7rem",
-                          borderRadius: "30px",
-                          mt: 0.5,
-                        }}
-                      />
-                    )}
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
+                      {role && (
+                        <Chip
+                          label={role}
+                          size="small"
+                          sx={{
+                            bgcolor: "#f1f5f9",
+                            color: "#1e293b",
+                            fontWeight: 500,
+                            fontSize: "0.7rem",
+                            borderRadius: "30px",
+                          }}
+                        />
+                      )}
+                      {isStudent && studentStats && (
+                        <>
+                          <Chip
+                            label={`${t("profile.student.totalPointsLabel", "Total Points")}: ${studentStats.totalPoints}`}
+                            size="small"
+                            sx={{ bgcolor: "#fef2f2", color: "#8B1D23", fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
+                          />
+                          <Chip
+                            label={`${t("profile.student.rankLabel", "Rank")}: #${studentStats.rank}`}
+                            size="small"
+                            sx={{ bgcolor: "#fffbeb", color: "#92400e", fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
+                          />
+                          <Chip
+                            label={t("profile.student.solved", { count: studentStats.problemSolved })}
+                            size="small"
+                            sx={{ bgcolor: "#f1f5f9", color: "#475569", fontWeight: 600, fontSize: "0.7rem", borderRadius: "30px" }}
+                          />
+                        </>
+                      )}
+                    </Box>
                   </Box>
                 </Box>
                 {!isEditing ? (

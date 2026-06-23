@@ -343,6 +343,8 @@ export const ContestsPage: React.FC = () => {
         topic: form.category || "General",
         photoFileKey: form.imageUrl || null,
         isPublished: form.isPublished,
+        points: form.points,         
+        isBankVisible: false,        
         isBankProblem: false,
       });
       const ids = [...contestProblemIds, newId];

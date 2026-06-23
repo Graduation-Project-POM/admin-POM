@@ -18,6 +18,7 @@ export interface ProblemFormValues {
   difficulty: string;
   isPublished: boolean;
   imageUrl: string;
+  points: number;   
 }
 
 type StatusChoice = '' | 'draft' | 'published';
@@ -47,6 +48,7 @@ const baseInitialFormData: Omit<ProblemFormValues, 'isPublished'> = {
   examples: [],
   difficulty: 'Easy',
   imageUrl: '',
+  points: 100,
 };
 
 const CreateProblem = ({
@@ -176,6 +178,18 @@ const CreateProblem = ({
               ]}
             />
           )}
+          <FormField
+            type="number"
+            label={t("problem.form.points", "Points")}
+            name="points"
+            value={formData.points}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, points: Number(e.target.value) }))
+            }
+            required
+            placeholder="100"
+            helperText={t("problem.form.pointsHelp", "Between 1 and 1000")}
+          />
           <ImageUploadField
             label={t("problem.form.image", "Problem image (optional)")}
             value={formData.imageUrl}
