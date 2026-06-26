@@ -184,7 +184,6 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
   const handleGraded = (updated: Submission) => {
     setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
   };
-  }, [problemId, t]);
 
   if (loading) {
     return (
@@ -274,20 +273,6 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack }: Problem
             </Box>
           )}
         </>
-      {submissions.length === 0 ? (
-        <Paper
-          elevation={0}
-          sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
-        >
-          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
-          <Typography variant="body2">{t('problem.details.noSubmissionsHint')}</Typography>
-        </Paper>
-      ) : (
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-          {submissions.map((sub) => (
-            <SubmissionCard key={sub.id} submission={sub} />
-          ))}
-        </Box>
       )}
     </Box>
   );

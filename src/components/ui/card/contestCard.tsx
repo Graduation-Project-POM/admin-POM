@@ -128,7 +128,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({
 
         <Divider sx={{ my: 1.5 }} />
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
             <Calendar size={14} color="#94a3b8" />
             <Typography variant="caption" sx={{ color: '#64748b', fontWeight: 600 }}>

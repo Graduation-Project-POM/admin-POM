@@ -124,6 +124,9 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
             label={t("contest.view.totalProblems")}
             value={contest.problemsCount}
           />
+        </Box>
+
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
           <DetailItem
             icon={<Calendar size={18} />}
             label={t("contest.view.startDate")}
