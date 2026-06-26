@@ -4,6 +4,7 @@ import type {
   CreateContestInput,
   UpdateContestInput,
   CreateContestResult,
+  ContestLeaderboardEntry,
 } from "../types/contest";
 
 const BASE = "/Contest";
@@ -28,6 +29,13 @@ export const contestService = {
   getMyProblems: async (id: number): Promise<Record<string, any>[]> => {
     const { data } = await api.get<Record<string, any>[]>(
       `${BASE}/${id}/my-problems`,
+    );
+    return data;
+  },
+
+  getLeaderboard: async (id: number): Promise<ContestLeaderboardEntry[]> => {
+    const { data } = await api.get<ContestLeaderboardEntry[]>(
+      `${BASE}/${id}/leaderboard`,
     );
     return data;
   },

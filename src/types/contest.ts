@@ -41,3 +41,10 @@ export interface CreateContestResult {
   message: string;
   contestID: number;
 }
+
+export interface ContestLeaderboardEntry {
+  rank: number;
+  studentId: number;
+  studentName: string;
+  score: number;
+}

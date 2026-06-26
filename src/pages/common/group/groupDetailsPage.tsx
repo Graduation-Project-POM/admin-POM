@@ -14,7 +14,7 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { groupService } from '../../../services/groupService';
-import { ArrowLeft, Users, Award, BookOpen, Clock } from 'lucide-react';
+import { ArrowLeft, Users, Award, BookOpen, Clock, Trophy } from 'lucide-react';
 import { ContestCard } from '../../../components/ui/card/contestCard';
 import {
     StyledContainer,
@@ -29,12 +29,16 @@ import { SharedTable } from '../../../components/ui/table/tables';
 import CreateContest from '../contest/Create';
 import EditContest from '../contest/Edit';
 import ViewContest from '../contest/View';
+import Leaderboard from '../contest/Leaderboard';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import CreateProblem, { type ProblemFormValues } from '../problem/Create';
 import EditProblem, { type ProblemEditValues } from '../problem/Edit';
 import { ProblemDetailsPage } from '../problem/ProblemDetailsPage';
 import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
+import type { ProblemSubmission } from '../../../services/problemsService';
+import { StudentProgressModal } from '../../trainer/problems-solution/StudentProgressModeal';
+import { SolutionDetailModal } from '../../trainer/problems-solution/SolutionDetailsModal';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL } from '../../../types/problem';
 import { getContestStatus, getContestStatusNumber } from '../../../utils/contestStatus';
@@ -74,7 +78,9 @@ interface GroupContestProblem {
     title: string;
     category: string;
     difficulty: string;
-    successRate: number;
+    studentsSolved: number;
+    totalSubmissions: number;
+    acceptanceRate: number;
 }
 
 interface ProblemEditPrefill {
@@ -131,6 +137,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
     const [isViewOpen, setIsViewOpen] = useState(false);
+    const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
     
     const [viewingProblems, setViewingProblems] = useState(false);
     const [contestProblems, setContestProblems] = useState<GroupContestProblem[]>([]);
@@ -139,6 +146,65 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState<ProblemEditPrefill | null>(null);
     const [detailProblemId, setDetailProblemId] = useState<number | null>(null);
+
+    // Mirror /admin/contests problem detail UX: clicking a problem opens the
+    // submissions/progress modal, where a trainer can drill into a single
+    // submission and grade it.
+    const [selectedProblemForProgress, setSelectedProblemForProgress] = useState<GroupContestProblem | null>(null);
+    const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
+    const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
+    const [currentSubmission, setCurrentSubmission] = useState<ProblemSubmission | null>(null);
+    const [submissions, setSubmissions] = useState<ProblemSubmission[]>([]);
+    const [submissionsLoading, setSubmissionsLoading] = useState(false);
+    const [gradingSaving, setGradingSaving] = useState(false);
+
+    const submissionStats = (subs: ProblemSubmission[]) => {
+        const total = subs.length;
+        const graded = subs.filter((s) => s.gradedAt != null || s.score != null).length;
+        return {
+            totalSubmissions: total,
+            studentsSolved: graded,
+            acceptanceRate: total > 0 ? Math.round((graded / total) * 100) : 0,
+        };
+    };
+
+    const loadSubmissions = async (problemId: number): Promise<ProblemSubmission[]> => {
+        setSubmissionsLoading(true);
+        try {
+            const subs = await problemsService.getSubmissions(problemId);
+            setSubmissions(subs);
+            return subs;
+        } catch (err) {
+            setSubmissions([]);
+            setTabsError(getApiErrorMessage(err, t('group.details.loadSubmissionsFailed', 'Failed to load submissions')));
+            return [];
+        } finally {
+            setSubmissionsLoading(false);
+        }
+    };
+
+    const handleGradeSubmission = async (submissionId: number, score: number, feedback: string) => {
+        setGradingSaving(true);
+        try {
+            await problemsService.gradeSubmission(submissionId, {
+                score,
+                feedback: feedback.trim() || undefined,
+            });
+            setIsSolutionModalOpen(false);
+            if (selectedProblemForProgress) {
+                const pid = selectedProblemForProgress.id;
+                const subs = await loadSubmissions(Number(pid));
+                const stats = submissionStats(subs);
+                setContestProblems((prev) =>
+                    prev.map((p) => (p.id === pid ? { ...p, ...stats } : p)),
+                );
+            }
+        } catch (err) {
+            setTabsError(getApiErrorMessage(err, t('group.details.gradeFailed', 'Failed to save mark')));
+        } finally {
+            setGradingSaving(false);
+        }
+    };
 
     const [confirmConfig, setConfirmConfig] = useState<{
         open: boolean;
@@ -218,7 +284,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         try {
             const data = await contestService.getProblems(Number(contestId));
             const ids: number[] = [];
-            const mapped = data.map((p) => {
+            const mapped: GroupContestProblem[] = data.map((p) => {
                 const pid = Number(p.id ?? p.iD ?? p.ID);
                 ids.push(pid);
                 return {
@@ -226,11 +292,33 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     title: String(p.title ?? ''),
                     category: String(p.topic ?? ''),
                     difficulty: DIFFICULTY_LABEL[Number(p.difficulty)] ?? 'Medium',
-                    successRate: 0,
+                    studentsSolved: 0,
+                    totalSubmissions: 0,
+                    acceptanceRate: 0,
                 };
             });
             setContestProblemIds(ids);
             setContestProblems(mapped);
+
+            // Backfill submission stats per problem (mirror /admin/contests).
+            void Promise.all(
+                mapped.map(async (prob) => {
+                    try {
+                        const subs = await problemsService.getSubmissions(Number(prob.id));
+                        return { id: prob.id, ...submissionStats(subs) };
+                    } catch {
+                        return null;
+                    }
+                }),
+            ).then((results) => {
+                const byId = new Map(
+                    results.filter((r): r is NonNullable<typeof r> => r != null).map((r) => [r.id, r]),
+                );
+                if (byId.size === 0) return;
+                setContestProblems((prev) =>
+                    prev.map((p) => (byId.has(p.id) ? { ...p, ...byId.get(p.id)! } : p)),
+                );
+            });
         } catch (err) {
             setContestProblemIds([]);
             setContestProblems([]);
@@ -429,46 +517,71 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     {t('group.details.backToGroup')}
                 </Button>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e5e7eb', mb: 4, bgcolor: '#f8fafc' }}>
-                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
-                        {t('group.details.problemsTitle', { title: selectedContest.title })}
-                    </Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
+                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', flex: 1, minWidth: 0 }}>
+                            {t('group.details.problemsTitle', { title: selectedContest.title })}
+                        </Typography>
+                        <Button
+                            variantType="default"
+                            startIcon={<Trophy size={16} />}
+                            onClick={() => setIsLeaderboardOpen(true)}
+                        >
+                            {t('contest.view.viewLeaderboard')}
+                        </Button>
+                    </Box>
                 </Paper>
                 <SharedTable
                     data={contestProblems}
                     columns={[
                         {
                             id: 'title',
-                            label: t('group.details.problemName'),
+                            label: t('contest.problems.columns.name', t('group.details.problemName')),
                             render: (row) => (
                                 <Typography
-                                    onClick={() => setDetailProblemId(Number(row.id))}
+                                    onClick={() => {
+                                        setSelectedProblemForProgress(row);
+                                        setSubmissions([]);
+                                        setIsProgressModalOpen(true);
+                                        void loadSubmissions(Number(row.id));
+                                    }}
                                     sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
                                 >
                                     {row.title}
                                 </Typography>
                             )
                         },
-                        { id: 'category', label: t('group.details.category') },
                         {
                             id: 'difficulty',
-                            label: t('group.details.difficulty'),
+                            label: t('contest.problems.columns.difficulty', t('group.details.difficulty')),
                             render: (row) => (
-                                <Chip 
-                                    label={row.difficulty} 
-                                    size="small" 
-                                    sx={{ 
-                                        fontWeight: 600, 
-                                        fontSize: '11px',
-                                        bgcolor: row.difficulty === 'Easy' ? '#e7f7ec' : row.difficulty === 'Medium' ? '#fff7e0' : '#fdecec',
-                                        color: row.difficulty === 'Easy' ? '#166534' : row.difficulty === 'Medium' ? '#92400e' : '#991b1b'
-                                    }} 
-                                />
+                                <Box
+                                    sx={{
+                                        display: 'inline-block',
+                                        px: 1.5,
+                                        py: 0.3,
+                                        borderRadius: 4,
+                                        bgcolor: row.difficulty === 'Easy' ? '#16a34a15' : row.difficulty === 'Hard' ? '#dc262615' : '#eab30815',
+                                        color: row.difficulty === 'Easy' ? '#16a34a' : row.difficulty === 'Hard' ? '#dc2626' : '#eab308',
+                                        fontSize: '0.75rem',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    {t(`contest.difficulty.${row.difficulty.toLowerCase()}`, row.difficulty)}
+                                </Box>
                             )
                         },
-                        { 
-                            id: 'stats',
-                            label: t('group.details.successRate'),
-                            render: (row) => <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{row.successRate}%</Typography>
+                        {
+                            id: 'studentsSolved',
+                            label: t('contest.problems.columns.studentsSolved', 'Students Solved'),
+                        },
+                        {
+                            id: 'totalSubmissions',
+                            label: t('contest.problems.columns.totalSubmissions', 'Total Submissions'),
+                        },
+                        {
+                            id: 'acceptanceRate',
+                            label: t('contest.problems.columns.acceptanceRate', t('group.details.successRate')),
+                            render: (row) => <Typography sx={{ fontWeight: 700, color: '#8B1D23' }}>{row.acceptanceRate}%</Typography>
                         }
                     ]}
                     onAdd={() => setIsCreateProblemOpen(true)}
@@ -497,12 +610,40 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     requireStatus={false}
                 />
 
-                <ConfirmationModal 
-                    open={confirmConfig.open} 
-                    onClose={() => setConfirmConfig(prev => ({ ...prev, open: false }))} 
-                    onConfirm={confirmConfig.onConfirm} 
-                    title={confirmConfig.title} 
-                    message={confirmConfig.message} 
+                <ConfirmationModal
+                    open={confirmConfig.open}
+                    onClose={() => setConfirmConfig(prev => ({ ...prev, open: false }))}
+                    onConfirm={confirmConfig.onConfirm}
+                    title={confirmConfig.title}
+                    message={confirmConfig.message}
+                />
+
+                <StudentProgressModal
+                    open={isProgressModalOpen}
+                    onClose={() => setIsProgressModalOpen(false)}
+                    problemTitle={selectedProblemForProgress?.title || ''}
+                    submissions={submissions}
+                    loading={submissionsLoading}
+                    onViewSolution={(submission) => {
+                        setCurrentSubmission(submission);
+                        setIsSolutionModalOpen(true);
+                    }}
+                />
+
+                <SolutionDetailModal
+                    open={isSolutionModalOpen}
+                    onClose={() => setIsSolutionModalOpen(false)}
+                    submission={currentSubmission}
+                    problemTitle={selectedProblemForProgress?.title || ''}
+                    saving={gradingSaving}
+                    onSaveMark={handleGradeSubmission}
+                />
+
+                <Leaderboard
+                    open={isLeaderboardOpen}
+                    onClose={() => setIsLeaderboardOpen(false)}
+                    contestId={Number(selectedContest.id)}
+                    contestTitle={selectedContest.title}
                 />
             </StyledContainer>
         );

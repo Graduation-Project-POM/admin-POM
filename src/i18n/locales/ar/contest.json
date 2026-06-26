@@ -42,7 +42,16 @@
       "participants": "المشاركون",
       "totalProblems": "إجمالي المسائل",
       "startDate": "تاريخ البدء",
-      "endDate": "تاريخ الانتهاء"
+      "endDate": "تاريخ الانتهاء",
+      "viewLeaderboard": "عرض لوحة المتصدرين"
+    },
+    "leaderboard": {
+      "title": "لوحة المتصدرين",
+      "rank": "الترتيب",
+      "name": "الاسم",
+      "points": "النقاط",
+      "empty": "لا يوجد مشاركون لديهم نقاط حتى الآن.",
+      "loadError": "تعذّر تحميل لوحة المتصدرين."
     },
     "fields": {
       "contestTitle": "عنوان المسابقة",

@@ -42,7 +42,16 @@
       "participants": "Participants",
       "totalProblems": "Total Problems",
       "startDate": "Start Date",
-      "endDate": "End Date"
+      "endDate": "End Date",
+      "viewLeaderboard": "View Leaderboard"
+    },
+    "leaderboard": {
+      "title": "Leaderboard",
+      "rank": "Rank",
+      "name": "Name",
+      "points": "Points",
+      "empty": "No participants have scored yet.",
+      "loadError": "Failed to load the leaderboard."
     },
     "fields": {
       "contestTitle": "Contest Title",

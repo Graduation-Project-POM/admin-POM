@@ -24,8 +24,9 @@ import {
   IconButton,
   TextField,
 } from '@mui/material';
-import { ArrowLeft, Users, Award, BookOpen, Clock, CheckCircle2, Circle, Star, Send, X, FileText, Upload, Image as ImageIcon, Camera } from 'lucide-react';
+import { ArrowLeft, Users, Award, BookOpen, Clock, CheckCircle2, Circle, Star, Send, X, FileText, Upload, Image as ImageIcon, Camera, Trophy } from 'lucide-react';
 import { ContestCard } from '../../../components/ui/card/studentConstentCard';
+import Leaderboard from '../../common/contest/Leaderboard';
 import {
   StyledContainer,
   HeaderSection,
@@ -79,6 +80,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
   const [viewingProblems, setViewingProblems] = useState(false);
   const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
 
   const [contestProblems, setContestProblems] = useState<StudentContestProblem[]>([]);
   const [, setProblemsLoading] = useState(false);
@@ -320,15 +322,24 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 {t('student.groupDetails.ongoingInstructions')}
               </Typography>
             </Box>
-            <Chip
-              label={t('student.groupDetails.statusOngoing')}
-              sx={{
-                bgcolor: '#ecfdf5',
-                color: '#059669',
-                fontWeight: 700,
-                border: '1px solid #a7f3d0',
-              }}
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Button
+                variantType="default"
+                startIcon={<Trophy size={16} />}
+                onClick={() => setIsLeaderboardOpen(true)}
+              >
+                {t('contest.view.viewLeaderboard')}
+              </Button>
+              <Chip
+                label={t('student.groupDetails.statusOngoing')}
+                sx={{
+                  bgcolor: '#ecfdf5',
+                  color: '#059669',
+                  fontWeight: 700,
+                  border: '1px solid #a7f3d0',
+                }}
+              />
+            </Box>
           </Box>
         </Paper>
 
@@ -676,6 +687,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             </Box>
           </DialogContent>
         </Dialog>
+
+        <Leaderboard
+          open={isLeaderboardOpen}
+          onClose={() => setIsLeaderboardOpen(false)}
+          contestId={Number(selectedContest.id)}
+          contestTitle={selectedContest.title}
+        />
       </StyledContainer>
     );
   }
@@ -700,13 +718,22 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 {t('student.groupDetails.endedDescription')}
               </Typography>
             </Box>
-            <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-              <Typography sx={{ fontWeight: 800, color: getGradeColor(averageGrade), fontSize: '28px', lineHeight: 1 }}>
-                {averageGrade}%
-              </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
-                {t('student.groupDetails.averageGrade')}
-              </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Button
+                variantType="default"
+                startIcon={<Trophy size={16} />}
+                onClick={() => setIsLeaderboardOpen(true)}
+              >
+                {t('contest.view.viewLeaderboard')}
+              </Button>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+                <Typography sx={{ fontWeight: 800, color: getGradeColor(averageGrade), fontSize: '28px', lineHeight: 1 }}>
+                  {averageGrade}%
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+                  {t('student.groupDetails.averageGrade')}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Paper>
@@ -952,6 +979,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             </Box>
           </DialogContent>
         </Dialog>
+
+        <Leaderboard
+          open={isLeaderboardOpen}
+          onClose={() => setIsLeaderboardOpen(false)}
+          contestId={Number(selectedContest.id)}
+          contestTitle={selectedContest.title}
+        />
       </StyledContainer>
     );
   }

@@ -9,7 +9,7 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, Trophy } from "lucide-react";
 import { useContests } from "../../../hooks/useContests";
 import { contestService } from "../../../services/contestService";
 import type {
@@ -40,6 +40,7 @@ import { ConfirmationModal } from "../../../components/common/modal/Confirmation
 import EditContest from "./Edit";
 import CreateContest from "./Create";
 import ViewContest from "./View";
+import Leaderboard from "./Leaderboard";
 import CreateProblem, { type ProblemFormValues } from "../problem/Create";
 import EditProblem, { type ProblemEditValues } from "../problem/Edit";
 import { StudentProgressModal } from "../../trainer/problems-solution/StudentProgressModeal";
@@ -198,6 +199,7 @@ export const ContestsPage: React.FC = () => {
 
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
+  const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
   const [currentSubmission, setCurrentSubmission] = useState<ProblemSubmission | null>(null);
 
   const [submissions, setSubmissions] = useState<ProblemSubmission[]>([]);
@@ -526,15 +528,26 @@ export const ContestsPage: React.FC = () => {
             bgcolor: "#f8fafc",
           }}
         >
-          <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-            {t("contest.problems.heading", { title: selectedContestTitle })}
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{ color: "#64748b", mt: 1, fontWeight: 500 }}
-          >
-            {t("contest.problems.description")}
-          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2, flexWrap: "wrap" }}>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
+                {t("contest.problems.heading", { title: selectedContestTitle })}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ color: "#64748b", mt: 1, fontWeight: 500 }}
+              >
+                {t("contest.problems.description")}
+              </Typography>
+            </Box>
+            <Button
+              variantType="default"
+              startIcon={<Trophy size={16} />}
+              onClick={() => setIsLeaderboardOpen(true)}
+            >
+              {t("contest.view.viewLeaderboard")}
+            </Button>
+          </Box>
         </Paper>
 
         {actionError && (
@@ -621,6 +634,13 @@ export const ContestsPage: React.FC = () => {
           problemTitle={selectedProblem?.name || ""}
           saving={gradingSaving}
           onSaveMark={handleGradeSubmission}
+        />
+
+        <Leaderboard
+          open={isLeaderboardOpen}
+          onClose={() => setIsLeaderboardOpen(false)}
+          contestId={selectedContestId != null ? Number(selectedContestId) : null}
+          contestTitle={selectedContestTitle}
         />
       </StyledContainer>
     );
