@@ -180,7 +180,7 @@ const EditProblem = ({
               type={field.type === "select" ? "select" : "text"}
               label={field.label}
               name={field.name}
-              value={formData[field.name] as string}
+              value={formData[field.name as keyof typeof formData] as string}
               onChange={handleChange}
               required={field.required}
               placeholder={field.placeholder}
