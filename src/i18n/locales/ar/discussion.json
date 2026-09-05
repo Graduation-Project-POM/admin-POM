@@ -1,0 +1,38 @@
+{
+  "discussion": {
+    "title": "النقاش ({{count}})",
+    "subtitle": "ناقش السؤال، وشارك طريقة حلّك، وردّ على زملائك.",
+    "placeholder": "اكتب رسالة — اشرح فكرتك أو شارك حلّك...",
+    "post": "نشر",
+    "postReply": "رد",
+    "saveEdit": "حفظ",
+    "sending": "جارٍ الإرسال...",
+    "cancel": "إلغاء",
+    "attachImage": "إرفاق صورة",
+    "removeImage": "إزالة الصورة",
+    "attachmentAlt": "مرفق",
+    "charactersLeft": "متبقٍّ {{count}} حرف",
+    "reply": "رد",
+    "replyPlaceholder": "الرد على {{name}}...",
+    "replyCount": "{{count}} ردود",
+    "edit": "تعديل",
+    "edited": "مُعدّل",
+    "delete": "حذف",
+    "deleteTitle": "حذف الرسالة؟",
+    "deleteMessage": "سيتم حذف هذه الرسالة نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+    "deleteMessageWithReplies": "سيتم حذف هذه الرسالة و{{count}} من الردود عليها نهائيًا. لا يمكن التراجع عن هذا الإجراء.",
+    "youBadge": "أنت",
+    "roles": {
+      "admin": "مشرف",
+      "trainer": "مدرب",
+      "student": "طالب"
+    },
+    "unknownAuthor": "مستخدم",
+    "empty": "لا يوجد نقاش بعد.",
+    "emptyHint": "كن أول من يبدأ النقاش حول هذا السؤال.",
+    "loadError": "تعذّر تحميل النقاش. حاول مرة أخرى.",
+    "postError": "تعذّر إرسال رسالتك. حاول مرة أخرى.",
+    "editError": "تعذّر حفظ التعديل. حاول مرة أخرى.",
+    "deleteError": "تعذّر حذف الرسالة. حاول مرة أخرى."
+  }
+}

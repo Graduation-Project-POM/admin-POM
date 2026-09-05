@@ -1,0 +1,38 @@
+{
+  "discussion": {
+    "title": "Discussion ({{count}})",
+    "subtitle": "Talk the question through, share how you solved it, and reply to each other.",
+    "placeholder": "Write a message — explain your approach or share your solution...",
+    "post": "Post",
+    "postReply": "Reply",
+    "saveEdit": "Save",
+    "sending": "Sending...",
+    "cancel": "Cancel",
+    "attachImage": "Attach image",
+    "removeImage": "Remove image",
+    "attachmentAlt": "Attachment",
+    "charactersLeft": "{{count}} characters left",
+    "reply": "Reply",
+    "replyPlaceholder": "Reply to {{name}}...",
+    "replyCount": "{{count}} replies",
+    "edit": "Edit",
+    "edited": "edited",
+    "delete": "Delete",
+    "deleteTitle": "Delete message?",
+    "deleteMessage": "This message will be permanently deleted. This action cannot be undone.",
+    "deleteMessageWithReplies": "This message and its {{count}} replies will be permanently deleted. This action cannot be undone.",
+    "youBadge": "You",
+    "roles": {
+      "admin": "Admin",
+      "trainer": "Trainer",
+      "student": "Student"
+    },
+    "unknownAuthor": "User",
+    "empty": "No discussion yet.",
+    "emptyHint": "Be the first to start the conversation about this question.",
+    "loadError": "Failed to load the discussion. Please try again.",
+    "postError": "Failed to post your message. Please try again.",
+    "editError": "Failed to save your changes. Please try again.",
+    "deleteError": "Failed to delete the message. Please try again."
+  }
+}

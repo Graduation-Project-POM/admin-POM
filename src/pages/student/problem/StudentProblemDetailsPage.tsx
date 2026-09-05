@@ -23,6 +23,7 @@ import {
 import { resolveMediaUrl } from '../../../utils/media';
 import { SubmitSolutionModal } from './SubmitSolutionModal';
 import { CommunitySubmissionCard } from './CommunitySubmissionCard';
+import { ProblemDiscussion } from '../../../components/discussion/ProblemDiscussion';
 
 type TaggedSubmission = { submission: Submission; source: 'bank' | 'contest' };
 
@@ -248,6 +249,8 @@ export const StudentProblemDetailsPage = () => {
           )}
         </Box>
       )}
+
+      <ProblemDiscussion problemId={problem.id} />
 
       <SubmitSolutionModal
         open={solveOpen}

@@ -23,6 +23,7 @@ import {
 } from '../../../services/problemService';
 import { problemsService, type ProblemSubmission } from '../../../services/problemsService';
 import { resolveMediaUrl } from '../../../utils/media';
+import { ProblemDiscussion } from '../../../components/discussion/ProblemDiscussion';
 
 const contestToSubmission = (s: ProblemSubmission): Submission => ({
   id: s.id,
@@ -319,6 +320,8 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
           )}
         </>
       )}
+
+      <ProblemDiscussion problemId={problem.id} />
     </Box>
   );
 };
