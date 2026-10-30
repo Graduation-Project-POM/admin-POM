@@ -82,7 +82,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
                 borderRadius: '12px', 
                 border: `1px solid ${neutral[200]}`,
                 mb: 3,
-                fontFamily: 'monospace',
+                fontFamily: 'inherit',
                 fontSize: '13px',
                 whiteSpace: 'pre-wrap',
                 lineHeight: 1.6,

@@ -181,7 +181,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
           <Typography
             component="pre"
-            sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
+            sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}
           >
             {submission.solutionText || t('student.problemDetails.noSolution')}
           </Typography>

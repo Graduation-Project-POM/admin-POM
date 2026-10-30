@@ -21,8 +21,8 @@ const rtlCache = createCache({
  * from the current i18n language. Wrapping the whole app (not just the
  * dashboard) means auth pages and every other screen mirror correctly in RTL.
  *
- * Direction also selects the font stack: Latin leads with Lenos, Arabic with
- * the platform UI face, since Lenos carries no Arabic glyphs.
+ * Both directions use the same font stack (Lenos, with Readex Pro for Arabic);
+ * direction only adjusts tracking and line height in the theme's type scale.
  */
 export const DirectionProvider = ({
   children,

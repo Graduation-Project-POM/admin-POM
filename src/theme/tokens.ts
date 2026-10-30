@@ -86,23 +86,16 @@ export const focusRing = {
 } as const;
 
 /**
- * Font stacks.
+ * Font stack.
  *
- * Inter (Latin) + IBM Plex Sans Arabic (Arabic), both self-hosted via
- * @fontsource and imported in main.tsx. Only Plex's Arabic subset is loaded,
- * so the browser picks per glyph: Latin letters and digits always come from
- * Inter, Arabic letters from Plex. The two were chosen as a pair — similar
- * x-height, stroke contrast and weight range — so a line mixing both scripts
- * reads as one typeface, and English and Arabic screens feel like the same
- * product. One stack therefore serves both directions.
- *
- * Previously Latin used Lenos, a display face, for all text (body, tables,
- * labels), and Arabic fell back to the platform font, so the two languages
- * looked like different apps.
+ * Only fonts from the project's own /fonts folder are used (declared in
+ * App.css); no system, npm or web fonts are named. Lenos is the primary face;
+ * it has no Arabic glyphs, so Readex Pro follows it and the browser renders
+ * Arabic characters in Readex Pro. One stack serves both directions. The trailing generic
+ * `sans-serif` is a CSS keyword, only reached if the font files fail to load.
  */
 export const fontStack = {
-  ui: '"Inter Variable", "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif',
-  mono: '"SFMono-Regular", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace',
+  ui: '"Lenos", "Readex Pro", sans-serif',
 } as const;
 
 /**

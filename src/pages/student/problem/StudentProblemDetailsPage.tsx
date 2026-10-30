@@ -161,7 +161,7 @@ export const StudentProblemDetailsPage = () => {
                       <Typography variant="caption" sx={{ color: neutral[400], fontWeight: 700 }}>
                         {t('student.problemDetails.input')}
                       </Typography>
-                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
                         {ex.input}
                       </Box>
                     </Box>
@@ -169,7 +169,7 @@ export const StudentProblemDetailsPage = () => {
                       <Typography variant="caption" sx={{ color: neutral[400], fontWeight: 700 }}>
                         {t('student.problemDetails.output')}
                       </Typography>
-                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'inherit' }}>
                         {ex.output}
                       </Box>
                     </Box>

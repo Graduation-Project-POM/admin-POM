@@ -103,7 +103,7 @@ export const SolutionDetailModal = ({
             borderRadius: '12px',
             border: `1px solid ${neutral[200]}`,
             mb: 2,
-            fontFamily: 'monospace',
+            fontFamily: 'inherit',
             fontSize: '13px',
             whiteSpace: 'pre-wrap',
             lineHeight: 1.6,

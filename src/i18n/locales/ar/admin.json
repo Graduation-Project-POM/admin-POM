@@ -133,7 +133,7 @@
       "subtitle": "مراجعة طلبات تسجيل المدربين والموافقة عليها",
       "pendingRequests": "الطلبات المعلقة",
       "trainerApplication": "طلب مدرب",
-      "noPending": "لا توجد طلبات مدربين معلقة في الوقت الحالي.",
+      "noPending": "لا توجد طلبات معلقة في الوقت الحالي.",
       "approvalHistory": "سجل الموافقات",
       "searchPlaceholder": "البحث في السجل...",
       "columns": {

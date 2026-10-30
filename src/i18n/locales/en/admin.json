@@ -133,7 +133,7 @@
       "subtitle": "Review and approve trainer registration requests",
       "pendingRequests": "Pending Requests",
       "trainerApplication": "Trainer Application",
-      "noPending": "No pending trainer requests at the moment.",
+      "noPending": "No pending requests at the moment.",
       "approvalHistory": "Approval History",
       "searchPlaceholder": "Search history...",
       "columns": {
