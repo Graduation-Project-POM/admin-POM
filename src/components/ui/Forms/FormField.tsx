@@ -22,6 +22,7 @@ interface FormFieldProps {
   options?: FormFieldOption[];
   error?: boolean;
   helperText?: string;
+  autoComplete?: string;
   children?: React.ReactNode;
 }
 
@@ -39,6 +40,7 @@ export const FormField: React.FC<FormFieldProps> = ({
   options,
   error = false,
   helperText,
+  autoComplete,
   children,
 }) => {
   const isSelect = select || type === 'select' || Boolean(options);
@@ -73,6 +75,7 @@ export const FormField: React.FC<FormFieldProps> = ({
           htmlInput: {
             'aria-describedby': helperId,
             'aria-invalid': error || undefined,
+            autoComplete,
           },
         }}
       >

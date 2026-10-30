@@ -62,6 +62,7 @@
     "INVALID_CREDENTIALS": "Invalid username or password",
     "USER_NOT_FOUND": "User not found",
     "ACCOUNT_PENDING": "Your account is pending admin approval",
+    "ACCOUNT_INACTIVE": "Your account has been deactivated. Please contact an administrator.",
     "RATE_LIMITED": "Too many login attempts. Please try again in a minute",
     "CONTEST_ENDED": "This contest has ended and can no longer be edited",
     "GROUP_REQUIRED": "A contest must be assigned to a group"

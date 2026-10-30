@@ -89,6 +89,7 @@
         "saveError": "Failed to save user. Please try again.",
         "deleteError": "Failed to delete user. Please try again.",
         "passwordMismatch": "Passwords do not match",
+        "passwordKeepHint": "Leave blank to keep the current password.",
         "validation": {
           "firstNameRequired": "First name is required.",
           "firstNameShort": "First name must be at least 2 characters.",

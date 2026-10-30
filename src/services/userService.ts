@@ -36,6 +36,7 @@ export interface CreateUserPayload {
   profileImageUrl?: string;
   password: string;
   roleID: number;
+  isActive?: boolean;
 }
 
 export interface UpdateUserPayload {
@@ -48,6 +49,13 @@ export interface UpdateUserPayload {
   gender?: string;
   profileImageUrl?: string;
   bio?: string;
+}
+
+// Admin-only fields for PUT /User/{id}; omitted fields are left unchanged.
+export interface AdminUpdateUserPayload extends UpdateUserPayload {
+  newPassword?: string;
+  roleID?: number;
+  isActive?: boolean;
 }
 
 export const getUsers = async (): Promise<BackendUser[]> => {
@@ -75,7 +83,7 @@ export const createUser = async (data: CreateUserPayload) => {
   return response.data;
 };
 
-export const updateUser = async (id: number, data: UpdateUserPayload) => {
+export const updateUser = async (id: number, data: AdminUpdateUserPayload) => {
   const response = await api.put(`/User/${id}`, data);
   return response.data;
 };

@@ -133,6 +133,7 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
         gender: formData.gender || undefined,
         roleID: roleNameToId(formData.role),
         password: formData.password,
+        isActive: formData.isActive,
         profileImageUrl: "",
       });
       onSuccess?.();
@@ -226,6 +227,7 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
                 required={field.required}
                 options={field.options}
                 error={!!errors[field.name]}
+                autoComplete={field.type === "password" ? "new-password" : undefined}
                 helperText={errors[field.name]}
               />
             ),
