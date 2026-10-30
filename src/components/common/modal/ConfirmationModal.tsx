@@ -12,6 +12,7 @@ import {
 import { AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui/button/Button';
+import { statusTone } from '../../../theme';
 
 interface ConfirmationModalProps {
   open: boolean;
@@ -26,14 +27,12 @@ interface ConfirmationModalProps {
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
-    borderRadius: '16px',
     padding: theme.spacing(1),
-    maxWidth: '400px',
+    maxWidth: '420px',
   },
-
   '& .MuiBackdrop-root': {
-    backdropFilter: 'blur(7px)',       
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backdropFilter: 'blur(6px)',
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
   },
 }));
 
@@ -48,27 +47,57 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isDanger = true,
 }) => {
   const { t } = useTranslation();
+  const titleId = 'confirm-title';
+  const messageId = 'confirm-message';
+
   return (
-    <StyledDialog open={open} onClose={onClose}>
-      <DialogTitle sx={{ pb: 1 }}>
+    <StyledDialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby={titleId}
+      aria-describedby={messageId}
+    >
+      <DialogTitle id={titleId} component="div" sx={{ pb: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          {isDanger && <AlertCircle color="#ef4444" size={24} />}
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b' }}>
+          {isDanger && (
+            <Box
+              aria-hidden
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: 40,
+                height: 40,
+                borderRadius: '50%',
+                bgcolor: statusTone.danger.bg,
+                color: statusTone.danger.fg,
+                flexShrink: 0,
+              }}
+            >
+              <AlertCircle size={22} />
+            </Box>
+          )}
+          <Typography variant="h6" component="h2" sx={{ fontWeight: 800 }}>
             {title}
           </Typography>
         </Box>
       </DialogTitle>
+
       <DialogContent>
-        <DialogContentText sx={{ color: '#64748b', fontSize: '15px', fontWeight: 500 }}>
+        <DialogContentText
+          id={messageId}
+          sx={{ color: 'text.secondary', fontSize: '15px', lineHeight: 1.65 }}
+        >
           {message}
         </DialogContentText>
       </DialogContent>
+
       <DialogActions sx={{ p: 2, gap: 1 }}>
         <Button variantType="outline" onClick={onClose}>
           {cancelLabel ?? t('buttons.cancel')}
         </Button>
-        <Button 
-          variantType={isDanger ? 'danger' : 'default'} 
+        <Button
+          variantType={isDanger ? 'danger' : 'default'}
           onClick={() => {
             onConfirm();
             onClose();

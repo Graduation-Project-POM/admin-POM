@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { Search, Users } from 'lucide-react';
 import { Button } from '../button/Button';
+import { brand, neutral } from '../../../theme';
 
 export interface MemberPickerOption {
   id: number;
@@ -26,7 +27,7 @@ interface MemberPickerProps {
   maxHeight?: number;
 }
 
-const BRAND = '#8B1D23';
+const BRAND = brand[500];
 
 const initials = (name: string) =>
   name
@@ -91,7 +92,7 @@ export const MemberPicker = ({
       >
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Users size={16} color={BRAND} />
-          <Typography sx={{ fontWeight: 700, fontSize: '14px', color: '#1e293b' }}>
+          <Typography sx={{ fontWeight: 700, fontSize: '14px', color: neutral[800] }}>
             {label ?? t('group.create.members', 'Members')}
           </Typography>
           {selectedIds.length > 0 && (
@@ -101,7 +102,7 @@ export const MemberPicker = ({
                 py: '1px',
                 borderRadius: '999px',
                 bgcolor: BRAND,
-                color: '#fff',
+                color: neutral[0],
                 fontSize: '11px',
                 fontWeight: 700,
               }}
@@ -142,7 +143,7 @@ export const MemberPicker = ({
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <Search size={16} color="#9ca3af" />
+                <Search size={16} color={neutral[400]} />
               </InputAdornment>
             ),
           },
@@ -153,15 +154,15 @@ export const MemberPicker = ({
         sx={{
           maxHeight,
           overflowY: 'auto',
-          border: '1px solid #f1f5f9',
+          border: `1px solid ${neutral[100]}`,
           borderRadius: '12px',
           p: 1,
-          bgcolor: '#fafafa',
+          bgcolor: neutral[50],
         }}
       >
         {filtered.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 4 }}>
-            <Typography sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '13px' }}>
+            <Typography sx={{ color: neutral[400], fontWeight: 600, fontSize: '13px' }}>
               {options.length === 0
                 ? t('group.create.noMembersAvailable', 'No students available')
                 : t('group.create.noSearchResults', 'No students match your search')}
@@ -182,12 +183,12 @@ export const MemberPicker = ({
                     p: 1,
                     borderRadius: '10px',
                     cursor: 'pointer',
-                    bgcolor: selected ? '#fef2f2' : '#fff',
+                    bgcolor: selected ? '#fef2f2' : neutral[0],
                     border: selected ? `1px solid ${BRAND}` : '1px solid #eef2f7',
                     transition: 'all 0.15s ease',
                     '&:hover': {
-                      borderColor: selected ? BRAND : '#cbd5e1',
-                      bgcolor: selected ? '#fef2f2' : '#f8fafc',
+                      borderColor: selected ? BRAND : neutral[300],
+                      bgcolor: selected ? '#fef2f2' : neutral[50],
                     },
                   }}
                 >
@@ -196,7 +197,7 @@ export const MemberPicker = ({
                       width: 36,
                       height: 36,
                       bgcolor: selected ? BRAND : '#fef2f2',
-                      color: selected ? '#fff' : BRAND,
+                      color: selected ? neutral[0] : BRAND,
                       fontSize: '13px',
                       fontWeight: 700,
                     }}
@@ -206,12 +207,12 @@ export const MemberPicker = ({
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography
                       noWrap
-                      sx={{ fontWeight: 700, fontSize: '14px', color: '#1e293b' }}
+                      sx={{ fontWeight: 700, fontSize: '14px', color: neutral[800] }}
                     >
                       {o.name}
                     </Typography>
                     {o.email && (
-                      <Typography noWrap sx={{ fontSize: '12px', color: '#94a3b8' }}>
+                      <Typography noWrap sx={{ fontSize: '12px', color: neutral[400] }}>
                         {o.email}
                       </Typography>
                     )}
@@ -219,7 +220,7 @@ export const MemberPicker = ({
                   <Checkbox
                     checked={selected}
                     tabIndex={-1}
-                    sx={{ color: '#cbd5e1', '&.Mui-checked': { color: BRAND } }}
+                    sx={{ color: neutral[300], '&.Mui-checked': { color: BRAND } }}
                   />
                 </Box>
               );

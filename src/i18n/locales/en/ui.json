@@ -5,7 +5,13 @@
       "searchPlaceholder": "Search...",
       "actions": "Actions",
       "noDataFound": "No data found.",
-      "showingItems": "Showing {{shown}} of {{total}} items"
+      "showingItems": "Showing {{shown}} of {{total}} items",
+      "noRows": "No data found.",
+      "noRowsHint": "Nothing has been added here yet.",
+      "noMatches": "No matches",
+      "noMatchesHint": "Nothing matched “{{query}}”. Try a different search.",
+      "selectAll": "Select all rows",
+      "selectRow": "Select row"
     },
     "courseCard": {
       "students": "Students",
@@ -55,11 +61,15 @@
       "accountSettings": "Account Settings"
     },
     "errors": {
-      "renderError": "Something crashed while rendering this page"
+      "renderError": "Something crashed while rendering this page",
+      "technicalDetails": "Technical details"
     },
     "common": {
       "imagePreview": "preview",
-      "logoAlt": "PMO Logo"
+      "logoAlt": "PMO Logo",
+      "skipToContent": "Skip to content",
+      "openMenu": "Open navigation menu",
+      "mainNavigation": "Main"
     }
   }
 }

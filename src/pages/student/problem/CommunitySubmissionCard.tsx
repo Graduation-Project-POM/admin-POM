@@ -13,6 +13,7 @@ import {
   setContestSubmissionVisibility,
   type Submission,
 } from '../../../services/problemService';
+import { brand, neutral, statusTone } from '../../../theme';
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
@@ -70,20 +71,20 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
       sx={{
         p: 3,
         borderRadius: '16px',
-        border: '1px solid #e2e8f0',
-        bgcolor: isDraft ? '#fafafa' : '#fff',
+        border: `1px solid ${neutral[200]}`,
+        bgcolor: isDraft ? neutral[50] : neutral[0],
         position: 'relative',
       }}
     >
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '280px 1fr' }, gap: 3 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1.5 }}>
-            <Avatar sx={{ bgcolor: submission.isMine ? '#8B1D23' : '#fef2f2', color: submission.isMine ? '#fff' : '#8B1D23', fontWeight: 700 }}>
+            <Avatar sx={{ bgcolor: submission.isMine ? brand[500] : '#fef2f2', color: submission.isMine ? neutral[0] : brand[500], fontWeight: 700 }}>
               {initials(submission.studentName)}
             </Avatar>
             <Box sx={{ minWidth: 0 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
-                <Typography sx={{ fontWeight: 700, color: '#1e293b', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <Typography sx={{ fontWeight: 700, color: neutral[800], overflow: 'hidden', textOverflow: 'ellipsis' }}>
                   {submission.studentName}
                 </Typography>
                 {submission.isMine && (
@@ -91,7 +92,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                     icon={<User size={11} />}
                     label={t('student.problemDetails.yourBadge')}
                     size="small"
-                    sx={{ bgcolor: '#8B1D23', color: '#fff', fontWeight: 700, fontSize: '10px', height: 20 }}
+                    sx={{ bgcolor: brand[500], color: neutral[0], fontWeight: 700, fontSize: '10px', height: 20 }}
                   />
                 )}
               </Box>
@@ -110,7 +111,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                 icon={<Trophy size={11} />}
                 label={t('student.problemDetails.contestBadge')}
                 size="small"
-                sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '10px', height: 22 }}
               />
             )}
             <Chip
@@ -118,8 +119,8 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
               label={isDraft ? t('student.problemDetails.draftBadge') : t('student.problemDetails.publishedBadge')}
               size="small"
               sx={{
-                bgcolor: isDraft ? '#f1f5f9' : '#ecfdf5',
-                color: isDraft ? '#475569' : '#166534',
+                bgcolor: isDraft ? neutral[100] : statusTone.success.bg,
+                color: isDraft ? neutral[600] : statusTone.success.fg,
                 fontWeight: 700,
                 fontSize: '10px',
                 height: 22,
@@ -129,18 +130,18 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
               <Chip
                 label={t('student.problemDetails.points', { score: submission.grade })}
                 size="small"
-                sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: statusTone.success.bg, color: statusTone.success.fg, fontWeight: 700, fontSize: '10px', height: 22 }}
               />
             )}
             {isPending && (
               <Chip
                 label={t('student.problemDetails.pendingGrade')}
                 size="small"
-                sx={{ bgcolor: '#fff7e0', color: '#92400e', fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '10px', height: 22 }}
               />
             )}
           </Box>
-          <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+          <Typography variant="caption" sx={{ color: neutral[400] }}>
             {new Date(submission.submittedAt).toLocaleString()}
           </Typography>
 
@@ -164,14 +165,14 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                 startIcon={<Trash2 size={14} />}
                 onClick={() => setConfirmOpen(true)}
                 disabled={busy}
-                sx={{ fontSize: '12px', color: '#dc2626', borderColor: '#fecaca' }}
+                sx={{ fontSize: '12px', color: statusTone.danger.solid, borderColor: statusTone.danger.border }}
               >
                 {t('student.problemDetails.deleteAction')}
               </Button>
             </Stack>
           )}
           {error && (
-            <Typography variant="caption" sx={{ color: '#dc2626', display: 'block', mt: 1 }}>
+            <Typography variant="caption" sx={{ color: statusTone.danger.solid, display: 'block', mt: 1 }}>
               {error}
             </Typography>
           )}
@@ -180,7 +181,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
           <Typography
             component="pre"
-            sx={{ color: '#8B1D23', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
+            sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
           >
             {submission.solutionText || t('student.problemDetails.noSolution')}
           </Typography>

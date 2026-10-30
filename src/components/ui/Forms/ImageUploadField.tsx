@@ -7,6 +7,7 @@ import { Label } from "../label/Label";
 import { problemsService } from "../../../services/problemsService";
 import { resolveMediaUrl } from "../../../utils/media";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { neutral, radius, statusTone } from '../../../theme';
 
 interface ImageUploadFieldProps {
   label: string;
@@ -58,7 +59,10 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
         hidden
         onChange={handleFile}
       />
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}>
+      <Box
+        aria-busy={uploading}
+        sx={{ display: "flex", alignItems: "center", gap: 1.5, flexWrap: "wrap" }}
+      >
         <Button
           type="button"
           variantType="outline"
@@ -96,9 +100,9 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
             maxHeight: 140,
             maxWidth: "100%",
             objectFit: "contain",
-            borderRadius: "8px",
-            border: "1px solid #e5e7eb",
-            bgcolor: "#f8fafc",
+            borderRadius: `${radius.md}px`,
+            border: `1px solid ${neutral[200]}`,
+            bgcolor: neutral[50],
             display: "block",
           }}
           onError={(e) => {
@@ -108,7 +112,8 @@ export const ImageUploadField: React.FC<ImageUploadFieldProps> = ({
       )}
       {error && (
         <Typography
-          sx={{ mt: 1, color: "#dc2626", fontSize: "12px", fontWeight: 600 }}
+          role="alert"
+          sx={{ mt: 1, color: statusTone.danger.fg, fontSize: "12px", fontWeight: 600 }}
         >
           {error}
         </Typography>

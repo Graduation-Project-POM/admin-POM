@@ -2,26 +2,24 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-    Box,
-    Typography,
-    Paper,
-    Tabs,
-    Tab,
-    Avatar,
-    Chip,
-    Divider,
-    Alert,
-    CircularProgress,
+  Box,
+  Typography,
+  Paper,
+  Tabs,
+  Tab,
+  Avatar,
+  Chip,
+  Divider,
 } from '@mui/material';
 import { groupService } from '../../../services/groupService';
 import { ArrowLeft, Users, Award, BookOpen, Clock, Trophy } from 'lucide-react';
 import { ContestCard } from '../../../components/ui/card/contestCard';
 import {
-    StyledContainer,
-    HeaderSection,
-    TabContentWrapper,
-    StudentCardStyled,
-    SearchInput,
+  StyledContainer,
+  HeaderSection,
+  TabContentWrapper,
+  StudentCardStyled,
+  SearchInput,
 } from './groupDetailsStyle';
 import type { ContestData } from '../../../types/index';
 import { Button } from '../../../components/ui/button/Button';
@@ -42,6 +40,8 @@ import { SolutionDetailModal } from '../../trainer/problems-solution/SolutionDet
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL } from '../../../types/problem';
 import { getContestStatus, getContestStatusNumber } from '../../../utils/contestStatus';
+import { brand, neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
 
 const toIso = (value: string): string => {
   const d = new Date(value);
@@ -516,9 +516,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={() => setViewingProblems(false)} sx={{ mb: 3 }}>
                     {t('group.details.backToGroup')}
                 </Button>
-                <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e5e7eb', mb: 4, bgcolor: '#f8fafc' }}>
+                <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4, bgcolor: neutral[50] }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
-                        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', flex: 1, minWidth: 0 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800], flex: 1, minWidth: 0 }}>
                             {t('group.details.problemsTitle', { title: selectedContest.title })}
                         </Typography>
                         <Button
@@ -544,7 +544,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                         setIsProgressModalOpen(true);
                                         void loadSubmissions(Number(row.id));
                                     }}
-                                    sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+                                    sx={{ fontWeight: 700, color: brand[500], fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
                                 >
                                     {row.title}
                                 </Typography>
@@ -561,7 +561,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                         py: 0.3,
                                         borderRadius: 4,
                                         bgcolor: row.difficulty === 'Easy' ? '#16a34a15' : row.difficulty === 'Hard' ? '#dc262615' : '#eab30815',
-                                        color: row.difficulty === 'Easy' ? '#16a34a' : row.difficulty === 'Hard' ? '#dc2626' : '#eab308',
+                                        color: row.difficulty === 'Easy' ? '#16a34a' : row.difficulty === 'Hard' ? statusTone.danger.solid : '#eab308',
                                         fontSize: '0.75rem',
                                         fontWeight: 600,
                                     }}
@@ -581,7 +581,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                         {
                             id: 'acceptanceRate',
                             label: t('contest.problems.columns.acceptanceRate', t('group.details.successRate')),
-                            render: (row) => <Typography sx={{ fontWeight: 700, color: '#8B1D23' }}>{row.acceptanceRate}%</Typography>
+                            render: (row) => <Typography sx={{ fontWeight: 700, color: brand[500] }}>{row.acceptanceRate}%</Typography>
                         }
                     ]}
                     onAdd={() => setIsCreateProblemOpen(true)}
@@ -656,31 +656,29 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             </Button>
 
             <HeaderSection>
-                <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
                     {group.title}
                 </Typography>
-                <Typography variant="body1" sx={{ color: '#64748b', mb: 2, maxWidth: '800px' }}>
+                <Typography variant="body1" sx={{ color: neutral[500], mb: 2, maxWidth: '800px' }}>
                     {group.description}
                 </Typography>
                 <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Users size={18} color="#8B1D23" />
+                        <Users size={18} color={brand[500]} />
                         <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('group.details.studentsCount', { count: students.length })}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Award size={18} color="#8B1D23" />
+                        <Award size={18} color={brand[500]} />
                         <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('group.details.created', { date: new Date(group.createdDate).toLocaleDateString() })}</Typography>
                     </Box>
                 </Box>
             </HeaderSection>
 
             {tabsError && (
-                <Alert severity="error" sx={{ mb: 2 }} onClose={() => setTabsError(null)}>
-                    {tabsError}
-                </Alert>
+                <ErrorState message={tabsError} onClose={() => setTabsError(null)} />
             )}
 
-            <Paper elevation={0} sx={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #e5e7eb', bgcolor: '#ffffff' }}>
+            <Paper elevation={0} sx={{ borderRadius: '16px', overflow: 'hidden', border: `1px solid ${neutral[200]}`, bgcolor: neutral[0] }}>
                 <Tabs
                     value={tabValue}
                     onChange={handleTabChange}
@@ -689,9 +687,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     allowScrollButtonsMobile
                     sx={{
                         px: 2,
-                        borderBottom: '1px solid #e5e7eb',
-                        '& .MuiTab-root': { textTransform: 'none', fontWeight: 700, color: '#64748b', minHeight: 64, '&.Mui-selected': { color: '#8B1D23' } },
-                        '& .MuiTabs-indicator': { backgroundColor: '#8B1D23', height: 3, borderRadius: '999px' },
+                        borderBottom: `1px solid ${neutral[200]}`,
+                        '& .MuiTab-root': { textTransform: 'none', fontWeight: 700, color: neutral[500], minHeight: 64, '&.Mui-selected': { color: brand[500] } },
+                        '& .MuiTabs-indicator': { backgroundColor: brand[500], height: 3, borderRadius: '999px' },
                     }}
                 >
                     <Tab label={t('group.details.tabContests')} icon={<BookOpen size={16} />} iconPosition="start" />
@@ -716,11 +714,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                         </Box>
                         
                         {tabsLoading ? (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                                <CircularProgress sx={{ color: '#8B1D23' }} />
-                            </Box>
+                            <LoadingState />
                         ) : filteredContests.length === 0 ? (
-                            <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>{t('group.details.noContests')}</Typography>
+                            <Typography sx={{ textAlign: 'center', color: neutral[400], py: 6, fontWeight: 600 }}>{t('group.details.noContests')}</Typography>
                         ) : (
                             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
                                 {filteredContests.map((c) => (
@@ -746,11 +742,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             onChange={(e) => setStudentSearchQuery(e.target.value)}
                         />
                         {tabsLoading ? (
-                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                            <CircularProgress sx={{ color: '#8B1D23' }} />
-                        </Box>
+                        <LoadingState />
                         ) : filteredStudents.length === 0 ? (
-                        <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>
+                        <Typography sx={{ textAlign: 'center', color: neutral[400], py: 6, fontWeight: 600 }}>
                             {t('group.details.noStudents', 'No students in this group')}
                         </Typography>
                         ) : (
@@ -758,21 +752,21 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             {filteredStudents.map((student) => (
                                 <StudentCardStyled key={student.id}>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                                        <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', width: 52, height: 52, fontWeight: 700 }}>
+                                        <Avatar sx={{ bgcolor: '#fef2f2', color: brand[500], width: 52, height: 52, fontWeight: 700 }}>
                                             {student.name.split(' ').map(n => n[0]).join('')}
                                         </Avatar>
                                         <Box>
-                                            <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>{student.name}</Typography>
-                                            <Typography variant="body2" sx={{ color: '#64748b' }}>{student.email}</Typography>
+                                            <Typography sx={{ fontWeight: 700, color: neutral[800] }}>{student.name}</Typography>
+                                            <Typography variant="body2" sx={{ color: neutral[500] }}>{student.email}</Typography>
                                         </Box>
                                     </Box>
                                     <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
                                     <Box sx={{ mb: 2 }}>
-                                        <Typography variant="body2" sx={{ color: '#64748b', mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
+                                        <Typography variant="body2" sx={{ color: neutral[500], mb: 0.5, display: 'flex', justifyContent: 'space-between' }}>
                                             {t('group.details.joined')} <span>{new Date(student.joinDate).toLocaleDateString()}</span>
                                         </Typography>
-                                        <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between' }}>
-                                            {t('group.details.solvedProblems')} <span style={{ fontWeight: 700, color: '#1e293b' }}>{student.solvedProblems}</span>
+                                        <Typography variant="body2" sx={{ color: neutral[500], display: 'flex', justifyContent: 'space-between' }}>
+                                            {t('group.details.solvedProblems')} <span style={{ fontWeight: 700, color: neutral[800] }}>{student.solvedProblems}</span>
                                         </Typography>
                                     </Box>
                                     <Button
@@ -791,23 +785,21 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     {/* Trainer Tab */}
                     <TabPanel value={tabValue} index={2}>
                         {tabsLoading ? (
-                            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                                <CircularProgress sx={{ color: '#8B1D23' }} />
-                            </Box>
+                            <LoadingState />
                         ) : !trainer ? (
-                            <Typography sx={{ textAlign: 'center', color: '#94a3b8', py: 6, fontWeight: 600 }}>
+                            <Typography sx={{ textAlign: 'center', color: neutral[400], py: 6, fontWeight: 600 }}>
                                 {t('group.details.noTrainer', 'No trainer assigned to this group')}
                             </Typography>
                         ) : (
-                        <Paper elevation={0} sx={{ p: 4, maxWidth: 600, borderRadius: '16px', border: '1px solid #e5e7eb', bgcolor: '#f8fafc' }}>
+                        <Paper elevation={0} sx={{ p: 4, maxWidth: 600, borderRadius: '16px', border: `1px solid ${neutral[200]}`, bgcolor: neutral[50] }}>
                             <Box sx={{ display: 'flex', gap: 3, mb: 4, alignItems: 'center' }}>
-                                <Avatar sx={{ width: 80, height: 88, bgcolor: '#8B1D23', fontSize: 30, fontWeight: 700, borderRadius: '16px' }}>
+                                <Avatar sx={{ width: 80, height: 88, bgcolor: brand[500], fontSize: 30, fontWeight: 700, borderRadius: '16px' }}>
                                     {trainer.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>{trainer.name}</Typography>
+                                    <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>{trainer.name}</Typography>
                                     {trainer.email && (
-                                        <Typography variant="body2" sx={{ color: '#64748b', mb: 2, fontWeight: 500 }}>{trainer.email}</Typography>
+                                        <Typography variant="body2" sx={{ color: neutral[500], mb: 2, fontWeight: 500 }}>{trainer.email}</Typography>
                                     )}
                                     <Button
                                         variantType="default"
@@ -819,9 +811,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             </Box>
                             {trainer.specialization && (
                                 <Box>
-                                    <Typography sx={{ fontWeight: 700, mb: 2, color: '#1e293b', fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
+                                    <Typography sx={{ fontWeight: 700, mb: 2, color: neutral[800], fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>{t('group.details.expertise')}</Typography>
                                     <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                                        <Chip label={trainer.specialization} sx={{ bgcolor: '#ffffff', color: '#1e293b', fontWeight: 700, border: '1px solid #e2e8f0' }} />
+                                        <Chip label={trainer.specialization} sx={{ bgcolor: neutral[0], color: neutral[800], fontWeight: 700, border: `1px solid ${neutral[200]}` }} />
                                     </Box>
                                 </Box>
                             )}

@@ -7,7 +7,6 @@ import {
   TableContainer,
   TableRow,
   Paper,
-  ThemeProvider,
   IconButton,
   Checkbox,
   TextField,
@@ -22,11 +21,12 @@ import { MoreVertical, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Button } from "../button/Button";
 import {
-  theme,
   StyledTableHead,
   StyledTableRow,
   StyledTableCell,
 } from "./tableStyle";
+import { EmptyState } from "../../common/states";
+import { neutral, statusTone } from '../../../theme';
 import type { SharedTableProps, TableRowBase } from "../../../types/index";
 
 export function SharedTable<TRow extends TableRowBase>({
@@ -99,7 +99,7 @@ export function SharedTable<TRow extends TableRowBase>({
   const selectedIds = Array.from(selectedRows).map((id) => String(id));
 
   return (
-    <ThemeProvider theme={theme}>
+    <>
       <Box
         sx={{
           mb: 2,
@@ -115,26 +115,13 @@ export function SharedTable<TRow extends TableRowBase>({
           placeholder={searchPlaceholder ?? t("ui.table.searchPlaceholder")}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          sx={{
-            flex: "1 1 240px",
-            maxWidth: 320,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "10px",
-              backgroundColor: "#fff",
-              "& fieldset": {
-                borderColor: "#e5e7eb",
-              },
-              "&.Mui-focused fieldset": {
-                borderColor: "#8B1D23",
-                borderWidth: "1.5px",
-              },
-            },
-          }}
+          sx={{ flex: "1 1 240px", maxWidth: 320 }}
           slotProps={{
+            htmlInput: { "aria-label": searchPlaceholder ?? t("ui.table.searchPlaceholder") },
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search size={18} color="#9ca3af" />
+                  <Search size={18} color={neutral[400]} />
                 </InputAdornment>
               ),
             },
@@ -166,10 +153,11 @@ export function SharedTable<TRow extends TableRowBase>({
         <TableContainer
           component={Paper}
           sx={{
-            borderRadius: 2,
-            boxShadow: 1,
-            border: "1px solid #e5e7eb",
-            backgroundColor: "#fff",
+            borderRadius: "16px",
+            boxShadow: "none",
+            border: `1px solid ${neutral[200]}`,
+            backgroundColor: "background.paper",
+            overflowX: "auto",
           }}
         >
           <Table>
@@ -186,15 +174,7 @@ export function SharedTable<TRow extends TableRowBase>({
                       selectedRows.size < selectableData.length
                     }
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    sx={{
-                      color: "#cbd5e1",
-                      "&.Mui-checked": {
-                        color: "#8B1D23",
-                      },
-                      "&.MuiCheckbox-indeterminate": {
-                        color: "#8B1D23",
-                      },
-                    }}
+                    slotProps={{ input: { "aria-label": t("ui.table.selectAll") } }}
                   />
                 </StyledTableCell>
                 {columns.map((col) => (
@@ -204,6 +184,29 @@ export function SharedTable<TRow extends TableRowBase>({
               </TableRow>
             </StyledTableHead>
             <TableBody>
+              {filteredData.length === 0 && (
+                <TableRow>
+                  <StyledTableCell
+                    colSpan={columns.length + 2}
+                    sx={{ borderBottom: "none", p: 0 }}
+                  >
+                    <EmptyState
+                      variant="bare"
+                      title={
+                        searchQuery
+                          ? t("ui.table.noMatches")
+                          : t("ui.table.noRows")
+                      }
+                      description={
+                        searchQuery
+                          ? t("ui.table.noMatchesHint", { query: searchQuery })
+                          : t("ui.table.noRowsHint")
+                      }
+                      icon={<Search size={24} />}
+                    />
+                  </StyledTableCell>
+                </TableRow>
+              )}
               {filteredData.map((row) => (
                 <StyledTableRow key={row.id}>
                   <StyledTableCell padding="checkbox">
@@ -213,12 +216,7 @@ export function SharedTable<TRow extends TableRowBase>({
                       onChange={(e) =>
                         handleSelectRow(String(row.id), e.target.checked)
                       }
-                      sx={{
-                        color: "#cbd5e1",
-                        "&.Mui-checked": {
-                          color: "#8B1D23",
-                        },
-                      }}
+                      slotProps={{ input: { "aria-label": t("ui.table.selectRow") } }}
                     />
                   </StyledTableCell>
                   {columns.map((col) => (
@@ -232,9 +230,10 @@ export function SharedTable<TRow extends TableRowBase>({
                     {(rowCanEdit(row) || rowCanDelete(row)) && (
                       <IconButton
                         size="small"
+                        aria-label={t("common.actions")}
                         onClick={(e) => handleActionClick(e, row)}
                       >
-                        <MoreVertical size={18} color="#64748b" />
+                        <MoreVertical size={18} />
                       </IconButton>
                     )}
                   </StyledTableCell>
@@ -248,26 +247,19 @@ export function SharedTable<TRow extends TableRowBase>({
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleActionClose}
-          elevation={2}
-          sx={{
-            "& .MuiPaper-root": {
-              borderRadius: "10px",
-              minWidth: 140,
-              mt: 0.5,
-              border: "1px solid #e5e7eb",
-            },
-          }}
+          elevation={0}
+          sx={{ "& .MuiPaper-root": { minWidth: 160, mt: 0.5 } }}
         >
           {currentRow && rowCanEdit(currentRow) && (
           <MenuItem onClick={handleEdit} sx={{ py: 1, px: 2 }}>
             <ListItemIcon sx={{ minWidth: "32px !important" }}>
-              <Pencil size={16} color="#64748b" />
+              <Pencil size={16} color={neutral[500]} />
             </ListItemIcon>
             <ListItemText
               primary={t("buttons.edit")}
               slotProps={{
                 primary: {
-                  sx: { fontSize: "14px", fontWeight: 600, color: "#1e293b" },
+                  sx: { fontSize: "14px", fontWeight: 600, color: neutral[800] },
                 },
               }}
             />
@@ -276,16 +268,16 @@ export function SharedTable<TRow extends TableRowBase>({
           {currentRow && rowCanDelete(currentRow) && (
           <MenuItem
             onClick={handleDelete}
-            sx={{ py: 1, px: 2, "&:hover": { bgcolor: "#fef2f2" } }}
+            sx={{ py: 1, px: 2, "&:hover": { bgcolor: statusTone.danger.bg } }}
           >
             <ListItemIcon sx={{ minWidth: "32px !important" }}>
-              <Trash2 size={16} color="#ef4444" />
+              <Trash2 size={16} color={statusTone.danger.fg} />
             </ListItemIcon>
             <ListItemText
               primary={t("buttons.delete")}
               slotProps={{
                 primary: {
-                  sx: { fontSize: "14px", fontWeight: 600, color: "#ef4444" },
+                  sx: { fontSize: "14px", fontWeight: 600, color: statusTone.danger.fg },
                 },
               }}
             />
@@ -293,6 +285,6 @@ export function SharedTable<TRow extends TableRowBase>({
           )}
         </Menu>
       </Box>
-    </ThemeProvider>
+    </>
   );
 }

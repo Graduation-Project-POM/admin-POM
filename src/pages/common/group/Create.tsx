@@ -19,6 +19,7 @@ import type { StudentOption } from '../../../services/studentService';
 import { trainerService } from '../../../services/trainerService';
 import type { TrainerOption } from '../../../services/trainerService';
 import { useAuth } from '../../../services/AuthContext';
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface CreateGroupProps {
   open: boolean;
@@ -31,7 +32,7 @@ interface CreateGroupProps {
   }) => void;
 }
 
-const BRAND = '#8B1D23';
+const BRAND = brand[500];
 
 const initials = (name: string) =>
   name
@@ -133,12 +134,12 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
                     <Box sx={{ minWidth: 0 }}>
                       <Typography
                         noWrap
-                        sx={{ fontWeight: 700, fontSize: '14px', color: '#1e293b' }}
+                        sx={{ fontWeight: 700, fontSize: '14px', color: neutral[800] }}
                       >
                         {tr.name}
                       </Typography>
                       {tr.specialization && (
-                        <Typography noWrap sx={{ fontSize: '12px', color: '#94a3b8' }}>
+                        <Typography noWrap sx={{ fontSize: '12px', color: neutral[400] }}>
                           {tr.specialization}
                         </Typography>
                       )}
@@ -164,7 +165,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
                                 width: 26,
                                 height: 26,
                                 bgcolor: BRAND,
-                                color: '#fff',
+                                color: neutral[0],
                                 fontSize: '11px',
                                 fontWeight: 700,
                               }}
@@ -189,7 +190,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
                 gap: 1.5,
                 p: 1.5,
                 bgcolor: '#fef2f2',
-                border: '1px solid #fde2e2',
+                border: `1px solid ${statusTone.danger.border}`,
                 borderRadius: '12px',
               }}
             >

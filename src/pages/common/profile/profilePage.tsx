@@ -20,6 +20,7 @@ import { getMyStudentProfile, type MyStudentProfile } from "../../../services/st
 import { getCurrentUser, updateCurrentUser, type BackendUser } from "../../../services/userService";
 import { getMyTrainerProfile, updateMyTrainerProfile } from "../../../services/trainerService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface ProfileData {
   fullName: string;
@@ -166,28 +167,28 @@ const ProfilePage: React.FC = () => {
   };
 
   const fieldSx = {
-    "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: "#fff" },
+    "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: neutral[0] },
   };
 
   return (
     <Box
       sx={{
         p: { xs: 2, sm: 3, md: 4 },
-        backgroundColor: "#f8fafc",
+        backgroundColor: neutral[50],
         minHeight: "100vh",
       }}
     >
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="h4"
-          sx={{ fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em", mb: 1 }}
+          sx={{ fontWeight: 800, color: neutral[900], letterSpacing: "-0.02em", mb: 1 }}
         >
           {t("profile.title")}
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
           <Typography
             variant="body1"
-            sx={{ color: "#64748b", borderLeft: "3px solid #8B1D23", pl: 2, fontWeight: 500 }}
+            sx={{ color: neutral[500], borderLeft: `3px solid ${brand[500]}`, pl: 2, fontWeight: 500 }}
           >
             {t("profile.subtitle")}
           </Typography>
@@ -199,7 +200,7 @@ const ProfilePage: React.FC = () => {
           <Card
             sx={{
               borderRadius: "20px",
-              border: "1px solid #eef2f6",
+              border: `1px solid ${neutral[200]}`,
               boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
               overflow: "visible",
             }}
@@ -209,7 +210,7 @@ const ProfilePage: React.FC = () => {
                 <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                   <Avatar
                     sx={{
-                      bgcolor: "#8B1D23",
+                      bgcolor: brand[500],
                       width: 64,
                       height: 64,
                       fontSize: "1.5rem",
@@ -220,7 +221,7 @@ const ProfilePage: React.FC = () => {
                     {profile.fullName.charAt(0)}
                   </Avatar>
                   <Box>
-                    <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f172a" }}>
+                    <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[900] }}>
                       {profile.displayName}
                     </Typography>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
@@ -229,8 +230,8 @@ const ProfilePage: React.FC = () => {
                           label={role}
                           size="small"
                           sx={{
-                            bgcolor: "#f1f5f9",
-                            color: "#1e293b",
+                            bgcolor: neutral[100],
+                            color: neutral[800],
                             fontWeight: 500,
                             fontSize: "0.7rem",
                             borderRadius: "30px",
@@ -242,17 +243,17 @@ const ProfilePage: React.FC = () => {
                           <Chip
                             label={`${t("profile.student.totalPointsLabel", "Total Points")}: ${studentStats.totalPoints}`}
                             size="small"
-                            sx={{ bgcolor: "#fef2f2", color: "#8B1D23", fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
+                            sx={{ bgcolor: "#fef2f2", color: brand[500], fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
                           />
                           <Chip
                             label={`${t("profile.student.rankLabel", "Rank")}: #${studentStats.rank}`}
                             size="small"
-                            sx={{ bgcolor: "#fffbeb", color: "#92400e", fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
+                            sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
                           />
                           <Chip
                             label={t("profile.student.solved", { count: studentStats.problemSolved })}
                             size="small"
-                            sx={{ bgcolor: "#f1f5f9", color: "#475569", fontWeight: 600, fontSize: "0.7rem", borderRadius: "30px" }}
+                            sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: "0.7rem", borderRadius: "30px" }}
                           />
                         </>
                       )}
@@ -271,8 +272,8 @@ const ProfilePage: React.FC = () => {
                       borderRadius: "40px",
                       textTransform: "none",
                       fontWeight: 600,
-                      borderColor: "#cbd5e1",
-                      color: "#1e293b",
+                      borderColor: neutral[300],
+                      color: neutral[800],
                     }}
                   >
                     {t("profile.editProfile")}
@@ -288,8 +289,8 @@ const ProfilePage: React.FC = () => {
                         borderRadius: "40px",
                         textTransform: "none",
                         fontWeight: 600,
-                        bgcolor: "#8B1D23",
-                        "&:hover": { bgcolor: "#6d1620" },
+                        bgcolor: brand[500],
+                        "&:hover": { bgcolor: brand[600] },
                       }}
                     >
                       {saving ? t("common.loading") : t("buttons.save")}
@@ -301,8 +302,8 @@ const ProfilePage: React.FC = () => {
                         borderRadius: "40px",
                         textTransform: "none",
                         fontWeight: 600,
-                        borderColor: "#cbd5e1",
-                        color: "#64748b",
+                        borderColor: neutral[300],
+                        color: neutral[500],
                       }}
                     >
                       {t("buttons.cancel")}
@@ -311,7 +312,7 @@ const ProfilePage: React.FC = () => {
                 )}
               </Box>
 
-              <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
+              <Divider sx={{ my: 2, borderColor: neutral[200] }} />
 
               {saveError && (
                 <Alert severity="error" sx={{ mb: 2 }} onClose={() => setSaveError(null)}>
@@ -326,7 +327,7 @@ const ProfilePage: React.FC = () => {
 
               <Typography
                 variant="subtitle1"
-                sx={{ fontWeight: 700, color: "#0f172a", mb: 2, fontSize: "1.1rem" }}
+                sx={{ fontWeight: 700, color: neutral[900], mb: 2, fontSize: "1.1rem" }}
               >
                 {t("profile.personalInformation")}
               </Typography>
@@ -414,7 +415,7 @@ const ProfilePage: React.FC = () => {
               <Box sx={{ mt: 3 }}>
                 <Typography
                   variant="subtitle2"
-                  sx={{ fontWeight: 600, color: "#0f172a", mb: 1 }}
+                  sx={{ fontWeight: 600, color: neutral[900], mb: 1 }}
                 >
                   {t('profile.fields.bio')}
                 </Typography>
@@ -441,8 +442,8 @@ const ProfilePage: React.FC = () => {
                       borderRadius: "40px",
                       textTransform: "none",
                       fontWeight: 600,
-                      bgcolor: "#8B1D23",
-                      "&:hover": { bgcolor: "#6d1620" },
+                      bgcolor: brand[500],
+                      "&:hover": { bgcolor: brand[600] },
                     }}
                   >
                     {t('profile.editProfile')}

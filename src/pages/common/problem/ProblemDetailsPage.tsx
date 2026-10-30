@@ -8,7 +8,6 @@ import {
   Divider,
   Avatar,
   Chip,
-  CircularProgress,
   TextField,
 } from '@mui/material';
 import { ArrowLeft, CheckCircle2, FileCode } from 'lucide-react';
@@ -24,6 +23,8 @@ import {
 import { problemsService, type ProblemSubmission } from '../../../services/problemsService';
 import { resolveMediaUrl } from '../../../utils/media';
 import { ProblemDiscussion } from '../../../components/discussion/ProblemDiscussion';
+import { brand, neutral, statusTone } from '../../../theme';
+import { LoadingState } from '../../../components/common/states';
 
 const contestToSubmission = (s: ProblemSubmission): Submission => ({
   id: s.id,
@@ -75,17 +76,17 @@ const SubmissionCard = ({
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e2e8f0' }}>
+    <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}` }}>
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '300px 1fr' }, gap: 4 }}>
         <Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', fontWeight: 700 }}>
+            <Avatar sx={{ bgcolor: '#fef2f2', color: brand[500], fontWeight: 700 }}>
               {initials(submission.studentName)}
             </Avatar>
             <Box>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>{submission.studentName}</Typography>
+              <Typography sx={{ fontWeight: 700, color: neutral[800] }}>{submission.studentName}</Typography>
               {submission.studentEmail && (
-                <Typography variant="body2" sx={{ color: '#64748b' }}>{submission.studentEmail}</Typography>
+                <Typography variant="body2" sx={{ color: neutral[500] }}>{submission.studentEmail}</Typography>
               )}
             </Box>
           </Box>
@@ -93,20 +94,20 @@ const SubmissionCard = ({
           {canGrade ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.status', 'Status')}</Typography>
+                <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600 }}>{t('problem.details.status', 'Status')}</Typography>
                 <Chip
                   label={submission.grade != null ? t('problem.details.graded', 'Graded') : t('problem.details.pending', 'Pending')}
                   size="small"
                   sx={{
                     fontWeight: 700,
                     fontSize: '11px',
-                    bgcolor: submission.grade != null ? '#e7f7ec' : '#fef3c7',
-                    color: submission.grade != null ? '#166534' : '#92400e',
+                    bgcolor: submission.grade != null ? statusTone.success.bg : statusTone.warning.bg,
+                    color: submission.grade != null ? statusTone.success.fg : statusTone.warning.fg,
                   }}
                 />
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600 }}>{t('problem.details.grade', 'Grade')}</Typography>
+                <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600 }}>{t('problem.details.grade', 'Grade')}</Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <TextField
                     type="number"
@@ -115,7 +116,7 @@ const SubmissionCard = ({
                     onChange={(e) => setGrade(e.target.value)}
                     slotProps={{ htmlInput: { min: 0, max: maxPts, style: { width: 60, textAlign: 'center', fontWeight: 700 } } }}
                   />
-                  <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>/ {maxPts}</Typography>
+                  <Typography sx={{ fontWeight: 700, color: neutral[800] }}>/ {maxPts}</Typography>
                 </Box>
               </Box>
               <TextField
@@ -127,31 +128,31 @@ const SubmissionCard = ({
                 onChange={(e) => setFeedback(e.target.value)}
               />
               {gradeError && (
-                <Typography variant="caption" sx={{ color: '#dc2626' }}>{gradeError}</Typography>
+                <Typography variant="caption" sx={{ color: statusTone.danger.solid }}>{gradeError}</Typography>
               )}
               <Button
                 variantType="default"
                 fullWidth
                 startIcon={<CheckCircle2 size={16} />}
-                sx={{ bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' } }}
+                sx={{ bgcolor: statusTone.success.fg, '&:hover': { bgcolor: statusTone.success.fg } }}
                 onClick={handleSave}
                 disabled={saving}
               >
                 {saving ? t('problem.details.saving', 'Saving...') : t('problem.details.saveGrade', 'Save grade')}
               </Button>
-              <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+              <Typography variant="caption" sx={{ color: neutral[400] }}>
                 {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
               </Typography>
             </Box>
           ) : (
-            <Typography variant="caption" sx={{ color: '#94a3b8' }}>
+            <Typography variant="caption" sx={{ color: neutral[400] }}>
               {t('problem.details.submittedAt', { date: new Date(submission.submittedAt).toLocaleString() })}
             </Typography>
           )}
         </Box>
 
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, color: '#8B1D23' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1, color: brand[500] }}>
             <Typography variant="caption" sx={{ fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1 }}>
               {t('problem.details.solution')}
             </Typography>
@@ -159,7 +160,7 @@ const SubmissionCard = ({
           </Box>
           <Typography
             component="pre"
-            sx={{ color: '#8B1D23', fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
+            sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
           >
             {submission.solutionText || t('problem.details.noSolution')}
           </Typography>
@@ -225,9 +226,7 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-        <CircularProgress sx={{ color: '#8B1D23' }} />
-      </Box>
+      <LoadingState />
     );
   }
   if (error || !problem) {
@@ -256,21 +255,21 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
         {t('problem.details.back')}
       </Button>
 
-      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
               {problem.title}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-              <Chip label={problem.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+              <Chip label={problem.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600 }} />
               <Chip
                 label={problem.isPublished ? t('problem.details.published') : t('problem.details.draft')}
                 size="small"
                 sx={{
                   fontWeight: 600,
-                  bgcolor: problem.isPublished ? '#e7f7ec' : '#f3f4f6',
-                  color: problem.isPublished ? '#166534' : '#374151',
+                  bgcolor: problem.isPublished ? statusTone.success.bg : neutral[100],
+                  color: problem.isPublished ? statusTone.success.fg : neutral[700],
                 }}
               />
             </Box>
@@ -278,19 +277,19 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
           <Chip
             label={difficulty}
             sx={{
-              bgcolor: difficulty === 'Easy' ? '#e7f7ec' : difficulty === 'Medium' ? '#fff7e0' : '#fdecec',
-              color: difficulty === 'Easy' ? '#166534' : difficulty === 'Medium' ? '#92400e' : '#991b1b',
+              bgcolor: difficulty === 'Easy' ? statusTone.success.bg : difficulty === 'Medium' ? statusTone.warning.bg : statusTone.danger.bg,
+              color: difficulty === 'Easy' ? statusTone.success.fg : difficulty === 'Medium' ? statusTone.warning.fg : statusTone.danger.fg,
               fontWeight: 700,
             }}
           />
         </Box>
 
-        <Typography sx={{ color: '#475569', lineHeight: 1.8, fontSize: '16px', mb: 2, whiteSpace: 'pre-wrap' }}>
+        <Typography sx={{ color: neutral[600], lineHeight: 1.8, fontSize: '16px', mb: 2, whiteSpace: 'pre-wrap' }}>
           {problem.statement || t('problem.details.noStatement')}
         </Typography>
 
         {problem.photoUrl && (
-          <Box sx={{ mb: 2, borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+          <Box sx={{ mb: 2, borderRadius: '12px', overflow: 'hidden', border: `1px solid ${neutral[200]}` }}>
             <img src={resolveMediaUrl(problem.photoUrl) ?? undefined} alt={problem.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
           </Box>
         )}
@@ -298,17 +297,17 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
 
       {canViewSubmissions && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <FileCode size={24} color="#8B1D23" />
+          <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800], mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <FileCode size={24} color={brand[500]} />
             {t('problem.details.submissionsTitle', { count: submissions.length })}
           </Typography>
 
           {submissions.length === 0 ? (
             <Paper
               elevation={0}
-              sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}
+              sx={{ p: 6, borderRadius: '16px', border: `1px dashed ${neutral[200]}`, textAlign: 'center', color: neutral[500] }}
             >
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 0.5 }}>{t('problem.details.noSubmissions')}</Typography>
               <Typography variant="body2">{t('problem.details.noSubmissionsHint')}</Typography>
             </Paper>
           ) : (

@@ -7,7 +7,6 @@ import {
   Paper,
   Stack,
   Alert,
-  CircularProgress,
 } from "@mui/material";
 import { ArrowLeft, Plus, Trophy } from "lucide-react";
 import { useContests } from "../../../hooks/useContests";
@@ -24,8 +23,6 @@ import { DIFFICULTY_FROM_LABEL, DIFFICULTY_LABEL } from "../../../types/problem"
 
 import {
   StyledContainer,
-  HeaderWrapper,
-  SubtitleWrapper,
   SearchWrapper,
   StyledSearchField,
   ContestsGrid,
@@ -45,6 +42,9 @@ import CreateProblem, { type ProblemFormValues } from "../problem/Create";
 import EditProblem, { type ProblemEditValues } from "../problem/Edit";
 import { StudentProgressModal } from "../../trainer/problems-solution/StudentProgressModeal";
 import { SolutionDetailModal } from "../../trainer/problems-solution/SolutionDetailsModal";
+import { brand, neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
+import { PageHeader } from '../../../components/common/shell';
 
 interface Problem {
   id: string;
@@ -78,7 +78,7 @@ const DifficultyBadge: React.FC<{ difficulty: string }> = ({ difficulty }) => {
   const difficultyStyles = {
     Easy: { bgcolor: "#16a34a15", color: "#16a34a" },
     Medium: { bgcolor: "#eab30815", color: "#eab308" },
-    Hard: { bgcolor: "#dc262615", color: "#dc2626" },
+    Hard: { bgcolor: "#dc262615", color: statusTone.danger.solid },
   };
 
   const style =
@@ -104,7 +104,7 @@ const DifficultyBadge: React.FC<{ difficulty: string }> = ({ difficulty }) => {
 };
 
 const AcceptanceRateDisplay: React.FC<{ rate: number }> = ({ rate }) => (
-  <Typography sx={{ fontWeight: 700, color: "#8B1D23" }}>{rate}%</Typography>
+  <Typography sx={{ fontWeight: 700, color: brand[500] }}>{rate}%</Typography>
 );
 
 export const ContestsPage: React.FC = () => {
@@ -471,7 +471,7 @@ export const ContestsPage: React.FC = () => {
             }}
             sx={{
               fontWeight: 700,
-              color: "#8B1D23",
+              color: brand[500],
               fontSize: "14px",
               cursor: "pointer",
               "&:hover": {
@@ -523,19 +523,19 @@ export const ContestsPage: React.FC = () => {
           sx={{
             p: 3,
             borderRadius: "16px",
-            border: "1px solid #e5e7eb",
+            border: `1px solid ${neutral[200]}`,
             mb: 4,
-            bgcolor: "#f8fafc",
+            bgcolor: neutral[50],
           }}
         >
           <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 2, flexWrap: "wrap" }}>
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
+              <Typography variant="h5" component="h2" sx={{ color: neutral[800] }}>
                 {t("contest.problems.heading", { title: selectedContestTitle })}
               </Typography>
               <Typography
                 variant="body2"
-                sx={{ color: "#64748b", mt: 1, fontWeight: 500 }}
+                sx={{ color: neutral[500], mt: 1 }}
               >
                 {t("contest.problems.description")}
               </Typography>
@@ -561,9 +561,7 @@ export const ContestsPage: React.FC = () => {
         )}
 
         {problemsLoading ? (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-            <CircularProgress sx={{ color: "#8B1D23" }} />
-          </Box>
+          <LoadingState />
         ) : (
           <SharedTable
             data={problems}
@@ -648,16 +646,10 @@ export const ContestsPage: React.FC = () => {
 
   return (
     <StyledContainer maxWidth="xl">
-      <HeaderWrapper>
-        <Typography variant="h4" sx={{ fontWeight: 800 }}>
-          {t("contest.list.title")}
-        </Typography>
-      </HeaderWrapper>
-      <SubtitleWrapper>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          {t("contest.list.subtitle")}
-        </Typography>
-      </SubtitleWrapper>
+      <PageHeader
+        title={t("contest.list.title")}
+        subtitle={t("contest.list.subtitle")}
+      />
       <SearchWrapper>
         <StyledSearchField
           fullWidth
@@ -669,7 +661,7 @@ export const ContestsPage: React.FC = () => {
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search size={18} color="#9ca3af" />
+                  <Search size={18} color={neutral[400]} />
                 </InputAdornment>
               ),
             },
@@ -686,15 +678,11 @@ export const ContestsPage: React.FC = () => {
         </Stack>
       </SearchWrapper>
       {actionError && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError(null)}>
-          {actionError}
-        </Alert>
+        <ErrorState message={actionError} onClose={() => setActionError(null)} />
       )}
 
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-          <CircularProgress sx={{ color: "#8B1D23" }} />
-        </Box>
+        <LoadingState />
       ) : error ? (
         <Alert severity="error" sx={{ mt: 2 }}>
           {error}

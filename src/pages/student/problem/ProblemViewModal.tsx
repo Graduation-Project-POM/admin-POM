@@ -4,6 +4,7 @@ import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
 import { resolveMediaUrl } from '../../../utils/media';
 import { difficultyIdToLabel, type BackendProblem } from '../../../services/problemService';
+import { neutral, statusTone } from '../../../theme';
 
 interface ProblemViewModalProps {
   open: boolean;
@@ -12,8 +13,8 @@ interface ProblemViewModalProps {
 }
 
 const difficultyStyle = (label: string) => ({
-  bgcolor: label === 'Easy' ? '#e7f7ec' : label === 'Medium' ? '#fff7e0' : '#fdecec',
-  color: label === 'Easy' ? '#166534' : label === 'Medium' ? '#92400e' : '#991b1b',
+  bgcolor: label === 'Easy' ? statusTone.success.bg : label === 'Medium' ? statusTone.warning.bg : statusTone.danger.bg,
+  color: label === 'Easy' ? statusTone.success.fg : label === 'Medium' ? statusTone.warning.fg : statusTone.danger.fg,
 });
 
 /**
@@ -37,7 +38,7 @@ export const ProblemViewModal = ({ open, onClose, problem }: ProblemViewModalPro
             )}
             <Chip label={difficulty} size="small" sx={{ fontWeight: 600, ...difficultyStyle(difficulty) }} />
           </Stack>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b' }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: neutral[800] }}>
             {problem.title}
           </Typography>
         </Box>
@@ -52,8 +53,8 @@ export const ProblemViewModal = ({ open, onClose, problem }: ProblemViewModalPro
               maxHeight: 360,
               objectFit: 'contain',
               borderRadius: '12px',
-              border: '1px solid #e5e7eb',
-              bgcolor: '#f8fafc',
+              border: `1px solid ${neutral[200]}`,
+              bgcolor: neutral[50],
             }}
             onError={(e) => {
               (e.currentTarget as HTMLImageElement).style.display = 'none';
@@ -65,11 +66,11 @@ export const ProblemViewModal = ({ open, onClose, problem }: ProblemViewModalPro
 
         <Box>
           <Typography
-            sx={{ fontWeight: 700, mb: 1, color: '#1e293b', fontSize: '13px', textTransform: 'uppercase', letterSpacing: 0.5 }}
+            sx={{ fontWeight: 700, mb: 1, color: neutral[800], fontSize: '13px', textTransform: 'uppercase', letterSpacing: 0.5 }}
           >
             {t('problem.detail.description', 'Description')}
           </Typography>
-          <Typography sx={{ color: '#475569', lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+          <Typography sx={{ color: neutral[600], lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
             {problem.statement && problem.statement.trim()
               ? problem.statement
               : t('problem.detail.noDescription', 'No description provided.')}

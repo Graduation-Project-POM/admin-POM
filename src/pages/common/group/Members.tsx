@@ -22,6 +22,7 @@ import { studentService } from '../../../services/studentService';
 import type { StudentOption } from '../../../services/studentService';
 import type { GroupStudent } from '../../../types/group';
 import { getApiErrorMessage } from '../../../utils/apiError';
+import { brand, neutral } from '../../../theme';
 
 interface MembersProps {
   open: boolean;
@@ -109,10 +110,10 @@ const Members = ({ open, onClose, group, onMembersChanged }: MembersProps) => {
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress sx={{ color: '#8B1D23' }} />
+            <CircularProgress sx={{ color: brand[500] }} />
           </Box>
         ) : members.length === 0 ? (
-          <Typography sx={{ color: '#94a3b8', fontWeight: 600, py: 2 }}>
+          <Typography sx={{ color: neutral[400], fontWeight: 600, py: 2 }}>
             {t('group.members.noMembers', 'No members in this group yet')}
           </Typography>
         ) : (
@@ -133,18 +134,18 @@ const Members = ({ open, onClose, group, onMembersChanged }: MembersProps) => {
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', fontSize: '14px', fontWeight: 700 }}>
+                    <Avatar sx={{ bgcolor: '#fef2f2', color: brand[500], fontSize: '14px', fontWeight: 700 }}>
                       {member.fullName.split(' ').map((n) => n[0]).join('')}
                     </Avatar>
                   </ListItemAvatar>
                   <ListItemText
                     primary={
-                      <Typography sx={{ fontWeight: 700, fontSize: '14px', color: '#1e293b' }}>
+                      <Typography sx={{ fontWeight: 700, fontSize: '14px', color: neutral[800] }}>
                         {member.fullName}
                       </Typography>
                     }
                     secondary={
-                      <Typography sx={{ fontSize: '12px', color: '#94a3b8' }}>
+                      <Typography sx={{ fontSize: '12px', color: neutral[400] }}>
                         {t('group.members.joined', 'Joined')}{' '}
                         {new Date(member.joinDate).toLocaleDateString()}
                       </Typography>
@@ -157,7 +158,7 @@ const Members = ({ open, onClose, group, onMembersChanged }: MembersProps) => {
           </List>
         )}
 
-        <Box sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #f1f5f9' }}>
+        <Box sx={{ p: 2, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[100]}` }}>
           <MemberPicker
             options={available}
             selectedIds={selectedIds}

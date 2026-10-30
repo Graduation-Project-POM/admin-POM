@@ -19,6 +19,7 @@ import {
   type MyStudentProfile,
 } from "../../../services/studentService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface FormState {
   gradeLevel: string;
@@ -125,18 +126,18 @@ export const StudentAcademicInfo = () => {
     setErrors({});
   };
 
-  const fieldSx = { "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: "#fff" } };
+  const fieldSx = { "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: neutral[0] } };
 
   return (
-    <Card sx={{ borderRadius: "20px", border: "1px solid #eef2f6", boxShadow: "0 4px 12px rgba(0,0,0,0.03)", mt: 4 }}>
+    <Card sx={{ borderRadius: "20px", border: `1px solid ${neutral[200]}`, boxShadow: "0 4px 12px rgba(0,0,0,0.03)", mt: 4 }}>
       <CardContent sx={{ p: 3 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Box sx={{ bgcolor: "#fee2e2", p: 1, borderRadius: "12px", display: "flex" }}>
-              <GraduationCap size={22} color="#8B1D23" />
+            <Box sx={{ bgcolor: statusTone.danger.bg, p: 1, borderRadius: "12px", display: "flex" }}>
+              <GraduationCap size={22} color={brand[500]} />
             </Box>
             <Box>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: "#0f172a", fontSize: "1.1rem" }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: neutral[900], fontSize: "1.1rem" }}>
                 {t("profile.student.title")}
               </Typography>
             </Box>
@@ -145,28 +146,28 @@ export const StudentAcademicInfo = () => {
             isEditing ? (
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Button variant="contained" startIcon={<Save size={16} />} onClick={handleSave} disabled={saving}
-                  sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, bgcolor: "#8B1D23", "&:hover": { bgcolor: "#6d1620" } }}>
+                  sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, bgcolor: brand[500], "&:hover": { bgcolor: brand[600] } }}>
                   {saving ? t("common.loading") : t("buttons.save")}
                 </Button>
                 <Button variant="outlined" onClick={handleCancel}
-                  sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, borderColor: "#cbd5e1", color: "#64748b" }}>
+                  sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, borderColor: neutral[300], color: neutral[500] }}>
                   {t("buttons.cancel")}
                 </Button>
               </Box>
             ) : (
               <Button variant="outlined" startIcon={<Edit size={16} />} onClick={() => setIsEditing(true)}
-                sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, borderColor: "#cbd5e1", color: "#1e293b" }}>
+                sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, borderColor: neutral[300], color: neutral[800] }}>
                 {t("profile.editProfile")}
               </Button>
             )
           )}
         </Box>
 
-        <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
+        <Divider sx={{ my: 2, borderColor: neutral[200] }} />
 
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress sx={{ color: "#8B1D23" }} />
+            <CircularProgress sx={{ color: brand[500] }} />
           </Box>
         ) : (
           <>

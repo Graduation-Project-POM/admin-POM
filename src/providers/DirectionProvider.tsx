@@ -1,25 +1,11 @@
 import React from "react";
-import { ThemeProvider, createTheme, CssBaseline } from "@mui/material";
+import { ThemeProvider, CssBaseline } from "@mui/material";
 import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 import { prefixer } from "stylis";
 import rtlPlugin from "stylis-plugin-rtl";
 import { useTranslation } from "react-i18next";
-
-const createAppTheme = (direction: "ltr" | "rtl") =>
-  createTheme({
-    direction,
-    palette: {
-      background: {
-        default: "#f8fafc",
-      },
-    },
-    typography: {
-      fontFamily: '"Lenos", sans-serif',
-    },
-  });
-
-export const theme = createAppTheme("ltr");
+import { createAppTheme } from '../theme';
 
 // Two emotion caches. The RTL cache runs styles through stylis-plugin-rtl so
 // all MUI/styled CSS (margins, paddings, borders, input adornments, the Drawer
@@ -34,6 +20,9 @@ const rtlCache = createCache({
  * App-wide direction handling: picks the MUI theme direction and emotion cache
  * from the current i18n language. Wrapping the whole app (not just the
  * dashboard) means auth pages and every other screen mirror correctly in RTL.
+ *
+ * Direction also selects the font stack: Latin leads with Lenos, Arabic with
+ * the platform UI face, since Lenos carries no Arabic glyphs.
  */
 export const DirectionProvider = ({
   children,

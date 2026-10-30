@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Avatar, Typography, Box, Stack, CircularProgress, Alert } from "@mui/material";
+import { Avatar, Typography, Box, Stack } from "@mui/material";
 import { CheckCircle, XCircle, Eye, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,6 +17,8 @@ import { SharedTable } from "../../../components/ui/table/tables";
 import { useTranslation } from "react-i18next";
 import { studentService, type StudentListItem } from "../../../services/studentService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand, neutral } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
 
 type ConfirmState = {
   open: boolean;
@@ -94,12 +96,12 @@ export const AdminApprovalsPage = () => {
       label: t("admin.approvals.columns.name"),
       render: (row: ApprovalHistoryRow) => (
         <UserCell>
-          <Avatar sx={{ width: 36, height: 36, backgroundColor: "#8B1D23", fontSize: "12px", fontWeight: 700 }}>
+          <Avatar sx={{ width: 36, height: 36, backgroundColor: brand[500], fontSize: "12px", fontWeight: 700 }}>
             {row.name.split(" ").map((n: string) => n[0]).join("")}
           </Avatar>
           <Box>
-            <Typography sx={{ fontWeight: 600, fontSize: "14px", color: "#1e293b" }}>{row.name}</Typography>
-            <Typography sx={{ fontSize: "12px", color: "#94a3b8" }}>{row.email}</Typography>
+            <Typography sx={{ fontWeight: 600, fontSize: "14px", color: neutral[800] }}>{row.name}</Typography>
+            <Typography sx={{ fontSize: "12px", color: neutral[400] }}>{row.email}</Typography>
           </Box>
         </UserCell>
       ),
@@ -115,9 +117,7 @@ export const AdminApprovalsPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
-        <CircularProgress sx={{ color: "#8B1D23" }} />
-      </Box>
+      <LoadingState />
     );
   }
 
@@ -126,29 +126,27 @@ export const AdminApprovalsPage = () => {
       <HeaderSection>
         <IconBadge>✓</IconBadge>
         <Box>
-          <Typography sx={{ fontSize: "28px", fontWeight: 800, color: "#1e293b", letterSpacing: "-0.5px" }}>
+          <Typography sx={{ fontSize: "28px", fontWeight: 800, color: neutral[800], letterSpacing: "-0.5px" }}>
             {t("admin.approvals.title")}
           </Typography>
-          <Typography sx={{ fontSize: "14px", color: "#64748b", fontWeight: 500, mt: "6px" }}>
+          <Typography sx={{ fontSize: "14px", color: neutral[500], fontWeight: 500, mt: "6px" }}>
             {t("admin.approvals.subtitle")}
           </Typography>
         </Box>
       </HeaderSection>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <ErrorState message={error} onClose={() => setError(null)} />
       )}
 
-      <Typography sx={{ fontSize: "16px", fontWeight: 700, color: "#1e293b", mb: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-        <Clock size={20} color="#8B1D23" />
+      <Typography sx={{ fontSize: "16px", fontWeight: 700, color: neutral[800], mb: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+        <Clock size={20} color={brand[500]} />
         {t("admin.approvals.pendingRequests")}
       </Typography>
 
       {pending.length === 0 ? (
-        <Box sx={{ mb: 6, p: 4, bgcolor: "#f8fafc", borderRadius: "16px", border: "2px dashed #e2e8f0", textAlign: "center" }}>
-          <Typography sx={{ color: "#94a3b8", fontWeight: 600 }}>{t("admin.approvals.noPending")}</Typography>
+        <Box sx={{ mb: 6, p: 4, bgcolor: neutral[50], borderRadius: "16px", border: `2px dashed ${neutral[200]}`, textAlign: "center" }}>
+          <Typography sx={{ color: neutral[400], fontWeight: 600 }}>{t("admin.approvals.noPending")}</Typography>
         </Box>
       ) : (
         <Stack spacing={2} sx={{ mb: 6 }}>
@@ -159,8 +157,8 @@ export const AdminApprovalsPage = () => {
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: "200px", flex: 1 }}>
                     <UserAvatar>{student.name.split(" ").map((n) => n[0]).join("")}</UserAvatar>
                     <Box>
-                      <Typography sx={{ fontSize: "18px", fontWeight: 700, color: "#1e293b" }}>{student.name}</Typography>
-                      <Typography sx={{ fontSize: "13px", color: "#94a3b8", mt: "2px", fontWeight: 600 }}>
+                      <Typography sx={{ fontSize: "18px", fontWeight: 700, color: neutral[800] }}>{student.name}</Typography>
+                      <Typography sx={{ fontSize: "13px", color: neutral[400], mt: "2px", fontWeight: 600 }}>
                         {student.email || t("admin.approvals.studentApplication", "Student registration")}
                       </Typography>
                     </Box>
@@ -184,7 +182,7 @@ export const AdminApprovalsPage = () => {
         </Stack>
       )}
 
-      <Typography sx={{ fontSize: "16px", fontWeight: 700, color: "#1e293b", mb: "16px" }}>
+      <Typography sx={{ fontSize: "16px", fontWeight: 700, color: neutral[800], mb: "16px" }}>
         {t("admin.approvals.approvalHistory")}
       </Typography>
       <SharedTable

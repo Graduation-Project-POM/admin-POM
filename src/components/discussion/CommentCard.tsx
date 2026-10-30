@@ -8,6 +8,7 @@ import { resolveMediaUrl } from '../../utils/media';
 import { formatDateTime } from '../../utils/datetime';
 import { CommentComposer } from './CommentComposer';
 import type { ProblemComment } from '../../services/discussionService';
+import { neutral } from '../../theme';
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join('').slice(0, 2).toUpperCase() || '?';
@@ -47,7 +48,7 @@ export const CommentCard = ({
       sx={{
         p: isReply ? 2 : 2.5,
         borderRadius: '14px',
-        border: '1px solid #e2e8f0',
+        border: `1px solid ${neutral[200]}`,
         bgcolor: comment.isMine ? '#fffaf9' : '#fff',
       }}
     >
@@ -124,7 +125,7 @@ export const CommentCard = ({
               )}
 
               {comment.photoUrl && (
-                <Box sx={{ mt: 1.5, borderRadius: '10px', overflow: 'hidden', border: '1px solid #e2e8f0', maxWidth: 420 }}>
+                <Box sx={{ mt: 1.5, borderRadius: '10px', overflow: 'hidden', border: `1px solid ${neutral[200]}`, maxWidth: 420 }}>
                   <img
                     src={resolveMediaUrl(comment.photoUrl) ?? undefined}
                     alt={t('discussion.attachmentAlt')}
@@ -170,7 +171,7 @@ export const CommentCard = ({
           )}
 
           {replying && (
-            <Box sx={{ mt: 1.5, pl: 1.5, borderLeft: '2px solid #f1f5f9' }}>
+            <Box sx={{ mt: 1.5, pl: 1.5, borderLeft: `2px solid ${neutral[100]}` }}>
               <CommentComposer
                 compact
                 autoFocus

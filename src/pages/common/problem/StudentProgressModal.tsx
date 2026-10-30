@@ -14,6 +14,7 @@ import {
 import { CheckCircle2, XCircle, FileText } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
+import { neutral, statusTone } from '../../../theme';
 
 interface StudentSubmission {
   id: string;
@@ -62,8 +63,8 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, submissions 
             variantType={filter === 'Solved' ? 'default' : 'outline'} 
             onClick={() => setFilter('Solved')}
             size="small"
-            startIcon={<CheckCircle2 size={16} color={filter === 'Solved' ? 'white' : '#166534'} />}
-            sx={filter !== 'Solved' ? { color: '#166534', bgcolor: '#e7f7ec', border: 'none' } : {}}
+            startIcon={<CheckCircle2 size={16} color={filter === 'Solved' ? 'white' : statusTone.success.fg} />}
+            sx={filter !== 'Solved' ? { color: statusTone.success.fg, bgcolor: statusTone.success.bg, border: 'none' } : {}}
           >
             Solved
           </Button>
@@ -71,8 +72,8 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, submissions 
             variantType={filter === 'Not Solved' ? 'default' : 'outline'} 
             onClick={() => setFilter('Not Solved')}
             size="small"
-            startIcon={<XCircle size={16} color={filter === 'Not Solved' ? 'white' : '#991b1b'} />}
-            sx={filter !== 'Not Solved' ? { color: '#991b1b', bgcolor: '#fdecec', border: 'none' } : {}}
+            startIcon={<XCircle size={16} color={filter === 'Not Solved' ? 'white' : statusTone.danger.fg} />}
+            sx={filter !== 'Not Solved' ? { color: statusTone.danger.fg, bgcolor: statusTone.danger.bg, border: 'none' } : {}}
           >
             Not Solved
           </Button>
@@ -93,8 +94,8 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, submissions 
                       sx={{ 
                         fontWeight: 700, 
                         fontSize: '11px',
-                        bgcolor: student.status === 'Solved' ? '#e7f7ec' : '#fdecec',
-                        color: student.status === 'Solved' ? '#166534' : '#991b1b',
+                        bgcolor: student.status === 'Solved' ? statusTone.success.bg : statusTone.danger.bg,
+                        color: student.status === 'Solved' ? statusTone.success.fg : statusTone.danger.fg,
                       }} 
                     />
                     <Button 
@@ -110,13 +111,13 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, submissions 
                 }
               >
                 <ListItemAvatar>
-                  <Avatar sx={{ bgcolor: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', fontSize: '14px', fontWeight: 700 }}>
+                  <Avatar sx={{ bgcolor: neutral[50], color: neutral[800], border: `1px solid ${neutral[200]}`, fontSize: '14px', fontWeight: 700 }}>
                     {student.name.split(' ').map(n => n[0]).join('')}
                   </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                  primary={<Typography sx={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>{student.name}</Typography>}
-                  secondary={<Typography sx={{ fontSize: '13px', color: '#94a3b8' }}>{student.email}</Typography>}
+                  primary={<Typography sx={{ fontWeight: 700, fontSize: '15px', color: neutral[800] }}>{student.name}</Typography>}
+                  secondary={<Typography sx={{ fontSize: '13px', color: neutral[400] }}>{student.email}</Typography>}
                 />
               </ListItem>
               {index < filteredSubmissions.length - 1 && <Divider component="li" />}

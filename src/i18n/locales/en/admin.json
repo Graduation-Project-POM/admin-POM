@@ -27,7 +27,8 @@
         "approve": "Approve",
         "approveFailed": "Failed to approve",
         "empty": "No pending approvals",
-        "student": "Student"
+        "student": "Student",
+        "emptyHint": "Everyone who applied has been reviewed."
       },
       "announcements": {
         "title": "Announcements",
@@ -47,7 +48,8 @@
         "groups": "Groups",
         "contests": "Contests",
         "problems": "Problems"
-      }
+      },
+      "subtitle": "Platform activity and everything waiting on you."
     },
     "users": {
       "title": "Users",

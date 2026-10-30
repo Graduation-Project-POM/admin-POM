@@ -3,8 +3,6 @@ import {
   Box,
   Typography,
   Grid,
-  Card,
-  CardContent,
   Button,
   Table,
   TableBody,
@@ -15,8 +13,6 @@ import {
   Paper,
   Avatar,
   Stack,
-  CircularProgress,
-  Alert,
 } from "@mui/material";
 import {
   Users,
@@ -29,18 +25,11 @@ import {
   BarChart3,
   CheckCircle,
   BookOpen,
+  Zap,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
-  dashboardContainer,
-  pageTitle,
-  statCard,
-  statTitle,
-  statValue,
-  statIconBox,
-  sectionCard,
-  sectionTitle,
   quickActionButton,
   pendingTrainerPaper,
   trainerAvatar,
@@ -49,9 +38,12 @@ import {
   tableHeadCell,
   tableBodyCell,
 } from "./dashboardStyle";
+import { PageHeader, SectionCard, StatCard } from "../../../components/common/shell";
+import { EmptyState, ErrorState, LoadingState } from "../../../components/common/states";
 import { dashboardService, type AdminDashboardData } from "../../../services/dashboardService";
 import { studentService } from "../../../services/studentService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand, neutral } from '../../../theme';
 
 const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -91,10 +83,10 @@ const AdminDashboard: React.FC = () => {
   };
 
   const stats = [
-    { title: t("admin.dashboard.stats.totalUsers"), value: data?.totalUsers ?? 0, icon: Users, iconBg: "#fee2e2", iconColor: "#8B1D23" },
-    { title: t("admin.dashboard.stats.activeTrainers"), value: data?.totalTrainers ?? 0, icon: UserCheck, iconBg: "#e0f2e9", iconColor: "#1f6e43" },
-    { title: t("admin.dashboard.stats.totalStudents"), value: data?.totalStudents ?? 0, icon: GraduationCap, iconBg: "#fff0db", iconColor: "#b45309" },
-    { title: t("admin.dashboard.stats.pendingApprovals"), value: data?.pendingStudents.length ?? 0, subtitle: t("admin.dashboard.stats.needsAction"), icon: AlertCircle, iconBg: "#fee2e2", iconColor: "#b91c1c" },
+    { title: t("admin.dashboard.stats.totalUsers"), value: data?.totalUsers ?? 0, icon: Users, tone: "brand" as const },
+    { title: t("admin.dashboard.stats.activeTrainers"), value: data?.totalTrainers ?? 0, icon: UserCheck, tone: "success" as const },
+    { title: t("admin.dashboard.stats.totalStudents"), value: data?.totalStudents ?? 0, icon: GraduationCap, tone: "info" as const },
+    { title: t("admin.dashboard.stats.pendingApprovals"), value: data?.pendingStudents.length ?? 0, subtitle: t("admin.dashboard.stats.needsAction"), icon: AlertCircle, tone: "warning" as const },
   ];
 
   const overview = [
@@ -112,57 +104,40 @@ const AdminDashboard: React.FC = () => {
   ];
 
   if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
-        <CircularProgress sx={{ color: "#8B1D23" }} />
-      </Box>
-    );
+    return <LoadingState />;
   }
 
   return (
-    <Box sx={dashboardContainer}>
-      <Typography variant="h4" sx={pageTitle}>
-        {t("admin.dashboard.title")}
-      </Typography>
+    <Box sx={{ py: 2 }}>
+      <PageHeader
+        title={t("admin.dashboard.title")}
+        subtitle={t("admin.dashboard.subtitle")}
+      />
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <Box sx={{ mb: 3 }}>
+          <ErrorState message={error} onClose={() => setError(null)} />
+        </Box>
       )}
 
       <Grid container spacing={3} sx={{ mb: 4 }}>
         {stats.map((stat, index) => (
           <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
-            <Card sx={statCard}>
-              <CardContent>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <Box>
-                    <Typography sx={statTitle}>{stat.title}</Typography>
-                    <Typography sx={statValue}>{stat.value.toLocaleString()}</Typography>
-                    {stat.subtitle && (
-                      <Typography variant="caption" sx={{ color: "#64748b", mt: 1, display: "block" }}>
-                        {stat.subtitle}
-                      </Typography>
-                    )}
-                  </Box>
-                  <Box sx={statIconBox(stat.iconBg)}>
-                    <stat.icon size={24} color={stat.iconColor} />
-                  </Box>
-                </Box>
-              </CardContent>
-            </Card>
+            <StatCard
+              title={stat.title}
+              value={stat.value}
+              subtitle={stat.subtitle}
+              icon={stat.icon}
+              tone={stat.tone}
+            />
           </Grid>
         ))}
       </Grid>
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ ...sectionCard, mb: 4 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>
-                {t("admin.dashboard.quickActions.title")}
-              </Typography>
+          <Box sx={{ mb: 4 }}>
+            <SectionCard title={t("admin.dashboard.quickActions.title")} icon={Zap}>
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
                   <Grid size={{ xs: 6, sm: 4 }} key={idx}>
@@ -178,18 +153,17 @@ const AdminDashboard: React.FC = () => {
                   </Grid>
                 ))}
               </Grid>
-            </CardContent>
-          </Card>
+            </SectionCard>
+          </Box>
 
-          <Card sx={sectionCard}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>
-                {t("admin.dashboard.pendingApprovals.title")}
-              </Typography>
+          <SectionCard title={t("admin.dashboard.pendingApprovals.title")} icon={UserCog}>
               {data && data.pendingStudents.length === 0 ? (
-                <Typography sx={{ color: "#94a3b8", fontWeight: 600, py: 2 }}>
-                  {t("admin.dashboard.pendingApprovals.empty", "No pending approvals")}
-                </Typography>
+                <EmptyState
+                  variant="bare"
+                  icon={<CheckCircle size={24} />}
+                  title={t("admin.dashboard.pendingApprovals.empty", "No pending approvals")}
+                  description={t("admin.dashboard.pendingApprovals.emptyHint")}
+                />
               ) : (
                 <Stack spacing={2}>
                   {data?.pendingStudents.slice(0, 6).map((student) => (
@@ -197,8 +171,8 @@ const AdminDashboard: React.FC = () => {
                       <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                         <Avatar sx={trainerAvatar}>{student.name.charAt(0)}</Avatar>
                         <Box>
-                          <Typography sx={{ fontWeight: 600, color: "#0f172a" }}>{student.name}</Typography>
-                          <Typography variant="caption" sx={{ color: "#64748b" }}>
+                          <Typography sx={{ fontWeight: 600, color: neutral[900] }}>{student.name}</Typography>
+                          <Typography variant="caption" sx={{ color: neutral[500] }}>
                             {student.email || t("admin.dashboard.pendingApprovals.student", "Student")}
                           </Typography>
                         </Box>
@@ -217,20 +191,15 @@ const AdminDashboard: React.FC = () => {
                   ))}
                 </Stack>
               )}
-            </CardContent>
-          </Card>
+          </SectionCard>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ ...sectionCard, height: "100%" }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>
-                {t("admin.dashboard.overview.title", "Platform Overview")}
-              </Typography>
+          <SectionCard title={t("admin.dashboard.overview.title", "Platform Overview")} icon={BarChart3} fullHeight>
               <TableContainer component={Paper} elevation={0} sx={{ ...tableContainer, overflowX: "auto" }}>
                 <Table sx={{ minWidth: 300 }}>
                   <TableHead>
-                    <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                    <TableRow sx={{ bgcolor: neutral[50] }}>
                       <TableCell sx={tableHeadCell}>{t("admin.dashboard.overview.metric", "Metric")}</TableCell>
                       <TableCell sx={tableHeadCell} align="right">{t("admin.dashboard.overview.count", "Count")}</TableCell>
                     </TableRow>
@@ -240,7 +209,7 @@ const AdminDashboard: React.FC = () => {
                       <TableRow key={row.label} hover>
                         <TableCell sx={tableBodyCell}>
                           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <row.icon size={16} color="#8B1D23" />
+                            <row.icon size={16} color={brand[500]} />
                             {row.label}
                           </Box>
                         </TableCell>
@@ -252,8 +221,7 @@ const AdminDashboard: React.FC = () => {
                   </TableBody>
                 </Table>
               </TableContainer>
-            </CardContent>
-          </Card>
+          </SectionCard>
         </Grid>
       </Grid>
     </Box>

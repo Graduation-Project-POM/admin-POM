@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
-  CircularProgress,
   Stack,
   Table,
   TableBody,
@@ -18,6 +17,8 @@ import { Button } from "../../../components/ui/button/Button";
 import { contestService } from "../../../services/contestService";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import type { ContestLeaderboardEntry } from "../../../types/contest";
+import { brand, neutral, statusTone } from '../../../theme';
+import { LoadingState } from '../../../components/common/states';
 
 interface LeaderboardProps {
   open: boolean;
@@ -28,17 +29,17 @@ interface LeaderboardProps {
 }
 
 const medalBg = (rank: number) => {
-  if (rank === 1) return "#fde68a";
-  if (rank === 2) return "#e5e7eb";
+  if (rank === 1) return statusTone.warning.border;
+  if (rank === 2) return neutral[200];
   if (rank === 3) return "#fcd9b6";
-  return "#f1f5f9";
+  return neutral[100];
 };
 
 const medalColor = (rank: number) => {
-  if (rank === 1) return "#92400e";
-  if (rank === 2) return "#475569";
+  if (rank === 1) return statusTone.warning.fg;
+  if (rank === 2) return neutral[600];
   if (rank === 3) return "#9a3412";
-  return "#475569";
+  return neutral[600];
 };
 
 const Leaderboard = ({
@@ -85,49 +86,47 @@ const Leaderboard = ({
       <Stack spacing={2} sx={{ mt: 1 }}>
         {contestTitle && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-            <Trophy size={20} color="#8B1D23" />
-            <Typography sx={{ fontWeight: 700, color: "#1e293b" }}>
+            <Trophy size={20} color={brand[500]} />
+            <Typography sx={{ fontWeight: 700, color: neutral[800] }}>
               {contestTitle}
             </Typography>
           </Box>
         )}
 
         {loading && (
-          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
-            <CircularProgress sx={{ color: "#8B1D23" }} />
-          </Box>
+          <LoadingState />
         )}
 
         {error && !loading && (
-          <Typography sx={{ color: "#b91c1c", textAlign: "center", py: 2 }}>
+          <Typography sx={{ color: statusTone.danger.fg, textAlign: "center", py: 2 }}>
             {error}
           </Typography>
         )}
 
         {!loading && !error && rows.length === 0 && (
-          <Typography sx={{ color: "#64748b", textAlign: "center", py: 4 }}>
+          <Typography sx={{ color: neutral[500], textAlign: "center", py: 4 }}>
             {t("contest.leaderboard.empty")}
           </Typography>
         )}
 
         {!loading && !error && rows.length > 0 && (
           <TableContainer
-            sx={{ border: "1px solid #e2e8f0", borderRadius: "12px" }}
+            sx={{ border: `1px solid ${neutral[200]}`, borderRadius: "12px" }}
           >
             <Table size="small">
               <TableHead>
-                <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                <TableRow sx={{ bgcolor: neutral[50] }}>
                   <TableCell
-                    sx={{ fontWeight: 700, color: "#475569", width: 80 }}
+                    sx={{ fontWeight: 700, color: neutral[600], width: 80 }}
                   >
                     {t("contest.leaderboard.rank")}
                   </TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: "#475569" }}>
+                  <TableCell sx={{ fontWeight: 700, color: neutral[600] }}>
                     {t("contest.leaderboard.name")}
                   </TableCell>
                   <TableCell
                     align="right"
-                    sx={{ fontWeight: 700, color: "#475569", width: 120 }}
+                    sx={{ fontWeight: 700, color: neutral[600], width: 120 }}
                   >
                     {t("contest.leaderboard.points")}
                   </TableCell>
@@ -143,7 +142,7 @@ const Leaderboard = ({
                       key={row.studentId}
                       sx={{
                         bgcolor: isMe ? "#fef2f2" : "transparent",
-                        "&:hover": { bgcolor: isMe ? "#fee2e2" : "#f8fafc" },
+                        "&:hover": { bgcolor: isMe ? statusTone.danger.bg : neutral[50] },
                       }}
                     >
                       <TableCell>
@@ -167,7 +166,7 @@ const Leaderboard = ({
                       </TableCell>
                       <TableCell
                         sx={{
-                          color: isMe ? "#8B1D23" : "#1e293b",
+                          color: isMe ? brand[500] : neutral[800],
                           fontWeight: isMe ? 800 : 600,
                         }}
                       >
@@ -175,7 +174,7 @@ const Leaderboard = ({
                       </TableCell>
                       <TableCell
                         align="right"
-                        sx={{ fontWeight: 700, color: "#1e293b" }}
+                        sx={{ fontWeight: 700, color: neutral[800] }}
                       >
                         {row.score}
                       </TableCell>

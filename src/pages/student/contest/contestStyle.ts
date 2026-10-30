@@ -1,6 +1,7 @@
 // StudentContestsPage.styles.ts
 import { styled } from '@mui/material/styles';
 import { Box, Paper } from '@mui/material';
+import { neutral } from '../../../theme';
 
 export const PageContainer = styled(Box)({
   padding: '32px 24px',
@@ -25,9 +26,9 @@ export const TitleBox = styled(Box)({
 
 export const StatsCard = styled(Paper)({
   padding: '16px 20px',
-  backgroundColor: '#ffffff',
+  backgroundColor: neutral[0],
   borderRadius: '12px',
-  border: '1px solid #e2e8f0',
+  border: `1px solid ${neutral[200]}`,
   display: 'flex',
   alignItems: 'center',
   gap: '12px',

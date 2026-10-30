@@ -44,10 +44,18 @@ export const FormField: React.FC<FormFieldProps> = ({
   const isSelect = select || type === 'select' || Boolean(options);
   const inputType = type === 'select' || type === 'switch' ? 'text' : type;
 
+  // Ties the visible label to the control and points the field's error text at
+  // it, so assistive tech announces "<label>, <error>" instead of a bare box.
+  const fieldId = `field-${name}`;
+  const helperId = helperText ? `${fieldId}-helper` : undefined;
+
   return (
     <Box sx={{ width: '100%' }}>
-      <Label required={required}>{label}</Label>
+      <Label required={required} htmlFor={fieldId}>
+        {label}
+      </Label>
       <Input
+        id={fieldId}
         name={name}
         type={inputType}
         value={value}
@@ -59,7 +67,14 @@ export const FormField: React.FC<FormFieldProps> = ({
         multiline={multiline}
         rows={rows}
         select={isSelect}
-        slotProps={isSelect ? { select: {} } : undefined}
+        slotProps={{
+          ...(isSelect ? { select: {} } : {}),
+          formHelperText: helperId ? { id: helperId } : undefined,
+          htmlInput: {
+            'aria-describedby': helperId,
+            'aria-invalid': error || undefined,
+          },
+        }}
       >
         {options
           ? options.map((opt) => (

@@ -11,6 +11,7 @@ import {
   difficultyIdToLabel,
   type BackendProblem,
 } from '../../../services/problemService';
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface SubmitSolutionModalProps {
   open: boolean;
@@ -77,7 +78,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
     <ModalWrapper open={open} onClose={onClose} title={t('student.problems.submit.title')} maxWidth="md">
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b' }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: neutral[800] }}>
             {problem.title}
           </Typography>
           <Chip
@@ -85,14 +86,14 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
             size="small"
             sx={{
               fontWeight: 700,
-              bgcolor: difficulty === 'Easy' ? '#e7f7ec' : difficulty === 'Medium' ? '#fff7e0' : '#fdecec',
-              color: difficulty === 'Easy' ? '#166534' : difficulty === 'Medium' ? '#92400e' : '#991b1b',
+              bgcolor: difficulty === 'Easy' ? statusTone.success.bg : difficulty === 'Medium' ? statusTone.warning.bg : statusTone.danger.bg,
+              color: difficulty === 'Easy' ? statusTone.success.fg : difficulty === 'Medium' ? statusTone.warning.fg : statusTone.danger.fg,
             }}
           />
-          <Chip label={problem.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+          <Chip label={problem.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600 }} />
         </Box>
         {problem.statement && (
-          <Typography sx={{ color: '#475569', lineHeight: 1.7, whiteSpace: 'pre-wrap', fontSize: '14px' }}>
+          <Typography sx={{ color: neutral[600], lineHeight: 1.7, whiteSpace: 'pre-wrap', fontSize: '14px' }}>
             {problem.statement}
           </Typography>
         )}
@@ -108,11 +109,11 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
 
       {/* Text solution */}
       <Box sx={{ mb: 3 }}>
-        <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
-          <FileText size={16} color="#8B1D23" />
+        <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <FileText size={16} color={brand[500]} />
           {t('student.problems.submit.textSolution')}
         </Typography>
-        <Typography variant="body2" sx={{ color: '#94a3b8', mb: 1.5, fontSize: '13px' }}>
+        <Typography variant="body2" sx={{ color: neutral[400], mb: 1.5, fontSize: '13px' }}>
           {t('student.problems.submit.textSolutionHint')}
         </Typography>
         <TextField
@@ -125,19 +126,19 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
           sx={{
             '& .MuiOutlinedInput-root': {
               borderRadius: '12px',
-              '& fieldset': { borderColor: '#e5e7eb' },
-              '&.Mui-focused fieldset': { borderColor: '#8B1D23', borderWidth: '1.5px' },
+              '& fieldset': { borderColor: neutral[200] },
+              '&.Mui-focused fieldset': { borderColor: brand[500], borderWidth: '1.5px' },
             },
           }}
         />
       </Box>
 
       <Box sx={{ mb: 3 }}>
-        <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Camera size={16} color="#8B1D23" />
+        <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Camera size={16} color={brand[500]} />
           {t('student.problems.submit.imageSolution')}
         </Typography>
-        <Typography variant="body2" sx={{ color: '#94a3b8', mb: 1.5, fontSize: '13px' }}>
+        <Typography variant="body2" sx={{ color: neutral[400], mb: 1.5, fontSize: '13px' }}>
           {t('student.problems.submit.imageSolutionHint')}
         </Typography>
 
@@ -145,7 +146,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
 
         {solutionImage ? (
           <Box>
-            <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+            <Paper elevation={0} sx={{ p: 2, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}`, textAlign: 'center' }}>
               <img src={solutionImage} alt={t('student.problems.submit.imageAlt')} style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '8px' }} />
             </Paper>
             <Box sx={{ display: 'flex', gap: 1, mt: 1.5 }}>
@@ -162,21 +163,21 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
             elevation={0}
             sx={{
               p: 4,
-              bgcolor: '#fafafa',
+              bgcolor: neutral[50],
               borderRadius: '12px',
-              border: '2px dashed #e5e7eb',
+              border: `2px dashed ${neutral[200]}`,
               textAlign: 'center',
               cursor: 'pointer',
               transition: 'all 0.2s ease',
-              '&:hover': { borderColor: '#8B1D23', bgcolor: '#fef2f2' },
+              '&:hover': { borderColor: brand[500], bgcolor: '#fef2f2' },
             }}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload size={32} color="#94a3b8" style={{ marginBottom: 8 }} />
-            <Typography sx={{ fontWeight: 600, color: '#64748b', mb: 0.5 }}>
+            <Upload size={32} color={neutral[400]} style={{ marginBottom: 8 }} />
+            <Typography sx={{ fontWeight: 600, color: neutral[500], mb: 0.5 }}>
               {t('student.problems.submit.clickToUpload')}
             </Typography>
-            <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '12px' }}>
+            <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
               {t('student.problems.submit.uploadHint')}
             </Typography>
           </Paper>
@@ -187,7 +188,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
 
       {/* Actions */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px' }}>
+        <Typography variant="body2" sx={{ color: neutral[400], fontSize: '13px' }}>
           {!solutionText.trim() && !solutionImage
             ? t('student.problems.submit.provideAtLeastOne')
             : t('student.problems.submit.readyToSubmit')}

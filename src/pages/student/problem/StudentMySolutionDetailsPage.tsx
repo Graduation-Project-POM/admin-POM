@@ -5,7 +5,6 @@ import {
   Typography,
   Paper,
   Chip,
-  CircularProgress,
   Divider,
 } from '@mui/material';
 import { ArrowLeft, BookOpen, FileCode } from 'lucide-react';
@@ -19,6 +18,8 @@ import {
   type Submission,
 } from '../../../services/problemService';
 import { CommunitySubmissionCard } from './CommunitySubmissionCard';
+import { brand, neutral, statusTone } from '../../../theme';
+import { LoadingState } from '../../../components/common/states';
 
 type TaggedSubmission = { submission: Submission; source: 'bank' | 'contest' };
 
@@ -63,9 +64,7 @@ export const StudentMySolutionDetailsPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-        <CircularProgress sx={{ color: '#8B1D23' }} />
-      </Box>
+      <LoadingState />
     );
   }
   if (error || !data) {
@@ -87,42 +86,42 @@ export const StudentMySolutionDetailsPage = () => {
         {t('student.mySolutionDetails.back')}
       </Button>
 
-      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
               {data.title}
             </Typography>
             {data.topic && (
-              <Chip label={data.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+              <Chip label={data.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600 }} />
             )}
           </Box>
           <Chip
             label={difficulty}
             sx={{
-              bgcolor: difficulty === 'Easy' ? '#e7f7ec' : difficulty === 'Medium' ? '#fff7e0' : '#fdecec',
-              color: difficulty === 'Easy' ? '#166534' : difficulty === 'Medium' ? '#92400e' : '#991b1b',
+              bgcolor: difficulty === 'Easy' ? statusTone.success.bg : difficulty === 'Medium' ? statusTone.warning.bg : statusTone.danger.bg,
+              color: difficulty === 'Easy' ? statusTone.success.fg : difficulty === 'Medium' ? statusTone.warning.fg : statusTone.danger.fg,
               fontWeight: 700,
             }}
           />
         </Box>
-        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#1e293b', fontWeight: 700, mb: 1 }}>
-          <BookOpen size={18} color="#8B1D23" />
+        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: neutral[800], fontWeight: 700, mb: 1 }}>
+          <BookOpen size={18} color={brand[500]} />
           {t('student.mySolutionDetails.statement')}
         </Typography>
-        <Typography sx={{ color: '#475569', lineHeight: 1.8, fontSize: '16px', whiteSpace: 'pre-wrap' }}>
+        <Typography sx={{ color: neutral[600], lineHeight: 1.8, fontSize: '16px', whiteSpace: 'pre-wrap' }}>
           {data.statement || t('student.mySolutionDetails.noStatement')}
         </Typography>
       </Paper>
 
-      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <FileCode size={24} color="#8B1D23" />
+      <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800], mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <FileCode size={24} color={brand[500]} />
         {t('student.problemDetails.allSubmissions', { count: totalCount })}
       </Typography>
 
       {totalCount === 0 ? (
-        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}>
-          <Typography sx={{ fontWeight: 700, color: '#1e293b' }}>
+        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: `1px dashed ${neutral[200]}`, textAlign: 'center', color: neutral[500] }}>
+          <Typography sx={{ fontWeight: 700, color: neutral[800] }}>
             {t('student.problemDetails.noSolutionsYet')}
           </Typography>
         </Paper>
@@ -146,7 +145,7 @@ export const StudentMySolutionDetailsPage = () => {
           )}
           {others.length > 0 && (
             <>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#475569' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: neutral[600] }}>
                 {t('student.problemDetails.communityHeading', { count: others.length })}
               </Typography>
               {others.map((x) => (

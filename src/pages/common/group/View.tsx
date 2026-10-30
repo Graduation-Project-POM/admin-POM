@@ -5,6 +5,7 @@ import { Button } from '../../../components/ui/button/Button';
 import { Users, User, Calendar, Info } from 'lucide-react';
 import type { ReactNode } from 'react';
 import type { GroupData } from '../../../types';
+import { brand, neutral } from '../../../theme';
 
 interface ViewGroupProps {
   open: boolean;
@@ -14,14 +15,14 @@ interface ViewGroupProps {
 
 const DetailItem = ({ icon, label, value }: { icon: ReactNode; label: string; value?: string | number }) => (
   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-    <Box sx={{ p: 1, bgcolor: '#f8fafc', borderRadius: '8px', color: '#8B1D23' }}>
+    <Box sx={{ p: 1, bgcolor: neutral[50], borderRadius: '8px', color: brand[500] }}>
       {icon}
     </Box>
     <Box>
-      <Typography sx={{ fontSize: '12px', fontWeight: 600, color: '#94a3b8', textTransform: 'uppercase' }}>
+      <Typography sx={{ fontSize: '12px', fontWeight: 600, color: neutral[400], textTransform: 'uppercase' }}>
         {label}
       </Typography>
-      <Typography sx={{ color: '#1e293b', fontWeight: 700 }}>
+      <Typography sx={{ color: neutral[800], fontWeight: 700 }}>
         {value}
       </Typography>
     </Box>
@@ -36,10 +37,10 @@ const ViewGroups = ({ open, onClose, group }: ViewGroupProps) => {
     <ModalWrapper open={open} onClose={onClose} title={t('group.view.title')} maxWidth="sm">
       <Stack spacing={3} sx={{ mt: 1 }}>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
             {group.title}
           </Typography>
-          <Typography sx={{ color: '#64748b', fontSize: '15px', lineHeight: 1.6 }}>
+          <Typography sx={{ color: neutral[500], fontSize: '15px', lineHeight: 1.6 }}>
             {group.description}
           </Typography>
         </Box>

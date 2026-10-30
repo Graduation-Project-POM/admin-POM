@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@mui/material";
 import { Languages } from "lucide-react";
+import { neutral } from '../../theme';
 
 interface LanguageToggleProps {
   /** Render fixed in the top corner — handy for full-screen pages like auth. */
@@ -28,7 +29,7 @@ export const LanguageToggle = ({ floating = false }: LanguageToggleProps) => {
         fontWeight: 700,
         py: 1,
         px: 2,
-        color: "#fff",
+        color: neutral[0],
         backgroundColor: "#7D1C48",
         "&:hover": { backgroundColor: "#5c1335" },
         ...(floating && {

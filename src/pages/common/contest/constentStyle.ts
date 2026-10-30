@@ -5,6 +5,7 @@ import {
   TextField,
   Card,
 } from "@mui/material";
+import { brand, neutral } from '../../../theme';
 
 export const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: "0",
@@ -34,12 +35,12 @@ export const StyledSearchField = styled(TextField)({
   maxWidth: 400,
   "& .MuiOutlinedInput-root": {
     borderRadius: "10px",
-    backgroundColor: "#fff",
+    backgroundColor: neutral[0],
     "& fieldset": {
-      borderColor: "#e5e7eb",
+      borderColor: neutral[200],
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#8B1D23",
+      borderColor: brand[500],
       borderWidth: "1.5px",
     },
   },
@@ -61,14 +62,14 @@ export const EmptyStateWrapper = styled(Box)({
   textAlign: "center",
   paddingTop: 64,
   paddingBottom: 64,
-  backgroundColor: "#f8fafc",
+  backgroundColor: neutral[50],
   borderRadius: "16px",
-  border: "2px dashed #e2e8f0",
+  border: `2px dashed ${neutral[200]}`,
 });
 
 export const StyledCard = styled(Card)({
   borderRadius: 16,
-  border: "1px solid #e5e7eb",
+  border: `1px solid ${neutral[200]}`,
   boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
   padding: 20,
 });

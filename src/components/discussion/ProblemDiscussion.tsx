@@ -12,6 +12,7 @@ import {
 } from '../../services/discussionService';
 import { CommentComposer } from './CommentComposer';
 import { CommentCard } from './CommentCard';
+import { neutral } from '../../theme';
 
 interface ProblemDiscussionProps {
   problemId: number;
@@ -97,7 +98,7 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
 
       <Paper
         elevation={0}
-        sx={{ p: 2.5, borderRadius: '16px', border: '1px solid #e2e8f0', bgcolor: '#f8fafc', mb: 3 }}
+        sx={{ p: 2.5, borderRadius: '16px', border: `1px solid ${neutral[200]}`, bgcolor: '#f8fafc', mb: 3 }}
       >
         <CommentComposer
           placeholder={t('discussion.placeholder')}
@@ -126,7 +127,7 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
           sx={{
             p: 5,
             borderRadius: '16px',
-            border: '1px dashed #e2e8f0',
+            border: `1px dashed ${neutral[200]}`,
             textAlign: 'center',
             color: '#64748b',
           }}

@@ -5,6 +5,7 @@ import { Label } from '../../../components/ui/label/Label';
 import { Input } from '../../../components/ui/input/Input';
 import { Button } from '../../../components/ui/button/Button';
 import type { ProblemExample } from '../../../types/problem';
+import { neutral, statusTone } from '../../../theme';
 
 interface Props {
   value: ProblemExample[];
@@ -28,7 +29,7 @@ export const ProblemExamplesEditor = ({ value, onChange }: Props) => {
       <Label>{t('problem.form.examplesLabel')}</Label>
       <Stack spacing={2} sx={{ mt: 1 }}>
         {value.length === 0 && (
-          <Typography variant="body2" sx={{ color: '#94a3b8', fontStyle: 'italic' }}>
+          <Typography variant="body2" sx={{ color: neutral[400], fontStyle: 'italic' }}>
             {t('problem.form.examplesEmpty')}
           </Typography>
         )}
@@ -38,16 +39,16 @@ export const ProblemExamplesEditor = ({ value, onChange }: Props) => {
             sx={{
               p: 2,
               borderRadius: '12px',
-              border: '1px solid #e2e8f0',
-              bgcolor: '#fafafa',
+              border: `1px solid ${neutral[200]}`,
+              bgcolor: neutral[50],
               position: 'relative',
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-              <Typography sx={{ fontWeight: 700, color: '#475569', fontSize: '13px' }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[600], fontSize: '13px' }}>
                 {t('problem.form.exampleN', { n: idx + 1 })}
               </Typography>
-              <IconButton size="small" onClick={() => remove(idx)} sx={{ color: '#dc2626' }} aria-label="remove example">
+              <IconButton size="small" onClick={() => remove(idx)} sx={{ color: statusTone.danger.solid }} aria-label="remove example">
                 <Trash2 size={16} />
               </IconButton>
             </Box>

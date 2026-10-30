@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, InputAdornment, Box, CircularProgress, Alert } from '@mui/material';
+import { Typography, InputAdornment, Box, Alert } from '@mui/material';
 import { Search, BookOpen, Users, Trophy, Target } from 'lucide-react';
 import { GroupCard } from '../../../components/ui/card/studentGroupCard';
 import type { GroupData } from '../../../types';
@@ -9,8 +9,6 @@ import { groupService } from '../../../services/groupService';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   StyledContainer,
-  TitleWrapper,
-  SubtitleWrapper,
   SearchWrapper,
   StyledSearchField,
   GroupsGrid,
@@ -19,6 +17,9 @@ import {
   StatCard,
 } from './groupStyle';
 import { GroupDetailsPage } from './GroupDetailsPage';
+import { brand, neutral, statusTone } from '../../../theme';
+import { LoadingState } from '../../../components/common/states';
+import { PageHeader } from '../../../components/common/shell';
 
 const toGroupData = (g: Group): GroupData => ({
   id: String(g.id),
@@ -113,28 +114,22 @@ export const StudentGroupsPage: React.FC = () => {
 
   return (
     <StyledContainer>
-      <TitleWrapper>
-        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
-          {t('student.groups.title')}
-        </Typography>
-      </TitleWrapper>
-      <SubtitleWrapper>
-        <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-          {t('student.groups.subtitle')}
-        </Typography>
-      </SubtitleWrapper>
+      <PageHeader
+        title={t('student.groups.title')}
+        subtitle={t('student.groups.subtitle')}
+      />
 
       <StatsBar>
         <StatCard>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: '#fef2f2', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <BookOpen size={20} color="#8B1D23" />
+              <BookOpen size={20} color={brand[500]} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {groups.length}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
                 {t('student.groups.totalGroups')}
               </Typography>
             </Box>
@@ -142,14 +137,14 @@ export const StudentGroupsPage: React.FC = () => {
         </StatCard>
         <StatCard>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: '#ecfdf5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Target size={20} color="#059669" />
+            <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: statusTone.success.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Target size={20} color={statusTone.success.solid} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {activeGroups}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
                 {t('student.groups.active')}
               </Typography>
             </Box>
@@ -161,10 +156,10 @@ export const StudentGroupsPage: React.FC = () => {
               <Trophy size={20} color="#0284c7" />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {completedGroups}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
                 {t('student.groups.completed')}
               </Typography>
             </Box>
@@ -172,14 +167,14 @@ export const StudentGroupsPage: React.FC = () => {
         </StatCard>
         <StatCard>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: '#fffbeb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Users size={20} color="#d97706" />
+            <Box sx={{ width: 40, height: 40, borderRadius: '10px', bgcolor: statusTone.warning.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Users size={20} color={statusTone.warning.solid} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {groups.length - completedGroups}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
                 {t('student.groups.inProgress')}
               </Typography>
             </Box>
@@ -198,7 +193,7 @@ export const StudentGroupsPage: React.FC = () => {
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search size={18} color="#9ca3af" />
+                  <Search size={18} color={neutral[400]} />
                 </InputAdornment>
               ),
             },
@@ -207,18 +202,16 @@ export const StudentGroupsPage: React.FC = () => {
       </SearchWrapper>
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress sx={{ color: '#8B1D23' }} />
-        </Box>
+        <LoadingState />
       ) : error ? (
         <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
       ) : filteredGroups.length === 0 ? (
         <EmptyStateWrapper>
-          <BookOpen size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
-          <Typography variant="body1" sx={{ color: '#94a3b8', fontWeight: 600, mb: 1 }}>
+          <BookOpen size={48} color={neutral[300]} style={{ marginBottom: 16 }} />
+          <Typography variant="body1" sx={{ color: neutral[400], fontWeight: 600, mb: 1 }}>
             {t('student.groups.noGroupsFound')}
           </Typography>
-          <Typography variant="body2" sx={{ color: '#cbd5e1', fontWeight: 500 }}>
+          <Typography variant="body2" sx={{ color: neutral[300], fontWeight: 500 }}>
             {searchQuery ? t('student.groups.adjustSearch') : t('student.groups.notEnrolled')}
           </Typography>
         </EmptyStateWrapper>

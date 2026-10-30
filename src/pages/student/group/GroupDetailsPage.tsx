@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CircularProgress, Alert } from '@mui/material';
+import { Alert } from '@mui/material';
 import { groupService } from '../../../services/groupService';
 import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
@@ -39,6 +39,8 @@ import { Button } from '../../../components/ui/button/studentButton';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { UserProfile } from '../../common/profile/UserProfilePage';
 import { useNavigate } from 'react-router-dom';
+import { brand, neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
 
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
@@ -301,9 +303,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   };
 
   const getGradeColor = (grade: number) => {
-    if (grade >= 90) return '#059669';
-    if (grade >= 70) return '#d97706';
-    return '#dc2626';
+    if (grade >= 90) return statusTone.success.solid;
+    if (grade >= 70) return statusTone.warning.solid;
+    return statusTone.danger.solid;
   };
 
   if (viewingProblems && selectedContest?.status === 'Ongoing') {
@@ -312,13 +314,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={() => setViewingProblems(false)} sx={{ mb: 3 }}>
           {t('student.groupDetails.backToGroup')}
         </Button>
-        <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e5e7eb', mb: 4, bgcolor: '#f8fafc' }}>
+        <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4, bgcolor: neutral[50] }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
                 🏆 {selectedContest.title}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5 }}>
+              <Typography variant="body2" sx={{ color: neutral[500], mt: 0.5 }}>
                 {t('student.groupDetails.ongoingInstructions')}
               </Typography>
             </Box>
@@ -333,10 +335,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               <Chip
                 label={t('student.groupDetails.statusOngoing')}
                 sx={{
-                  bgcolor: '#ecfdf5',
-                  color: '#059669',
+                  bgcolor: statusTone.success.bg,
+                  color: statusTone.success.solid,
                   fontWeight: 700,
-                  border: '1px solid #a7f3d0',
+                  border: `1px solid ${statusTone.success.border}`,
                 }}
               />
             </Box>
@@ -344,7 +346,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         </Paper>
 
         {problemsError && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setProblemsError(null)}>{problemsError}</Alert>
+          <ErrorState message={problemsError} onClose={() => setProblemsError(null)} />
         )}
 
         <SharedTable
@@ -356,16 +358,16 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               render: (row) => (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                   {row.status === 'submitted' ? (
-                    <CheckCircle2 size={18} color="#059669" />
+                    <CheckCircle2 size={18} color={statusTone.success.solid} />
                   ) : (
-                    <Circle size={18} color="#cbd5e1" />
+                    <Circle size={18} color={neutral[300]} />
                   )}
                   <Box>
-                    <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>
+                    <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '14px' }}>
                       {row.title}
                     </Typography>
                     {row.status === 'submitted' && (
-                      <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '11px' }}>
+                      <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
                         {t('student.groupDetails.submittedOn', { date: new Date(row.submittedAt).toLocaleDateString() })}
                       </Typography>
                     )}
@@ -384,8 +386,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   sx={{
                     fontWeight: 600,
                     fontSize: '11px',
-                    bgcolor: row.difficulty === 'Easy' ? '#ecfdf5' : row.difficulty === 'Medium' ? '#fffbeb' : '#fef2f2',
-                    color: row.difficulty === 'Easy' ? '#059669' : row.difficulty === 'Medium' ? '#d97706' : '#dc2626',
+                    bgcolor: row.difficulty === 'Easy' ? statusTone.success.bg : row.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
+                    color: row.difficulty === 'Easy' ? statusTone.success.solid : row.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
                 />
               )
@@ -400,8 +402,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   sx={{
                     fontWeight: 600,
                     fontSize: '11px',
-                    bgcolor: row.status === 'submitted' ? '#ecfdf5' : '#fef2f2',
-                    color: row.status === 'submitted' ? '#059669' : '#dc2626',
+                    bgcolor: row.status === 'submitted' ? statusTone.success.bg : '#fef2f2',
+                    color: row.status === 'submitted' ? statusTone.success.solid : statusTone.danger.solid,
                   }}
                 />
               )
@@ -453,33 +455,33 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
             <Box>
-              <Typography sx={{ fontWeight: 800, fontSize: '20px', color: '#1e293b' }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '20px', color: neutral[800] }}>
                 {questionProblem?.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                <Chip label={questionProblem?.category} size="small" sx={{ bgcolor: '#f1f5f9', fontWeight: 600 }} />
+                <Chip label={questionProblem?.category} size="small" sx={{ bgcolor: neutral[100], fontWeight: 600 }} />
                 <Chip
                   label={questionProblem?.difficulty}
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    bgcolor: questionProblem?.difficulty === 'Easy' ? '#ecfdf5' : questionProblem?.difficulty === 'Medium' ? '#fffbeb' : '#fef2f2',
-                    color: questionProblem?.difficulty === 'Easy' ? '#059669' : questionProblem?.difficulty === 'Medium' ? '#d97706' : '#dc2626',
+                    bgcolor: questionProblem?.difficulty === 'Easy' ? statusTone.success.bg : questionProblem?.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
+                    color: questionProblem?.difficulty === 'Easy' ? statusTone.success.solid : questionProblem?.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
                 />
               </Box>
             </Box>
-            <IconButton onClick={() => setQuestionModalOpen(false)} sx={{ color: '#94a3b8' }}>
+            <IconButton onClick={() => setQuestionModalOpen(false)} sx={{ color: neutral[400] }}>
               <X size={20} />
             </IconButton>
           </DialogTitle>
           <DialogContent>
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.question')}
               </Typography>
-              <Paper elevation={0} sx={{ p: 3, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <Typography variant="body1" sx={{ color: '#374151', lineHeight: 1.8, fontSize: '15px' }}>
+              <Paper elevation={0} sx={{ p: 3, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}` }}>
+                <Typography variant="body1" sx={{ color: neutral[700], lineHeight: 1.8, fontSize: '15px' }}>
                   {questionProblem?.questionText}
                 </Typography>
               </Paper>
@@ -487,10 +489,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
             {questionProblem?.questionImage && (
               <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   {t('student.groupDetails.diagram')}
                 </Typography>
-                <Paper elevation={0} sx={{ p: 2, bgcolor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                <Paper elevation={0} sx={{ p: 2, bgcolor: neutral[0], borderRadius: '12px', border: `1px solid ${neutral[200]}`, textAlign: 'center' }}>
                   <img
                     src={questionProblem.questionImage}
                     alt={t('student.groupDetails.questionImageAlt')}
@@ -531,29 +533,29 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box>
-              <Typography sx={{ fontWeight: 800, fontSize: '18px', color: '#1e293b' }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '18px', color: neutral[800] }}>
                 {t('student.groupDetails.submitSolution')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b' }}>
+              <Typography variant="body2" sx={{ color: neutral[500] }}>
                 {selectedProblem?.title}
               </Typography>
             </Box>
-            <IconButton onClick={() => setSubmitModalOpen(false)} sx={{ color: '#94a3b8' }}>
+            <IconButton onClick={() => setSubmitModalOpen(false)} sx={{ color: neutral[400] }}>
               <X size={20} />
             </IconButton>
           </DialogTitle>
           <DialogContent>
-            <Box sx={{ mb: 3, p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-              <Typography sx={{ fontWeight: 600, color: '#64748b', fontSize: '12px', mb: 1, textTransform: 'uppercase' }}>
+            <Box sx={{ mb: 3, p: 2, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}` }}>
+              <Typography sx={{ fontWeight: 600, color: neutral[500], fontSize: '12px', mb: 1, textTransform: 'uppercase' }}>
                 {t('student.groupDetails.question')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#374151', lineHeight: 1.6 }}>
+              <Typography variant="body2" sx={{ color: neutral[700], lineHeight: 1.6 }}>
                 {selectedProblem?.questionText?.substring(0, 200)}...
               </Typography>
               {selectedProblem?.questionImage && (
                 <Box sx={{ mt: 1, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                  <ImageIcon size={14} color="#8B1D23" />
-                  <Typography variant="body2" sx={{ color: '#8B1D23', fontWeight: 600, fontSize: '12px' }}>
+                  <ImageIcon size={14} color={brand[500]} />
+                  <Typography variant="body2" sx={{ color: brand[500], fontWeight: 600, fontSize: '12px' }}>
                     {t('student.groupDetails.questionHasImage')}
                   </Typography>
                 </Box>
@@ -563,11 +565,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             <Divider sx={{ mb: 3 }} />
 
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <FileText size={16} color="#8B1D23" />
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <FileText size={16} color={brand[500]} />
                 {t('student.groupDetails.textSolution')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', mb: 1.5, fontSize: '13px' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], mb: 1.5, fontSize: '13px' }}>
                 {t('student.groupDetails.textSolutionHint')}
               </Typography>
               <TextField
@@ -580,19 +582,19 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: '12px',
-                    '& fieldset': { borderColor: '#e5e7eb' },
-                    '&.Mui-focused fieldset': { borderColor: '#8B1D23', borderWidth: '1.5px' },
+                    '& fieldset': { borderColor: neutral[200] },
+                    '&.Mui-focused fieldset': { borderColor: brand[500], borderWidth: '1.5px' },
                   },
                 }}
               />
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Camera size={16} color="#8B1D23" />
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Camera size={16} color={brand[500]} />
                 {t('student.groupDetails.imageSolution')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', mb: 1.5, fontSize: '13px' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], mb: 1.5, fontSize: '13px' }}>
                 {t('student.groupDetails.imageSolutionHint')}
               </Typography>
 
@@ -606,7 +608,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
               {solutionImage ? (
                 <Box sx={{ position: 'relative' }}>
-                  <Paper elevation={0} sx={{ p: 2, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                  <Paper elevation={0} sx={{ p: 2, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}`, textAlign: 'center' }}>
                     <img
                       src={resolveMediaUrl(solutionImage) ?? solutionImage}
                       alt={t('student.groupDetails.solutionImageAlt')}
@@ -639,24 +641,24 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   elevation={0}
                   sx={{
                     p: 4,
-                    bgcolor: '#fafafa',
+                    bgcolor: neutral[50],
                     borderRadius: '12px',
-                    border: '2px dashed #e5e7eb',
+                    border: `2px dashed ${neutral[200]}`,
                     textAlign: 'center',
                     cursor: 'pointer',
                     transition: 'all 0.2s ease',
                     '&:hover': {
-                      borderColor: '#8B1D23',
+                      borderColor: brand[500],
                       bgcolor: '#fef2f2',
                     },
                   }}
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Upload size={32} color="#94a3b8" style={{ marginBottom: 8 }} />
-                  <Typography sx={{ fontWeight: 600, color: '#64748b', mb: 0.5 }}>
+                  <Upload size={32} color={neutral[400]} style={{ marginBottom: 8 }} />
+                  <Typography sx={{ fontWeight: 600, color: neutral[500], mb: 0.5 }}>
                     {t('student.groupDetails.clickToUpload')}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '12px' }}>
+                  <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
                     {t('student.groupDetails.uploadHint')}
                   </Typography>
                 </Paper>
@@ -667,7 +669,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
             {/* Submit Actions */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '13px' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontSize: '13px' }}>
                 {!solutionText && !solutionImage ? t('student.groupDetails.provideAtLeastOne') : t('student.groupDetails.readyToSubmit')}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2 }}>
@@ -679,7 +681,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   startIcon={<Send size={16} />}
                   onClick={handleSubmitSolution}
                   disabled={!solutionText.trim() && !solutionImage}
-                  sx={{ py: 0.5, px: 2, fontSize: '12px', backgroundColor: '#fff', color: '#8B1D23', '&:hover': { backgroundColor: '#fff', color: '#8B1D23' } }}
+                  sx={{ py: 0.5, px: 2, fontSize: '12px', backgroundColor: neutral[0], color: brand[500], '&:hover': { backgroundColor: neutral[0], color: brand[500] } }}
                 >
                   {selectedProblem?.status === 'submitted' ? t('student.groupDetails.updateSolution') : t('student.groupDetails.submitSolution')}
                 </Button>
@@ -708,13 +710,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={() => setViewingProblems(false)} sx={{ mb: 3 }}>
           {t('student.groupDetails.backToGroup')}
         </Button>
-        <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: '1px solid #e5e7eb', mb: 4, bgcolor: '#f8fafc' }}>
+        <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4, bgcolor: neutral[50] }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
+              <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
                 📊 {t('student.groupDetails.resultsTitle', { title: selectedContest.title })}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#64748b', mt: 0.5 }}>
+              <Typography variant="body2" sx={{ color: neutral[500], mt: 0.5 }}>
                 {t('student.groupDetails.endedDescription')}
               </Typography>
             </Box>
@@ -726,11 +728,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               >
                 {t('contest.view.viewLeaderboard')}
               </Button>
-              <Box sx={{ textAlign: 'center', p: 2, bgcolor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
+              <Box sx={{ textAlign: 'center', p: 2, bgcolor: neutral[0], borderRadius: '12px', border: `1px solid ${neutral[200]}` }}>
                 <Typography sx={{ fontWeight: 800, color: getGradeColor(averageGrade), fontSize: '28px', lineHeight: 1 }}>
                   {averageGrade}%
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+                <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
                   {t('student.groupDetails.averageGrade')}
                 </Typography>
               </Box>
@@ -739,7 +741,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         </Paper>
 
         {problemsError && (
-          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setProblemsError(null)}>{problemsError}</Alert>
+          <ErrorState message={problemsError} onClose={() => setProblemsError(null)} />
         )}
 
         <SharedTable
@@ -750,10 +752,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               label: t('student.groupDetails.columns.problem'),
               render: (row) => (
                 <Box>
-                  <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>
+                  <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '14px' }}>
                     {row.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '11px' }}>
+                  <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
                     {t('student.groupDetails.submittedOn', { date: new Date(row.submittedAt).toLocaleDateString() })}
                   </Typography>
                 </Box>
@@ -770,8 +772,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   sx={{
                     fontWeight: 600,
                     fontSize: '11px',
-                    bgcolor: row.difficulty === 'Easy' ? '#ecfdf5' : row.difficulty === 'Medium' ? '#fffbeb' : '#fef2f2',
-                    color: row.difficulty === 'Easy' ? '#059669' : row.difficulty === 'Medium' ? '#d97706' : '#dc2626',
+                    bgcolor: row.difficulty === 'Easy' ? statusTone.success.bg : row.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
+                    color: row.difficulty === 'Easy' ? statusTone.success.solid : row.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
                 />
               )
@@ -784,10 +786,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   <Typography sx={{ fontWeight: 800, color: getGradeColor(row.grade), fontSize: '16px' }}>
                     {row.grade}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '12px' }}>
+                  <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
                     / {row.maxGrade}
                   </Typography>
-                  {row.grade >= 90 && <Star size={14} color="#059669" fill="#059669" />}
+                  {row.grade >= 90 && <Star size={14} color={statusTone.success.solid} fill={statusTone.success.solid} />}
                 </Box>
               )
             },
@@ -841,33 +843,33 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
             <Box>
-              <Typography sx={{ fontWeight: 800, fontSize: '20px', color: '#1e293b' }}>
+              <Typography sx={{ fontWeight: 800, fontSize: '20px', color: neutral[800] }}>
                 {questionProblem?.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
-                <Chip label={questionProblem?.category} size="small" sx={{ bgcolor: '#f1f5f9', fontWeight: 600 }} />
+                <Chip label={questionProblem?.category} size="small" sx={{ bgcolor: neutral[100], fontWeight: 600 }} />
                 <Chip
                   label={questionProblem?.difficulty}
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    bgcolor: questionProblem?.difficulty === 'Easy' ? '#ecfdf5' : questionProblem?.difficulty === 'Medium' ? '#fffbeb' : '#fef2f2',
-                    color: questionProblem?.difficulty === 'Easy' ? '#059669' : questionProblem?.difficulty === 'Medium' ? '#d97706' : '#dc2626',
+                    bgcolor: questionProblem?.difficulty === 'Easy' ? statusTone.success.bg : questionProblem?.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
+                    color: questionProblem?.difficulty === 'Easy' ? statusTone.success.solid : questionProblem?.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
                 />
               </Box>
             </Box>
-            <IconButton onClick={() => setQuestionModalOpen(false)} sx={{ color: '#94a3b8' }}>
+            <IconButton onClick={() => setQuestionModalOpen(false)} sx={{ color: neutral[400] }}>
               <X size={20} />
             </IconButton>
           </DialogTitle>
           <DialogContent>
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.question')}
               </Typography>
-              <Paper elevation={0} sx={{ p: 3, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb' }}>
-                <Typography variant="body1" sx={{ color: '#374151', lineHeight: 1.8, fontSize: '15px' }}>
+              <Paper elevation={0} sx={{ p: 3, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}` }}>
+                <Typography variant="body1" sx={{ color: neutral[700], lineHeight: 1.8, fontSize: '15px' }}>
                   {questionProblem?.questionText}
                 </Typography>
               </Paper>
@@ -875,10 +877,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
             {questionProblem?.questionImage && (
               <Box sx={{ mb: 3 }}>
-                <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                   {t('student.groupDetails.diagram')}
                 </Typography>
-                <Paper elevation={0} sx={{ p: 2, bgcolor: '#fff', borderRadius: '12px', border: '1px solid #e5e7eb', textAlign: 'center' }}>
+                <Paper elevation={0} sx={{ p: 2, bgcolor: neutral[0], borderRadius: '12px', border: `1px solid ${neutral[200]}`, textAlign: 'center' }}>
                   <img
                     src={questionProblem.questionImage}
                     alt={t('student.groupDetails.questionImageAlt')}
@@ -889,11 +891,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             )}
 
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.yourSolution')}
               </Typography>
-              <Paper elevation={0} sx={{ p: 3, bgcolor: '#fffbeb', borderRadius: '12px', border: '1px solid #fde68a' }}>
-                <Typography variant="body1" sx={{ color: '#374151', lineHeight: 1.8 }}>
+              <Paper elevation={0} sx={{ p: 3, bgcolor: statusTone.warning.bg, borderRadius: '12px', border: `1px solid ${statusTone.warning.border}` }}>
+                <Typography variant="body1" sx={{ color: neutral[700], lineHeight: 1.8 }}>
                   {questionProblem?.textSolution}
                 </Typography>
               </Paper>
@@ -919,35 +921,35 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           }}
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography sx={{ fontWeight: 800, fontSize: '18px', color: '#1e293b' }}>
+            <Typography sx={{ fontWeight: 800, fontSize: '18px', color: neutral[800] }}>
               {t('student.groupDetails.trainerFeedback')}
             </Typography>
-            <IconButton onClick={() => setFeedbackModalOpen(false)} sx={{ color: '#94a3b8' }}>
+            <IconButton onClick={() => setFeedbackModalOpen(false)} sx={{ color: neutral[400] }}>
               <X size={20} />
             </IconButton>
           </DialogTitle>
           <DialogContent>
             <Box sx={{ mb: 3 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#1e293b', mb: 1 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[800], mb: 1 }}>
                 {feedbackProblem?.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                <Chip label={feedbackProblem?.category} size="small" sx={{ bgcolor: '#f1f5f9', fontWeight: 600 }} />
+                <Chip label={feedbackProblem?.category} size="small" sx={{ bgcolor: neutral[100], fontWeight: 600 }} />
                 <Chip
                   label={feedbackProblem?.difficulty}
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    bgcolor: feedbackProblem?.difficulty === 'Easy' ? '#ecfdf5' : feedbackProblem?.difficulty === 'Medium' ? '#fffbeb' : '#fef2f2',
-                    color: feedbackProblem?.difficulty === 'Easy' ? '#059669' : feedbackProblem?.difficulty === 'Medium' ? '#d97706' : '#dc2626',
+                    bgcolor: feedbackProblem?.difficulty === 'Easy' ? statusTone.success.bg : feedbackProblem?.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
+                    color: feedbackProblem?.difficulty === 'Easy' ? statusTone.success.solid : feedbackProblem?.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
                 />
               </Box>
             </Box>
 
-            <Box sx={{ p: 3, bgcolor: '#f8fafc', borderRadius: '12px', border: '1px solid #e5e7eb', mb: 3 }}>
+            <Box sx={{ p: 3, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}`, mb: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                <Typography sx={{ fontWeight: 700, color: '#64748b', fontSize: '12px', textTransform: 'uppercase' }}>
+                <Typography sx={{ fontWeight: 700, color: neutral[500], fontSize: '12px', textTransform: 'uppercase' }}>
                   {t('student.groupDetails.yourGrade')}
                 </Typography>
               </Box>
@@ -955,18 +957,18 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 <Typography sx={{ fontWeight: 800, color: getGradeColor(feedbackProblem?.grade || 0), fontSize: '36px', lineHeight: 1 }}>
                   {feedbackProblem?.grade}
                 </Typography>
-                <Typography sx={{ color: '#94a3b8', fontSize: '18px', fontWeight: 600 }}>
+                <Typography sx={{ color: neutral[400], fontSize: '18px', fontWeight: 600 }}>
                   / {feedbackProblem?.maxGrade}
                 </Typography>
               </Box>
             </Box>
 
             <Box sx={{ mb: 3 }}>
-              <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {t('student.groupDetails.trainerComments')}
               </Typography>
-              <Paper elevation={0} sx={{ p: 2.5, bgcolor: '#fff', border: '1px solid #e5e7eb', borderRadius: '12px' }}>
-                <Typography variant="body1" sx={{ color: '#374151', lineHeight: 1.8 }}>
+              <Paper elevation={0} sx={{ p: 2.5, bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, borderRadius: '12px' }}>
+                <Typography variant="body1" sx={{ color: neutral[700], lineHeight: 1.8 }}>
                   {feedbackProblem?.feedback}
                 </Typography>
               </Paper>
@@ -999,23 +1001,23 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
       <HeaderSection>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
               {group.title}
             </Typography>
-            <Typography variant="body1" sx={{ color: '#64748b', mb: 2, maxWidth: '800px' }}>
+            <Typography variant="body1" sx={{ color: neutral[500], mb: 2, maxWidth: '800px' }}>
               {group.description}
             </Typography>
             <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Users size={18} color="#8B1D23" />
+                <Users size={18} color={brand[500]} />
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('student.groupDetails.studentsCount', { count: group.studentsCount })}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Award size={18} color="#8B1D23" />
+                <Award size={18} color={brand[500]} />
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('student.groupDetails.trainerLabel', { name: group.trainerName })}</Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Clock size={18} color="#8B1D23" />
+                <Clock size={18} color={brand[500]} />
                 <Typography variant="body2" sx={{ fontWeight: 700 }}>{t('student.groupDetails.since', { date: new Date(group.createdDate).toLocaleDateString() })}</Typography>
               </Box>
             </Box>
@@ -1023,10 +1025,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           {courseProgress !== null && (
             <Box sx={{ minWidth: 200 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '12px' }}>
+                <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600, fontSize: '12px' }}>
                   {t('student.groupDetails.courseProgress')}
                 </Typography>
-                <Typography variant="body2" sx={{ color: '#8B1D23', fontWeight: 800, fontSize: '12px' }}>
+                <Typography variant="body2" sx={{ color: brand[500], fontWeight: 800, fontSize: '12px' }}>
                   {courseProgress}%
                 </Typography>
               </Box>
@@ -1036,9 +1038,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 sx={{
                   height: 8,
                   borderRadius: '999px',
-                  bgcolor: '#fee2e2',
+                  bgcolor: statusTone.danger.bg,
                   '& .MuiLinearProgress-bar': {
-                    bgcolor: '#8B1D23',
+                    bgcolor: brand[500],
                     borderRadius: '999px',
                   },
                 }}
@@ -1048,7 +1050,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         </Box>
       </HeaderSection>
 
-      <Paper elevation={0} sx={{ borderRadius: '16px', overflow: 'hidden', border: '1px solid #e5e7eb', bgcolor: '#ffffff' }}>
+      <Paper elevation={0} sx={{ borderRadius: '16px', overflow: 'hidden', border: `1px solid ${neutral[200]}`, bgcolor: neutral[0] }}>
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
@@ -1057,15 +1059,15 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           allowScrollButtonsMobile
           sx={{
             px: 2,
-            borderBottom: '1px solid #e5e7eb',
+            borderBottom: `1px solid ${neutral[200]}`,
             '& .MuiTab-root': {
               textTransform: 'none',
               fontWeight: 700,
-              color: '#64748b',
+              color: neutral[500],
               minHeight: 64,
-              '&.Mui-selected': { color: '#8B1D23' },
+              '&.Mui-selected': { color: brand[500] },
             },
-            '& .MuiTabs-indicator': { backgroundColor: '#8B1D23', height: 3, borderRadius: '999px' },
+            '& .MuiTabs-indicator': { backgroundColor: brand[500], height: 3, borderRadius: '999px' },
           }}
         >
           <Tab label={t('student.groupDetails.tabContests')} icon={<BookOpen size={16} />} iconPosition="start" />
@@ -1086,15 +1088,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             </Box>
 
             {contestsLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                <CircularProgress sx={{ color: '#8B1D23' }} />
-              </Box>
+              <LoadingState />
             ) : contestsError ? (
               <Alert severity="error" sx={{ mt: 2 }}>{contestsError}</Alert>
             ) : filteredContests.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
-                <BookOpen size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
-                <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noContestsFound')}</Typography>
+                <BookOpen size={48} color={neutral[300]} style={{ marginBottom: 16 }} />
+                <Typography sx={{ color: neutral[400], fontWeight: 600 }}>{t('student.groupDetails.noContestsFound')}</Typography>
               </Box>
             ) : (
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
@@ -1117,36 +1117,34 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               onChange={(e) => setStudentSearchQuery(e.target.value)}
             />
             {membersLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                <CircularProgress sx={{ color: '#8B1D23' }} />
-              </Box>
+              <LoadingState />
             ) : membersError ? (
               <Alert severity="error" sx={{ mt: 2 }}>{membersError}</Alert>
             ) : filteredStudents.length === 0 ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
-                <Users size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
-                <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noStudents', 'No students in this group')}</Typography>
+                <Users size={48} color={neutral[300]} style={{ marginBottom: 16 }} />
+                <Typography sx={{ color: neutral[400], fontWeight: 600 }}>{t('student.groupDetails.noStudents', 'No students in this group')}</Typography>
               </Box>
             ) : (
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
                 {filteredStudents.map((student) => (
                   <StudentCardStyled key={student.id}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                      <Avatar sx={{ bgcolor: '#fef2f2', color: '#8B1D23', width: 48, height: 48, fontWeight: 700, fontSize: '16px' }}>
+                      <Avatar sx={{ bgcolor: '#fef2f2', color: brand[500], width: 48, height: 48, fontWeight: 700, fontSize: '16px' }}>
                         {student.name.split(' ').map(n => n[0]).join('')}
                       </Avatar>
                       <Box>
-                        <Typography sx={{ fontWeight: 700, color: '#1e293b', fontSize: '14px' }}>{student.name}</Typography>
-                        <Typography variant="body2" sx={{ color: '#64748b', fontSize: '12px' }}>{student.email}</Typography>
+                        <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '14px' }}>{student.name}</Typography>
+                        <Typography variant="body2" sx={{ color: neutral[500], fontSize: '12px' }}>{student.email}</Typography>
                       </Box>
                     </Box>
                     <Divider sx={{ mb: 2, borderStyle: 'dashed' }} />
                     <Box sx={{ flexGrow: 1 }}>
-                      <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
-                        {t('student.groupDetails.joined')} <span style={{ fontWeight: 600, color: '#1e293b' }}>{new Date(student.joinDate).toLocaleDateString()}</span>
+                      <Typography variant="body2" sx={{ color: neutral[500], display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
+                        {t('student.groupDetails.joined')} <span style={{ fontWeight: 600, color: neutral[800] }}>{new Date(student.joinDate).toLocaleDateString()}</span>
                       </Typography>
-                      <Typography variant="body2" sx={{ color: '#64748b', display: 'flex', justifyContent: 'space-between', fontSize: '12px', mb: 2 }}>
-                        {t('student.groupDetails.solved')} <span style={{ fontWeight: 700, color: '#8B1D23' }}>{student.solvedProblems}</span>
+                      <Typography variant="body2" sx={{ color: neutral[500], display: 'flex', justifyContent: 'space-between', fontSize: '12px', mb: 2 }}>
+                        {t('student.groupDetails.solved')} <span style={{ fontWeight: 700, color: brand[500] }}>{student.solvedProblems}</span>
                       </Typography>
                     </Box>
                     <Button
@@ -1156,12 +1154,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                       onClick={() => navigate(`/profile/student/${student.id}`)}
                       sx={{
                         mt: 1,
-                        borderColor: '#8B1D23',
-                        color: '#8B1D23',
+                        borderColor: brand[500],
+                        color: brand[500],
                         '&:hover': {
-                          borderColor: '#6B141A',
+                          borderColor: brand[700],
                           backgroundColor: '#fef2f2',
-                          color: '#8B1D23'
+                          color: brand[500]
                         }
                       }}
                     >
@@ -1175,8 +1173,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               <TabPanel value={tabValue} index={2}>
             {!group.trainerId ? (
               <Box sx={{ textAlign: 'center', py: 6 }}>
-                <Award size={48} color="#cbd5e1" style={{ marginBottom: 16 }} />
-                <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('student.groupDetails.noTrainer', 'No trainer assigned to this group')}</Typography>
+                <Award size={48} color={neutral[300]} style={{ marginBottom: 16 }} />
+                <Typography sx={{ color: neutral[400], fontWeight: 600 }}>{t('student.groupDetails.noTrainer', 'No trainer assigned to this group')}</Typography>
               </Box>
             ) : (
               <UserProfile type="trainer" id={group.trainerId} />

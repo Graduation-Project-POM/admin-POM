@@ -44,6 +44,7 @@ import {
   StyledListItemButton,
 } from "./SidebarStyle";
 import { useAuth } from "../../../services/AuthContext";
+import { brand, neutral } from '../../../theme';
 
 interface SidebarProps {
   role: UserRole;
@@ -150,18 +151,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <Box>
       <IconButton
         onClick={handleDrawerToggle}
+        aria-label={t("ui.common.openMenu")}
+        aria-expanded={mobileOpen}
+        aria-controls="app-sidebar"
         sx={{
           display: { md: "none" },
           position: "fixed",
-          top: 16,
-          left: 16,
+          top: 12,
+          insetInlineStart: 12,
           zIndex: 1200,
+          bgcolor: neutral[0],
+          border: `1px solid ${neutral[200]}`,
+          boxShadow: "0 1px 3px rgba(15, 23, 42, 0.06)",
+          "&:hover": { bgcolor: neutral[50] },
         }}
       >
         <MenuIcon />
       </IconButton>
 
       <SidebarContainer
+        id="app-sidebar"
+        component="nav"
+        aria-label={t("ui.common.mainNavigation")}
         variant={isMobile ? "temporary" : "permanent"}
         open={isMobile ? mobileOpen : true}
         onClose={handleDrawerToggle}
@@ -179,7 +190,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           />
         </LogoContainer>
 
-        <Divider sx={{ borderColor: "#eceff3" }} />
+        <Divider />
 
         <ScrollContainer>
           {sections.map((section, index) => (
@@ -202,6 +213,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       <ListItem disablePadding>
                         <StyledListItemButton
                           isActive={isParentActive}
+                          aria-current={isActive ? "page" : undefined}
+                          {...(hasChildren && !isLogoutItem && !isLanguageItem
+                            ? { "aria-expanded": isOpen }
+                            : {})}
                           onClick={() => {
                             if (isLogoutItem) {
                               handleLogout();
@@ -223,7 +238,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                           <ListItemIcon
                             sx={{
                               minWidth: 40,
-                              color: isParentActive ? "#8B1D23" : "#94a3b8",
+                              color: isParentActive ? brand[500] : neutral[400],
                             }}
                           >
                             {iconMap[item.icon]}
@@ -234,7 +249,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 sx={{
                                   fontSize: "14px",
                                   fontWeight: isParentActive ? 700 : 600,
-                                  color: isParentActive ? "#8B1D23" : "#64748b",
+                                  color: isParentActive ? brand[500] : neutral[500],
                                 }}
                               >
                                 {isLanguageItem
@@ -249,9 +264,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
                             !isLogoutItem &&
                             !isLanguageItem &&
                             (isOpen ? (
-                              <ChevronDown size={16} color="#94a3b8" />
+                              <ChevronDown size={16} color={neutral[400]} />
                             ) : (
-                              <ChevronRight size={16} color="#94a3b8" />
+                              <ChevronRight size={16} color={neutral[400]} />
                             ))}
                         </StyledListItemButton>
                       </ListItem>
@@ -267,6 +282,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                 <ListItem key={subItem.path} disablePadding>
                                   <StyledListItemButton
                                     isActive={isSubActive}
+                                    aria-current={isSubActive ? "page" : undefined}
                                     onClick={() => {
                                       navigate(subItem.path);
                                       if (isMobile) setMobileOpen(false);
@@ -277,8 +293,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                       sx={{
                                         minWidth: 34,
                                         color: isSubActive
-                                          ? "#8B1D23"
-                                          : "#94a3b8",
+                                          ? brand[500]
+                                          : neutral[400],
                                       }}
                                     >
                                       {iconMap[subItem.icon]}
@@ -290,8 +306,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                             fontSize: "12px",
                                             fontWeight: isSubActive ? 800 : 600,
                                             color: isSubActive
-                                              ? "#8B1D23"
-                                              : "#64748b",
+                                              ? brand[500]
+                                              : neutral[500],
                                           }}
                                         >
                                           {subItem.titleKey ? t(subItem.titleKey) : subItem.title}
@@ -314,7 +330,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ))}
         </ScrollContainer>
 
-        <Divider sx={{ borderColor: "#eceff3" }} />
+        <Divider />
 
         <Box sx={{ p: 2 }}>
           <Box
@@ -323,26 +339,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
               alignItems: "center",
               gap: 1.5,
               p: 1.5,
-              borderRadius: "16px",
-              bgcolor: "#fafafa",
-              border: "1px solid #f1f5f9",
+              borderRadius: "14px",
+              bgcolor: neutral[50],
+              border: `1px solid ${neutral[200]}`,
             }}
           >
             <Avatar
-              sx={{ bgcolor: "#fff", color: "#fff", width: 42, height: 42 }}
+              aria-hidden
+              sx={{ bgcolor: brand[50], width: 42, height: 42 }}
             >
-              <UserCircle size={35} strokeWidth={2} color="#8B1D23" />
+              <UserCircle size={26} strokeWidth={2} color={brand[500]} />
             </Avatar>
             <Box sx={{ minWidth: 0 }}>
               <Typography
                 noWrap
-                sx={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}
+                sx={{ fontSize: "14px", fontWeight: 700, color: neutral[900] }}
               >
                 {userName}
               </Typography>
-              <Typography noWrap sx={{ fontSize: "12px", color: "#94a3b8" }}>
-                {userEmail}
-              </Typography>
+              {/* Rendered only when present — an empty address previously left
+                  a blank line that made the card look broken. */}
+              {userEmail && (
+                <Typography noWrap sx={{ fontSize: "12px", color: neutral[400] }}>
+                  {userEmail}
+                </Typography>
+              )}
             </Box>
           </Box>
         </Box>

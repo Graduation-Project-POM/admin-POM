@@ -5,7 +5,6 @@ import {
   Typography,
   Paper,
   Chip,
-  CircularProgress,
   Divider,
 } from '@mui/material';
 import { ArrowLeft, FileCode, Send, BookOpen, ListChecks } from 'lucide-react';
@@ -24,6 +23,8 @@ import { resolveMediaUrl } from '../../../utils/media';
 import { SubmitSolutionModal } from './SubmitSolutionModal';
 import { CommunitySubmissionCard } from './CommunitySubmissionCard';
 import { ProblemDiscussion } from '../../../components/discussion/ProblemDiscussion';
+import { brand, neutral, statusTone } from '../../../theme';
+import { LoadingState } from '../../../components/common/states';
 
 type TaggedSubmission = { submission: Submission; source: 'bank' | 'contest' };
 
@@ -72,9 +73,7 @@ export const StudentProblemDetailsPage = () => {
 
   if (loading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-        <CircularProgress sx={{ color: '#8B1D23' }} />
-      </Box>
+      <LoadingState />
     );
   }
   if (error || !problem) {
@@ -98,44 +97,44 @@ export const StudentProblemDetailsPage = () => {
         {t('student.problemDetails.back')}
       </Button>
 
-      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: '1px solid #e2e8f0', mb: 4 }}>
+      <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: '#1e293b', mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
               {problem.title}
             </Typography>
             {problem.topic && (
-              <Chip label={problem.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600 }} />
+              <Chip label={problem.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600 }} />
             )}
           </Box>
           <Chip
             label={difficulty}
             sx={{
-              bgcolor: difficulty === 'Easy' ? '#e7f7ec' : difficulty === 'Medium' ? '#fff7e0' : '#fdecec',
-              color: difficulty === 'Easy' ? '#166534' : difficulty === 'Medium' ? '#92400e' : '#991b1b',
+              bgcolor: difficulty === 'Easy' ? statusTone.success.bg : difficulty === 'Medium' ? statusTone.warning.bg : statusTone.danger.bg,
+              color: difficulty === 'Easy' ? statusTone.success.fg : difficulty === 'Medium' ? statusTone.warning.fg : statusTone.danger.fg,
               fontWeight: 700,
             }}
           />
         </Box>
 
-        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#1e293b', fontWeight: 700, mb: 1 }}>
-          <BookOpen size={18} color="#8B1D23" />
+        <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: neutral[800], fontWeight: 700, mb: 1 }}>
+          <BookOpen size={18} color={brand[500]} />
           {t('student.problemDetails.statement')}
         </Typography>
-        <Typography sx={{ color: '#475569', lineHeight: 1.8, fontSize: '16px', whiteSpace: 'pre-wrap', mb: 3 }}>
+        <Typography sx={{ color: neutral[600], lineHeight: 1.8, fontSize: '16px', whiteSpace: 'pre-wrap', mb: 3 }}>
           {problem.statement || t('student.problemDetails.noStatement')}
         </Typography>
 
         {hasConstraints && (
           <>
             <Divider sx={{ my: 3 }} />
-            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: '#1e293b', fontWeight: 700, mb: 1 }}>
-              <ListChecks size={18} color="#8B1D23" />
+            <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1, color: neutral[800], fontWeight: 700, mb: 1 }}>
+              <ListChecks size={18} color={brand[500]} />
               {t('student.problemDetails.constraints')}
             </Typography>
             <Typography
               component="pre"
-              sx={{ color: '#475569', lineHeight: 1.8, fontSize: '14px', whiteSpace: 'pre-wrap', m: 0, fontFamily: 'inherit' }}
+              sx={{ color: neutral[600], lineHeight: 1.8, fontSize: '14px', whiteSpace: 'pre-wrap', m: 0, fontFamily: 'inherit' }}
             >
               {problem.constraints}
             </Typography>
@@ -145,42 +144,42 @@ export const StudentProblemDetailsPage = () => {
         {hasExamples && (
           <>
             <Divider sx={{ my: 3 }} />
-            <Typography variant="h6" sx={{ color: '#1e293b', fontWeight: 700, mb: 2 }}>
+            <Typography variant="h6" sx={{ color: neutral[800], fontWeight: 700, mb: 2 }}>
               {t('student.problemDetails.examples')}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {problem.examples!.map((ex, i) => (
                 <Box
                   key={i}
-                  sx={{ p: 2, borderRadius: '12px', border: '1px solid #e2e8f0', bgcolor: '#fafafa' }}
+                  sx={{ p: 2, borderRadius: '12px', border: `1px solid ${neutral[200]}`, bgcolor: neutral[50] }}
                 >
-                  <Typography sx={{ fontWeight: 700, color: '#475569', fontSize: '13px', mb: 1 }}>
+                  <Typography sx={{ fontWeight: 700, color: neutral[600], fontSize: '13px', mb: 1 }}>
                     {t('student.problemDetails.exampleN', { n: i + 1 })}
                   </Typography>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2, mb: ex.explanation ? 1.5 : 0 }}>
                     <Box>
-                      <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                      <Typography variant="caption" sx={{ color: neutral[400], fontWeight: 700 }}>
                         {t('student.problemDetails.input')}
                       </Typography>
-                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: '#fff', border: '1px solid #e2e8f0', fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
                         {ex.input}
                       </Box>
                     </Box>
                     <Box>
-                      <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                      <Typography variant="caption" sx={{ color: neutral[400], fontWeight: 700 }}>
                         {t('student.problemDetails.output')}
                       </Typography>
-                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: '#fff', border: '1px solid #e2e8f0', fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
+                      <Box component="pre" sx={{ m: 0, p: 1.5, borderRadius: '8px', bgcolor: neutral[0], border: `1px solid ${neutral[200]}`, fontSize: '13px', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}>
                         {ex.output}
                       </Box>
                     </Box>
                   </Box>
                   {ex.explanation && (
                     <Box>
-                      <Typography variant="caption" sx={{ color: '#94a3b8', fontWeight: 700 }}>
+                      <Typography variant="caption" sx={{ color: neutral[400], fontWeight: 700 }}>
                         {t('student.problemDetails.explanation')}
                       </Typography>
-                      <Typography sx={{ color: '#475569', fontSize: '13px', whiteSpace: 'pre-wrap' }}>
+                      <Typography sx={{ color: neutral[600], fontSize: '13px', whiteSpace: 'pre-wrap' }}>
                         {ex.explanation}
                       </Typography>
                     </Box>
@@ -192,7 +191,7 @@ export const StudentProblemDetailsPage = () => {
         )}
 
         {problem.photoUrl && (
-          <Box sx={{ mt: 3, borderRadius: '12px', overflow: 'hidden', border: '1px solid #e2e8f0' }}>
+          <Box sx={{ mt: 3, borderRadius: '12px', overflow: 'hidden', border: `1px solid ${neutral[200]}` }}>
             <img src={resolveMediaUrl(problem.photoUrl) ?? undefined} alt={problem.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
           </Box>
         )}
@@ -204,14 +203,14 @@ export const StudentProblemDetailsPage = () => {
         </Box>
       </Paper>
 
-      <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b', mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <FileCode size={24} color="#8B1D23" />
+      <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800], mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <FileCode size={24} color={brand[500]} />
         {t('student.problemDetails.allSubmissions', { count: totalCount })}
       </Typography>
 
       {totalCount === 0 ? (
-        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}>
-          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>
+        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: `1px dashed ${neutral[200]}`, textAlign: 'center', color: neutral[500] }}>
+          <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 0.5 }}>
             {t('student.problemDetails.noSolutionsYet')}
           </Typography>
           <Typography variant="body2">{t('student.problemDetails.beFirst')}</Typography>
@@ -220,7 +219,7 @@ export const StudentProblemDetailsPage = () => {
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
           {mine.length > 0 && (
             <>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#8B1D23' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: brand[500] }}>
                 {t('student.problemDetails.yourSubmissions', { count: mine.length })}
               </Typography>
               {mine.map((x) => (
@@ -235,7 +234,7 @@ export const StudentProblemDetailsPage = () => {
           )}
           {others.length > 0 && (
             <>
-              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#475569' }}>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: neutral[600] }}>
                 {t('student.problemDetails.communityHeading', { count: others.length })}
               </Typography>
               {others.map((x) => (

@@ -9,6 +9,8 @@ import { styled } from '@mui/material/styles';
 import { Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { Column, TableRowBase } from '../../../types/index';
+import { EmptyState } from '../../common/states';
+import { brand, neutral, radius } from '../../../theme';
 
 interface StudentTableProps<TRow extends TableRowBase = TableRowBase> {
   data: TRow[];
@@ -18,30 +20,31 @@ interface StudentTableProps<TRow extends TableRowBase = TableRowBase> {
 }
 
 const TableWrapper = styled(Box)({
-  border: '1px solid #e5e7eb',
-  borderRadius: '16px',
+  border: `1px solid ${neutral[200]}`,
+  borderRadius: `${radius['2xl']}px`,
   overflow: 'hidden',
-  backgroundColor: '#fff',
+  backgroundColor: neutral[0],
 });
 
 const TableHeader = styled(Box)({
   display: 'grid',
   padding: '14px 20px',
-  backgroundColor: '#f8fafc',
-  borderBottom: '1px solid #e5e7eb',
+  backgroundColor: neutral[50],
+  borderBottom: `1px solid ${neutral[200]}`,
 });
 
 const TableRow = styled(Box)<{ clickable?: boolean }>(({ clickable }) => ({
   display: 'grid',
+  alignItems: 'center',
   padding: '14px 20px',
-  borderBottom: '1px solid #f1f5f9',
-  transition: 'all 0.2s ease',
+  borderBottom: `1px solid ${neutral[100]}`,
+  transition: 'background-color .15s ease',
   cursor: clickable ? 'pointer' : 'default',
   '&:last-child': {
     borderBottom: 'none',
   },
   '&:hover': {
-    backgroundColor: '#fafafa',
+    backgroundColor: clickable ? brand[50] : neutral[50],
   },
 }));
 
@@ -73,22 +76,13 @@ export function SharedTable<TRow extends TableRowBase>({
         placeholder={searchPlaceholder ?? t('ui.table.searchPlaceholder')}
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        sx={{
-          mb: 3,
-          width: '100%',
-          maxWidth: 400,
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '10px',
-            backgroundColor: '#fff',
-            '& fieldset': { borderColor: '#e5e7eb' },
-            '&.Mui-focused fieldset': { borderColor: '#8B1D23', borderWidth: '1.5px' },
-          },
-        }}
+        sx={{ mb: 3, width: '100%', maxWidth: 400 }}
         slotProps={{
+          htmlInput: { 'aria-label': searchPlaceholder ?? t('ui.table.searchPlaceholder') },
           input: {
             startAdornment: (
               <InputAdornment position="start">
-                <Search size={18} color="#9ca3af" />
+                <Search size={18} color={neutral[400]} />
               </InputAdornment>
             ),
           },
@@ -103,10 +97,10 @@ export function SharedTable<TRow extends TableRowBase>({
               key={col.id}
               sx={{
                 fontWeight: 700,
-                color: '#64748b',
-                fontSize: '12px',
+                color: neutral[600],
+                fontSize: '11.5px',
                 textTransform: 'uppercase',
-                letterSpacing: 0.5,
+                letterSpacing: '0.06em',
               }}
             >
               {col.label}
@@ -115,9 +109,16 @@ export function SharedTable<TRow extends TableRowBase>({
         </TableHeader>
 
         {filtered.length === 0 ? (
-          <Box sx={{ py: 6, textAlign: 'center' }}>
-            <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>{t('ui.table.noDataFound')}</Typography>
-          </Box>
+          <EmptyState
+            variant="bare"
+            icon={<Search size={24} />}
+            title={searchQuery ? t('ui.table.noMatches') : t('ui.table.noRows')}
+            description={
+              searchQuery
+                ? t('ui.table.noMatchesHint', { query: searchQuery })
+                : t('ui.table.noRowsHint')
+            }
+          />
         ) : (
           filtered.map((row) => (
             <TableRow
@@ -125,13 +126,25 @@ export function SharedTable<TRow extends TableRowBase>({
               sx={{ gridTemplateColumns: gridCols, minWidth: 640 }}
               clickable={!!onRowClick}
               onClick={() => onRowClick?.(row)}
+              {...(onRowClick
+                ? {
+                    role: 'button',
+                    tabIndex: 0,
+                    onKeyDown: (e: React.KeyboardEvent) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        onRowClick(row);
+                      }
+                    },
+                  }
+                : {})}
             >
               {columns.map((col) => (
                 <Box key={col.id}>
                   {col.render ? (
                     col.render(row)
                   ) : (
-                    <Typography sx={{ fontSize: '14px', color: '#1e293b', fontWeight: 500 }}>
+                    <Typography sx={{ fontSize: '14px', color: neutral[800], fontWeight: 500 }}>
                       {(row as Record<string, unknown>)[col.id] as React.ReactNode}
                     </Typography>
                   )}
@@ -145,7 +158,7 @@ export function SharedTable<TRow extends TableRowBase>({
 
       {filtered.length > 0 && (
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 500 }}>
+          <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 500 }}>
             {t('ui.table.showingItems', { shown: filtered.length, total: data.length })}
           </Typography>
         </Box>

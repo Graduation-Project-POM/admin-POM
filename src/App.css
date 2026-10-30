@@ -272,14 +272,39 @@
   font-weight: 700;
 }
 
-body,.typography {
-  font-family: "Lenos Thin", sans-serif;
+/*
+ * "Lenos Thin" is not a declared family — the @font-face blocks above all
+ * register the family as "Lenos" at different weights — so this rule silently
+ * fell through to the generic sans-serif for every plain DOM element while MUI
+ * components rendered in Lenos. Naming the real family lines the two up.
+ *
+ * "Readex Pro" is intentionally absent from this stack: the @font-face blocks
+ * for it point at public/fonts/readex/*, which is not in the repo. The dev
+ * server answers those URLs with index.html, and a font parsed from HTML has
+ * advance widths but no glyphs — referencing the family makes every character
+ * on the page invisible. Add the files before using it.
+ */
+body,
+.typography {
+  font-family: "Lenos", system-ui, -apple-system, "Segoe UI", sans-serif;
   margin: 0;
   padding: 0;
 }
 
+/* Lenos carries no Arabic glyphs, so Arabic sets in the platform UI face. */
+[dir="rtl"] body,
+[dir="rtl"] .typography {
+  font-family: system-ui, -apple-system, "Segoe UI", "Lenos", sans-serif;
+}
+
 html {
   scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }
 
 .secondary-text {

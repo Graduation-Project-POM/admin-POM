@@ -5,23 +5,16 @@ import { Users, Calendar, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { GroupData } from '../../../types';
 import { Button } from '../button/Button';
+import { brand, cardSurface, neutral, statusTone } from '../../../theme';
 
 const CardWrapper = styled(Box)({
+  ...cardSurface,
   padding: '24px',
-  border: '1px solid #e5e7eb',
-  borderRadius: '16px',
-  backgroundColor: '#fff',
   cursor: 'pointer',
-  transition: 'all 0.3s ease',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
   minHeight: '260px',
-  '&:hover': {
-    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-    borderColor: '#8B1D23',
-    transform: 'translateY(-3px)',
-  },
 });
 
 const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => ({
@@ -37,7 +30,7 @@ const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => ({
   ...(status === 'active' && {
     backgroundColor: '#ecfdf5',
     color: '#059669',
-    border: '1px solid #a7f3d0',
+    border: `1px solid ${statusTone.success.border}`,
   }),
   ...(status === 'completed' && {
     backgroundColor: '#f0f9ff',
@@ -47,7 +40,7 @@ const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => ({
   ...(status === 'upcoming' && {
     backgroundColor: '#fffbeb',
     color: '#d97706',
-    border: '1px solid #fde68a',
+    border: `1px solid ${statusTone.warning.border}`,
   }),
 }));
 
@@ -68,7 +61,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
             <Avatar
               sx={{
                 bgcolor: '#fef2f2',
-                color: '#8B1D23',
+                color: brand[500],
                 width: 48,
                 height: 48,
                 fontWeight: 800,
@@ -79,10 +72,10 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
               {group.title.charAt(0)}
             </Avatar>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px', lineHeight: 1.3 }}>
+              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px', lineHeight: 1.3 }}>
                 {group.title}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 500, fontSize: '12px' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 500, fontSize: '12px' }}>
                 {t('ui.studentGroupCard.trainerLabel', { name: group.trainerName })}
               </Typography>
             </Box>
@@ -93,17 +86,17 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
           </StatusBadge>
         </Box>
 
-        <Typography variant="body2" sx={{ color: '#64748b', mb: 2, lineHeight: 1.6, fontSize: '13px' }}>
+        <Typography variant="body2" sx={{ color: neutral[500], mb: 2, lineHeight: 1.6, fontSize: '13px' }}>
           {group.description.length > 100 ? group.description.substring(0, 100) + '...' : group.description}
         </Typography>
 
         {group.progress !== undefined && (
           <Box sx={{ mb: 2 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '12px' }}>
+              <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600, fontSize: '12px' }}>
                 {t('ui.studentGroupCard.courseProgress')}
               </Typography>
-              <Typography variant="body2" sx={{ color: '#8B1D23', fontWeight: 800, fontSize: '12px' }}>
+              <Typography variant="body2" sx={{ color: brand[500], fontWeight: 800, fontSize: '12px' }}>
                 {group.progress}%
               </Typography>
             </Box>
@@ -115,7 +108,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
                 borderRadius: '999px',
                 bgcolor: '#fee2e2',
                 '& .MuiLinearProgress-bar': {
-                  bgcolor: '#8B1D23',
+                  bgcolor: brand[500],
                   borderRadius: '999px',
                 },
               }}
@@ -129,14 +122,14 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
           <Box sx={{ display: 'flex', gap: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Users size={14} color="#94a3b8" />
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '12px' }}>
+              <Users size={14} color={neutral[400]} />
+              <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600, fontSize: '12px' }}>
                 {group.studentsCount}
               </Typography>
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Calendar size={14} color="#94a3b8" />
-              <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 600, fontSize: '12px' }}>
+              <Calendar size={14} color={neutral[400]} />
+              <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600, fontSize: '12px' }}>
                 {new Date(group.createdDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </Typography>
             </Box>

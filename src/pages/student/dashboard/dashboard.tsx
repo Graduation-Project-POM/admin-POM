@@ -5,8 +5,6 @@ import {
   Box,
   Typography,
   Grid,
-  Card,
-  CardContent,
   Button,
   Table,
   TableBody,
@@ -19,29 +17,23 @@ import {
   Avatar,
   LinearProgress,
   Stack,
-  CircularProgress,
-  Alert,
 } from "@mui/material";
-import { Target, Trophy, Star, Users, BookOpen } from "lucide-react";
+import { Target, Trophy, Star, Users, BookOpen, Zap, GraduationCap } from "lucide-react";
 import {
-  dashboardContainer,
   welcomeBanner,
-  statCard,
-  statTitle,
-  statValue,
-  statIconBox,
-  sectionCard,
-  sectionTitle,
   quickActionButton,
   tableContainer,
   tableHeadCell,
   tableBodyCell,
   gradeChip,
 } from "./dashboardStyle";
+import { SectionCard, StatCard } from "../../../components/common/shell";
+import { EmptyState, ErrorState, LoadingState } from "../../../components/common/states";
 import { dashboardService, type StudentDashboardData, type StudentContestAlert } from "../../../services/dashboardService";
 import { useAuth } from "../../../services/AuthContext";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { ContestDeadlineWarning } from "../../../components/student/ContestDeadlineWarning";
+import { brand, neutral, radius } from '../../../theme';
 
 const initials = (name: string) =>
   name.trim().split(/\s+/).map((n) => n[0]).join("").slice(0, 2).toUpperCase() || "S";
@@ -86,15 +78,11 @@ const StudentDashboardPage: React.FC = () => {
   ];
 
   if (loading) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
-        <CircularProgress sx={{ color: "#8B1D23" }} />
-      </Box>
-    );
+    return <LoadingState />;
   }
 
   return (
-    <Box sx={dashboardContainer}>
+    <Box sx={{ py: 2 }}>
       {/* Welcome Banner */}
       <Box sx={welcomeBanner}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
@@ -105,86 +93,73 @@ const StudentDashboardPage: React.FC = () => {
             <Typography variant="h4" sx={{ fontWeight: 800 }}>
               {t("student.dashboard.greeting", { name: (userName ?? "").split(" ")[0] })}
             </Typography>
-            <Chip label={t("student.dashboard.roleBadge")} icon={<Star size={14} />} sx={{ mt: 1, bgcolor: "rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, borderRadius: "40px" }} />
+            <Chip label={t("student.dashboard.roleBadge")} icon={<Star size={14} />} sx={{ mt: 1, bgcolor: "rgba(255,255,255,0.2)", color: neutral[0], fontWeight: 700, borderRadius: "40px" }} />
           </Box>
         </Box>
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <Box sx={{ mb: 3 }}>
+          <ErrorState message={error} onClose={() => setError(null)} />
+        </Box>
       )}
 
       {/* Stats Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={statCard}>
-            <CardContent>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <Box>
-                  <Typography sx={statTitle}>{t("student.dashboard.stats.problemsSolved")}</Typography>
-                  <Typography sx={statValue}>{data?.problemsSolved ?? 0}</Typography>
-                </Box>
-                <Box sx={statIconBox("#fee2e2")}><Target size={24} color="#8B1D23" /></Box>
-              </Box>
-              <LinearProgress variant="determinate" value={solveRate} sx={{ mt: 2, height: 6, borderRadius: "10px", bgcolor: "#fee2e2", "& .MuiLinearProgress-bar": { bgcolor: "#8B1D23" } }} />
-              <Typography variant="caption" sx={{ color: "#64748b", mt: 0.5, display: "block" }}>
-                {t("student.dashboard.stats.solveRate", { rate: solveRate, total: data?.totalProblems ?? 0 })}
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard
+            title={t("student.dashboard.stats.problemsSolved")}
+            value={data?.problemsSolved ?? 0}
+            icon={Target}
+            tone="brand"
+            subtitle={t("student.dashboard.stats.solveRate", { rate: solveRate, total: data?.totalProblems ?? 0 })}
+            footer={
+              <LinearProgress
+                variant="determinate"
+                value={solveRate}
+                aria-label={t("student.dashboard.stats.problemsSolved")}
+                sx={{
+                  height: 6,
+                  borderRadius: `${radius.pill}px`,
+                  bgcolor: brand[100],
+                  "& .MuiLinearProgress-bar": { bgcolor: brand[500], borderRadius: `${radius.pill}px` },
+                }}
+              />
+            }
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={statCard}>
-            <CardContent>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <Box>
-                  <Typography sx={statTitle}>{t("student.dashboard.stats.myGroups", "My Groups")}</Typography>
-                  <Typography sx={statValue}>{data?.groups.length ?? 0}</Typography>
-                </Box>
-                <Box sx={statIconBox("#e0f2e9")}><Users size={24} color="#1f6e43" /></Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <StatCard
+            title={t("student.dashboard.stats.myGroups", "My Groups")}
+            value={data?.groups.length ?? 0}
+            icon={Users}
+            tone="success"
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={statCard}>
-            <CardContent>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <Box>
-                  <Typography sx={statTitle}>{t("student.dashboard.stats.averageGrade")}</Typography>
-                  <Typography sx={statValue}>{data?.averageGrade ?? 0}%</Typography>
-                </Box>
-                <Box sx={statIconBox("#fffbeb")}><Star size={24} color="#d97706" /></Box>
-              </Box>
-              <Typography variant="caption" sx={{ color: "#64748b", mt: 2, display: "block" }}>
-                {t("student.dashboard.stats.gradedCount", { count: data?.gradedCount ?? 0 })}
-              </Typography>
-            </CardContent>
-          </Card>
+          <StatCard
+            title={t("student.dashboard.stats.averageGrade")}
+            value={`${data?.averageGrade ?? 0}%`}
+            icon={Star}
+            tone="warning"
+            subtitle={t("student.dashboard.stats.gradedCount", { count: data?.gradedCount ?? 0 })}
+          />
         </Grid>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <Card sx={statCard}>
-            <CardContent>
-              <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                <Box>
-                  <Typography sx={statTitle}>{t("student.dashboard.stats.totalProblems", "Available Problems")}</Typography>
-                  <Typography sx={statValue}>{data?.totalProblems ?? 0}</Typography>
-                </Box>
-                <Box sx={statIconBox("#f0f9ff")}><BookOpen size={24} color="#0284c7" /></Box>
-              </Box>
-            </CardContent>
-          </Card>
+          <StatCard
+            title={t("student.dashboard.stats.totalProblems", "Available Problems")}
+            value={data?.totalProblems ?? 0}
+            icon={BookOpen}
+            tone="info"
+          />
         </Grid>
       </Grid>
 
       {/* Main Content Grid */}
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 6 }}>
-          <Card sx={{ ...sectionCard, mb: 4 }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.quickActions.title")}</Typography>
+          <Box sx={{ mb: 4 }}>
+            <SectionCard title={t("student.dashboard.quickActions.title")} icon={Zap}>
               <Grid container spacing={1.5}>
                 {quickActions.map((action, idx) => (
                   <Grid size={{ xs: 6, sm: 4 }} key={idx}>
@@ -194,25 +169,26 @@ const StudentDashboardPage: React.FC = () => {
                   </Grid>
                 ))}
               </Grid>
-            </CardContent>
-          </Card>
+            </SectionCard>
+          </Box>
 
-          <Card sx={sectionCard}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.myGroups.title")}</Typography>
+          <SectionCard title={t("student.dashboard.myGroups.title")} icon={Users}>
               {data && data.groups.length === 0 ? (
-                <Typography sx={{ color: "#94a3b8", fontWeight: 600, py: 2 }}>
-                  {t("student.dashboard.myGroups.empty", "You're not enrolled in any group yet")}
-                </Typography>
+                <EmptyState
+                  variant="bare"
+                  icon={<Users size={24} />}
+                  title={t("student.dashboard.myGroups.empty", "You're not enrolled in any group yet")}
+                  description={t("student.dashboard.myGroups.emptyHint")}
+                />
               ) : (
                 <Stack spacing={2}>
                   {data?.groups.slice(0, 6).map((group) => (
-                    <Paper key={group.id} elevation={0} sx={{ p: 2, borderRadius: "16px", border: "1px solid #eef2f6", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                        <Avatar sx={{ bgcolor: "#fef2f2", color: "#8B1D23", width: 40, height: 40 }}>{group.name.charAt(0)}</Avatar>
+                    <Paper key={group.id} elevation={0} sx={{ p: 2, borderRadius: `${radius.xl}px`, border: `1px solid ${neutral[200]}`, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 2, flexWrap: "wrap" }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 0 }}>
+                        <Avatar sx={{ bgcolor: brand[50], color: brand[500], width: 40, height: 40 }}>{group.name.charAt(0)}</Avatar>
                         <Box>
                           <Typography sx={{ fontWeight: 600 }}>{group.name}</Typography>
-                          <Typography variant="caption" sx={{ color: "#64748b" }}>
+                          <Typography variant="caption" sx={{ color: neutral[500] }}>
                             {t("student.dashboard.myGroups.students", { count: group.studentCount ?? 0 })}
                           </Typography>
                         </Box>
@@ -224,25 +200,25 @@ const StudentDashboardPage: React.FC = () => {
                   ))}
                 </Stack>
               )}
-            </CardContent>
-          </Card>
+          </SectionCard>
         </Grid>
 
         <Grid size={{ xs: 12, md: 6 }}>
           <ContestDeadlineWarning alerts={contestAlerts} />
 
-          <Card sx={sectionCard}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" sx={sectionTitle}>{t("student.dashboard.recentGrades.title")}</Typography>
+          <SectionCard title={t("student.dashboard.recentGrades.title")} icon={GraduationCap}>
               {recentGrades.length === 0 ? (
-                <Typography sx={{ color: "#94a3b8", fontWeight: 600, py: 2 }}>
-                  {t("student.dashboard.recentGrades.empty", "No graded submissions yet")}
-                </Typography>
+                <EmptyState
+                  variant="bare"
+                  icon={<GraduationCap size={24} />}
+                  title={t("student.dashboard.recentGrades.empty", "No graded submissions yet")}
+                  description={t("student.dashboard.recentGrades.emptyHint")}
+                />
               ) : (
                 <TableContainer component={Paper} elevation={0} sx={tableContainer}>
                   <Table size="small">
                     <TableHead>
-                      <TableRow sx={{ bgcolor: "#f8fafc" }}>
+                      <TableRow sx={{ bgcolor: neutral[50] }}>
                         <TableCell sx={tableHeadCell}>{t("student.dashboard.recentGrades.problem")}</TableCell>
                         <TableCell sx={tableHeadCell} align="center">{t("student.dashboard.recentGrades.grade")}</TableCell>
                       </TableRow>
@@ -260,8 +236,7 @@ const StudentDashboardPage: React.FC = () => {
                   </Table>
                 </TableContainer>
               )}
-            </CardContent>
-          </Card>
+          </SectionCard>
         </Grid>
       </Grid>
     </Box>

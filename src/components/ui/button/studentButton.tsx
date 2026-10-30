@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button as MuiButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { brand, neutral, radius, shadow, statusTone } from '../../../theme';
 
 interface ButtonProps {
   children: React.ReactNode;
@@ -14,48 +15,65 @@ interface ButtonProps {
   size?: 'small' | 'medium' | 'large';
 }
 
+/**
+ * Student-facing button. Slightly rounder and heavier than the base Button;
+ * both now pull from the same token ramp so the two never drift apart.
+ */
 const StyledButton = styled(MuiButton)<{ varianttype?: string }>(({ varianttype }) => ({
   textTransform: 'none',
   fontWeight: 700,
-  borderRadius: '10px',
-  padding: varianttype === 'large' ? '12px 24px' : '8px 20px',
+  borderRadius: radius.md,
+  padding: '8px 20px',
   fontSize: '14px',
-  transition: 'all 0.2s ease',
+  gap: 6,
+  transition: 'background-color .2s ease, border-color .2s ease, color .2s ease, box-shadow .2s ease',
+
   ...(varianttype === 'default' && {
-    backgroundColor: '#8B1D23',
-    color: '#fff',
+    backgroundColor: brand[500],
+    color: neutral[0],
     '&:hover': {
-      backgroundColor: '#6d1620',
-      boxShadow: '0 4px 12px rgba(139, 29, 35, 0.3)',
+      backgroundColor: brand[600],
+      boxShadow: shadow.brand,
     },
+    '&:active': { backgroundColor: brand[700] },
   }),
+
   ...(varianttype === 'outline' && {
     backgroundColor: 'transparent',
-    color: '#1e293b',
-    border: '1.5px solid #e2e8f0',
+    color: neutral[800],
+    border: `1.5px solid ${neutral[200]}`,
     '&:hover': {
-      borderColor: '#8B1D23',
-      color: '#8B1D23',
-      backgroundColor: '#fef2f2',
+      borderColor: brand[500],
+      color: brand[500],
+      backgroundColor: brand[50],
     },
   }),
+
   ...(varianttype === 'ghost' && {
     backgroundColor: 'transparent',
-    color: '#64748b',
+    color: neutral[500],
     '&:hover': {
-      backgroundColor: '#f1f5f9',
-      color: '#1e293b',
+      backgroundColor: neutral[100],
+      color: neutral[800],
     },
   }),
+
   ...(varianttype === 'danger' && {
-    backgroundColor: '#fef2f2',
-    color: '#dc2626',
-    border: '1.5px solid #fecaca',
+    backgroundColor: statusTone.danger.bg,
+    color: statusTone.danger.fg,
+    border: `1.5px solid ${statusTone.danger.border}`,
     '&:hover': {
-      backgroundColor: '#fee2e2',
+      backgroundColor: '#fbdcdc',
       borderColor: '#f87171',
     },
   }),
+
+  '&.Mui-disabled': {
+    backgroundColor: varianttype === 'ghost' ? 'transparent' : neutral[100],
+    borderColor: neutral[200],
+    color: neutral[400],
+    boxShadow: 'none',
+  },
 }));
 
 export const Button: React.FC<ButtonProps> = ({

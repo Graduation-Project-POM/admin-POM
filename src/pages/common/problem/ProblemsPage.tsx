@@ -5,8 +5,6 @@ import {
   MenuItem,
   Select,
   FormControl,
-  CircularProgress,
-  Alert,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -19,6 +17,9 @@ import CreateProblem from "./Create";
 import EditProblem, { type ProblemEditValues } from "./Edit";
 import { SharedTable } from "../../../components/ui/table/tables";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand, neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
+import { PageHeader } from '../../../components/common/shell';
 
 const primaryColor = "#7A1E1E";
 
@@ -26,18 +27,18 @@ const StyledFormControl = styled(FormControl)({
   minWidth: "180px",
   "& .MuiOutlinedInput-root": {
     borderRadius: "40px",
-    backgroundColor: "#ffffff",
+    backgroundColor: neutral[0],
     height: "44px",
     transition: "all 0.2s",
     "& fieldset": {
-      borderColor: "#e2e8f0",
+      borderColor: neutral[200],
       borderWidth: "1px",
     },
     "&:hover fieldset": {
-      borderColor: "#8B1D23",
+      borderColor: brand[500],
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#8B1D23",
+      borderColor: brand[500],
       borderWidth: "1.5px",
     },
   },
@@ -69,16 +70,16 @@ const DifficultyChip = styled(Chip)<{ difficulty: string }>(
     height: "22px",
     fontWeight: 600,
     ...(difficulty === "Easy" && {
-      backgroundColor: "#e7f7ec",
-      color: "#166534",
+      backgroundColor: statusTone.success.bg,
+      color: statusTone.success.fg,
     }),
     ...(difficulty === "Medium" && {
-      backgroundColor: "#fff7e0",
-      color: "#92400e",
+      backgroundColor: statusTone.warning.bg,
+      color: statusTone.warning.fg,
     }),
     ...(difficulty === "Hard" && {
-      backgroundColor: "#fdecec",
-      color: "#991b1b",
+      backgroundColor: statusTone.danger.bg,
+      color: statusTone.danger.fg,
     }),
   }),
 );
@@ -255,14 +256,14 @@ export const ProblemsPage = () => {
       id: "points",
       label: t("problem.list.columns.points", "Points"),
       render: (row: Problem) => (
-        <Typography sx={{ fontWeight: 700, color: "#8B1D23", fontSize: "13px" }}>{row.points}</Typography>
+        <Typography sx={{ fontWeight: 700, color: brand[500], fontSize: "13px" }}>{row.points}</Typography>
       ),
     },
     {
       id: "solved",
       label: t("problem.list.columns.solved", "Solved"),
       render: (row: Problem) => (
-        <Typography sx={{ fontWeight: 600, color: "#166534", fontSize: "13px" }}>
+        <Typography sx={{ fontWeight: 600, color: statusTone.success.fg, fontSize: "13px" }}>
           {row.solved} {t("problem.list.solvedSuffix", "solved")}
         </Typography>
       ),
@@ -277,8 +278,8 @@ export const ProblemsPage = () => {
           sx={{
             fontSize: "11px",
             height: "22px",
-            bgcolor: row.status === "published" ? "#e7f7ec" : "#f3f4f6",
-            color: row.status === "published" ? "#166534" : "#374151",
+            bgcolor: row.status === "published" ? statusTone.success.bg : neutral[100],
+            color: row.status === "published" ? statusTone.success.fg : neutral[700],
           }}
         />
       ),
@@ -287,14 +288,12 @@ export const ProblemsPage = () => {
 
   return (
     <Box sx={{ p: 0 }}>
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
-          {t("problem.list.title")}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "#64748b", fontWeight: 500 }}>
-          {t("problem.list.subtitle")}
-        </Typography>
+      <PageHeader
+        title={t("problem.list.title")}
+        subtitle={t("problem.list.subtitle")}
+      />
 
+      <Box sx={{ mb: 4 }}>
         <SearchFilterBox>
           <StyledFormControl>
             <Select
@@ -313,15 +312,11 @@ export const ProblemsPage = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <ErrorState message={error} onClose={() => setError(null)} />
       )}
 
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-          <CircularProgress sx={{ color: "#8B1D23" }} />
-        </Box>
+        <LoadingState />
       ) : (
         <SharedTable
           data={filteredProblems}

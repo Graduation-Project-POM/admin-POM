@@ -45,13 +45,16 @@
         "empty": "No contests yet",
         "tableStatus": "Status",
         "tableTitle": "Contest",
-        "title": "My Contests"
+        "title": "My Contests",
+        "emptyHint": "Contests you create will appear here."
       },
       "myGroups": {
         "empty": "You don't own any groups yet",
         "students": "{{count}} students",
-        "title": "My Groups"
-      }
+        "title": "My Groups",
+        "emptyHint": "Groups you own will appear here."
+      },
+      "subtitle": "Your groups, contests and problems at a glance."
     },
     "solutionDetail": {
       "status": "Status:",

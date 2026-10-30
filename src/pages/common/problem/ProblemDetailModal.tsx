@@ -16,6 +16,7 @@ import { getApiErrorMessage } from "../../../utils/apiError";
 import { resolveMediaUrl } from "../../../utils/media";
 import { DIFFICULTY_LABEL } from "../../../types/problem";
 import type { ProblemDetail } from "../../../types/problem";
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface ProblemDetailModalProps {
   open: boolean;
@@ -25,9 +26,9 @@ interface ProblemDetailModalProps {
 
 const difficultyStyle = (label: string) => ({
   bgcolor:
-    label === "Easy" ? "#e7f7ec" : label === "Medium" ? "#fff7e0" : "#fdecec",
+    label === "Easy" ? statusTone.success.bg : label === "Medium" ? statusTone.warning.bg : statusTone.danger.bg,
   color:
-    label === "Easy" ? "#166534" : label === "Medium" ? "#92400e" : "#991b1b",
+    label === "Easy" ? statusTone.success.fg : label === "Medium" ? statusTone.warning.fg : statusTone.danger.fg,
 });
 
 const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
@@ -81,7 +82,7 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
     >
       {loading ? (
         <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-          <CircularProgress sx={{ color: "#8B1D23" }} />
+          <CircularProgress sx={{ color: brand[500] }} />
         </Box>
       ) : error ? (
         <Alert severity="error" sx={{ my: 2 }}>
@@ -114,7 +115,7 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
             </Stack>
             <Typography
               variant="h6"
-              sx={{ fontWeight: 800, color: "#1e293b" }}
+              sx={{ fontWeight: 800, color: neutral[800] }}
             >
               {problem.title}
             </Typography>
@@ -130,8 +131,8 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
                 maxHeight: 360,
                 objectFit: "contain",
                 borderRadius: "12px",
-                border: "1px solid #e5e7eb",
-                bgcolor: "#f8fafc",
+                border: `1px solid ${neutral[200]}`,
+                bgcolor: neutral[50],
               }}
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
@@ -146,7 +147,7 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
               sx={{
                 fontWeight: 700,
                 mb: 1,
-                color: "#1e293b",
+                color: neutral[800],
                 fontSize: "13px",
                 textTransform: "uppercase",
                 letterSpacing: 0.5,
@@ -155,7 +156,7 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
               {t("problem.detail.description", "Description")}
             </Typography>
             <Typography
-              sx={{ color: "#475569", lineHeight: 1.8, whiteSpace: "pre-wrap" }}
+              sx={{ color: neutral[600], lineHeight: 1.8, whiteSpace: "pre-wrap" }}
             >
               {problem.statement && problem.statement.trim()
                 ? problem.statement

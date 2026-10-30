@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { SharedTable } from "../../../components/ui/table/tables";
-import { Avatar, Typography, Box, Chip, CircularProgress, Alert } from "@mui/material";
+import { Avatar, Typography, Box, Chip } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import Create from "./Create";
 import Edit from "./Edit";
@@ -13,6 +13,8 @@ import {
   type BackendUser,
 } from "../../../services/userService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
 
 type User = {
   id: string;
@@ -50,16 +52,16 @@ const StatusChip = styled(Chip)<{ status: string }>(({ status }) => ({
   height: 22,
   fontWeight: 600,
   ...(status === "active" && {
-    backgroundColor: "#e7f7ec",
-    color: "#166534",
+    backgroundColor: statusTone.success.bg,
+    color: statusTone.success.fg,
   }),
   ...(status === "inactive" && {
-    backgroundColor: "#fdecec",
-    color: "#991b1b",
+    backgroundColor: statusTone.danger.bg,
+    color: statusTone.danger.fg,
   }),
   ...(status === "pending" && {
-    backgroundColor: "#fff7e0",
-    color: "#92400e",
+    backgroundColor: statusTone.warning.bg,
+    color: statusTone.warning.fg,
   }),
 }));
 
@@ -197,13 +199,13 @@ export const AdminUsersPage = () => {
         }}
       >
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
             {t("admin.users.title")}
           </Typography>
 
           <Typography
             variant="body2"
-            sx={{ color: "#64748b", fontWeight: 500 }}
+            sx={{ color: neutral[500], fontWeight: 500 }}
           >
             {t("admin.users.subtitle")}
           </Typography>
@@ -213,15 +215,11 @@ export const AdminUsersPage = () => {
       </Box>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <ErrorState message={error} onClose={() => setError(null)} />
       )}
 
       {loading ? (
-        <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
-          <CircularProgress sx={{ color: "#8B1D23" }} />
-        </Box>
+        <LoadingState />
       ) : (
         <SharedTable
           data={users}

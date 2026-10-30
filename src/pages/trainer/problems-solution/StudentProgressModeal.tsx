@@ -17,6 +17,7 @@ import { CheckCircle2, Clock, FileText } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
 import type { ProblemSubmission } from '../../../services/problemsService';
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface StudentProgressModalProps {
   open: boolean;
@@ -70,8 +71,8 @@ export const StudentProgressModal = ({
             variantType={filter === 'Graded' ? 'default' : 'outline'}
             onClick={() => setFilter('Graded')}
             size="small"
-            startIcon={<CheckCircle2 size={16} color={filter === 'Graded' ? 'white' : '#166534'} />}
-            sx={filter !== 'Graded' ? { color: '#166534', bgcolor: '#e7f7ec', border: 'none' } : {}}
+            startIcon={<CheckCircle2 size={16} color={filter === 'Graded' ? 'white' : statusTone.success.fg} />}
+            sx={filter !== 'Graded' ? { color: statusTone.success.fg, bgcolor: statusTone.success.bg, border: 'none' } : {}}
           >
             {t('trainer.studentProgress.graded', 'Graded')}
           </Button>
@@ -79,8 +80,8 @@ export const StudentProgressModal = ({
             variantType={filter === 'Pending' ? 'default' : 'outline'}
             onClick={() => setFilter('Pending')}
             size="small"
-            startIcon={<Clock size={16} color={filter === 'Pending' ? 'white' : '#92400e'} />}
-            sx={filter !== 'Pending' ? { color: '#92400e', bgcolor: '#fef3c7', border: 'none' } : {}}
+            startIcon={<Clock size={16} color={filter === 'Pending' ? 'white' : statusTone.warning.fg} />}
+            sx={filter !== 'Pending' ? { color: statusTone.warning.fg, bgcolor: statusTone.warning.bg, border: 'none' } : {}}
           >
             {t('trainer.studentProgress.pending', 'Pending')}
           </Button>
@@ -90,12 +91,12 @@ export const StudentProgressModal = ({
 
         {loading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-            <CircularProgress sx={{ color: '#8B1D23' }} />
+            <CircularProgress sx={{ color: brand[500] }} />
           </Box>
         ) : filtered.length === 0 ? (
           <Box sx={{ py: 6, textAlign: 'center' }}>
-            <FileText size={40} color="#cbd5e1" style={{ marginBottom: 12 }} />
-            <Typography sx={{ color: '#94a3b8', fontWeight: 600 }}>
+            <FileText size={40} color={neutral[300]} style={{ marginBottom: 12 }} />
+            <Typography sx={{ color: neutral[400], fontWeight: 600 }}>
               {t('trainer.studentProgress.noSubmissions', 'No submissions yet')}
             </Typography>
           </Box>
@@ -119,8 +120,8 @@ export const StudentProgressModal = ({
                           sx={{
                             fontWeight: 700,
                             fontSize: '11px',
-                            bgcolor: graded ? '#e7f7ec' : '#fef3c7',
-                            color: graded ? '#166534' : '#92400e',
+                            bgcolor: graded ? statusTone.success.bg : statusTone.warning.bg,
+                            color: graded ? statusTone.success.fg : statusTone.warning.fg,
                           }}
                         />
                         <Button
@@ -136,14 +137,14 @@ export const StudentProgressModal = ({
                     }
                   >
                     <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: '#f8fafc', color: '#1e293b', border: '1px solid #e2e8f0', fontSize: '14px', fontWeight: 700 }}>
+                      <Avatar sx={{ bgcolor: neutral[50], color: neutral[800], border: `1px solid ${neutral[200]}`, fontSize: '14px', fontWeight: 700 }}>
                         {initials(submission.studentName)}
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={<Typography sx={{ fontWeight: 700, fontSize: '15px', color: '#1e293b' }}>{submission.studentName}</Typography>}
+                      primary={<Typography sx={{ fontWeight: 700, fontSize: '15px', color: neutral[800] }}>{submission.studentName}</Typography>}
                       secondary={
-                        <Typography sx={{ fontSize: '13px', color: '#94a3b8' }}>
+                        <Typography sx={{ fontSize: '13px', color: neutral[400] }}>
                           {t('trainer.studentProgress.submittedOn', 'Submitted')}{' '}
                           {submission.submittedAt ? new Date(submission.submittedAt).toLocaleString() : '—'}
                         </Typography>

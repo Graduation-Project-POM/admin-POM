@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { useTranslation } from "react-i18next";
+import { brand, neutral } from '../../../theme';
 
 interface TrainerRequest {
   id: string;
@@ -57,7 +58,7 @@ const InfoRow = ({
   <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
     <Box
       sx={{
-        color: "#8B1D23",
+        color: brand[500],
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -72,14 +73,14 @@ const InfoRow = ({
         sx={{
           fontSize: "0.7rem",
           fontWeight: 600,
-          color: "#94a3b8",
+          color: neutral[400],
           textTransform: "uppercase",
           letterSpacing: "0.5px",
         }}
       >
         {label}
       </Typography>
-      <Typography sx={{ color: "#1e293b", fontWeight: 500, fontSize: "0.9rem" }}>
+      <Typography sx={{ color: neutral[800], fontWeight: 500, fontSize: "0.9rem" }}>
         {value || "—"}
       </Typography>
     </Box>
@@ -117,14 +118,14 @@ export const ViewTrainerDetails = ({
         sx={{
           p: 3,
           borderRadius: "20px",
-          backgroundColor: "#ffffff",
-          border: "1px solid #eef2f6",
+          backgroundColor: neutral[0],
+          border: `1px solid ${neutral[200]}`,
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
           <Avatar
             sx={{
-              bgcolor: "#8B1D23",
+              bgcolor: brand[500],
               width: 64,
               height: 64,
               fontSize: "1.5rem",
@@ -137,7 +138,7 @@ export const ViewTrainerDetails = ({
           <Box>
             <Typography
               variant="h6"
-              sx={{ fontWeight: 700, color: "#0f172a", mb: 0.5 }}
+              sx={{ fontWeight: 700, color: neutral[900], mb: 0.5 }}
             >
               {trainer.name}
             </Typography>
@@ -145,8 +146,8 @@ export const ViewTrainerDetails = ({
               label={trainer.specialization}
               size="small"
               sx={{
-                bgcolor: "#f1f5f9",
-                color: "#1e293b",
+                bgcolor: neutral[100],
+                color: neutral[800],
                 fontWeight: 600,
                 fontSize: "0.7rem",
                 borderRadius: "30px",
@@ -156,7 +157,7 @@ export const ViewTrainerDetails = ({
           </Box>
         </Box>
 
-        <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
+        <Divider sx={{ my: 2, borderColor: neutral[200] }} />
 
         {/* Contact & personal info */}
         <Grid container spacing={3}>
@@ -186,14 +187,14 @@ export const ViewTrainerDetails = ({
           </Grid>
         </Grid>
 
-        <Divider sx={{ my: 2, borderColor: "#eef2f6" }} />
+        <Divider sx={{ my: 2, borderColor: neutral[200] }} />
 
         <Box sx={{ mt: 1 }}>
           <Typography
             sx={{
               fontSize: "0.7rem",
               fontWeight: 600,
-              color: "#94a3b8",
+              color: neutral[400],
               textTransform: "uppercase",
               mb: 1,
               letterSpacing: "0.5px",
@@ -207,12 +208,12 @@ export const ViewTrainerDetails = ({
               p: 2,
               borderRadius: "16px",
               backgroundColor: "#fafcff",
-              borderColor: "#eef2f6",
+              borderColor: neutral[200],
             }}
           >
             <Typography
               sx={{
-                color: "#334155",
+                color: neutral[700],
                 fontSize: "0.85rem",
                 lineHeight: 1.5,
                 whiteSpace: "pre-wrap",

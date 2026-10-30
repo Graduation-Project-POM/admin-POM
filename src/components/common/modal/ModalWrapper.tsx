@@ -4,9 +4,11 @@ import {
   DialogTitle,
   DialogContent,
   IconButton,
-  Box,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { useTranslation } from "react-i18next";
+import { neutral } from '../../../theme';
 
 type Props = {
   open: boolean;
@@ -23,17 +25,22 @@ export const ModalWrapper: React.FC<Props> = ({
   children,
   maxWidth = "md",
 }) => {
+  const { t } = useTranslation();
+  const titleId = "modal-title";
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
       fullWidth
       maxWidth={maxWidth}
+      // Names the dialog for screen readers instead of leaving it anonymous.
+      aria-labelledby={title ? titleId : undefined}
       slotProps={{
         backdrop: {
           sx: {
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
-            backdropFilter: "blur(7px)",
+            backgroundColor: "rgba(15, 23, 42, 0.55)",
+            backdropFilter: "blur(6px)",
           },
         },
         paper: {
@@ -46,23 +53,30 @@ export const ModalWrapper: React.FC<Props> = ({
       }}
     >
       <DialogTitle
+        id={titleId}
+        component="div"
         sx={{
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          gap: 2,
           px: 3,
           py: 2,
-          borderBottom: "1px solid #eee",
+          borderBottom: `1px solid ${neutral[200]}`,
         }}
       >
-        <Box sx={{ fontWeight: 700 }}>{title}</Box>
+        <Typography variant="h6" component="h2" sx={{ fontWeight: 700, minWidth: 0 }}>
+          {title}
+        </Typography>
 
-        <IconButton onClick={onClose}>
-          <CloseIcon />
+        <IconButton onClick={onClose} aria-label={t("buttons.close")} edge="end">
+          <CloseIcon fontSize="small" />
         </IconButton>
       </DialogTitle>
 
-      <DialogContent dividers>{children}</DialogContent>
+      <DialogContent dividers sx={{ px: 3, py: 2.5, borderColor: neutral[200] }}>
+        {children}
+      </DialogContent>
     </Dialog>
   );
 };

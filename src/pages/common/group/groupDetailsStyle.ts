@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Box, Container } from '@mui/material';
+import { brand, neutral } from '../../../theme';
 
 export const StyledContainer = styled(Container)(({ theme }) => ({
   padding: '0',
@@ -10,9 +11,9 @@ export const StyledContainer = styled(Container)(({ theme }) => ({
 
 export const HeaderSection = styled(Box)({
   padding: '24px',
-  backgroundColor: '#f8fafc',
+  backgroundColor: neutral[50],
   borderRadius: '12px',
-  border: '1px solid #e5e7eb',
+  border: `1px solid ${neutral[200]}`,
   marginBottom: '24px',
 });
 
@@ -22,28 +23,28 @@ export const TabContentWrapper = styled(Box)({
 
 export const StatsCard = styled(Box)({
   padding: '16px',
-  backgroundColor: '#f1f5f9',
+  backgroundColor: neutral[100],
   borderRadius: '8px',
-  border: '1px solid #e2e8f0',
+  border: `1px solid ${neutral[200]}`,
   textAlign: 'center',
   '& .stat-value': {
     fontSize: '24px',
     fontWeight: 700,
-    color: '#8B1D23',
+    color: brand[500],
     marginBottom: '4px',
   },
   '& .stat-label': {
     fontSize: '12px',
     fontWeight: 600,
-    color: '#64748b',
+    color: neutral[500],
     textTransform: 'uppercase',
   },
 });
 export const StudentCardStyled = styled(Box)({
   padding: '16px',
-  border: '1px solid #e5e7eb',
+  border: `1px solid ${neutral[200]}`,
   borderRadius: '12px',
-  backgroundColor: '#fff',
+  backgroundColor: neutral[0],
 
   minHeight: '220px',
   height: '220px',
@@ -56,7 +57,7 @@ export const StudentCardStyled = styled(Box)({
 
   '&:hover': {
     boxShadow: '0 8px 20px rgba(0,0,0,0.08)',
-    borderColor: '#8B1D23',
+    borderColor: brand[500],
     transform: 'translateY(-2px)',
   },
 });
@@ -66,18 +67,18 @@ export const SearchInput = styled('input')(() => ({
   maxWidth: '420px',
   height: '48px',
   padding: '0 16px',
-  border: '1px solid #d1d5db',
+  border: `1px solid ${neutral[300]}`,
   borderRadius: '12px',
   outline: 'none',
   fontSize: '15px',
   marginBottom: '32px',
   transition: 'all 0.2s ease',
   '&:focus': {
-    borderColor: '#8B1D23',
+    borderColor: brand[500],
     boxShadow: '0 0 0 3px rgba(139, 29, 35, 0.1)',
   },
   '&::placeholder': {
-    color: '#94a3b8',
+    color: neutral[400],
     fontSize: '14px',
   },
 }));

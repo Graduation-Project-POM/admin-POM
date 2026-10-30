@@ -16,6 +16,7 @@ import { Button } from "../../../components/ui/button/Button";
 import { studentService, type StudentProfile } from "../../../services/studentService";
 import { trainerService, type TrainerProfile } from "../../../services/trainerService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand, neutral, statusTone } from '../../../theme';
 
 export type ProfileType = "student" | "trainer";
 
@@ -25,14 +26,14 @@ const DetailRow: React.FC<{ icon: React.ReactNode; label: string; value?: React.
   value,
 }) => (
   <Box sx={{ display: "flex", alignItems: "center", gap: 2, py: 1.25 }}>
-    <Box sx={{ p: 1, bgcolor: "#f8fafc", borderRadius: "8px", color: "#8B1D23", display: "flex" }}>
+    <Box sx={{ p: 1, bgcolor: neutral[50], borderRadius: "8px", color: brand[500], display: "flex" }}>
       {icon}
     </Box>
     <Box sx={{ minWidth: 0 }}>
-      <Typography sx={{ fontSize: "11px", fontWeight: 600, color: "#94a3b8", textTransform: "uppercase", letterSpacing: 0.5 }}>
+      <Typography sx={{ fontSize: "11px", fontWeight: 600, color: neutral[400], textTransform: "uppercase", letterSpacing: 0.5 }}>
         {label}
       </Typography>
-      <Typography sx={{ color: "#1e293b", fontWeight: 700, fontSize: "14px", wordBreak: "break-word" }}>
+      <Typography sx={{ color: neutral[800], fontWeight: 700, fontSize: "14px", wordBreak: "break-word" }}>
         {value === undefined || value === null || value === "" ? "—" : value}
       </Typography>
     </Box>
@@ -90,7 +91,7 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
   if (loading) {
     return (
       <Box sx={{ display: "flex", justifyContent: "center", py: 10 }}>
-        <CircularProgress sx={{ color: "#8B1D23" }} />
+        <CircularProgress sx={{ color: brand[500] }} />
       </Box>
     );
   }
@@ -104,14 +105,14 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
   }
 
   return (
-    <Paper elevation={0} sx={{ p: { xs: 2, sm: 4 }, width: "100%", maxWidth: 720, borderRadius: "16px", border: "1px solid #e5e7eb", bgcolor: "#fff" }}>
+    <Paper elevation={0} sx={{ p: { xs: 2, sm: 4 }, width: "100%", maxWidth: 720, borderRadius: "16px", border: `1px solid ${neutral[200]}`, bgcolor: neutral[0] }}>
       {/* Header */}
       <Box sx={{ display: "flex", gap: 3, mb: 3, alignItems: "center", flexWrap: "wrap" }}>
-        <Avatar sx={{ width: 80, height: 80, bgcolor: "#8B1D23", fontSize: 28, fontWeight: 700, borderRadius: "16px" }}>
+        <Avatar sx={{ width: 80, height: 80, bgcolor: brand[500], fontSize: 28, fontWeight: 700, borderRadius: "16px" }}>
           {initials(fullName)}
         </Avatar>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: "#1e293b" }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
             {fullName || "—"}
           </Typography>
           <Box sx={{ display: "flex", gap: 1, mt: 1, flexWrap: "wrap" }}>
@@ -122,7 +123,7 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
                   : t("profile.view.roleTrainer", "Trainer")
               }
               size="small"
-              sx={{ fontWeight: 700, bgcolor: "#fef2f2", color: "#8B1D23", border: "1px solid #fecaca" }}
+              sx={{ fontWeight: 700, bgcolor: "#fef2f2", color: brand[500], border: `1px solid ${statusTone.danger.border}` }}
             />
            
           </Box>
@@ -163,7 +164,7 @@ export const UserProfilePage: React.FC = () => {
   const { type, id } = useParams<{ type: string; id: string }>();
 
   return (
-    <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, bgcolor: "#f8fafc", minHeight: "100vh" }}>
+    <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, bgcolor: neutral[50], minHeight: "100vh" }}>
       <Button variantType="outline" startIcon={<ArrowLeft size={18} />} onClick={() => navigate(-1)} sx={{ mb: 3 }}>
         {t("buttons.back", "Back")}
       </Button>

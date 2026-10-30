@@ -23,7 +23,7 @@ import {
   textFieldStyles,
   buttonStyles,
   linkStyles,
-} from "./loginStyle";
+} from "../authStyle";
 import { isAxiosError } from "axios";
 import type { TFunction } from "i18next";
 import { loginUser } from "../../../services/authService";
@@ -179,7 +179,7 @@ export default function Login() {
                   component="button"
                   type="button"
                   variant="body2"
-                  onClick={() => (window.location.href = "/credentials/signup")}
+                  onClick={() => navigate("/credentials/signup")}
                   sx={linkStyles}
                 >
                   {t("login.signUpLink")}

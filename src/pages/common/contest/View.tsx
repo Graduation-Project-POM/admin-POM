@@ -6,6 +6,7 @@ import { Calendar, Users, Trophy, Clock } from "lucide-react";
 import type { ReactNode } from "react";
 import type { ContestData } from "../../../types";
 import { formatDateTime } from "../../../utils/datetime";
+import { brand, neutral, statusTone } from '../../../theme';
 
 interface ViewContestProps {
   open: boolean;
@@ -26,7 +27,7 @@ const DetailItem = ({
 }) => (
   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
     <Box
-      sx={{ p: 1, bgcolor: "#f8fafc", borderRadius: "8px", color: "#8B1D23" }}
+      sx={{ p: 1, bgcolor: neutral[50], borderRadius: "8px", color: brand[500] }}
     >
       {icon}
     </Box>
@@ -35,7 +36,7 @@ const DetailItem = ({
         sx={{
           fontSize: "11px",
           fontWeight: 600,
-          color: "#94a3b8",
+          color: neutral[400],
           textTransform: "uppercase",
           letterSpacing: 0.5,
         }}
@@ -45,7 +46,7 @@ const DetailItem = ({
       <Typography
         dir={ltr ? "ltr" : undefined}
         sx={{
-          color: "#1e293b",
+          color: neutral[800],
           fontWeight: 700,
           fontSize: "14px",
           ...(ltr && { unicodeBidi: "isolate" }),
@@ -80,16 +81,16 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
               sx={{
                 bgcolor:
                   contest.status === "Ended"
-                    ? "#fee2e2"
+                    ? statusTone.danger.bg
                     : contest.status === "Ongoing"
-                      ? "#dcfce7"
-                      : "#fef3c7",
+                      ? statusTone.success.bg
+                      : statusTone.warning.bg,
                 color:
                   contest.status === "Ended"
-                    ? "#991b1b"
+                    ? statusTone.danger.fg
                     : contest.status === "Ongoing"
-                      ? "#166534"
-                      : "#92400e",
+                      ? statusTone.success.fg
+                      : statusTone.warning.fg,
                 fontWeight: 700,
               }}
             />
@@ -105,7 +106,7 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
           </Stack>
           <Typography
             variant="h6"
-            sx={{ fontWeight: 800, color: "#1e293b", mb: 1 }}
+            sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}
           >
             {contest.title}
           </Typography>

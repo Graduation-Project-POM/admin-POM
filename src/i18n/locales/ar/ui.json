@@ -5,7 +5,13 @@
       "searchPlaceholder": "بحث...",
       "actions": "الإجراءات",
       "noDataFound": "لا توجد بيانات.",
-      "showingItems": "عرض {{shown}} من {{total}} عنصر"
+      "showingItems": "عرض {{shown}} من {{total}} عنصر",
+      "noRows": "لا توجد بيانات.",
+      "noRowsHint": "لم يُضف أي عنصر بعد.",
+      "noMatches": "لا توجد نتائج",
+      "noMatchesHint": "لا توجد نتائج لـ «{{query}}». جرّب بحثًا آخر.",
+      "selectAll": "تحديد كل الصفوف",
+      "selectRow": "تحديد الصف"
     },
     "courseCard": {
       "students": "الطلاب",
@@ -55,11 +61,15 @@
       "accountSettings": "إعدادات الحساب"
     },
     "errors": {
-      "renderError": "حدث خطأ أثناء عرض هذه الصفحة"
+      "renderError": "حدث خطأ أثناء عرض هذه الصفحة",
+      "technicalDetails": "تفاصيل تقنية"
     },
     "common": {
       "imagePreview": "معاينة",
-      "logoAlt": "شعار PMO"
+      "logoAlt": "شعار PMO",
+      "skipToContent": "تخطَّ إلى المحتوى",
+      "openMenu": "فتح قائمة التنقل",
+      "mainNavigation": "التنقل الرئيسي"
     }
   }
 }

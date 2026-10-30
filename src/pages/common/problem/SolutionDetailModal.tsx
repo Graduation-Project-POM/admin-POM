@@ -7,6 +7,7 @@ import {
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
+import { neutral, statusTone } from '../../../theme';
 
 interface StudentSubmission {
   id: string;
@@ -41,20 +42,20 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
       <Box sx={{ mt: 1 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>Status:</Typography>
+            <Typography sx={{ fontSize: '14px', fontWeight: 700, color: neutral[800] }}>Status:</Typography>
             <Chip 
               label={submission.status} 
               size="small"
               sx={{ 
                 fontWeight: 700, 
                 fontSize: '11px',
-                bgcolor: submission.status === 'Solved' ? '#e7f7ec' : '#fdecec',
-                color: submission.status === 'Solved' ? '#166534' : '#991b1b',
+                bgcolor: submission.status === 'Solved' ? statusTone.success.bg : statusTone.danger.bg,
+                color: submission.status === 'Solved' ? statusTone.success.fg : statusTone.danger.fg,
               }} 
             />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>Score:</Typography>
+             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: neutral[800] }}>Score:</Typography>
              <input 
                 type="number" 
                 value={score} 
@@ -63,7 +64,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
                     width: '60px',
                     padding: '6px 8px',
                     borderRadius: '8px',
-                    border: '1.5px solid #e2e8f0',
+                    border: `1.5px solid ${neutral[200]}`,
                     fontSize: '14px',
                     fontWeight: 700,
                     outline: 'none'
@@ -72,35 +73,35 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
           </Box>
         </Box>
 
-        <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b', mb: 1.5 }}>Solution:</Typography>
+        <Typography sx={{ fontSize: '14px', fontWeight: 700, color: neutral[800], mb: 1.5 }}>Solution:</Typography>
         
         {submission.solutionCode ? (
             <Box sx={{ 
                 p: 2.5, 
-                bgcolor: '#f8fafc', 
+                bgcolor: neutral[50], 
                 borderRadius: '12px', 
-                border: '1px solid #e2e8f0',
+                border: `1px solid ${neutral[200]}`,
                 mb: 3,
                 fontFamily: 'monospace',
                 fontSize: '13px',
                 whiteSpace: 'pre-wrap',
                 lineHeight: 1.6,
-                color: '#334155'
+                color: neutral[700]
             }}>
                 {submission.solutionCode}
             </Box>
         ) : (
-            <Box sx={{ py: 4, textAlign: 'center', bgcolor: '#f8fafc', borderRadius: '12px', border: '1px dashed #e2e8f0', mb: 3 }}>
-                <AlertCircle size={32} color="#94a3b8" style={{ marginBottom: 8 }} />
-                <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>No submission found.</Typography>
-                <Typography variant="body2" sx={{ color: '#64748b' }}>This student has not submitted a solution yet.</Typography>
+            <Box sx={{ py: 4, textAlign: 'center', bgcolor: neutral[50], borderRadius: '12px', border: `1px dashed ${neutral[200]}`, mb: 3 }}>
+                <AlertCircle size={32} color={neutral[400]} style={{ marginBottom: 8 }} />
+                <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 0.5 }}>No submission found.</Typography>
+                <Typography variant="body2" sx={{ color: neutral[500] }}>This student has not submitted a solution yet.</Typography>
             </Box>
         )}
 
         {submission.result && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 4 }}>
-                <Typography sx={{ fontSize: '14px', fontWeight: 700, color: '#1e293b' }}>Result:</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#166534' }}>
+                <Typography sx={{ fontSize: '14px', fontWeight: 700, color: neutral[800] }}>Result:</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: statusTone.success.fg }}>
                     <CheckCircle2 size={16} />
                     <Typography sx={{ fontSize: '14px', fontWeight: 600 }}>{submission.result}</Typography>
                 </Box>
@@ -112,7 +113,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
             variantType="default" 
             startIcon={<CheckCircle2 size={18} />}
             onClick={() => onSaveMark(submission.id, score)}
-            sx={{ px: 3, bgcolor: '#166534', '&:hover': { bgcolor: '#14532d' } }}
+            sx={{ px: 3, bgcolor: statusTone.success.fg, '&:hover': { bgcolor: statusTone.success.fg } }}
           >
             Mark as Done
           </Button>

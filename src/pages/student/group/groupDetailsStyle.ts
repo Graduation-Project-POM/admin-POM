@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Box } from '@mui/material';
+import { brand, neutral } from '../../../theme';
 
 export const StyledContainer = styled(Box)(() => ({
   padding: '0',
@@ -7,9 +8,9 @@ export const StyledContainer = styled(Box)(() => ({
 
 export const HeaderSection = styled(Box)({
   padding: '24px',
-  backgroundColor: '#f8fafc',
+  backgroundColor: neutral[50],
   borderRadius: '12px',
-  border: '1px solid #e5e7eb',
+  border: `1px solid ${neutral[200]}`,
   marginBottom: '24px',
 });
 
@@ -52,7 +53,7 @@ export const StudentCardStyled = styled(Box)(({ theme }) => ({
     left: 0,
     width: '100%',
     height: '4px',
-    background: 'linear-gradient(90deg, #8B1D23 0%, #dc2626 100%)',
+    background: `linear-gradient(90deg, ${brand[500]} 0%, ${brand[400]} 100%)`,
   },
 
   '&::after': {
@@ -95,27 +96,27 @@ export const SearchInput = styled('input')(() => ({
   maxWidth: '420px',
   height: '48px',
   padding: '0 16px',
-  border: '1px solid #d1d5db',
+  border: `1px solid ${neutral[300]}`,
   borderRadius: '12px',
   outline: 'none',
   fontSize: '15px',
   marginBottom: '32px',
   transition: 'all 0.2s ease',
   '&:focus': {
-    borderColor: '#8B1D23',
+    borderColor: brand[500],
     boxShadow: '0 0 0 3px rgba(139, 29, 35, 0.1)',
   },
   '&::placeholder': {
-    color: '#94a3b8',
+    color: neutral[400],
     fontSize: '14px',
   },
 }));
 
 export const ProgressCard = styled(Box)({
   padding: '20px',
-  border: '1px solid #e5e7eb',
+  border: `1px solid ${neutral[200]}`,
   borderRadius: '12px',
-  backgroundColor: '#fff',
+  backgroundColor: neutral[0],
   transition: 'all 0.3s ease',
   '&:hover': {
     boxShadow: '0 4px 12px rgba(0,0,0,0.06)',

@@ -2,11 +2,23 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Box, Chip, Stack, Typography, Paper, Grid, CircularProgress, Alert,
+  Box,
+  Chip,
+  Stack,
+  Typography,
+  Paper,
+  Grid,
 } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
 import {
-  Tag, RotateCcw, Filter, Target, Flame, Zap, Library, Gauge,
+  Tag,
+  RotateCcw,
+  Filter,
+  Target,
+  Flame,
+  Zap,
+  Library,
+  Gauge,
 } from 'lucide-react';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { Button } from '../../../components/ui/button/Button';
@@ -19,6 +31,8 @@ import {
   type DifficultyLabel,
 } from '../../../services/problemService';
 import { SubmitSolutionModal } from './SubmitSolutionModal';
+import { brand, neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
 
 interface ProblemRow {
   id: string;
@@ -44,10 +58,10 @@ const PageContainer = styled(Box)({
 });
 
 const WelcomeBanner = styled(Box)({
-  background: 'linear-gradient(135deg, #8B1D23 0%, #6B141A 50%, #4A0E12 100%)',
+  background: `linear-gradient(135deg, ${brand[500]} 0%, ${brand[700]} 50%, ${brand[800]} 100%)`,
   borderRadius: '20px',
   padding: '32px',
-  color: '#fff',
+  color: neutral[0],
   position: 'relative',
   overflow: 'hidden',
   marginBottom: '32px',
@@ -66,9 +80,9 @@ const WelcomeBanner = styled(Box)({
 const FilterCard = styled(Paper)({
   padding: '28px',
   marginBottom: '28px',
-  border: '1px solid #e5e7eb',
+  border: `1px solid ${neutral[200]}`,
   borderRadius: '20px',
-  backgroundColor: '#ffffff',
+  backgroundColor: neutral[0],
   boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   animation: `${fadeInUp} 0.5s ease-out 200ms both`,
 });
@@ -82,7 +96,7 @@ const FilterGroup = styled(Box)({
 const FilterLabel = styled(Typography)({
   fontWeight: 700,
   fontSize: '12px',
-  color: '#64748b',
+  color: neutral[500],
   textTransform: 'uppercase',
   letterSpacing: '1px',
   display: 'flex',
@@ -104,12 +118,12 @@ const StyledChip = styled(Chip)<{ active?: boolean }>(({ active }) => ({
   height: '36px',
   cursor: 'pointer',
   transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-  backgroundColor: active ? '#8B1D23' : '#f8fafc',
-  color: active ? '#ffffff' : '#64748b',
-  border: active ? 'none' : '1px solid #e2e8f0',
+  backgroundColor: active ? brand[500] : neutral[50],
+  color: active ? neutral[0] : neutral[500],
+  border: active ? 'none' : `1px solid ${neutral[200]}`,
   boxShadow: active ? '0 4px 12px rgba(139, 29, 35, 0.25)' : 'none',
   '&:hover': {
-    backgroundColor: active ? '#6d1620' : '#f1f5f9',
+    backgroundColor: active ? brand[600] : neutral[100],
   },
 }));
 
@@ -123,19 +137,19 @@ const DifficultyBadge = styled(Box)<{ difficulty: string }>(({ difficulty }) => 
   fontWeight: 700,
   letterSpacing: '0.3px',
   ...(difficulty === 'Easy' && {
-    backgroundColor: '#ecfdf5',
-    color: '#059669',
-    border: '1px solid #a7f3d0',
+    backgroundColor: statusTone.success.bg,
+    color: statusTone.success.solid,
+    border: `1px solid ${statusTone.success.border}`,
   }),
   ...(difficulty === 'Medium' && {
-    backgroundColor: '#fffbeb',
-    color: '#d97706',
-    border: '1px solid #fde68a',
+    backgroundColor: statusTone.warning.bg,
+    color: statusTone.warning.solid,
+    border: `1px solid ${statusTone.warning.border}`,
   }),
   ...(difficulty === 'Hard' && {
     backgroundColor: '#fef2f2',
-    color: '#dc2626',
-    border: '1px solid #fecaca',
+    color: statusTone.danger.solid,
+    border: `1px solid ${statusTone.danger.border}`,
   }),
 }));
 
@@ -215,7 +229,7 @@ export const ProblemBank: React.FC = () => {
           onClick={() => navigate(`/student/problems/${row.raw.id}`)}
           sx={{
             fontWeight: 700,
-            color: '#8B1D23',
+            color: brand[500],
             fontSize: '14px',
             cursor: 'pointer',
             '&:hover': { textDecoration: 'underline' },
@@ -232,7 +246,7 @@ export const ProblemBank: React.FC = () => {
         <Chip
           label={row.topic}
           size="small"
-          sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600, fontSize: '11px', borderRadius: '8px' }}
+          sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: '11px', borderRadius: '8px' }}
         />
       ),
     },
@@ -261,7 +275,7 @@ export const ProblemBank: React.FC = () => {
               variantType="default"
               size="small"
               onClick={() => setModalProblem(row.raw)}
-              sx={{ py: 0.5, px: 2, fontSize: '12px', '&:hover': { color: 'white', backgroundColor: '#8B1D23' } }}
+              sx={{ py: 0.5, px: 2, fontSize: '12px', '&:hover': { color: 'white', backgroundColor: brand[500] } }}
             >
               {submitted ? t('student.problems.solveAgain') : t('student.problems.solve')}
             </Button>
@@ -269,7 +283,7 @@ export const ProblemBank: React.FC = () => {
               <Chip
                 label={t('student.problems.submitted')}
                 size="small"
-                sx={{ bgcolor: '#e7f7ec', color: '#166534', fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
+                sx={{ bgcolor: statusTone.success.bg, color: statusTone.success.fg, fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
               />
             )}
           </Box>
@@ -289,14 +303,14 @@ export const ProblemBank: React.FC = () => {
                   width: 56,
                   height: 56,
                   borderRadius: '16px',
-                  background: 'linear-gradient(135deg, #8B1D23, #6B141A)',
+                  background: `linear-gradient(135deg, ${brand[500]}, ${brand[700]})`,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   boxShadow: '0 8px 20px rgba(139,29,35,0.3)',
                 }}
               >
-                <Library size={28} color="#fff" />
+                <Library size={28} color={neutral[0]} />
               </Box>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
@@ -321,15 +335,15 @@ export const ProblemBank: React.FC = () => {
       <FilterCard elevation={0}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Filter size={18} color="#8B1D23" />
+            <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: neutral[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Filter size={18} color={brand[500]} />
             </Box>
-            <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px' }}>
+            <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px' }}>
               {t('student.problems.filters')}
             </Typography>
           </Box>
           {hasActiveFilters && (
-            <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: '#8B1D23' }}>
+            <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: brand[500] }}>
               {t('student.problems.resetAll')}
             </Button>
           )}
@@ -339,7 +353,7 @@ export const ProblemBank: React.FC = () => {
           <Grid size={{ xs: 12, md: 6 }}>
             <FilterGroup>
               <FilterLabel>
-                <Gauge size={14} color="#8B1D23" />
+                <Gauge size={14} color={brand[500]} />
                 {t('student.problems.columns.difficulty')}
               </FilterLabel>
               <FilterChipsStack>
@@ -353,7 +367,7 @@ export const ProblemBank: React.FC = () => {
           <Grid size={{ xs: 12, md: 6 }}>
             <FilterGroup>
               <FilterLabel>
-                <Tag size={14} color="#8B1D23" />
+                <Tag size={14} color={brand[500]} />
                 {t('student.problems.topic')}
               </FilterLabel>
               <FilterChipsStack>
@@ -368,15 +382,11 @@ export const ProblemBank: React.FC = () => {
       </FilterCard>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
-          {error}
-        </Alert>
+        <ErrorState message={error} onClose={() => setError(null)} />
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-          <CircularProgress sx={{ color: '#8B1D23' }} />
-        </Box>
+        <LoadingState />
       ) : (
         <TableSection>
           <SharedTable data={rows} columns={columns} searchPlaceholder={t('student.problems.searchPlaceholder')} />

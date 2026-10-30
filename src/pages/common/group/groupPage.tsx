@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Box, Typography, InputAdornment, Stack, Alert, CircularProgress } from '@mui/material';
-import { Plus, Search  } from 'lucide-react';
+import { Typography, InputAdornment, Stack, Alert } from '@mui/material';
+import { Plus, Search } from 'lucide-react';
 import { GroupCard } from '../../../components/ui/card/GroupCard';
 import type { GroupData } from '../../../types/index';
 import {
   StyledContainer,
-  TitleWrapper,
-  SubtitleWrapper,
   SearchWrapper,
   StyledSearchField,
   GroupsGrid,
@@ -25,6 +23,9 @@ import { groupService } from '../../../services/groupService';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { useAuth } from '../../../services/AuthContext';
 import type { Group } from '../../../types/group';
+import { neutral } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
+import { PageHeader } from '../../../components/common/shell';
 
 const toGroupData = (g: Group): GroupData => ({
   id: String(g.id),
@@ -156,16 +157,10 @@ export const GroupsPage: React.FC = () => {
 
   return (
     <StyledContainer>
-      <TitleWrapper>
-        <Typography variant="h5" sx={{ fontWeight: 800, color: '#1e293b' }}>
-          {t('group.list.title')}
-        </Typography>
-      </TitleWrapper>
-      <SubtitleWrapper>
-        <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500 }}>
-          {t('group.list.subtitle')}
-        </Typography>
-      </SubtitleWrapper>
+      <PageHeader
+        title={t('group.list.title')}
+        subtitle={t('group.list.subtitle')}
+      />
 
       <SearchWrapper sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <StyledSearchField
@@ -178,7 +173,7 @@ export const GroupsPage: React.FC = () => {
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  <Search size={18} color="#9ca3af" />
+                  <Search size={18} color={neutral[400]} />
                 </InputAdornment>
               ),
             },
@@ -197,20 +192,16 @@ export const GroupsPage: React.FC = () => {
       </SearchWrapper>
 
       {actionError && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setActionError(null)}>
-          {actionError}
-        </Alert>
+        <ErrorState message={actionError} onClose={() => setActionError(null)} />
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}>
-          <CircularProgress sx={{ color: '#8B1D23' }} />
-        </Box>
+        <LoadingState />
       ) : error ? (
         <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>
       ) : filteredGroups.length === 0 ? (
         <EmptyStateWrapper>
-          <Typography variant="body1" sx={{ color: '#94a3b8', fontWeight: 600 }}>
+          <Typography variant="body1" sx={{ color: neutral[400], fontWeight: 600 }}>
             {t('group.list.emptyState')}
           </Typography>
         </EmptyStateWrapper>

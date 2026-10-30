@@ -7,6 +7,7 @@ import { Label } from "../../../components/ui/label/Label";
 import { useTranslation } from "react-i18next";
 import { createUser, roleNameToId } from "../../../services/userService";
 import { getApiErrorMessage } from "../../../utils/apiError";
+import { brand } from '../../../theme';
 
 interface UserFormData {
   firstName: string;
@@ -214,10 +215,10 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
                     onChange={handleSwitchChange}
                     sx={{
                       "& .MuiSwitch-switchBase.Mui-checked": {
-                        color: "#8B1D23",
+                        color: brand[500],
                       },
                       "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                        backgroundColor: "#8B1D23",
+                        backgroundColor: brand[500],
                       },
                     }}
                   />

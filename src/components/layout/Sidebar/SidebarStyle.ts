@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Drawer, Box, ListItemButton } from '@mui/material';
+import { brand, neutral, radius } from '../../../theme';
 
 export const DRAWER_WIDTH = 250;
 
@@ -9,8 +10,11 @@ export const SidebarContainer = styled(Drawer)({
   '& .MuiDrawer-paper': {
     width: DRAWER_WIDTH,
     boxSizing: 'border-box',
-    borderRight: '1px solid #f1f5f9',
-    backgroundColor: '#ffffff',
+    // borderInlineEnd rather than borderRight so the divider follows the
+    // reading direction and lands on the correct edge in Arabic.
+    borderInlineEnd: `1px solid ${neutral[200]}`,
+    borderRight: 'none',
+    backgroundColor: neutral[0],
   },
 });
 
@@ -25,6 +29,7 @@ export const ScrollContainer = styled(Box)({
   flexGrow: 1,
   overflowY: 'auto',
   marginTop: '8px',
+  paddingBottom: '8px',
   msOverflowStyle: 'none',
   scrollbarWidth: 'none',
   '&::-webkit-scrollbar': {
@@ -35,28 +40,33 @@ export const ScrollContainer = styled(Box)({
 export const StyledListItemButton = styled(ListItemButton, {
   shouldForwardProp: (prop) => prop !== 'isActive',
 })<{ isActive?: boolean }>(({ isActive }) => ({
-  margin: '2px 16px',
-  borderRadius: '8px',
+  margin: '2px 12px',
+  borderRadius: radius.md,
   padding: '10px 12px',
+  minHeight: 44,
   position: 'relative',
+  transition: 'background-color .15s ease, color .15s ease',
 
-  backgroundColor: isActive ? 'rgba(139, 29, 35, 0.06)' : 'transparent',
+  backgroundColor: isActive ? brand[50] : 'transparent',
 
   '&:hover': {
-    backgroundColor: isActive ? 'rgba(139, 29, 35, 0.1)' : '#f8fafc',
+    backgroundColor: isActive ? brand[100] : neutral[50],
   },
 
+  // The active marker sits on the inline-start edge, so it mirrors to the
+  // right-hand side in Arabic instead of being stranded on the left.
   ...(isActive && {
     '&::before': {
       content: '""',
       position: 'absolute',
-      left: '-16px',
+      insetInlineStart: '-12px',
       top: '50%',
       transform: 'translateY(-50%)',
       width: '4px',
-      height: '24px',
-      backgroundColor: '#8B1D23',
-      borderRadius: '0 4px 4px 0',
+      height: '22px',
+      backgroundColor: brand[500],
+      borderStartEndRadius: '4px',
+      borderEndEndRadius: '4px',
     },
   }),
 }));

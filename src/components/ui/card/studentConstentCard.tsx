@@ -6,22 +6,15 @@ import { useTranslation } from 'react-i18next';
 import type { ContestData } from '../../../types';
 import { Button } from '../button/Button';
 import { formatDateTime } from '../../../utils/datetime';
+import { cardSurface, neutral, statusTone } from '../../../theme';
 
 const CardWrapper = styled(Box)({
+  ...cardSurface,
   padding: '24px',
-  border: '1px solid #e5e7eb',
-  borderRadius: '16px',
-  backgroundColor: '#fff',
-  transition: 'all 0.3s ease',
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'space-between',
   minHeight: '220px',
-  '&:hover': {
-    boxShadow: '0 8px 24px rgba(0,0,0,0.08)',
-    borderColor: '#8B1D23',
-    transform: 'translateY(-3px)',
-  },
 });
 
 const StatusChip = styled(Box)<{ status: string }>(({ status }) => ({
@@ -37,17 +30,17 @@ const StatusChip = styled(Box)<{ status: string }>(({ status }) => ({
   ...(status === 'Ongoing' && {
     backgroundColor: '#ecfdf5',
     color: '#059669',
-    border: '1px solid #a7f3d0',
+    border: `1px solid ${statusTone.success.border}`,
   }),
   ...(status === 'Upcoming' && {
     backgroundColor: '#fffbeb',
     color: '#d97706',
-    border: '1px solid #fde68a',
+    border: `1px solid ${statusTone.warning.border}`,
   }),
   ...(status === 'Ended' && {
-    backgroundColor: '#f1f5f9',
-    color: '#64748b',
-    border: '1px solid #e2e8f0',
+    backgroundColor: neutral[100],
+    color: neutral[500],
+    border: `1px solid ${neutral[200]}`,
   }),
 }));
 
@@ -56,7 +49,7 @@ const getDifficultyColor = (difficulty: string) => {
     case 'Easy': return { bg: '#ecfdf5', color: '#059669', border: '#a7f3d0' };
     case 'Medium': return { bg: '#fffbeb', color: '#d97706', border: '#fde68a' };
     case 'Hard': return { bg: '#fef2f2', color: '#dc2626', border: '#fecaca' };
-    default: return { bg: '#f1f5f9', color: '#64748b', border: '#e2e8f0' };
+    default: return { bg: neutral[100], color: neutral[500], border: neutral[200] };
   }
 };
 
@@ -74,7 +67,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
       <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
-            <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px', mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px', mb: 0.5 }}>
               {contest.title}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
@@ -100,14 +93,14 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
 
         <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 1.5, mb: 1.5 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Target size={14} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
+            <Target size={14} color={neutral[400]} />
+            <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 500, fontSize: '12px' }}>
               {t('ui.studentContestCard.problems', { count: contest.problemsCount })}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Users size={14} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#64748b', fontWeight: 500, fontSize: '12px' }}>
+            <Users size={14} color={neutral[400]} />
+            <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 500, fontSize: '12px' }}>
               {t('ui.studentContestCard.participants', { count: contest.participants })}
             </Typography>
           </Box>
@@ -115,20 +108,20 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
 
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75, mb: 2 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Calendar size={14} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '12px', minWidth: 34 }}>
+            <Calendar size={14} color={neutral[400]} />
+            <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', minWidth: 34 }}>
               {t('ui.studentContestCard.startShort', 'Start')}
             </Typography>
-            <Typography variant="body2" dir="ltr" sx={{ color: '#475569', fontWeight: 600, fontSize: '12px', unicodeBidi: 'isolate' }}>
+            <Typography variant="body2" dir="ltr" sx={{ color: neutral[600], fontWeight: 600, fontSize: '12px', unicodeBidi: 'isolate' }}>
               {formatDateTime(contest.startDate)}
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Clock size={14} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#94a3b8', fontWeight: 600, fontSize: '12px', minWidth: 34 }}>
+            <Clock size={14} color={neutral[400]} />
+            <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', minWidth: 34 }}>
               {t('ui.studentContestCard.endShort', 'End')}
             </Typography>
-            <Typography variant="body2" dir="ltr" sx={{ color: '#475569', fontWeight: 600, fontSize: '12px', unicodeBidi: 'isolate' }}>
+            <Typography variant="body2" dir="ltr" sx={{ color: neutral[600], fontWeight: 600, fontSize: '12px', unicodeBidi: 'isolate' }}>
               {formatDateTime(contest.endDate)}
             </Typography>
           </Box>

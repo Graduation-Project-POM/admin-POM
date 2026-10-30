@@ -4,6 +4,7 @@ import { ImagePlus, Send, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button/Button';
 import { resolveMediaUrl } from '../../utils/media';
+import { neutral } from '../../theme';
 
 interface CommentComposerProps {
   onSubmit: (body: string, photo: string | null) => Promise<void>;
@@ -92,7 +93,7 @@ export const CommentComposer = ({
             mt: 1.5,
             p: 1.5,
             borderRadius: '12px',
-            border: '1px solid #e5e7eb',
+            border: `1px solid ${neutral[200]}`,
             bgcolor: '#f8fafc',
             display: 'flex',
             alignItems: 'flex-start',

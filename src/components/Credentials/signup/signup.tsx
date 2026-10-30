@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import {
   containerStyles, paperStyles, titleStyles, subtitleStyles,
   formStyles, textFieldStyles, buttonStyles, linkStyles,
-} from "./signupStyle";
+} from "../authStyle";
 import { isAxiosError } from "axios";
 import type { TFunction } from "i18next";
 import { signupUser } from "../../../services/authService";
@@ -218,7 +218,7 @@ export default function Signup() {
                 {t("signup.alreadyHaveAccount")}{" "}
                 <Link
                   component="button" type="button" variant="body2"
-                  onClick={() => (window.location.href = "/credentials/login")}
+                  onClick={() => navigate("/credentials/login")}
                   sx={linkStyles}
                 >
                   {t("signup.signInLink")}

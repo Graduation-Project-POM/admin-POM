@@ -2,11 +2,25 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import {
-  Box, Chip, Stack, Typography, Paper, Grid, CircularProgress, Alert,
+  Box,
+  Chip,
+  Stack,
+  Typography,
+  Paper,
+  Grid,
 } from '@mui/material';
 import { styled, keyframes } from '@mui/material/styles';
 import {
-  RotateCcw, BookOpen, Filter, Target, Flame, Clock, Tag, Zap, Layers, Trophy,
+  RotateCcw,
+  BookOpen,
+  Filter,
+  Target,
+  Flame,
+  Clock,
+  Tag,
+  Zap,
+  Layers,
+  Trophy,
 } from 'lucide-react';
 import { SharedTable } from '../../../components/ui/table/studentTable';
 import { Button } from '../../../components/ui/button/Button';
@@ -17,6 +31,8 @@ import {
   type MySolvedProblemSummary,
   type DifficultyLabel,
 } from '../../../services/problemService';
+import { brand, neutral, statusTone } from '../../../theme';
+import { ErrorState, LoadingState } from '../../../components/common/states';
 
 interface Row {
   id: string;
@@ -42,10 +58,10 @@ const fadeIn = keyframes`
 const PageContainer = styled(Box)({ padding: '0', animation: `${fadeIn} 0.5s ease-out` });
 
 const WelcomeBanner = styled(Box)({
-  background: 'linear-gradient(135deg, #8B1D23 0%, #6B141A 50%, #4A0E12 100%)',
+  background: `linear-gradient(135deg, ${brand[500]} 0%, ${brand[700]} 50%, ${brand[800]} 100%)`,
   borderRadius: '20px',
   padding: '32px',
-  color: '#fff',
+  color: neutral[0],
   position: 'relative',
   overflow: 'hidden',
   marginBottom: '32px',
@@ -59,16 +75,16 @@ const WelcomeBanner = styled(Box)({
 const FilterCard = styled(Paper)({
   padding: '18px',
   marginBottom: '28px',
-  border: '1px solid #e5e7eb',
+  border: `1px solid ${neutral[200]}`,
   borderRadius: '20px',
-  backgroundColor: '#ffffff',
+  backgroundColor: neutral[0],
   boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
   animation: `${fadeInUp} 0.5s ease-out 200ms both`,
 });
 
 const FilterGroup = styled(Box)({ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' });
 const FilterLabel = styled(Typography)({
-  fontWeight: 700, fontSize: '12px', color: '#64748b', textTransform: 'uppercase',
+  fontWeight: 700, fontSize: '12px', color: neutral[500], textTransform: 'uppercase',
   letterSpacing: '1px', display: 'flex', alignItems: 'center', gap: '8px',
 });
 const FilterChipsStack = styled(Stack)({ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', gap: '8px' });
@@ -80,18 +96,18 @@ const StyledChip = styled(Chip)<{ active?: boolean }>(({ active }) => ({
   height: '36px',
   cursor: 'pointer',
   transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
-  backgroundColor: active ? '#8B1D23' : '#f8fafc',
-  color: active ? '#ffffff' : '#64748b',
-  border: active ? 'none' : '1px solid #e2e8f0',
-  '&:hover': { backgroundColor: active ? '#6d1620' : '#f1f5f9' },
+  backgroundColor: active ? brand[500] : neutral[50],
+  color: active ? neutral[0] : neutral[500],
+  border: active ? 'none' : `1px solid ${neutral[200]}`,
+  '&:hover': { backgroundColor: active ? brand[600] : neutral[100] },
 }));
 
 const DifficultyBadge = styled(Box)<{ difficulty: string }>(({ difficulty }) => ({
   display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '6px 14px',
   borderRadius: '10px', fontSize: '12px', fontWeight: 700, letterSpacing: '0.3px',
-  ...(difficulty === 'Easy' && { backgroundColor: '#ecfdf5', color: '#059669', border: '1px solid #a7f3d0' }),
-  ...(difficulty === 'Medium' && { backgroundColor: '#fffbeb', color: '#d97706', border: '1px solid #fde68a' }),
-  ...(difficulty === 'Hard' && { backgroundColor: '#fef2f2', color: '#dc2626', border: '1px solid #fecaca' }),
+  ...(difficulty === 'Easy' && { backgroundColor: statusTone.success.bg, color: statusTone.success.solid, border: `1px solid ${statusTone.success.border}` }),
+  ...(difficulty === 'Medium' && { backgroundColor: statusTone.warning.bg, color: statusTone.warning.solid, border: `1px solid ${statusTone.warning.border}` }),
+  ...(difficulty === 'Hard' && { backgroundColor: '#fef2f2', color: statusTone.danger.solid, border: `1px solid ${statusTone.danger.border}` }),
 }));
 
 const TableSection = styled(Box)({ animation: `${fadeInUp} 0.5s ease-out 300ms both` });
@@ -174,13 +190,13 @@ export const MySubmissions: React.FC = () => {
         <Box>
           <Typography
             onClick={() => navigate(`/student/my-solutions/${row.problemId}`)}
-            sx={{ fontWeight: 700, color: '#8B1D23', fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+            sx={{ fontWeight: 700, color: brand[500], fontSize: '14px', cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
           >
             {row.name}
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
-            <Clock size={11} color="#94a3b8" />
-            <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '11px' }}>
+            <Clock size={11} color={neutral[400]} />
+            <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
               {new Date(row.latestAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </Typography>
           </Box>
@@ -203,7 +219,7 @@ export const MySubmissions: React.FC = () => {
       id: 'topic',
       label: t('student.mySolutions.columns.topic'),
       render: (row: Row) => (
-        <Chip label={row.topic} size="small" sx={{ bgcolor: '#f1f5f9', color: '#475569', fontWeight: 600, fontSize: '11px', borderRadius: '8px' }} />
+        <Chip label={row.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: '11px', borderRadius: '8px' }} />
       ),
     },
     {
@@ -224,7 +240,7 @@ export const MySubmissions: React.FC = () => {
               icon={<Trophy size={12} />}
               label={t('student.mySolutions.sources.contest')}
               size="small"
-              sx={{ bgcolor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '11px' }}
+              sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '11px' }}
             />
           )}
         </Stack>
@@ -238,22 +254,22 @@ export const MySubmissions: React.FC = () => {
         // unless the student also has a contest submission with points.
         if (!row.hasContest) {
           return (
-            <Typography variant="body2" sx={{ color: '#cbd5e1', fontStyle: 'italic', fontSize: '12px' }}>
+            <Typography variant="body2" sx={{ color: neutral[300], fontStyle: 'italic', fontSize: '12px' }}>
               {t('student.mySolutions.noPoints')}
             </Typography>
           );
         }
         if (row.contestScore == null) {
           return (
-            <Typography variant="body2" sx={{ color: '#94a3b8', fontSize: '12px' }}>
+            <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
               {t('student.mySolutions.pending')}
             </Typography>
           );
         }
         return (
-          <Typography sx={{ fontWeight: 800, color: '#8B1D23', fontSize: '15px' }}>
+          <Typography sx={{ fontWeight: 800, color: brand[500], fontSize: '15px' }}>
             {row.contestScore}
-            <Typography component="span" variant="body2" sx={{ color: '#94a3b8', fontSize: '12px', ml: 0.5 }}>
+            <Typography component="span" variant="body2" sx={{ color: neutral[400], fontSize: '12px', ml: 0.5 }}>
               / 100
             </Typography>
           </Typography>
@@ -268,8 +284,8 @@ export const MySubmissions: React.FC = () => {
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-              <Box sx={{ width: 56, height: 56, borderRadius: '16px', background: 'linear-gradient(135deg, #8B1D23, #6B141A)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(139,29,35,0.3)' }}>
-                <BookOpen size={28} color="#fff" />
+              <Box sx={{ width: 56, height: 56, borderRadius: '16px', background: `linear-gradient(135deg, ${brand[500]}, ${brand[700]})`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(139,29,35,0.3)' }}>
+                <BookOpen size={28} color={neutral[0]} />
               </Box>
               <Box>
                 <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
@@ -293,13 +309,13 @@ export const MySubmissions: React.FC = () => {
       <FilterCard elevation={0}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 3, gap: 5, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Filter size={18} color="#8B1D23" />
+            <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: neutral[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Filter size={18} color={brand[500]} />
             </Box>
-            <Typography sx={{ fontWeight: 800, color: '#1e293b', fontSize: '16px' }}>{t('student.mySolutions.filters')}</Typography>
+            <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px' }}>{t('student.mySolutions.filters')}</Typography>
           </Box>
           {hasActiveFilters && (
-            <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: '#8B1D23' }}>
+            <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: brand[500] }}>
               {t('student.mySolutions.resetAll')}
             </Button>
           )}
@@ -308,7 +324,7 @@ export const MySubmissions: React.FC = () => {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 4 }}>
             <FilterGroup>
-              <FilterLabel><Target size={14} color="#8B1D23" />{t('student.mySolutions.columns.difficulty')}</FilterLabel>
+              <FilterLabel><Target size={14} color={brand[500]} />{t('student.mySolutions.columns.difficulty')}</FilterLabel>
               <FilterChipsStack>
                 <StyledChip label={t('common.all')} onClick={() => setSelectedDifficulty('All')} active={selectedDifficulty === 'All'} size="small" />
                 {DIFFICULTIES.map((d) => (
@@ -319,7 +335,7 @@ export const MySubmissions: React.FC = () => {
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <FilterGroup>
-              <FilterLabel><Tag size={14} color="#8B1D23" />{t('student.mySolutions.topic')}</FilterLabel>
+              <FilterLabel><Tag size={14} color={brand[500]} />{t('student.mySolutions.topic')}</FilterLabel>
               <FilterChipsStack>
                 <StyledChip label={t('common.all')} onClick={() => setSelectedTopic('All')} active={selectedTopic === 'All'} size="small" />
                 {allTopics.map((topic) => (
@@ -330,7 +346,7 @@ export const MySubmissions: React.FC = () => {
           </Grid>
           <Grid size={{ xs: 12, md: 4 }}>
             <FilterGroup>
-              <FilterLabel><Layers size={14} color="#8B1D23" />{t('student.mySolutions.columns.source')}</FilterLabel>
+              <FilterLabel><Layers size={14} color={brand[500]} />{t('student.mySolutions.columns.source')}</FilterLabel>
               <FilterChipsStack>
                 {SOURCES.map((src) => (
                   <StyledChip
@@ -348,16 +364,14 @@ export const MySubmissions: React.FC = () => {
       </FilterCard>
 
       {error && (
-        <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>{error}</Alert>
+        <ErrorState message={error} onClose={() => setError(null)} />
       )}
 
       {loading ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-          <CircularProgress sx={{ color: '#8B1D23' }} />
-        </Box>
+        <LoadingState />
       ) : rows.length === 0 ? (
-        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: '1px dashed #e2e8f0', textAlign: 'center', color: '#64748b' }}>
-          <Typography sx={{ fontWeight: 700, color: '#1e293b', mb: 0.5 }}>
+        <Paper elevation={0} sx={{ p: 6, borderRadius: '16px', border: `1px dashed ${neutral[200]}`, textAlign: 'center', color: neutral[500] }}>
+          <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 0.5 }}>
             {t('student.mySolutions.empty')}
           </Typography>
           <Typography variant="body2">{t('student.mySolutions.emptyHint')}</Typography>
