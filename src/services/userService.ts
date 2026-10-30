@@ -8,7 +8,7 @@ export interface BackendUser {
   email: string;
   userName: string;
   phoneNumber?: string | null;
-  gender: string;
+  gender?: string | null;
   profileImageUrl?: string | null;
   bio?: string | null;
   isActive: boolean;
@@ -29,9 +29,10 @@ export interface CreateUserPayload {
   middleName?: string;
   lastName: string;
   email: string;
-  userName: string;
+  // Omit to let the backend generate one from the user's name.
+  userName?: string;
   phoneNumber?: string;
-  gender: string;
+  gender?: string;
   profileImageUrl?: string;
   password: string;
   roleID: number;
@@ -44,7 +45,7 @@ export interface UpdateUserPayload {
   email: string;
   userName: string;
   phoneNumber?: string;
-  gender: string;
+  gender?: string;
   profileImageUrl?: string;
   bio?: string;
 }

@@ -83,7 +83,7 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
         userName: formData.userName,
         email: formData.email,
         phoneNumber: formData.phone || undefined,
-        gender: formData.gender,
+        gender: formData.gender || undefined,
         profileImageUrl: formData.profileImageUrl || "",
       });
       onSuccess?.();
@@ -112,7 +112,6 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
       name: "gender",
       label: t("admin.users.form.gender"),
       type: "select",
-      required: true,
       options: [
         { label: t("admin.users.form.genders.male"), value: "male" },
         { label: t("admin.users.form.genders.female"), value: "female" },

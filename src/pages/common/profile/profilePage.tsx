@@ -139,7 +139,7 @@ const ProfilePage: React.FC = () => {
         email: profile.email.trim(),
         userName: profile.displayName.trim(),
         phoneNumber: profile.phone.trim() || undefined,
-        gender: loadedUser.gender,
+        gender: loadedUser.gender ?? undefined,
         profileImageUrl: loadedUser.profileImageUrl ?? "",
         bio: profile.bio,
       });

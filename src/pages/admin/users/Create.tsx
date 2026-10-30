@@ -13,7 +13,6 @@ interface UserFormData {
   firstName: string;
   middleName: string;
   lastName: string;
-  userName: string;
   email: string;
   phone: string;
   role: string;
@@ -41,7 +40,6 @@ const initialFormData: UserFormData = {
   firstName: "",
   middleName: "",
   lastName: "",
-  userName: "",
   email: "",
   phone: "",
   role: "",
@@ -97,9 +95,6 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
     if (!v(formData.lastName)) e.lastName = t("admin.users.form.validation.lastNameRequired");
     else if (v(formData.lastName).length < 2) e.lastName = t("admin.users.form.validation.lastNameShort");
 
-    if (!v(formData.userName)) e.userName = t("admin.users.form.validation.userNameRequired");
-    else if (v(formData.userName).length < 4) e.userName = t("admin.users.form.validation.userNameShort");
-
     if (!v(formData.email)) e.email = t("admin.users.form.validation.emailRequired");
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v(formData.email)))
       e.email = t("admin.users.form.validation.emailInvalid");
@@ -108,7 +103,6 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
       e.phone = t("admin.users.form.validation.phoneInvalid");
 
     if (!formData.role) e.role = t("admin.users.form.validation.roleRequired");
-    if (!formData.gender) e.gender = t("admin.users.form.validation.genderRequired");
 
     if (!formData.password) e.password = t("admin.users.form.validation.passwordRequired");
     else if (formData.password.length < 8) e.password = t("admin.users.form.validation.passwordShort");
@@ -134,10 +128,9 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
         firstName: formData.firstName,
         middleName: formData.middleName,
         lastName: formData.lastName,
-        userName: formData.userName,
         email: formData.email,
         phoneNumber: formData.phone || undefined,
-        gender: formData.gender,
+        gender: formData.gender || undefined,
         roleID: roleNameToId(formData.role),
         password: formData.password,
         profileImageUrl: "",
@@ -155,7 +148,6 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
     { name: "firstName", label: t("admin.users.form.firstName"), type: "text", required: true },
     { name: "middleName", label: t("admin.users.form.middleName"), type: "text" },
     { name: "lastName", label: t("admin.users.form.lastName"), type: "text", required: true },
-    { name: "userName", label: t("admin.users.form.userName"), type: "text", required: true },
     { name: "email", label: t("admin.users.form.emailAddress"), type: "email", required: true },
     { name: "phone", label: t("form.labels.phone"), type: "text" },
     {
@@ -173,7 +165,6 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
       name: "gender",
       label: t("admin.users.form.gender"),
       type: "select",
-      required: true,
       options: [
         { label: t("admin.users.form.genders.male"), value: "male" },
         { label: t("admin.users.form.genders.female"), value: "female" },
