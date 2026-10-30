@@ -101,7 +101,12 @@ export const AdminUsersPage = () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await getUsers();
+      // Newest first: most recently created user at the top of the table.
+      const data = [...(await getUsers())].sort(
+        (a, b) =>
+          (Date.parse(b.createdAt) || 0) - (Date.parse(a.createdAt) || 0) ||
+          b.id - a.id,
+      );
       setRawUsers(data);
       setUsers(data.map(toTableRow));
     } catch (err: unknown) {
