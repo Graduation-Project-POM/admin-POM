@@ -71,7 +71,7 @@ const InfoRow = ({
     <Box>
       <Typography
         sx={{
-          fontSize: "0.7rem",
+          fontSize: "12px",
           fontWeight: 600,
           color: neutral[400],
           textTransform: "uppercase",
@@ -117,7 +117,7 @@ export const ViewTrainerDetails = ({
         elevation={0}
         sx={{
           p: 3,
-          borderRadius: "20px",
+          borderRadius: "16px",
           backgroundColor: neutral[0],
           border: `1px solid ${neutral[200]}`,
         }}
@@ -149,7 +149,7 @@ export const ViewTrainerDetails = ({
                 bgcolor: neutral[100],
                 color: neutral[800],
                 fontWeight: 600,
-                fontSize: "0.7rem",
+                fontSize: "12px",
                 borderRadius: "30px",
               }}
               icon={<Star size={14} />}
@@ -192,7 +192,7 @@ export const ViewTrainerDetails = ({
         <Box sx={{ mt: 1 }}>
           <Typography
             sx={{
-              fontSize: "0.7rem",
+              fontSize: "12px",
               fontWeight: 600,
               color: neutral[400],
               textTransform: "uppercase",

@@ -4,8 +4,6 @@ import { CheckCircle, XCircle, Eye, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
   PageContainer,
-  HeaderSection,
-  IconBadge,
   PendingCard,
   UserAvatar,
   ActionButton,
@@ -19,6 +17,7 @@ import { studentService, type StudentListItem } from "../../../services/studentS
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { brand, neutral } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
+import { PageHeader } from "../../../components/common/shell";
 
 type ConfirmState = {
   open: boolean;
@@ -123,17 +122,7 @@ export const AdminApprovalsPage = () => {
 
   return (
     <PageContainer>
-      <HeaderSection>
-        <IconBadge>✓</IconBadge>
-        <Box>
-          <Typography sx={{ fontSize: "28px", fontWeight: 800, color: neutral[800], letterSpacing: "-0.5px" }}>
-            {t("admin.approvals.title")}
-          </Typography>
-          <Typography sx={{ fontSize: "14px", color: neutral[500], fontWeight: 500, mt: "6px" }}>
-            {t("admin.approvals.subtitle")}
-          </Typography>
-        </Box>
-      </HeaderSection>
+      <PageHeader title={t("admin.approvals.title")} subtitle={t("admin.approvals.subtitle")} />
 
       {error && (
         <ErrorState message={error} onClose={() => setError(null)} />

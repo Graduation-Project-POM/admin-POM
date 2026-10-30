@@ -185,7 +185,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             style={{
               maxWidth: "100%",
               height: "auto",
-              width: "128px",
+              width: "116px",
             }}
           />
         </LogoContainer>
@@ -237,7 +237,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                         >
                           <ListItemIcon
                             sx={{
-                              minWidth: 40,
+                              minWidth: 36,
                               color: isParentActive ? brand[500] : neutral[400],
                             }}
                           >
@@ -248,8 +248,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               <Typography
                                 sx={{
                                   fontSize: "14px",
-                                  fontWeight: isParentActive ? 700 : 600,
-                                  color: isParentActive ? brand[500] : neutral[500],
+                                  fontWeight: isParentActive ? 600 : 500,
+                                  color: isParentActive ? brand[600] : neutral[600],
                                 }}
                               >
                                 {isLanguageItem
@@ -303,8 +303,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                                       primary={
                                         <Typography
                                           sx={{
-                                            fontSize: "12px",
-                                            fontWeight: isSubActive ? 800 : 600,
+                                            fontSize: "13px",
+                                            fontWeight: isSubActive ? 600 : 500,
                                             color: isSubActive
                                               ? brand[500]
                                               : neutral[500],
@@ -332,28 +332,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         <Divider />
 
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 1.5 }}>
           <Box
             sx={{
               display: "flex",
               alignItems: "center",
               gap: 1.5,
-              p: 1.5,
-              borderRadius: "14px",
+              p: 1.25,
+              borderRadius: "12px",
               bgcolor: neutral[50],
               border: `1px solid ${neutral[200]}`,
             }}
           >
             <Avatar
               aria-hidden
-              sx={{ bgcolor: brand[50], width: 42, height: 42 }}
+              sx={{ bgcolor: brand[50], width: 38, height: 38 }}
             >
-              <UserCircle size={26} strokeWidth={2} color={brand[500]} />
+              <UserCircle size={22} strokeWidth={2} color={brand[500]} />
             </Avatar>
             <Box sx={{ minWidth: 0 }}>
               <Typography
                 noWrap
-                sx={{ fontSize: "14px", fontWeight: 700, color: neutral[900] }}
+                sx={{ fontSize: "14px", fontWeight: 600, color: neutral[900] }}
               >
                 {userName}
               </Typography>

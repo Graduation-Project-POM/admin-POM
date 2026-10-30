@@ -82,15 +82,15 @@ const StudentDashboardPage: React.FC = () => {
   }
 
   return (
-    <Box sx={{ py: 2 }}>
+    <Box>
       {/* Welcome Banner */}
       <Box sx={welcomeBanner}>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Avatar sx={{ width: 64, height: 64, bgcolor: "rgba(255,255,255,0.2)", fontSize: "1.5rem", fontWeight: 800, border: "2px solid rgba(255,255,255,0.5)" }}>
+          <Avatar sx={{ width: 64, height: 64, bgcolor: "rgba(255,255,255,0.2)", fontSize: "1.5rem", fontWeight: 700, border: "2px solid rgba(255,255,255,0.5)" }}>
             {initials(userName ?? "")}
           </Avatar>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
               {t("student.dashboard.greeting", { name: (userName ?? "").split(" ")[0] })}
             </Typography>
             <Chip label={t("student.dashboard.roleBadge")} icon={<Star size={14} />} sx={{ mt: 1, bgcolor: "rgba(255,255,255,0.2)", color: neutral[0], fontWeight: 700, borderRadius: "40px" }} />

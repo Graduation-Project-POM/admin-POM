@@ -66,7 +66,7 @@ const SearchFilterBox = styled(Box)({
 
 const DifficultyChip = styled(Chip)<{ difficulty: string }>(
   ({ difficulty }) => ({
-    fontSize: "11px",
+    fontSize: "12px",
     height: "22px",
     fontWeight: 600,
     ...(difficulty === "Easy" && {
@@ -276,7 +276,7 @@ export const ProblemsPage = () => {
         <Chip
           label={row.status}
           sx={{
-            fontSize: "11px",
+            fontSize: "12px",
             height: "22px",
             bgcolor: row.status === "published" ? statusTone.success.bg : neutral[100],
             color: row.status === "published" ? statusTone.success.fg : neutral[700],

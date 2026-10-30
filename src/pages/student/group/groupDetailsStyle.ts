@@ -23,7 +23,7 @@ export const StudentCardStyled = styled(Box)(({ theme }) => ({
   overflow: 'hidden',
 
   padding: '20px',
-  borderRadius: '20px',
+  borderRadius: '16px',
 
   minHeight: '220px',
   height: '100%',
@@ -32,8 +32,7 @@ export const StudentCardStyled = styled(Box)(({ theme }) => ({
   flexDirection: 'column',
   justifyContent: 'space-between',
 
-  background:
-    'linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,1) 100%)',
+  backgroundColor: neutral[0],
 
   border: '1px solid rgba(226,232,240,0.9)',
 
@@ -53,7 +52,7 @@ export const StudentCardStyled = styled(Box)(({ theme }) => ({
     left: 0,
     width: '100%',
     height: '4px',
-    background: `linear-gradient(90deg, ${brand[500]} 0%, ${brand[400]} 100%)`,
+    backgroundColor: brand[500],
   },
 
   '&::after': {

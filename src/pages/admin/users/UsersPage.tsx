@@ -13,7 +13,8 @@ import {
   type BackendUser,
 } from "../../../services/userService";
 import { getApiErrorMessage } from "../../../utils/apiError";
-import { neutral, statusTone } from '../../../theme';
+import { brand, statusTone } from '../../../theme';
+import { PageHeader } from "../../../components/common/shell";
 import { ErrorState, LoadingState } from '../../../components/common/states';
 
 type User = {
@@ -48,7 +49,7 @@ const UserCell = styled(Box)({
 });
 
 const StatusChip = styled(Chip)<{ status: string }>(({ status }) => ({
-  fontSize: "11px",
+  fontSize: "12px",
   height: 22,
   fontWeight: 600,
   ...(status === "active" && {
@@ -173,7 +174,7 @@ export const AdminUsersPage = () => {
       label: t("admin.users.columns.name"),
       render: (row: User) => (
         <UserCell>
-          <Avatar sx={{ width: 34, height: 34, bgcolor: "#7A1E1E" }}>
+          <Avatar sx={{ width: 34, height: 34, bgcolor: brand[500], fontSize: "0.875rem" }}>
             {row.name[0]}
           </Avatar>
           <Typography sx={{ fontWeight: 600 }}>{row.name}</Typography>
@@ -181,12 +182,20 @@ export const AdminUsersPage = () => {
       ),
     },
     { id: "email", label: t("admin.users.columns.email") },
-    { id: "role", label: t("admin.users.columns.role") },
+    {
+      id: "role",
+      label: t("admin.users.columns.role"),
+      render: (row: User) => t(`admin.users.roles.${row.role}`, row.role),
+    },
     {
       id: "status",
       label: t("admin.users.columns.status"),
       render: (row: User) => (
-        <StatusChip label={row.status} status={row.status} />
+        <StatusChip
+          label={t(`admin.users.status.${row.status}`, row.status)}
+          status={row.status}
+          size="small"
+        />
       ),
     },
     { id: "group", label: t("admin.users.columns.group") },
@@ -194,30 +203,8 @@ export const AdminUsersPage = () => {
   ];
 
   return (
-    <Box sx={{ p: 0 }}>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 4,
-        }}
-      >
-        <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
-            {t("admin.users.title")}
-          </Typography>
-
-          <Typography
-            variant="body2"
-            sx={{ color: neutral[500], fontWeight: 500 }}
-          >
-            {t("admin.users.subtitle")}
-          </Typography>
-        </Box>
-
-
-      </Box>
+    <Box>
+      <PageHeader title={t("admin.users.title")} subtitle={t("admin.users.subtitle")} />
 
       {error && (
         <ErrorState message={error} onClose={() => setError(null)} />

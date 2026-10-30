@@ -19,22 +19,23 @@ export const SidebarContainer = styled(Drawer)({
 });
 
 export const LogoContainer = styled(Box)({
-  padding: '24px',
+  padding: '18px 24px',
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
 });
 
+// The nav scrolls when the window is short. Its scrollbar used to be hidden,
+// so on a laptop-height screen the last items (Logout) looked cut off with no
+// hint that more was below; it now shows the theme's thin scrollbar.
 export const ScrollContainer = styled(Box)({
   flexGrow: 1,
+  minHeight: 0,
   overflowY: 'auto',
-  marginTop: '8px',
-  paddingBottom: '8px',
-  msOverflowStyle: 'none',
-  scrollbarWidth: 'none',
-  '&::-webkit-scrollbar': {
-    display: 'none',
-  },
+  paddingBlock: '10px',
+  scrollbarWidth: 'thin',
+  '&::-webkit-scrollbar': { width: 6 },
+  '&::-webkit-scrollbar-thumb': { border: 'none' },
 });
 
 export const StyledListItemButton = styled(ListItemButton, {
@@ -42,8 +43,8 @@ export const StyledListItemButton = styled(ListItemButton, {
 })<{ isActive?: boolean }>(({ isActive }) => ({
   margin: '2px 12px',
   borderRadius: radius.md,
-  padding: '10px 12px',
-  minHeight: 44,
+  padding: '8px 12px',
+  minHeight: 40,
   position: 'relative',
   transition: 'background-color .15s ease, color .15s ease',
 

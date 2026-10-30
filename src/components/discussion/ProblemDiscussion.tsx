@@ -87,7 +87,7 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
     <Box sx={{ mt: 5 }}>
       <Typography
         variant="h5"
-        sx={{ fontWeight: 800, color: '#1e293b', mb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}
+        sx={{ fontWeight: 700, color: '#1e293b', mb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}
       >
         <MessagesSquare size={24} color="#8B1D23" />
         {t('discussion.title', { count: messageCount })}

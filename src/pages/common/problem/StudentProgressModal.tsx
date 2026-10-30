@@ -93,7 +93,7 @@ export const StudentProgressModal = ({ open, onClose, problemTitle, submissions 
                       size="small"
                       sx={{ 
                         fontWeight: 700, 
-                        fontSize: '11px',
+                        fontSize: '12px',
                         bgcolor: student.status === 'Solved' ? statusTone.success.bg : statusTone.danger.bg,
                         color: student.status === 'Solved' ? statusTone.success.fg : statusTone.danger.fg,
                       }} 

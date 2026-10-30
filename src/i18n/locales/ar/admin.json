@@ -115,6 +115,17 @@
           "male": "ذكر",
           "female": "أنثى"
         }
+      },
+      "status": {
+        "active": "نشط",
+        "inactive": "غير نشط",
+        "pending": "قيد الانتظار"
+      },
+      "roles": {
+        "admin": "مسؤول",
+        "superuser": "مستخدم خارق",
+        "trainer": "مدرب",
+        "student": "طالب"
       }
     },
     "approvals": {

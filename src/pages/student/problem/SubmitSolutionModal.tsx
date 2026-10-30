@@ -78,7 +78,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
     <ModalWrapper open={open} onClose={onClose} title={t('student.problems.submit.title')} maxWidth="md">
       <Box sx={{ mb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: neutral[800] }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[800] }}>
             {problem.title}
           </Typography>
           <Chip

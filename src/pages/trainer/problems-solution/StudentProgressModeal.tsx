@@ -119,7 +119,7 @@ export const StudentProgressModal = ({
                           size="small"
                           sx={{
                             fontWeight: 700,
-                            fontSize: '11px',
+                            fontSize: '12px',
                             bgcolor: graded ? statusTone.success.bg : statusTone.warning.bg,
                             color: graded ? statusTone.success.fg : statusTone.warning.fg,
                           }}

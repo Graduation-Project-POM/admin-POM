@@ -4,7 +4,7 @@ import {
   type ButtonProps as MuiButtonProps,
   styled,
 } from "@mui/material";
-import { brand, neutral, radius, shadow, statusTone } from '../../../theme';
+import { brand, neutral, radius, statusTone } from '../../../theme';
 
 interface StyledButtonProps extends MuiButtonProps {
   variantType?: "default" | "outline" | "ghost" | "danger";
@@ -29,10 +29,7 @@ const StyledButton = styled(MuiButton, {
   ...(variantType === "default" && {
     backgroundColor: brand[500],
     color: neutral[0],
-    "&:hover": {
-      backgroundColor: brand[600],
-      boxShadow: shadow.brand,
-    },
+    "&:hover": { backgroundColor: brand[600] },
     "&:active": { backgroundColor: brand[700] },
   }),
 

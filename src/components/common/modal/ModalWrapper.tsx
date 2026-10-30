@@ -65,7 +65,7 @@ export const ModalWrapper: React.FC<Props> = ({
           borderBottom: `1px solid ${neutral[200]}`,
         }}
       >
-        <Typography variant="h6" component="h2" sx={{ fontWeight: 700, minWidth: 0 }}>
+        <Typography variant="h6" component="h2" sx={{ minWidth: 0 }}>
           {title}
         </Typography>
 

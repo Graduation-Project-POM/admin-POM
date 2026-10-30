@@ -77,7 +77,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
               <AlertCircle size={22} />
             </Box>
           )}
-          <Typography variant="h6" component="h2" sx={{ fontWeight: 800 }}>
+          <Typography variant="h6" component="h2">
             {title}
           </Typography>
         </Box>
@@ -86,7 +86,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       <DialogContent>
         <DialogContentText
           id={messageId}
-          sx={{ color: 'text.secondary', fontSize: '15px', lineHeight: 1.65 }}
+          sx={{ color: 'text.secondary' }}
         >
           {message}
         </DialogContentText>

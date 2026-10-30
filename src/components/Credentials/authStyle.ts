@@ -32,7 +32,7 @@ export const paperStyles: SxProps<Theme> = {
 
 export const titleStyles: SxProps<Theme> = {
   mb: 1,
-  fontWeight: 800,
+  fontWeight: 700,
   color: brand[500],
   textAlign: 'center',
 };

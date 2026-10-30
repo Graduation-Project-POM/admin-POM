@@ -48,7 +48,7 @@ export const SolutionDetailModal = ({ open, onClose, submission, problemTitle, o
               size="small"
               sx={{ 
                 fontWeight: 700, 
-                fontSize: '11px',
+                fontSize: '12px',
                 bgcolor: submission.status === 'Solved' ? statusTone.success.bg : statusTone.danger.bg,
                 color: submission.status === 'Solved' ? statusTone.success.fg : statusTone.danger.fg,
               }} 

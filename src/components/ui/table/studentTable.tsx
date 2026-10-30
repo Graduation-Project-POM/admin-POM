@@ -98,7 +98,7 @@ export function SharedTable<TRow extends TableRowBase>({
               sx={{
                 fontWeight: 700,
                 color: neutral[600],
-                fontSize: '11.5px',
+                fontSize: '12px',
                 textTransform: 'uppercase',
                 letterSpacing: '0.06em',
               }}

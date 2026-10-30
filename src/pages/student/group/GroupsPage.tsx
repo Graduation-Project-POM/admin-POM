@@ -126,10 +126,10 @@ export const StudentGroupsPage: React.FC = () => {
               <BookOpen size={20} color={brand[500]} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {groups.length}
               </Typography>
-              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', textTransform: 'uppercase' }}>
                 {t('student.groups.totalGroups')}
               </Typography>
             </Box>
@@ -141,10 +141,10 @@ export const StudentGroupsPage: React.FC = () => {
               <Target size={20} color={statusTone.success.solid} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {activeGroups}
               </Typography>
-              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', textTransform: 'uppercase' }}>
                 {t('student.groups.active')}
               </Typography>
             </Box>
@@ -156,10 +156,10 @@ export const StudentGroupsPage: React.FC = () => {
               <Trophy size={20} color="#0284c7" />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {completedGroups}
               </Typography>
-              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', textTransform: 'uppercase' }}>
                 {t('student.groups.completed')}
               </Typography>
             </Box>
@@ -171,10 +171,10 @@ export const StudentGroupsPage: React.FC = () => {
               <Users size={20} color={statusTone.warning.solid} />
             </Box>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '22px', lineHeight: 1 }}>
                 {groups.length - completedGroups}
               </Typography>
-              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+              <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', textTransform: 'uppercase' }}>
                 {t('student.groups.inProgress')}
               </Typography>
             </Box>

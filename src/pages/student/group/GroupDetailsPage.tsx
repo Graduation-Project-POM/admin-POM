@@ -316,7 +316,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4, bgcolor: neutral[50] }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: neutral[800] }}>
                 🏆 {selectedContest.title}
               </Typography>
               <Typography variant="body2" sx={{ color: neutral[500], mt: 0.5 }}>
@@ -366,7 +366,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                       {row.title}
                     </Typography>
                     {row.status === 'submitted' && (
-                      <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
+                      <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
                         {t('student.groupDetails.submittedOn', { date: new Date(row.submittedAt).toLocaleDateString() })}
                       </Typography>
                     )}
@@ -384,7 +384,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    fontSize: '11px',
+                    fontSize: '12px',
                     bgcolor: row.difficulty === 'Easy' ? statusTone.success.bg : row.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
                     color: row.difficulty === 'Easy' ? statusTone.success.solid : row.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
@@ -400,7 +400,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    fontSize: '11px',
+                    fontSize: '12px',
                     bgcolor: row.status === 'submitted' ? statusTone.success.bg : '#fef2f2',
                     color: row.status === 'submitted' ? statusTone.success.solid : statusTone.danger.solid,
                   }}
@@ -448,13 +448,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           fullWidth
           slotProps={{
             paper: {
-              sx: { borderRadius: '20px', p: 1 },
+              sx: { borderRadius: '16px', p: 1 },
             },
           }}
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
             <Box>
-              <Typography sx={{ fontWeight: 800, fontSize: '20px', color: neutral[800] }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '20px', color: neutral[800] }}>
                 {questionProblem?.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
@@ -526,13 +526,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           fullWidth
           slotProps={{
             paper: {
-              sx: { borderRadius: '20px', p: 1 },
+              sx: { borderRadius: '16px', p: 1 },
             },
           }}
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Box>
-              <Typography sx={{ fontWeight: 800, fontSize: '18px', color: neutral[800] }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '18px', color: neutral[800] }}>
                 {t('student.groupDetails.submitSolution')}
               </Typography>
               <Typography variant="body2" sx={{ color: neutral[500] }}>
@@ -712,7 +712,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
         <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4, bgcolor: neutral[50] }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
             <Box>
-              <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
+              <Typography variant="h5" sx={{ fontWeight: 700, color: neutral[800] }}>
                 📊 {t('student.groupDetails.resultsTitle', { title: selectedContest.title })}
               </Typography>
               <Typography variant="body2" sx={{ color: neutral[500], mt: 0.5 }}>
@@ -728,10 +728,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 {t('contest.view.viewLeaderboard')}
               </Button>
               <Box sx={{ textAlign: 'center', p: 2, bgcolor: neutral[0], borderRadius: '12px', border: `1px solid ${neutral[200]}` }}>
-                <Typography sx={{ fontWeight: 800, color: getGradeColor(averageGrade), fontSize: '28px', lineHeight: 1 }}>
+                <Typography sx={{ fontWeight: 700, color: getGradeColor(averageGrade), fontSize: '28px', lineHeight: 1 }}>
                   {averageGrade}%
                 </Typography>
-                <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '11px', textTransform: 'uppercase' }}>
+                <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 600, fontSize: '12px', textTransform: 'uppercase' }}>
                   {t('student.groupDetails.averageGrade')}
                 </Typography>
               </Box>
@@ -754,7 +754,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '14px' }}>
                     {row.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
+                  <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
                     {t('student.groupDetails.submittedOn', { date: new Date(row.submittedAt).toLocaleDateString() })}
                   </Typography>
                 </Box>
@@ -770,7 +770,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   size="small"
                   sx={{
                     fontWeight: 600,
-                    fontSize: '11px',
+                    fontSize: '12px',
                     bgcolor: row.difficulty === 'Easy' ? statusTone.success.bg : row.difficulty === 'Medium' ? statusTone.warning.bg : '#fef2f2',
                     color: row.difficulty === 'Easy' ? statusTone.success.solid : row.difficulty === 'Medium' ? statusTone.warning.solid : statusTone.danger.solid,
                   }}
@@ -782,7 +782,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               label: t('student.groupDetails.columns.grade'),
               render: (row) => (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography sx={{ fontWeight: 800, color: getGradeColor(row.grade), fontSize: '16px' }}>
+                  <Typography sx={{ fontWeight: 700, color: getGradeColor(row.grade), fontSize: '16px' }}>
                     {row.grade}
                   </Typography>
                   <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
@@ -805,7 +805,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                       setQuestionProblem(row);
                       setQuestionModalOpen(true);
                     }}
-                    sx={{ py: 0.5, px: 1.5, fontSize: '11px' }}
+                    sx={{ py: 0.5, px: 1.5, fontSize: '12px' }}
                   >
                     {t('student.groupDetails.question')}
                   </Button>
@@ -817,7 +817,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                       setFeedbackProblem(row);
                       setFeedbackModalOpen(true);
                     }}
-                    sx={{ py: 0.5, px: 1.5, fontSize: '11px' }}
+                    sx={{ py: 0.5, px: 1.5, fontSize: '12px' }}
                   >
                     {t('student.groupDetails.feedback')}
                   </Button>
@@ -836,13 +836,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           fullWidth
           slotProps={{
             paper: {
-              sx: { borderRadius: '20px', p: 1 },
+              sx: { borderRadius: '16px', p: 1 },
             },
           }}
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
             <Box>
-              <Typography sx={{ fontWeight: 800, fontSize: '20px', color: neutral[800] }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '20px', color: neutral[800] }}>
                 {questionProblem?.title}
               </Typography>
               <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
@@ -915,12 +915,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           fullWidth
           slotProps={{
             paper: {
-              sx: { borderRadius: '20px', p: 1 },
+              sx: { borderRadius: '16px', p: 1 },
             },
           }}
         >
           <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Typography sx={{ fontWeight: 800, fontSize: '18px', color: neutral[800] }}>
+            <Typography sx={{ fontWeight: 700, fontSize: '18px', color: neutral[800] }}>
               {t('student.groupDetails.trainerFeedback')}
             </Typography>
             <IconButton onClick={() => setFeedbackModalOpen(false)} sx={{ color: neutral[400] }}>
@@ -953,7 +953,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 </Typography>
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                <Typography sx={{ fontWeight: 800, color: getGradeColor(feedbackProblem?.grade || 0), fontSize: '36px', lineHeight: 1 }}>
+                <Typography sx={{ fontWeight: 700, color: getGradeColor(feedbackProblem?.grade || 0), fontSize: '36px', lineHeight: 1 }}>
                   {feedbackProblem?.grade}
                 </Typography>
                 <Typography sx={{ color: neutral[400], fontSize: '18px', fontWeight: 600 }}>
@@ -1000,7 +1000,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
       <HeaderSection>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: neutral[800], mb: 1 }}>
               {group.title}
             </Typography>
             <Typography variant="body1" sx={{ color: neutral[500], mb: 2, maxWidth: '800px' }}>
@@ -1027,7 +1027,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600, fontSize: '12px' }}>
                   {t('student.groupDetails.courseProgress')}
                 </Typography>
-                <Typography variant="body2" sx={{ color: brand[500], fontWeight: 800, fontSize: '12px' }}>
+                <Typography variant="body2" sx={{ color: brand[500], fontWeight: 700, fontSize: '12px' }}>
                   {courseProgress}%
                 </Typography>
               </Box>

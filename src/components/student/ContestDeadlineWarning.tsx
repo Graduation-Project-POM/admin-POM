@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Button, Stack } from '@mui/material';
 import { AlertTriangle, ArrowRight } from 'lucide-react';
 import type { StudentContestAlert } from '../../services/dashboardService';
+import { statusTone } from '../../theme';
 
 interface Props {
   alerts: StudentContestAlert[];
@@ -43,9 +44,9 @@ export const ContestDeadlineWarning = ({ alerts, thresholdMinutes = 15 }: Props)
               flexWrap: 'wrap',
               gap: 1.5,
               p: { xs: 1.5, sm: 2 },
-              borderRadius: '14px',
+              borderRadius: '12px',
               border: '1px solid #fca5a5',
-              background: 'linear-gradient(90deg, #fff7ed 0%, #fef2f2 100%)',
+              backgroundColor: statusTone.warning.bg,
               boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
             }}
           >
@@ -71,7 +72,7 @@ export const ContestDeadlineWarning = ({ alerts, thresholdMinutes = 15 }: Props)
             </Box>
 
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography sx={{ fontWeight: 800, color: '#7f1d1d', fontSize: '14px' }}>
+              <Typography sx={{ fontWeight: 700, color: '#7f1d1d', fontSize: '14px' }}>
                 {t(
                   'student.dashboard.contestWarning.title',
                   '⚠️ Hurry up! You still have unsolved problems and the contest is almost ending.',

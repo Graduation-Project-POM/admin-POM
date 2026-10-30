@@ -20,7 +20,8 @@ import { getMyStudentProfile, type MyStudentProfile } from "../../../services/st
 import { getCurrentUser, updateCurrentUser, type BackendUser } from "../../../services/userService";
 import { getMyTrainerProfile, updateMyTrainerProfile } from "../../../services/trainerService";
 import { getApiErrorMessage } from "../../../utils/apiError";
-import { brand, neutral, statusTone } from '../../../theme';
+import { brand, neutral, radius, statusTone } from '../../../theme';
+import { PageHeader } from "../../../components/common/shell";
 
 interface ProfileData {
   fullName: string;
@@ -171,35 +172,14 @@ const ProfilePage: React.FC = () => {
   };
 
   return (
-    <Box
-      sx={{
-        p: { xs: 2, sm: 3, md: 4 },
-        backgroundColor: neutral[50],
-        minHeight: "100vh",
-      }}
-    >
-      <Box sx={{ mb: 4 }}>
-        <Typography
-          variant="h4"
-          sx={{ fontWeight: 800, color: neutral[900], letterSpacing: "-0.02em", mb: 1 }}
-        >
-          {t("profile.title")}
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-          <Typography
-            variant="body1"
-            sx={{ color: neutral[500], borderLeft: `3px solid ${brand[500]}`, pl: 2, fontWeight: 500 }}
-          >
-            {t("profile.subtitle")}
-          </Typography>
-        </Box>
-      </Box>
+    <Box>
+      <PageHeader title={t("profile.title")} subtitle={t("profile.subtitle")} />
 
       <Grid container spacing={4}>
         <Grid size={{ xs: 12, md: 10 }}>
           <Card
             sx={{
-              borderRadius: "20px",
+              borderRadius: "16px",
               border: `1px solid ${neutral[200]}`,
               boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
               overflow: "visible",
@@ -233,7 +213,7 @@ const ProfilePage: React.FC = () => {
                             bgcolor: neutral[100],
                             color: neutral[800],
                             fontWeight: 500,
-                            fontSize: "0.7rem",
+                            fontSize: "12px",
                             borderRadius: "30px",
                           }}
                         />
@@ -243,17 +223,17 @@ const ProfilePage: React.FC = () => {
                           <Chip
                             label={`${t("profile.student.totalPointsLabel", "Total Points")}: ${studentStats.totalPoints}`}
                             size="small"
-                            sx={{ bgcolor: "#fef2f2", color: brand[500], fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
+                            sx={{ bgcolor: "#fef2f2", color: brand[500], fontWeight: 700, fontSize: "12px", borderRadius: "30px" }}
                           />
                           <Chip
                             label={`${t("profile.student.rankLabel", "Rank")}: #${studentStats.rank}`}
                             size="small"
-                            sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: "0.7rem", borderRadius: "30px" }}
+                            sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: "12px", borderRadius: "30px" }}
                           />
                           <Chip
                             label={t("profile.student.solved", { count: studentStats.problemSolved })}
                             size="small"
-                            sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: "0.7rem", borderRadius: "30px" }}
+                            sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: "12px", borderRadius: "30px" }}
                           />
                         </>
                       )}
@@ -269,7 +249,7 @@ const ProfilePage: React.FC = () => {
                       setIsEditing(true);
                     }}
                     sx={{
-                      borderRadius: "40px",
+                      borderRadius: `${radius.sm}px`,
                       textTransform: "none",
                       fontWeight: 600,
                       borderColor: neutral[300],
@@ -286,7 +266,7 @@ const ProfilePage: React.FC = () => {
                       onClick={handleSave}
                       disabled={saving}
                       sx={{
-                        borderRadius: "40px",
+                        borderRadius: `${radius.sm}px`,
                         textTransform: "none",
                         fontWeight: 600,
                         bgcolor: brand[500],
@@ -299,7 +279,7 @@ const ProfilePage: React.FC = () => {
                       variant="outlined"
                       onClick={handleCancel}
                       sx={{
-                        borderRadius: "40px",
+                        borderRadius: `${radius.sm}px`,
                         textTransform: "none",
                         fontWeight: 600,
                         borderColor: neutral[300],
@@ -439,7 +419,7 @@ const ProfilePage: React.FC = () => {
                     variant="contained"
                     onClick={() => setIsEditing(true)}
                     sx={{
-                      borderRadius: "40px",
+                      borderRadius: `${radius.sm}px`,
                       textTransform: "none",
                       fontWeight: 600,
                       bgcolor: brand[500],

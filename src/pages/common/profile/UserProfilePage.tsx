@@ -30,7 +30,7 @@ const DetailRow: React.FC<{ icon: React.ReactNode; label: string; value?: React.
       {icon}
     </Box>
     <Box sx={{ minWidth: 0 }}>
-      <Typography sx={{ fontSize: "11px", fontWeight: 600, color: neutral[400], textTransform: "uppercase", letterSpacing: 0.5 }}>
+      <Typography sx={{ fontSize: "12px", fontWeight: 600, color: neutral[400], textTransform: "uppercase", letterSpacing: 0.5 }}>
         {label}
       </Typography>
       <Typography sx={{ color: neutral[800], fontWeight: 700, fontSize: "14px", wordBreak: "break-word" }}>
@@ -112,7 +112,7 @@ export const UserProfile: React.FC<{ type: ProfileType; id?: number }> = ({ type
           {initials(fullName)}
         </Avatar>
         <Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: neutral[800] }}>
             {fullName || "—"}
           </Typography>
           <Box sx={{ display: "flex", gap: 1, mt: 1, flexWrap: "wrap" }}>

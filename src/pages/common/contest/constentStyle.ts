@@ -7,10 +7,11 @@ import {
 } from "@mui/material";
 import { brand, neutral } from '../../../theme';
 
-export const StyledContainer = styled(Container)(({ theme }) => ({
-  paddingTop: "0",
-  paddingBottom: theme.spacing(4),
-}));
+// Page padding comes from the app layout. Used with `disableGutters`: the
+// Container's own gutters pushed this page 24px further in than its siblings.
+export const StyledContainer = styled(Container)({
+  paddingBlock: 0,
+});
 
 export const HeaderWrapper = styled(Box)({
   marginBottom: 8,

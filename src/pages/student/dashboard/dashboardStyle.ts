@@ -3,28 +3,14 @@ import type { SxProps, Theme } from '@mui/material';
 import { brand, neutral, radius, statusTone } from '../../../theme';
 
 export const welcomeBanner: SxProps<Theme> = {
-  // The old value stopped at 60% with the same colour at both ends, so it
-  // rendered as a flat fill. A real depth ramp toward the darker brand step
-  // gives the banner the dimension it was reaching for.
-  background: `linear-gradient(135deg, ${brand[500]} 0%, ${brand[700]} 100%)`,
+  // Flat brand surface: the gradient and corner glow read as decoration.
+  backgroundColor: brand[600],
   borderRadius: `${radius['2xl']}px`,
   p: { xs: 2.5, sm: 3.5 },
   mb: 4,
   color: neutral[0],
   position: 'relative',
   overflow: 'hidden',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: '-30%',
-    // insetInlineEnd so the highlight mirrors to the correct corner in Arabic.
-    insetInlineEnd: '-10%',
-    width: '250px',
-    height: '250px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(255,255,255,0.16) 0%, rgba(255,255,255,0) 70%)',
-    pointerEvents: 'none',
-  },
 };
 
 export const quickActionButton: SxProps<Theme> = {
@@ -49,7 +35,7 @@ export const activityItem: SxProps<Theme> = {
 
 export const contestCard: SxProps<Theme> = {
   p: 2,
-  borderRadius: '18px',
+  borderRadius: '16px',
   border: `1px solid ${neutral[200]}`,
   transition: 'all 0.2s',
   cursor: 'pointer',
@@ -57,8 +43,8 @@ export const contestCard: SxProps<Theme> = {
 };
 
 export const streakCard: SxProps<Theme> = {
-  background: 'linear-gradient(145deg, #FFF7ED 0%, #FFEDD5 100%)',
-  borderRadius: '24px',
+  backgroundColor: statusTone.warning.bg,
+  borderRadius: '16px',
   p: 2.5,
   border: '1px solid #FED7AA',
 };
@@ -68,7 +54,7 @@ export const badgeItem = (colorBg: string, borderColor: string) => ({
   alignItems: 'center',
   gap: 2,
   p: 1.5,
-  borderRadius: '20px',
+  borderRadius: '16px',
   bgcolor: colorBg,
   border: `1px solid ${borderColor}`,
 });

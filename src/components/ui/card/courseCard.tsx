@@ -37,7 +37,7 @@ const CardHeader = styled(Box)({
 const IconWrapper = styled(Box)({
   width: '44px',
   height: '44px',
-  borderRadius: '14px',
+  borderRadius: '12px',
   backgroundColor: 'rgba(139, 29, 35, 0.08)',
   display: 'flex',
   alignItems: 'center',
@@ -105,7 +105,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, onViewDetails })
         <IconWrapper>
           <BookOpen size={22} color={brand[500]} strokeWidth={1.8} />
         </IconWrapper>
-        <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[900], letterSpacing: '-0.3px', flex: 1 }}>
+        <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[900], flex: 1 }}>
           {title}
         </Typography>
       </CardHeader>
@@ -147,7 +147,7 @@ export const CourseCard: React.FC<CourseCardProps> = ({ course, onViewDetails })
             fontSize: '14px',
             color: neutral[600],
             backgroundColor: 'transparent',
-            borderRadius: '14px',
+            borderRadius: '12px',
             py: 1,
             transition: 'all 0.2s',
             '&:hover': {

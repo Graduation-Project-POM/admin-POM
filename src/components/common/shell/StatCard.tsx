@@ -78,7 +78,7 @@ export const StatCard = ({
         <Typography
           sx={{
             fontSize: "0.75rem",
-            fontWeight: 700,
+            fontWeight: 600,
             color: "text.secondary",
             textTransform: "uppercase",
             letterSpacing: "0.05em",
@@ -88,7 +88,13 @@ export const StatCard = ({
           {title}
         </Typography>
         <Typography
-          sx={{ fontSize: "2rem", fontWeight: 800, color: neutral[900], lineHeight: 1.15 }}
+          sx={{
+            fontSize: "2rem",
+            fontWeight: 700,
+            color: neutral[900],
+            lineHeight: 1.15,
+            fontVariantNumeric: "tabular-nums",
+          }}
         >
           {typeof value === "number" ? value.toLocaleString() : value}
         </Typography>

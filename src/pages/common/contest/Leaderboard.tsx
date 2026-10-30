@@ -157,7 +157,7 @@ const Leaderboard = ({
                             borderRadius: "999px",
                             bgcolor: medalBg(row.rank),
                             color: medalColor(row.rank),
-                            fontWeight: 800,
+                            fontWeight: 700,
                             fontSize: "13px",
                           }}
                         >
@@ -167,7 +167,7 @@ const Leaderboard = ({
                       <TableCell
                         sx={{
                           color: isMe ? brand[500] : neutral[800],
-                          fontWeight: isMe ? 800 : 600,
+                          fontWeight: isMe ? 700 : 600,
                         }}
                       >
                         {row.studentName}

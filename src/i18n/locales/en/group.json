@@ -25,6 +25,7 @@
       "removeProblemsMessage": "Are you sure you want to remove {{count}} selected problems?",
       "deleteContestTitle": "Delete Contest",
       "deleteContestMessage": "Are you sure you want to delete this contest from this group?",
+      "studentsCount_one": "{{count}} Student",
       "studentsCount": "{{count}} Students",
       "created": "Created {{date}}",
       "tabContests": "Contests",

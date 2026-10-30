@@ -166,7 +166,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
                                 height: 26,
                                 bgcolor: BRAND,
                                 color: neutral[0],
-                                fontSize: '11px',
+                                fontSize: '12px',
                                 fontWeight: 700,
                               }}
                             >

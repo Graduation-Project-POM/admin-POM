@@ -47,7 +47,7 @@ export const CommentCard = ({
       elevation={0}
       sx={{
         p: isReply ? 2 : 2.5,
-        borderRadius: '14px',
+        borderRadius: '12px',
         border: `1px solid ${neutral[200]}`,
         bgcolor: comment.isMine ? '#fffaf9' : '#fff',
       }}
@@ -76,14 +76,14 @@ export const CommentCard = ({
               <Chip
                 label={t('discussion.youBadge')}
                 size="small"
-                sx={{ bgcolor: '#8B1D23', color: '#fff', fontWeight: 700, fontSize: '10px', height: 18 }}
+                sx={{ bgcolor: '#8B1D23', color: '#fff', fontWeight: 700, fontSize: '12px', height: 18 }}
               />
             )}
             {roleStyle && (
               <Chip
                 label={t('discussion.roles.' + comment.authorRole.toLowerCase(), comment.authorRole)}
                 size="small"
-                sx={{ bgcolor: roleStyle.bg, color: roleStyle.color, fontWeight: 700, fontSize: '10px', height: 18 }}
+                sx={{ bgcolor: roleStyle.bg, color: roleStyle.color, fontWeight: 700, fontSize: '12px', height: 18 }}
               />
             )}
             <Typography variant="caption" sx={{ color: '#94a3b8' }}>

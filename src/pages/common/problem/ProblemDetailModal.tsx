@@ -115,7 +115,7 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
             </Stack>
             <Typography
               variant="h6"
-              sx={{ fontWeight: 800, color: neutral[800] }}
+              sx={{ fontWeight: 700, color: neutral[800] }}
             >
               {problem.title}
             </Typography>

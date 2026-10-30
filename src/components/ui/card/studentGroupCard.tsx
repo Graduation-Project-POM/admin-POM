@@ -23,7 +23,7 @@ const StatusBadge = styled(Box)<{ status?: string }>(({ status }) => ({
   gap: '6px',
   padding: '4px 12px',
   borderRadius: '999px',
-  fontSize: '11px',
+  fontSize: '12px',
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
@@ -64,7 +64,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
                 color: brand[500],
                 width: 48,
                 height: 48,
-                fontWeight: 800,
+                fontWeight: 700,
                 fontSize: '18px',
                 borderRadius: '12px',
               }}
@@ -72,7 +72,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
               {group.title.charAt(0)}
             </Avatar>
             <Box>
-              <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px', lineHeight: 1.3 }}>
+              <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '16px', lineHeight: 1.3 }}>
                 {group.title}
               </Typography>
               <Typography variant="body2" sx={{ color: neutral[400], fontWeight: 500, fontSize: '12px' }}>
@@ -96,7 +96,7 @@ export const GroupCard: React.FC<GroupCardProps> = ({ group, onView }) => {
               <Typography variant="body2" sx={{ color: neutral[500], fontWeight: 600, fontSize: '12px' }}>
                 {t('ui.studentGroupCard.courseProgress')}
               </Typography>
-              <Typography variant="body2" sx={{ color: brand[500], fontWeight: 800, fontSize: '12px' }}>
+              <Typography variant="body2" sx={{ color: brand[500], fontWeight: 700, fontSize: '12px' }}>
                 {group.progress}%
               </Typography>
             </Box>

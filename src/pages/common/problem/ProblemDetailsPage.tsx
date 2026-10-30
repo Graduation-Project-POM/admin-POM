@@ -100,7 +100,7 @@ const SubmissionCard = ({
                   size="small"
                   sx={{
                     fontWeight: 700,
-                    fontSize: '11px',
+                    fontSize: '12px',
                     bgcolor: submission.grade != null ? statusTone.success.bg : statusTone.warning.bg,
                     color: submission.grade != null ? statusTone.success.fg : statusTone.warning.fg,
                   }}
@@ -258,7 +258,7 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
       <Paper elevation={0} sx={{ p: 4, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3, flexWrap: 'wrap', gap: 2 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
+            <Typography variant="h4" sx={{ fontWeight: 700, color: neutral[800], mb: 1 }}>
               {problem.title}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -297,7 +297,7 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
 
       {canViewSubmissions && (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800], mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: 700, color: neutral[800], mb: 3, display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <FileCode size={24} color={brand[500]} />
             {t('problem.details.submissionsTitle', { count: submissions.length })}
           </Typography>

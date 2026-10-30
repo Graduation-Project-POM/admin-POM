@@ -108,7 +108,7 @@ const AdminDashboard: React.FC = () => {
   }
 
   return (
-    <Box sx={{ py: 2 }}>
+    <Box>
       <PageHeader
         title={t("admin.dashboard.title")}
         subtitle={t("admin.dashboard.subtitle")}
@@ -213,7 +213,7 @@ const AdminDashboard: React.FC = () => {
                             {row.label}
                           </Box>
                         </TableCell>
-                        <TableCell align="right" sx={{ ...tableBodyCell, fontWeight: 800 }}>
+                        <TableCell align="right" sx={{ ...tableBodyCell, fontWeight: 700 }}>
                           {row.value.toLocaleString()}
                         </TableCell>
                       </TableRow>

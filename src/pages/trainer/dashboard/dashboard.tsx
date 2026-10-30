@@ -35,7 +35,7 @@ import { neutral, statusTone } from '../../../theme';
 
 const statusChipSx = (status: string) => ({
   fontWeight: 700,
-  fontSize: "11px",
+  fontSize: "12px",
   bgcolor: status === "Ongoing" ? statusTone.success.bg : status === "Upcoming" ? statusTone.warning.bg : neutral[100],
   color: status === "Ongoing" ? statusTone.success.solid : status === "Upcoming" ? statusTone.warning.solid : neutral[500],
 });
@@ -75,7 +75,7 @@ const TrainerDashboard: React.FC = () => {
   }
 
   return (
-    <Box sx={{ py: 2 }}>
+    <Box>
       <PageHeader
         title={t("trainer.dashboard.title")}
         subtitle={t("trainer.dashboard.subtitle")}

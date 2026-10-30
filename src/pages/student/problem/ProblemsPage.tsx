@@ -9,7 +9,7 @@ import {
   Paper,
   Grid,
 } from '@mui/material';
-import { styled, keyframes } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import {
   Tag,
   RotateCcw,
@@ -42,49 +42,31 @@ interface ProblemRow {
   raw: BackendProblem;
 }
 
-const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
 
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
 
 const PageContainer = styled(Box)({
   padding: '0',
-  animation: `${fadeIn} 0.5s ease-out`,
+
 });
 
 const WelcomeBanner = styled(Box)({
-  background: `linear-gradient(135deg, ${brand[500]} 0%, ${brand[700]} 50%, ${brand[800]} 100%)`,
-  borderRadius: '20px',
+  backgroundColor: brand[600],
+  borderRadius: '16px',
   padding: '32px',
   color: neutral[0],
   position: 'relative',
   overflow: 'hidden',
   marginBottom: '32px',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: '-50%',
-    right: '-10%',
-    width: '300px',
-    height: '300px',
-    borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(139,29,35,0.4) 0%, transparent 70%)',
-  },
 });
 
 const FilterCard = styled(Paper)({
   padding: '28px',
   marginBottom: '28px',
   border: `1px solid ${neutral[200]}`,
-  borderRadius: '20px',
+  borderRadius: '16px',
   backgroundColor: neutral[0],
   boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-  animation: `${fadeInUp} 0.5s ease-out 200ms both`,
+
 });
 
 const FilterGroup = styled(Box)({
@@ -154,7 +136,7 @@ const DifficultyBadge = styled(Box)<{ difficulty: string }>(({ difficulty }) => 
 }));
 
 const TableSection = styled(Box)({
-  animation: `${fadeInUp} 0.5s ease-out 300ms both`,
+
 });
 
 const DIFFICULTIES: DifficultyLabel[] = ['Easy', 'Medium', 'Hard'];
@@ -246,7 +228,7 @@ export const ProblemBank: React.FC = () => {
         <Chip
           label={row.topic}
           size="small"
-          sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: '11px', borderRadius: '8px' }}
+          sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: '12px', borderRadius: '8px' }}
         />
       ),
     },
@@ -258,7 +240,7 @@ export const ProblemBank: React.FC = () => {
           {row.difficulty === 'Easy' && <Zap size={12} />}
           {row.difficulty === 'Medium' && <Target size={12} />}
           {row.difficulty === 'Hard' && <Flame size={12} />}
-          {row.difficulty}
+          {t(`contest.difficulty.${row.difficulty.toLowerCase()}`, row.difficulty)}
         </DifficultyBadge>
       ),
     },
@@ -283,7 +265,7 @@ export const ProblemBank: React.FC = () => {
               <Chip
                 label={t('student.problems.submitted')}
                 size="small"
-                sx={{ bgcolor: statusTone.success.bg, color: statusTone.success.fg, fontWeight: 700, fontSize: '11px', borderRadius: '8px' }}
+                sx={{ bgcolor: statusTone.success.bg, color: statusTone.success.fg, fontWeight: 700, fontSize: '12px', borderRadius: '8px' }}
               />
             )}
           </Box>
@@ -303,7 +285,7 @@ export const ProblemBank: React.FC = () => {
                   width: 56,
                   height: 56,
                   borderRadius: '16px',
-                  background: `linear-gradient(135deg, ${brand[500]}, ${brand[700]})`,
+                  backgroundColor: brand[500],
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -313,7 +295,7 @@ export const ProblemBank: React.FC = () => {
                 <Library size={28} color={neutral[0]} />
               </Box>
               <Box>
-                <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
                   {t('student.problems.title')}
                 </Typography>
                 <Typography sx={{ opacity: 0.9, fontWeight: 500, fontSize: '14px' }}>
@@ -322,8 +304,8 @@ export const ProblemBank: React.FC = () => {
               </Box>
             </Box>
             <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{problems.length}</Typography>
-              <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '24px', lineHeight: 1 }}>{problems.length}</Typography>
+              <Typography sx={{ fontSize: '12px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
                 {t('student.problems.totalProblems')}
               </Typography>
             </Box>
@@ -338,7 +320,7 @@ export const ProblemBank: React.FC = () => {
             <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: neutral[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Filter size={18} color={brand[500]} />
             </Box>
-            <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px' }}>
+            <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '16px' }}>
               {t('student.problems.filters')}
             </Typography>
           </Box>
@@ -359,7 +341,7 @@ export const ProblemBank: React.FC = () => {
               <FilterChipsStack>
                 <StyledChip label={t('common.all')} onClick={() => setSelectedDifficulty('All')} active={selectedDifficulty === 'All'} size="small" />
                 {DIFFICULTIES.map((d) => (
-                  <StyledChip key={d} label={d} onClick={() => setSelectedDifficulty(d)} active={selectedDifficulty === d} size="small" />
+                  <StyledChip key={d} label={t(`contest.difficulty.${d.toLowerCase()}`, d)} onClick={() => setSelectedDifficulty(d)} active={selectedDifficulty === d} size="small" />
                 ))}
               </FilterChipsStack>
             </FilterGroup>

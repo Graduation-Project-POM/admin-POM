@@ -1,5 +1,11 @@
-import { styled, TableCell, TableHead, TableRow } from "@mui/material";
-import { brand, neutral } from '../../../theme';
+import {
+  TableCell,
+  TableHead,
+  TableRow,
+  type TableCellProps,
+  type TableHeadProps,
+  type TableRowProps,
+} from "@mui/material";
 
 /**
  * Table chrome.
@@ -8,34 +14,15 @@ import { brand, neutral } from '../../../theme';
  * around every table. That nested theme carried no `direction`, so tables lost
  * RTL when the app was in Arabic. The styles now sit on the shared app theme
  * and the rogue theme is gone.
+ *
+ * Header/body typography, padding, borders and the row hover live on the
+ * theme (MuiTableCell / MuiTableRow in src/theme/index.ts), so SharedTable and
+ * the hand-built tables on the dashboards and leaderboard look identical. These
+ * wrappers only keep the names SharedTable already imports.
  */
+export const StyledTableHead = (props: TableHeadProps) => <TableHead {...props} />;
 
-export const StyledTableHead = styled(TableHead)({
-  backgroundColor: neutral[50],
-  "& th": {
-    fontWeight: 700,
-    color: neutral[600],
-    fontSize: "11.5px",
-    letterSpacing: "0.06em",
-    textTransform: "uppercase",
-    padding: "14px",
-    borderBottom: `1px solid ${neutral[200]}`,
-    whiteSpace: "nowrap",
-  },
-});
+// `hover` opts the row into the theme's neutral hover tint.
+export const StyledTableRow = (props: TableRowProps) => <TableRow hover {...props} />;
 
-export const StyledTableRow = styled(TableRow)({
-  transition: "background-color .15s ease",
-  "& td": { borderBottom: `1px solid ${neutral[100]}` },
-  "&:last-of-type td": { borderBottom: "none" },
-  "&:hover": {
-    backgroundColor: brand[50],
-  },
-});
-
-export const StyledTableCell = styled(TableCell)({
-  padding: "14px",
-  color: neutral[800],
-  fontSize: "14px",
-  verticalAlign: "middle",
-});
+export const StyledTableCell = (props: TableCellProps) => <TableCell {...props} />;

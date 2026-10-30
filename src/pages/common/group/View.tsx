@@ -37,7 +37,7 @@ const ViewGroups = ({ open, onClose, group }: ViewGroupProps) => {
     <ModalWrapper open={open} onClose={onClose} title={t('group.view.title')} maxWidth="sm">
       <Stack spacing={3} sx={{ mt: 1 }}>
         <Box>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[800], mb: 1 }}>
             {group.title}
           </Typography>
           <Typography sx={{ color: neutral[500], fontSize: '15px', lineHeight: 1.6 }}>

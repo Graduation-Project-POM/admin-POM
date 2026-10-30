@@ -9,7 +9,7 @@ import {
   Paper,
   Grid,
 } from '@mui/material';
-import { styled, keyframes } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import {
   RotateCcw,
   BookOpen,
@@ -46,40 +46,27 @@ interface Row {
   latestAt: string;
 }
 
-const fadeInUp = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-`;
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
 
-const PageContainer = styled(Box)({ padding: '0', animation: `${fadeIn} 0.5s ease-out` });
+const PageContainer = styled(Box)({ padding: '0' });
 
 const WelcomeBanner = styled(Box)({
-  background: `linear-gradient(135deg, ${brand[500]} 0%, ${brand[700]} 50%, ${brand[800]} 100%)`,
-  borderRadius: '20px',
+  backgroundColor: brand[600],
+  borderRadius: '16px',
   padding: '32px',
   color: neutral[0],
   position: 'relative',
   overflow: 'hidden',
   marginBottom: '32px',
-  '&::before': {
-    content: '""', position: 'absolute', top: '-50%', right: '-10%',
-    width: '300px', height: '300px', borderRadius: '50%',
-    background: 'radial-gradient(circle, rgba(139,29,35,0.4) 0%, transparent 70%)',
-  },
 });
 
 const FilterCard = styled(Paper)({
   padding: '18px',
   marginBottom: '28px',
   border: `1px solid ${neutral[200]}`,
-  borderRadius: '20px',
+  borderRadius: '16px',
   backgroundColor: neutral[0],
   boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-  animation: `${fadeInUp} 0.5s ease-out 200ms both`,
+
 });
 
 const FilterGroup = styled(Box)({ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'flex-start' });
@@ -110,7 +97,7 @@ const DifficultyBadge = styled(Box)<{ difficulty: string }>(({ difficulty }) => 
   ...(difficulty === 'Hard' && { backgroundColor: '#fef2f2', color: statusTone.danger.solid, border: `1px solid ${statusTone.danger.border}` }),
 }));
 
-const TableSection = styled(Box)({ animation: `${fadeInUp} 0.5s ease-out 300ms both` });
+const TableSection = styled(Box)({ });
 
 const DIFFICULTIES: DifficultyLabel[] = ['Easy', 'Medium', 'Hard'];
 const SOURCES = ['All', 'Bank', 'Contest'] as const;
@@ -196,7 +183,7 @@ export const MySubmissions: React.FC = () => {
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.3 }}>
             <Clock size={11} color={neutral[400]} />
-            <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
+            <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
               {new Date(row.latestAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </Typography>
           </Box>
@@ -219,7 +206,7 @@ export const MySubmissions: React.FC = () => {
       id: 'topic',
       label: t('student.mySolutions.columns.topic'),
       render: (row: Row) => (
-        <Chip label={row.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: '11px', borderRadius: '8px' }} />
+        <Chip label={row.topic} size="small" sx={{ bgcolor: neutral[100], color: neutral[600], fontWeight: 600, fontSize: '12px', borderRadius: '8px' }} />
       ),
     },
     {
@@ -232,7 +219,7 @@ export const MySubmissions: React.FC = () => {
               icon={<Layers size={12} />}
               label={t('student.mySolutions.sources.bank')}
               size="small"
-              sx={{ bgcolor: '#eef2ff', color: '#4338ca', fontWeight: 700, fontSize: '11px' }}
+              sx={{ bgcolor: '#eef2ff', color: '#4338ca', fontWeight: 700, fontSize: '12px' }}
             />
           )}
           {row.hasContest && (
@@ -240,7 +227,7 @@ export const MySubmissions: React.FC = () => {
               icon={<Trophy size={12} />}
               label={t('student.mySolutions.sources.contest')}
               size="small"
-              sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '11px' }}
+              sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '12px' }}
             />
           )}
         </Stack>
@@ -267,7 +254,7 @@ export const MySubmissions: React.FC = () => {
           );
         }
         return (
-          <Typography sx={{ fontWeight: 800, color: brand[500], fontSize: '15px' }}>
+          <Typography sx={{ fontWeight: 700, color: brand[500], fontSize: '15px' }}>
             {row.contestScore}
             <Typography component="span" variant="body2" sx={{ color: neutral[400], fontSize: '12px', ml: 0.5 }}>
               / 100
@@ -284,11 +271,11 @@ export const MySubmissions: React.FC = () => {
         <Box sx={{ position: 'relative', zIndex: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 3 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
-              <Box sx={{ width: 56, height: 56, borderRadius: '16px', background: `linear-gradient(135deg, ${brand[500]}, ${brand[700]})`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(139,29,35,0.3)' }}>
+              <Box sx={{ width: 56, height: 56, borderRadius: '16px', backgroundColor: brand[500], display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 8px 20px rgba(139,29,35,0.3)' }}>
                 <BookOpen size={28} color={neutral[0]} />
               </Box>
               <Box>
-                <Typography variant="h4" sx={{ fontWeight: 800, mb: 0.5, letterSpacing: '-0.5px' }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
                   {t('student.mySolutions.title')}
                 </Typography>
                 <Typography sx={{ opacity: 0.9, fontWeight: 500, fontSize: '14px' }}>
@@ -297,8 +284,8 @@ export const MySubmissions: React.FC = () => {
               </Box>
             </Box>
             <Box sx={{ textAlign: 'center', p: 1.5, px: 2.5, bgcolor: 'rgba(255,255,255,0.15)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.2)' }}>
-              <Typography sx={{ fontWeight: 800, fontSize: '24px', lineHeight: 1 }}>{items.length}</Typography>
-              <Typography sx={{ fontSize: '11px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
+              <Typography sx={{ fontWeight: 700, fontSize: '24px', lineHeight: 1 }}>{items.length}</Typography>
+              <Typography sx={{ fontSize: '12px', opacity: 0.9, fontWeight: 600, textTransform: 'uppercase' }}>
                 {t('student.mySolutions.totalSolved')}
               </Typography>
             </Box>
@@ -312,7 +299,7 @@ export const MySubmissions: React.FC = () => {
             <Box sx={{ width: 36, height: 36, borderRadius: '10px', bgcolor: neutral[100], display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Filter size={18} color={brand[500]} />
             </Box>
-            <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px' }}>{t('student.mySolutions.filters')}</Typography>
+            <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '16px' }}>{t('student.mySolutions.filters')}</Typography>
           </Box>
           {hasActiveFilters && (
             <Button variantType="ghost" size="small" startIcon={<RotateCcw size={14} />} onClick={resetFilters} sx={{ color: brand[500] }}>

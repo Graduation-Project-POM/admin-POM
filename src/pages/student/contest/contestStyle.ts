@@ -4,8 +4,8 @@ import { Box, Paper } from '@mui/material';
 import { neutral } from '../../../theme';
 
 export const PageContainer = styled(Box)({
-  padding: '32px 24px',
-  background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
+  padding: 0, // page padding comes from the app layout
+  backgroundColor: neutral[50],
   minHeight: '100vh',
 });
 

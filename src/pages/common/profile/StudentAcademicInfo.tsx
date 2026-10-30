@@ -19,7 +19,7 @@ import {
   type MyStudentProfile,
 } from "../../../services/studentService";
 import { getApiErrorMessage } from "../../../utils/apiError";
-import { brand, neutral, statusTone } from '../../../theme';
+import { brand, neutral, radius, statusTone } from '../../../theme';
 
 interface FormState {
   gradeLevel: string;
@@ -129,7 +129,7 @@ export const StudentAcademicInfo = () => {
   const fieldSx = { "& .MuiOutlinedInput-root": { borderRadius: "12px", backgroundColor: neutral[0] } };
 
   return (
-    <Card sx={{ borderRadius: "20px", border: `1px solid ${neutral[200]}`, boxShadow: "0 4px 12px rgba(0,0,0,0.03)", mt: 4 }}>
+    <Card sx={{ borderRadius: "16px", border: `1px solid ${neutral[200]}`, boxShadow: "0 4px 12px rgba(0,0,0,0.03)", mt: 4 }}>
       <CardContent sx={{ p: 3 }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2, flexWrap: "wrap", gap: 2 }}>
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
@@ -146,17 +146,17 @@ export const StudentAcademicInfo = () => {
             isEditing ? (
               <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
                 <Button variant="contained" startIcon={<Save size={16} />} onClick={handleSave} disabled={saving}
-                  sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, bgcolor: brand[500], "&:hover": { bgcolor: brand[600] } }}>
+                  sx={{ borderRadius: `${radius.sm}px`, textTransform: "none", fontWeight: 600, bgcolor: brand[500], "&:hover": { bgcolor: brand[600] } }}>
                   {saving ? t("common.loading") : t("buttons.save")}
                 </Button>
                 <Button variant="outlined" onClick={handleCancel}
-                  sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, borderColor: neutral[300], color: neutral[500] }}>
+                  sx={{ borderRadius: `${radius.sm}px`, textTransform: "none", fontWeight: 600, borderColor: neutral[300], color: neutral[500] }}>
                   {t("buttons.cancel")}
                 </Button>
               </Box>
             ) : (
               <Button variant="outlined" startIcon={<Edit size={16} />} onClick={() => setIsEditing(true)}
-                sx={{ borderRadius: "40px", textTransform: "none", fontWeight: 600, borderColor: neutral[300], color: neutral[800] }}>
+                sx={{ borderRadius: `${radius.sm}px`, textTransform: "none", fontWeight: 600, borderColor: neutral[300], color: neutral[800] }}>
                 {t("profile.editProfile")}
               </Button>
             )

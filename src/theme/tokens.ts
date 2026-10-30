@@ -88,19 +88,32 @@ export const focusRing = {
 /**
  * Font stacks.
  *
- * Lenos is the display/latin face and is the only webfont actually present in
- * the repo. App.css also declares @font-face blocks for "Readex Pro", but the
- * files they point at (public/fonts/readex/*) do not exist -- the dev server
- * answers those URLs with index.html, which the browser parses as a font with
- * advance widths and no glyphs, rendering every character invisible. So Readex
- * Pro is deliberately NOT referenced here.
+ * Inter (Latin) + IBM Plex Sans Arabic (Arabic), both self-hosted via
+ * @fontsource and imported in main.tsx. Only Plex's Arabic subset is loaded,
+ * so the browser picks per glyph: Latin letters and digits always come from
+ * Inter, Arabic letters from Plex. The two were chosen as a pair — similar
+ * x-height, stroke contrast and weight range — so a line mixing both scripts
+ * reads as one typeface, and English and Arabic screens feel like the same
+ * product. One stack therefore serves both directions.
  *
- * Arabic therefore resolves to the platform UI face (Segoe UI on Windows), the
- * same as before. To switch Arabic to Readex Pro, add the .ttf files under
- * public/fonts/readex/ and put '"Readex Pro"' at the front of `rtl`.
+ * Previously Latin used Lenos, a display face, for all text (body, tables,
+ * labels), and Arabic fell back to the platform font, so the two languages
+ * looked like different apps.
  */
 export const fontStack = {
-  ltr: '"Lenos", system-ui, -apple-system, "Segoe UI", sans-serif',
-  rtl: 'system-ui, -apple-system, "Segoe UI", "Lenos", sans-serif',
+  ui: '"Inter Variable", "IBM Plex Sans Arabic", system-ui, -apple-system, "Segoe UI", sans-serif',
   mono: '"SFMono-Regular", ui-monospace, Menlo, Consolas, "Liberation Mono", monospace',
+} as const;
+
+/**
+ * Type sizes for the rare spot that can't use a Typography variant (badges,
+ * table headers, inline meta). 12px is the floor: Arabic in particular turns
+ * illegible below it.
+ */
+export const fontSize = {
+  xs: "0.75rem", // 12px — captions, badges, table headers
+  sm: "0.8125rem", // 13px — secondary/meta text
+  md: "0.875rem", // 14px — default UI text
+  lg: "1rem", // 16px — emphasised body, card titles
+  xl: "1.125rem", // 18px — section titles
 } as const;

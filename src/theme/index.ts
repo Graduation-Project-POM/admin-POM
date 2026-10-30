@@ -2,6 +2,7 @@ import { createTheme, type Theme } from "@mui/material/styles";
 import {
   brand,
   focusRing,
+  fontSize,
   fontStack,
   neutral,
   radius,
@@ -20,8 +21,16 @@ export * from "./surfaces";
  * Pages that pass their own `sx` still win — this raises the floor without
  * moving anything a page deliberately styled.
  */
-export const createAppTheme = (direction: "ltr" | "rtl"): Theme =>
-  createTheme({
+export const createAppTheme = (direction: "ltr" | "rtl"): Theme => {
+  const isRtl = direction === "rtl";
+  // Negative tracking tightens Latin headings; on Arabic it pulls the joined
+  // letters apart, so it is applied in English only.
+  const tracking = (value: string) => (isRtl ? "normal" : value);
+  // Arabic letterforms have taller ascenders and deeper descenders than Latin
+  // at the same size, so running text needs a little more leading.
+  const leading = (ltr: number, rtl: number) => (isRtl ? rtl : ltr);
+
+  return createTheme({
     direction,
 
     palette: {
@@ -57,21 +66,32 @@ export const createAppTheme = (direction: "ltr" | "rtl"): Theme =>
     },
 
     // A real scale, so a heading is picked from the ramp instead of being
-    // hand-set with fontWeight/fontSize at each call site.
+    // hand-set at each call site. Weights top out at 700: with everything at
+    // 800 nothing stood out. h4 is the page title (PageHeader).
     typography: {
-      fontFamily: direction === "rtl" ? fontStack.rtl : fontStack.ltr,
-      h1: { fontSize: "2.5rem", fontWeight: 800, lineHeight: 1.2, letterSpacing: "-0.02em" },
-      h2: { fontSize: "2rem", fontWeight: 800, lineHeight: 1.25, letterSpacing: "-0.02em" },
-      h3: { fontSize: "1.625rem", fontWeight: 800, lineHeight: 1.3, letterSpacing: "-0.01em" },
-      h4: { fontSize: "1.375rem", fontWeight: 800, lineHeight: 1.35, letterSpacing: "-0.01em" },
-      h5: { fontSize: "1.125rem", fontWeight: 700, lineHeight: 1.4 },
-      h6: { fontSize: "1rem", fontWeight: 700, lineHeight: 1.45 },
-      subtitle1: { fontSize: "0.9375rem", fontWeight: 600, lineHeight: 1.5 },
-      subtitle2: { fontSize: "0.8125rem", fontWeight: 600, lineHeight: 1.5 },
-      body1: { fontSize: "0.9375rem", lineHeight: 1.65 },
-      body2: { fontSize: "0.875rem", lineHeight: 1.6 },
-      caption: { fontSize: "0.75rem", lineHeight: 1.5 },
-      button: { fontSize: "0.875rem", fontWeight: 600, textTransform: "none" },
+      fontFamily: fontStack.ui,
+      fontWeightRegular: 400,
+      fontWeightMedium: 500,
+      fontWeightBold: 700,
+      h1: { fontSize: "2.25rem", fontWeight: 700, lineHeight: leading(1.2, 1.35), letterSpacing: tracking("-0.025em") },
+      h2: { fontSize: "1.875rem", fontWeight: 700, lineHeight: leading(1.25, 1.4), letterSpacing: tracking("-0.02em") },
+      h3: { fontSize: "1.5rem", fontWeight: 700, lineHeight: leading(1.3, 1.45), letterSpacing: tracking("-0.02em") },
+      h4: { fontSize: "1.375rem", fontWeight: 700, lineHeight: leading(1.35, 1.5), letterSpacing: tracking("-0.015em") },
+      h5: { fontSize: "1.125rem", fontWeight: 600, lineHeight: leading(1.4, 1.55), letterSpacing: tracking("-0.01em") },
+      h6: { fontSize: "1rem", fontWeight: 600, lineHeight: leading(1.45, 1.6), letterSpacing: tracking("-0.005em") },
+      subtitle1: { fontSize: "0.9375rem", fontWeight: 500, lineHeight: leading(1.5, 1.7) },
+      subtitle2: { fontSize: "0.8125rem", fontWeight: 600, lineHeight: leading(1.5, 1.7) },
+      body1: { fontSize: "0.9375rem", lineHeight: leading(1.6, 1.8) },
+      body2: { fontSize: "0.875rem", lineHeight: leading(1.55, 1.75) },
+      caption: { fontSize: fontSize.xs, lineHeight: leading(1.45, 1.6) },
+      overline: {
+        fontSize: fontSize.xs,
+        fontWeight: 600,
+        lineHeight: 1.5,
+        letterSpacing: tracking("0.06em"),
+        textTransform: "uppercase",
+      },
+      button: { fontSize: fontSize.md, fontWeight: 600, textTransform: "none", letterSpacing: "normal" },
     },
 
     shape: { borderRadius: radius.lg },
@@ -291,9 +311,155 @@ export const createAppTheme = (direction: "ltr" | "rtl"): Theme =>
         },
       },
 
+      // Every table — SharedTable, the dashboards, the leaderboard — reads
+      // its look from here, so they can't drift apart again.
       MuiTableCell: {
         styleOverrides: {
-          root: { borderColor: neutral[100] },
+          root: {
+            borderColor: neutral[100],
+            paddingBlock: 14,
+            paddingInline: 16,
+            fontSize: fontSize.md,
+            color: neutral[700],
+            verticalAlign: "middle",
+          },
+          head: {
+            backgroundColor: neutral[50],
+            borderBottom: `1px solid ${neutral[200]}`,
+            color: neutral[500],
+            fontSize: fontSize.xs,
+            fontWeight: 600,
+            lineHeight: 1.5,
+            whiteSpace: "nowrap",
+            // Small caps-style headers in English; Arabic has no case and
+            // tracking would break its joins.
+            textTransform: isRtl ? "none" : "uppercase",
+            letterSpacing: tracking("0.05em"),
+          },
+          // Columns of numbers line up when every digit has the same width.
+          body: { fontVariantNumeric: "tabular-nums" },
+        },
+      },
+
+      MuiTableRow: {
+        styleOverrides: {
+          root: {
+            transition: "background-color .15s ease",
+            "&:last-of-type > td": { borderBottom: "none" },
+            "&.MuiTableRow-hover:hover": { backgroundColor: neutral[50] },
+          },
+        },
+      },
+
+      MuiTablePagination: {
+        styleOverrides: {
+          root: { borderTop: `1px solid ${neutral[100]}`, color: neutral[600] },
+          selectLabel: { fontSize: fontSize.sm },
+          displayedRows: { fontSize: fontSize.sm, fontVariantNumeric: "tabular-nums" },
+        },
+      },
+
+      MuiPaginationItem: {
+        styleOverrides: {
+          root: {
+            borderRadius: radius.sm,
+            fontWeight: 500,
+            color: neutral[600],
+            "&.Mui-selected": {
+              backgroundColor: brand[50],
+              color: brand[600],
+              fontWeight: 600,
+              "&:hover": { backgroundColor: brand[100] },
+            },
+          },
+        },
+      },
+
+      MuiTabs: {
+        styleOverrides: {
+          root: { minHeight: 44, borderBottom: `1px solid ${neutral[200]}` },
+          indicator: { height: 2, borderRadius: 2, backgroundColor: brand[500] },
+        },
+      },
+
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            minHeight: 44,
+            paddingInline: 16,
+            textTransform: "none",
+            fontSize: fontSize.md,
+            fontWeight: 500,
+            color: neutral[500],
+            "&:hover": { color: neutral[800] },
+            "&.Mui-selected": { color: brand[600], fontWeight: 600 },
+            "&:focus-visible": focusRing,
+          },
+        },
+      },
+
+      MuiDialogTitle: {
+        styleOverrides: {
+          root: {
+            fontSize: "1.125rem",
+            fontWeight: 600,
+            color: neutral[900],
+            paddingBlock: 20,
+            paddingInline: 24,
+          },
+        },
+      },
+
+      MuiDialogContent: {
+        styleOverrides: { root: { paddingBlock: 20, paddingInline: 24 } },
+      },
+
+      MuiDialogActions: {
+        styleOverrides: {
+          root: {
+            paddingBlock: 16,
+            paddingInline: 24,
+            gap: 8,
+            borderTop: `1px solid ${neutral[100]}`,
+            "& > :not(style) ~ :not(style)": { marginInlineStart: 0 },
+          },
+        },
+      },
+
+      MuiCard: {
+        defaultProps: { elevation: 0 },
+        styleOverrides: {
+          root: {
+            borderRadius: radius["2xl"],
+            border: `1px solid ${neutral[200]}`,
+            boxShadow: shadow.xs,
+          },
+        },
+      },
+
+      MuiSelect: {
+        styleOverrides: { icon: { color: neutral[400] } },
+      },
+
+      MuiAutocomplete: {
+        styleOverrides: {
+          paper: {
+            borderRadius: radius.md,
+            border: `1px solid ${neutral[200]}`,
+            boxShadow: shadow.md,
+          },
+          option: { fontSize: fontSize.md },
+        },
+      },
+
+      MuiBadge: {
+        styleOverrides: { badge: { fontWeight: 600, fontSize: "0.6875rem" } },
+      },
+
+      MuiLinearProgress: {
+        styleOverrides: {
+          root: { height: 6, borderRadius: radius.pill, backgroundColor: neutral[100] },
+          bar: { borderRadius: radius.pill },
         },
       },
 
@@ -328,5 +494,6 @@ export const createAppTheme = (direction: "ltr" | "rtl"): Theme =>
       },
     },
   });
+};
 
 export const theme = createAppTheme("ltr");

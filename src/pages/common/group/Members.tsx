@@ -127,7 +127,7 @@ const Members = ({ open, onClose, group, onMembersChanged }: MembersProps) => {
                       variantType="danger"
                       size="small"
                       onClick={() => handleRemove(member.studentId)}
-                      sx={{ fontSize: '11px', px: 1, py: 0.5, height: '28px' }}
+                      sx={{ fontSize: '12px', px: 1, py: 0.5, height: '28px' }}
                     >
                       {t('group.members.remove')}
                     </Button>

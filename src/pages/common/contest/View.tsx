@@ -34,7 +34,7 @@ const DetailItem = ({
     <Box sx={{ minWidth: 0 }}>
       <Typography
         sx={{
-          fontSize: "11px",
+          fontSize: "12px",
           fontWeight: 600,
           color: neutral[400],
           textTransform: "uppercase",
@@ -106,7 +106,7 @@ const ViewContest = ({ open, onClose, contest }: ViewContestProps) => {
           </Stack>
           <Typography
             variant="h6"
-            sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}
+            sx={{ fontWeight: 700, color: neutral[800], mb: 1 }}
           >
             {contest.title}
           </Typography>

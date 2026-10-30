@@ -23,7 +23,7 @@ const StatusChip = styled(Box)<{ status: string }>(({ status }) => ({
   gap: '6px',
   padding: '4px 12px',
   borderRadius: '999px',
-  fontSize: '11px',
+  fontSize: '12px',
   fontWeight: 700,
   textTransform: 'uppercase',
   letterSpacing: '0.5px',
@@ -67,7 +67,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
       <Box>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
           <Box>
-            <Typography sx={{ fontWeight: 800, color: neutral[800], fontSize: '16px', mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '16px', mb: 0.5 }}>
               {contest.title}
             </Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
@@ -80,7 +80,7 @@ export const ContestCard: React.FC<ContestCardProps> = ({ contest, onViewProblem
                 size="small"
                 sx={{
                   fontWeight: 700,
-                  fontSize: '11px',
+                  fontSize: '12px',
                   bgcolor: diffColor.bg,
                   color: diffColor.color,
                   border: `1px solid ${diffColor.border}`,

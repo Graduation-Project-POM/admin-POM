@@ -22,7 +22,9 @@
     "contestCard": {
       "noData": "No contest data available",
       "untitled": "Untitled Contest",
+      "participants_one": "{{count}} Participant",
       "participants": "{{count}} Participants",
+      "problemsStat_one": "{{count}} Problem",
       "problemsStat": "{{count}} Problems",
       "start": "Start: {{date}}",
       "end": "End: {{date}}",
@@ -31,14 +33,18 @@
       "problems": "Problems"
     },
     "groupCard": {
+      "students_one": "{{count}} Student",
       "students": "{{count}} Students",
-      "trainer": "{{count}} Trainer",
+      "trainer_one": "{{count}} Trainer",
+      "trainer": "{{count}} Trainers",
       "trainerLabel": "Trainer: {{name}}",
       "created": "Created: {{date}}",
       "members": "Members"
     },
     "studentContestCard": {
+      "problems_one": "{{count}} Problem",
       "problems": "{{count}} Problems",
+      "participants_one": "{{count}} Participant",
       "participants": "{{count}} Participants",
       "solveProblems": "Solve Problems",
       "viewProblemsGrades": "View Problems & Grades",

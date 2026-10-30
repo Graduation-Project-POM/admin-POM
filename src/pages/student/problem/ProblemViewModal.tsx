@@ -38,7 +38,7 @@ export const ProblemViewModal = ({ open, onClose, problem }: ProblemViewModalPro
             )}
             <Chip label={difficulty} size="small" sx={{ fontWeight: 600, ...difficultyStyle(difficulty) }} />
           </Stack>
-          <Typography variant="h6" sx={{ fontWeight: 800, color: neutral[800] }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: neutral[800] }}>
             {problem.title}
           </Typography>
         </Box>

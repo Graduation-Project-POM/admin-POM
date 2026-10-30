@@ -37,7 +37,7 @@ export const approveButton: SxProps<Theme> = {
   textTransform: 'none',
   bgcolor: statusTone.success.fg,
   '&:hover': { bgcolor: '#165a34' },
-  fontSize: '0.7rem',
+  fontSize: '12px',
 };
 
 export const tableContainer: SxProps<Theme> = {
@@ -80,7 +80,7 @@ export const publishedChip = {
   color: statusTone.success.fg,
   fontWeight: 600,
   borderRadius: '30px',
-  fontSize: '0.7rem',
+  fontSize: '12px',
 };
 
 export const draftChip = {
@@ -88,5 +88,5 @@ export const draftChip = {
   color: neutral[500],
   fontWeight: 600,
   borderRadius: '30px',
-  fontSize: '0.7rem',
+  fontSize: '12px',
 };

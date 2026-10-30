@@ -508,7 +508,7 @@ export const ContestsPage: React.FC = () => {
     ];
 
     return (
-      <StyledContainer maxWidth="xl">
+      <StyledContainer maxWidth="xl" disableGutters>
         <Button
           variantType="outline"
           startIcon={<ArrowLeft size={18} />}
@@ -645,7 +645,7 @@ export const ContestsPage: React.FC = () => {
   }
 
   return (
-    <StyledContainer maxWidth="xl">
+    <StyledContainer maxWidth="xl" disableGutters>
       <PageHeader
         title={t("contest.list.title")}
         subtitle={t("contest.list.subtitle")}

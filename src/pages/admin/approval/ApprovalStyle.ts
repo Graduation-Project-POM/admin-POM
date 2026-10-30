@@ -3,28 +3,8 @@ import { Box, Card, Chip, Avatar, Typography, Button } from '@mui/material';
 import { brand, neutral, statusTone } from '../../../theme';
 
 export const PageContainer = styled(Box)({
-  padding: '40px 24px',
+  padding: 0, // page padding comes from the app layout
   minHeight: '100vh',
-});
-
-export const HeaderSection = styled(Box)({
-  marginBottom: '40px',
-  display: 'flex',
-  alignItems: 'flex-start',
-  gap: '16px',
-});
-
-export const IconBadge = styled(Box)({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: 56,
-  height: 56,
-  borderRadius: '16px',
-  background: 'linear-gradient(135deg, rgba(139, 29, 35, 0.15) 0%, rgba(139, 29, 35, 0.05) 100%)',
-  color: brand[500],
-  fontSize: '28px',
-  flexShrink: 0,
 });
 
 export const PendingCard = styled(Card)({
@@ -43,7 +23,7 @@ export const PendingCard = styled(Card)({
     left: 0,
     right: 0,
     height: '4px',
-    background: `linear-gradient(90deg, ${brand[500]} 0%, ${brand[300]} 100%)`,
+    backgroundColor: brand[500],
   },
 });
 

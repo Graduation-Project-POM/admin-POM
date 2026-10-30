@@ -92,7 +92,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                     icon={<User size={11} />}
                     label={t('student.problemDetails.yourBadge')}
                     size="small"
-                    sx={{ bgcolor: brand[500], color: neutral[0], fontWeight: 700, fontSize: '10px', height: 20 }}
+                    sx={{ bgcolor: brand[500], color: neutral[0], fontWeight: 700, fontSize: '12px', height: 20 }}
                   />
                 )}
               </Box>
@@ -104,14 +104,14 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                 icon={<Layers size={11} />}
                 label={t('student.problemDetails.bankBadge')}
                 size="small"
-                sx={{ bgcolor: '#eef2ff', color: '#4338ca', fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: '#eef2ff', color: '#4338ca', fontWeight: 700, fontSize: '12px', height: 22 }}
               />
             ) : (
               <Chip
                 icon={<Trophy size={11} />}
                 label={t('student.problemDetails.contestBadge')}
                 size="small"
-                sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '12px', height: 22 }}
               />
             )}
             <Chip
@@ -122,7 +122,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                 bgcolor: isDraft ? neutral[100] : statusTone.success.bg,
                 color: isDraft ? neutral[600] : statusTone.success.fg,
                 fontWeight: 700,
-                fontSize: '10px',
+                fontSize: '12px',
                 height: 22,
               }}
             />
@@ -130,14 +130,14 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
               <Chip
                 label={t('student.problemDetails.points', { score: submission.grade })}
                 size="small"
-                sx={{ bgcolor: statusTone.success.bg, color: statusTone.success.fg, fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: statusTone.success.bg, color: statusTone.success.fg, fontWeight: 700, fontSize: '12px', height: 22 }}
               />
             )}
             {isPending && (
               <Chip
                 label={t('student.problemDetails.pendingGrade')}
                 size="small"
-                sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '10px', height: 22 }}
+                sx={{ bgcolor: statusTone.warning.bg, color: statusTone.warning.fg, fontWeight: 700, fontSize: '12px', height: 22 }}
               />
             )}
           </Box>

@@ -58,3 +58,14 @@
 [dir="rtl"] .fa-arrow-circle-right {
   transform: scaleX(-1);
 }
+
+/*
+ * Arabic is a joined script: any letter-spacing pulls the connected letters
+ * apart. Several components track their small uppercase labels for English;
+ * in Arabic there is no case and the tracking only damages the text, so it is
+ * switched off for the whole RTL tree in one place rather than per component.
+ */
+[dir="rtl"],
+[dir="rtl"] * {
+  letter-spacing: normal !important;
+}

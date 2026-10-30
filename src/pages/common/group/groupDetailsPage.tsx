@@ -518,7 +518,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 </Button>
                 <Paper elevation={0} sx={{ p: 3, borderRadius: '16px', border: `1px solid ${neutral[200]}`, mb: 4, bgcolor: neutral[50] }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2, flexWrap: 'wrap' }}>
-                        <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800], flex: 1, minWidth: 0 }}>
+                        <Typography variant="h5" sx={{ fontWeight: 700, color: neutral[800], flex: 1, minWidth: 0 }}>
                             {t('group.details.problemsTitle', { title: selectedContest.title })}
                         </Typography>
                         <Button
@@ -656,7 +656,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             </Button>
 
             <HeaderSection>
-                <Typography variant="h4" sx={{ fontWeight: 800, color: neutral[800], mb: 1 }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: neutral[800], mb: 1 }}>
                     {group.title}
                 </Typography>
                 <Typography variant="body1" sx={{ color: neutral[500], mb: 2, maxWidth: '800px' }}>
@@ -797,7 +797,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                                     {trainer.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase()}
                                 </Avatar>
                                 <Box>
-                                    <Typography variant="h5" sx={{ fontWeight: 800, color: neutral[800] }}>{trainer.name}</Typography>
+                                    <Typography variant="h5" sx={{ fontWeight: 700, color: neutral[800] }}>{trainer.name}</Typography>
                                     {trainer.email && (
                                         <Typography variant="body2" sx={{ color: neutral[500], mb: 2, fontWeight: 500 }}>{trainer.email}</Typography>
                                     )}

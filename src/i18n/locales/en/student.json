@@ -307,6 +307,7 @@
       "yourGrade": "Your Grade",
       "trainerComments": "Trainer Comments",
       "courseProgress": "Course Progress",
+      "studentsCount_one": "{{count}} Student",
       "studentsCount": "{{count}} Students",
       "trainerLabel": "Trainer: {{name}}",
       "since": "Since {{date}}",
