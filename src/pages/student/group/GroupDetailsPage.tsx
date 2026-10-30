@@ -172,7 +172,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             title: x.title,
             status: getContestStatus(x.startAt, x.endAt),
             difficulty: 'Medium',
-            participants: group.studentsCount,
+            participants: x.participantCount ?? 0,
             problemsCount: 0,
             startDate: x.startAt,
             endDate: x.endAt,
@@ -197,7 +197,6 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 p.id === c.id
                   ? {
                     ...p,
-                    participants: group.studentsCount,
                     problemsCount: info?.problemCount ?? problems.length,
                     difficulty,
                   }

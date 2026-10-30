@@ -34,4 +34,6 @@ export interface GroupContest {
   addDate: string;
   startAt: string;
   endAt: string;
+  // Distinct students who submitted to the contest (from any of its groups).
+  participantCount?: number;
 }
