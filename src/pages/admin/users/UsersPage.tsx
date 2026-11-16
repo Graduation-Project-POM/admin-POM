@@ -12,7 +12,7 @@ import {
   roleIdToLabel,
   type BackendUser,
 } from "../../../services/userService";
-import { getApiErrorMessage } from "../../../utils/apiError";
+import { getApiErrorMessage, toDisplayError } from "../../../utils/apiError";
 import { neutral, statusTone } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
 
@@ -89,7 +89,7 @@ export const AdminUsersPage = () => {
     open: boolean;
     title: string;
     message: string;
-    onConfirm: () => void;
+    onConfirm: () => void | Promise<unknown>;
   }>({
     open: false,
     title: "",
@@ -125,7 +125,7 @@ export const AdminUsersPage = () => {
       await Promise.all(ids.map((id) => deleteUser(Number(id))));
       await loadUsers();
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, t("admin.users.form.deleteError")));
+      throw toDisplayError(err, t("admin.users.form.deleteError"));
     }
   };
 

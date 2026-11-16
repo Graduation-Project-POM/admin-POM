@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack, MenuItem, Box } from "@mui/material";
+import { Stack, MenuItem, Box, Alert } from "@mui/material";
+import { getApiErrorMessage } from "../../../utils/apiError";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Button } from "../../../components/ui/button/Button";
@@ -10,7 +11,7 @@ interface EditContestProps {
   open: boolean;
   onClose: () => void;
   contest: ContestData | null;
-  onSave: (contest: ContestData) => void;
+  onSave: (contest: ContestData) => void | Promise<unknown>;
 }
 
 const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
@@ -21,6 +22,20 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     startDate: "",
     endDate: "",
   });
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (open) setError(null);
+  }, [open]);
+
+  // Shown as soon as both dates are filled in, not after pressing save.
+  const dateError =
+    formData.startDate &&
+    formData.endDate &&
+    new Date(formData.endDate).getTime() <= new Date(formData.startDate).getTime()
+      ? t("common.endBeforeStart", "End date must be after the start date.")
+      : null;
 
   useEffect(() => {
     if (contest) {
@@ -39,17 +54,22 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (contest) {
-      onSave({
-        ...contest,
-        ...formData,
-      });
+    if (!contest || dateError) return;
+    setError(null);
+    setSubmitting(true);
+    try {
+      await onSave({ ...contest, ...formData });
+      onClose();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t("contest.errors.updateFailed", "Failed to update contest")));
+    } finally {
+      setSubmitting(false);
     }
-    onClose();
   };
 
   return (
@@ -60,6 +80,11 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
             label={t("contest.fields.contestTitle")}
@@ -98,11 +123,13 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
               value={formData.endDate}
               onChange={handleChange}
               required
+              error={!!dateError}
+              helperText={dateError ?? undefined}
             />
           </Box>
         </Stack>
 
-        <Button sx={{ mt: 3 }} variantType="default" type="submit">
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting || !!dateError}>
           {t("contest.edit.submitButton")}
         </Button>
       </form>

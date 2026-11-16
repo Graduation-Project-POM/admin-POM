@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Box, CircularProgress, Pagination, Paper, Typography } from '@mui/material';
 import { MessagesSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getApiErrorMessage } from '../../utils/apiError';
+import { getApiErrorMessage, toDisplayError } from '../../utils/apiError';
 import {
   addComment,
   deleteComment,
@@ -64,6 +64,8 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
     document.getElementById('problem-discussion')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
+  // Errors are re-thrown so the composer / confirm dialog that started the
+  // action can show them right where the user is, and keep what they typed.
   const run = async (
     action: () => Promise<unknown>,
     fallbackKey: string,
@@ -72,12 +74,16 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
     setActionError(null);
     try {
       await action();
+    } catch (err: unknown) {
+      throw toDisplayError(err, t(fallbackKey));
+    }
+    try {
       const updated = await getDiscussion(problemId);
       setComments(updated);
       // Comments are oldest-first, so a new top-level comment lands on the last page.
       if (jumpToLastPage) setPage(Math.max(1, Math.ceil(updated.length / PAGE_SIZE)));
     } catch (err: unknown) {
-      setActionError(getApiErrorMessage(err, t(fallbackKey)));
+      setActionError(getApiErrorMessage(err, t('discussion.loadError')));
     }
   };
 

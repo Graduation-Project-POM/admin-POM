@@ -16,7 +16,7 @@ import { ConfirmationModal } from "../../../components/common/modal/Confirmation
 import CreateProblem from "./Create";
 import EditProblem, { type ProblemEditValues } from "./Edit";
 import { SharedTable } from "../../../components/ui/table/tables";
-import { getApiErrorMessage } from "../../../utils/apiError";
+import { getApiErrorMessage, toDisplayError } from "../../../utils/apiError";
 import { brand, neutral, statusTone } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
 import { PageHeader } from '../../../components/common/shell';
@@ -127,7 +127,7 @@ export const ProblemsPage = () => {
     open: boolean;
     title: string;
     message: string;
-    onConfirm: () => void;
+    onConfirm: () => void | Promise<unknown>;
   }>({
     open: false,
     title: "",
@@ -193,7 +193,7 @@ export const ProblemsPage = () => {
       await Promise.all(ids.map((id) => deleteProblem(Number(id))));
       await loadProblems();
     } catch (err: unknown) {
-      setError(getApiErrorMessage(err, t("problem.list.loadError")));
+      throw toDisplayError(err, t("problem.delete.error", "Failed to delete problem"));
     }
   };
 

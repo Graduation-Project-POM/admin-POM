@@ -8,6 +8,7 @@ export function getApiErrorCode(err: unknown): string | undefined {
 }
 
 export function getApiErrorMessage(err: unknown, fallback: string): string {
+  if (err instanceof DisplayError) return err.message;
   if (axios.isAxiosError(err)) {
    
     if (!err.response) {
@@ -38,4 +39,22 @@ export function getApiErrorMessage(err: unknown, fallback: string): string {
   }
 
   return fallback;
+}
+
+/**
+ * An error whose message is already user-facing. Pages throw it from save /
+ * confirm handlers so the open form or dialog can show the message inline
+ * instead of the page showing it after the dialog closes.
+ */
+export class DisplayError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "DisplayError";
+  }
+}
+
+/** Wraps any caught error into a DisplayError with a readable message. */
+export function toDisplayError(err: unknown, fallback: string): DisplayError {
+  if (err instanceof DisplayError) return err;
+  return new DisplayError(getApiErrorMessage(err, fallback));
 }

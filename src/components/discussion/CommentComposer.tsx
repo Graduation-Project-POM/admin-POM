@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
-import { Box, Paper, TextField, Typography } from '@mui/material';
+import { Alert, Box, Paper, TextField, Typography } from '@mui/material';
+import { getApiErrorMessage } from '../../utils/apiError';
 import { ImagePlus, Send, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button/Button';
@@ -31,6 +32,7 @@ export const CommentComposer = ({
   const [body, setBody] = useState(initialBody);
   const [photo, setPhoto] = useState<string | null>(initialPhoto);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEmpty = !body.trim() && !photo;
@@ -47,10 +49,14 @@ export const CommentComposer = ({
   const handleSubmit = async () => {
     if (isEmpty || busy) return;
     setBusy(true);
+    setError(null);
     try {
       await onSubmit(body.trim(), photo);
       setBody('');
       setPhoto(null);
+    } catch (err) {
+      // Keep what the user typed and show the reason right here.
+      setError(getApiErrorMessage(err, t('common.actionFailed', 'Action failed')));
     } finally {
       setBusy(false);
     }
@@ -58,6 +64,11 @@ export const CommentComposer = ({
 
   return (
     <Box>
+      {error && (
+        <Alert severity="error" sx={{ mb: 1.5, borderRadius: '12px' }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
       <TextField
         multiline
         minRows={compact ? 2 : 3}

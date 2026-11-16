@@ -213,7 +213,7 @@ export const CommentCard = ({
       <ConfirmationModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => void onDelete(comment.id)}
+        onConfirm={() => onDelete(comment.id)}
         title={t('discussion.deleteTitle')}
         message={
           comment.replies.length > 0

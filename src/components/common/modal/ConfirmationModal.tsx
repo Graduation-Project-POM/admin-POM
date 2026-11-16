@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -7,17 +7,23 @@ import {
   DialogActions,
   Typography,
   Box,
+  Alert,
   styled,
 } from '@mui/material';
 import { AlertCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../../ui/button/Button';
 import { statusTone } from '../../../theme';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 interface ConfirmationModalProps {
   open: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  /**
+   * May return a promise. The dialog waits for it: on success it closes,
+   * on failure it stays open and shows the error message inside itself.
+   */
+  onConfirm: () => void | Promise<unknown>;
   title: string;
   message: string;
   confirmLabel?: string;
@@ -47,13 +53,36 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isDanger = true,
 }) => {
   const { t } = useTranslation();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      setError(null);
+      setBusy(false);
+    }
+  }, [open]);
+
+  const handleConfirm = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      await onConfirm();
+      onClose();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('common.actionFailed', 'Action failed')));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const titleId = 'confirm-title';
   const messageId = 'confirm-message';
 
   return (
     <StyledDialog
       open={open}
-      onClose={onClose}
+      onClose={busy ? undefined : onClose}
       aria-labelledby={titleId}
       aria-describedby={messageId}
     >
@@ -90,20 +119,23 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         >
           {message}
         </DialogContentText>
+        {error && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            {error}
+          </Alert>
+        )}
       </DialogContent>
 
       <DialogActions sx={{ p: 2, gap: 1 }}>
-        <Button variantType="outline" onClick={onClose}>
+        <Button variantType="outline" onClick={onClose} disabled={busy}>
           {cancelLabel ?? t('buttons.cancel')}
         </Button>
         <Button
           variantType={isDanger ? 'danger' : 'default'}
-          onClick={() => {
-            onConfirm();
-            onClose();
-          }}
+          onClick={() => void handleConfirm()}
+          disabled={busy}
         >
-          {confirmLabel ?? t('buttons.confirm')}
+          {busy ? t('common.loading') : confirmLabel ?? t('buttons.confirm')}
         </Button>
       </DialogActions>
     </StyledDialog>

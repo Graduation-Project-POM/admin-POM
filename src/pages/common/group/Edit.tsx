@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Stack } from '@mui/material';
+import { Stack, Alert } from '@mui/material';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
 import { Button } from '../../../components/ui/button/Button';
@@ -14,7 +15,7 @@ interface EditGroupProps {
   open: boolean;
   onClose: () => void;
   group: GroupData | null;
-  onSave: (group: GroupData & { studentIds: number[] }) => void;
+  onSave: (group: GroupData & { studentIds: number[] }) => void | Promise<unknown>;
 }
 
 const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
@@ -23,11 +24,14 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
   const [description, setDescription] = useState('');
   const [studentIds, setStudentIds] = useState<number[]>([]);
   const [students, setStudents] = useState<StudentOption[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open || !group) return;
     setTitle(group.title);
     setDescription(group.description);
+    setError(null);
     studentService.getAccepted().then(setStudents).catch(() => setStudents([]));
     groupService
       .getStudents(Number(group.id))
@@ -35,17 +39,29 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
       .catch(() => setStudentIds([]));
   }, [open, group]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (group) {
-      onSave({ ...group, title, description, studentIds });
+    if (!group) return;
+    setError(null);
+    setSubmitting(true);
+    try {
+      await onSave({ ...group, title, description, studentIds });
+      onClose();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('group.errors.updateFailed', 'Failed to update group')));
+    } finally {
+      setSubmitting(false);
     }
-    onClose();
   };
 
   return (
     <ModalWrapper open={open} onClose={onClose} title={t('group.edit.title')} maxWidth="sm">
       <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
             label={t('group.edit.groupTitle')}
@@ -70,7 +86,7 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
             onChange={setStudentIds}
           />
         </Stack>
-        <Button sx={{ mt: 3 }} variantType="default" type="submit">
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting}>
           {t('buttons.save')}
         </Button>
       </form>

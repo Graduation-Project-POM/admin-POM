@@ -42,7 +42,8 @@
       "singleTitle": "Delete Problem",
       "singleMessage": "Are you sure you want to delete this problem? This action cannot be undone.",
       "bulkTitle": "Delete Problems",
-      "bulkMessage": "Are you sure you want to delete {{count}} selected problems? This action cannot be undone."
+      "bulkMessage": "Are you sure you want to delete {{count}} selected problems? This action cannot be undone.",
+      "error": "Failed to delete problem"
     },
     "form": {
       "createTitle": "Create New Problem",

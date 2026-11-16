@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack, MenuItem, Box } from "@mui/material";
+import { Stack, MenuItem, Box, Alert } from "@mui/material";
+import { getApiErrorMessage } from "../../../utils/apiError";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Button } from "../../../components/ui/button/Button";
@@ -11,7 +12,7 @@ import type { Group } from "../../../types/group";
 interface CreateContestProps {
   open: boolean;
   onClose: () => void;
-  onSave: (contest: ContestData & { groupId: number }) => void;
+  onSave: (contest: ContestData & { groupId: number }) => void | Promise<unknown>;
 
   fixedGroupId?: number;
 }
@@ -24,6 +25,20 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
     startDate: "",
     endDate: "",
   });
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (open) setError(null);
+  }, [open]);
+
+  // Shown as soon as both dates are filled in, not after pressing save.
+  const dateError =
+    formData.startDate &&
+    formData.endDate &&
+    new Date(formData.endDate).getTime() <= new Date(formData.startDate).getTime()
+      ? t("common.endBeforeStart", "End date must be after the start date.")
+      : null;
   const [groupId, setGroupId] = useState<number | "">("");
   const [groups, setGroups] = useState<Group[]>([]);
 
@@ -42,24 +57,37 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (dateError) return;
     const finalGroupId = fixedGroupId ?? (groupId === "" ? 0 : groupId);
-    if (!finalGroupId) return;
-    onSave({
-      id: String(Math.floor(Math.random() * 10000)),
-      title: formData.title,
-      status: "Upcoming",
-      difficulty: formData.difficulty,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
-      participants: 0,
-      problemsCount: 0,
-      groupId: finalGroupId,
-    });
-    onClose();
+    if (!finalGroupId) {
+      setError(t("contest.fields.groupRequired", "Please choose a group."));
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    try {
+      await onSave({
+        id: String(Math.floor(Math.random() * 10000)),
+        title: formData.title,
+        status: "Upcoming",
+        difficulty: formData.difficulty,
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        participants: 0,
+        problemsCount: 0,
+        groupId: finalGroupId,
+      });
+      onClose();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t("contest.errors.createFailed", "Failed to create contest")));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -70,6 +98,11 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
       maxWidth="sm"
     >
       <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
             label={t("contest.fields.contestTitle")}
@@ -132,11 +165,13 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
               value={formData.endDate}
               onChange={handleChange}
               required
+              error={!!dateError}
+              helperText={dateError ?? undefined}
             />
           </Box>
         </Stack>
 
-        <Button sx={{ mt: 3 }} variantType="default" type="submit">
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting || !!dateError}>
           {t("contest.create.submitButton")}
         </Button>
       </form>

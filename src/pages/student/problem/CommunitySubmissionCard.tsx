@@ -4,7 +4,7 @@ import { Eye, EyeOff, Layers, Trash2, Trophy, User } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { resolveMediaUrl } from '../../../utils/media';
 import { Button } from '../../../components/ui/button/Button';
-import { getApiErrorMessage } from '../../../utils/apiError';
+import { getApiErrorMessage, toDisplayError } from '../../../utils/apiError';
 import { ConfirmationModal } from '../../../components/common/modal/ConfirmationModal';
 import {
   deleteBankSubmission,
@@ -56,10 +56,9 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
     try {
       if (source === 'bank') await deleteBankSubmission(submission.id);
       else await deleteContestSubmission(submission.id);
-      setConfirmOpen(false);
       onChanged?.();
     } catch (err) {
-      setError(getApiErrorMessage(err, t('student.problemDetails.deleteError')));
+      throw toDisplayError(err, t('student.problemDetails.deleteError'));
     } finally {
       setBusy(false);
     }
@@ -196,7 +195,7 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
       <ConfirmationModal
         open={confirmOpen}
         onClose={() => setConfirmOpen(false)}
-        onConfirm={() => void onConfirmDelete()}
+        onConfirm={onConfirmDelete}
         title={t('student.problemDetails.deleteTitle')}
         message={t('student.problemDetails.deleteMessage')}
       />
