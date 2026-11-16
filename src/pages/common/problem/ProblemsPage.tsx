@@ -197,21 +197,41 @@ export const ProblemsPage = () => {
     }
   };
 
+  // Submissions and discussion messages that deleting these problems would also remove.
+  const deletionImpact = (ids: string[]) =>
+    rawProblems
+      .filter((p) => ids.includes(String(p.id)))
+      .reduce(
+        (acc, p) => ({
+          submissions: acc.submissions + (p.submissionCount ?? 0),
+          comments: acc.comments + (p.commentCount ?? 0),
+        }),
+        { submissions: 0, comments: 0 },
+      );
+
   const handleDelete = (id: string) => {
+    const impact = deletionImpact([id]);
+    const hasData = impact.submissions > 0 || impact.comments > 0;
     setConfirmConfig({
       open: true,
       title: t("problem.delete.singleTitle"),
-      message: t("problem.delete.singleMessage"),
+      message: hasData
+        ? t("problem.delete.singleWithDataMessage", impact)
+        : t("problem.delete.singleMessage"),
       onConfirm: () => removeProblems([id]),
     });
   };
 
   const handleBulkDelete = (ids: string[]) => {
     if (ids.length === 0) return;
+    const impact = deletionImpact(ids);
+    const hasData = impact.submissions > 0 || impact.comments > 0;
     setConfirmConfig({
       open: true,
       title: t("problem.delete.bulkTitle"),
-      message: t("problem.delete.bulkMessage", { count: ids.length }),
+      message: hasData
+        ? t("problem.delete.bulkWithDataMessage", { count: ids.length, ...impact })
+        : t("problem.delete.bulkMessage", { count: ids.length }),
       onConfirm: () => removeProblems(ids),
     });
   };

@@ -19,7 +19,11 @@ export interface BackendProblem {
   publisherName?: string | null;
   canModify?: boolean;
   points: number;       
-  solvedCount: number;  
+  solvedCount: number;
+  /** Bank + contest submissions; deleting the problem removes them. */
+  submissionCount?: number;
+  /** Discussion messages incl. replies; deleting the problem removes them. */
+  commentCount?: number;
 }
 
 export const Difficulty = {

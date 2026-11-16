@@ -164,7 +164,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         const graded = subs.filter((s) => s.gradedAt != null || s.score != null).length;
         return {
             totalSubmissions: total,
-            studentsSolved: graded,
+            // "Solved" = submitted a solution, counted once per student.
+            studentsSolved: new Set(subs.map((s) => s.studentId)).size,
             acceptanceRate: total > 0 ? Math.round((graded / total) * 100) : 0,
         };
     };
