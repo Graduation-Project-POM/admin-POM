@@ -268,7 +268,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                         id: String(x.contestId),
                         title: x.title,
                         status: getContestStatus(d?.startAt ?? x.addDate, d?.endAt ?? x.addDate),
-                        difficulty: 'Medium',
+                        difficulty: (d && DIFFICULTY_LABEL[d.difficulty]) || 'Medium',
                         participants: d?.studentCount ?? 0,
                         problemsCount: d?.problemCount ?? 0,
                         startDate: d?.startAt ?? x.addDate,
@@ -469,6 +469,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 title: newContest.title,
                 description: '',
                 status: getContestStatusNumber(startAt, endAt),
+                difficulty: DIFFICULTY_FROM_LABEL[newContest.difficulty] ?? 2,
                 startAt,
                 endAt,
                 problemIds: [],
@@ -488,6 +489,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             await contestService.update(Number(updated.id), {
                 title: updated.title,
                 status: getContestStatusNumber(startAt, endAt),
+                difficulty: DIFFICULTY_FROM_LABEL[updated.difficulty] ?? 2,
                 startAt,
                 endAt,
             });

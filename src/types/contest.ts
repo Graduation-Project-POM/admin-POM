@@ -19,6 +19,8 @@ export interface Contest {
   title: string;
   description: string;
   status: ContestStatus;
+  // 1 = Easy, 2 = Medium, 3 = Hard (same values as problem difficulty).
+  difficulty: number;
   startAt: string; 
   endAt: string; 
   trainerId: number;
@@ -33,6 +35,7 @@ export interface CreateContestInput {
   title: string;
   description?: string;
   status: ContestStatus;
+  difficulty?: number;
   startAt: string; 
   endAt: string; 
   problemIds?: number[];

@@ -44,6 +44,23 @@ import { useNavigate } from 'react-router-dom';
 import { brand, neutral, statusTone } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
 
+// Under a problem's title: the submission date, or "Not Submitted" in red when
+// there's no submission (or no usable date), instead of "Invalid Date".
+const SubmissionDateLine: React.FC<{ status: string; submittedAt: string }> = ({ status, submittedAt }) => {
+  const { t } = useTranslation();
+  const date = submittedAt ? new Date(submittedAt) : null;
+  const submitted = status === 'submitted' && date != null && !isNaN(date.getTime());
+  return submitted ? (
+    <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
+      {t('student.groupDetails.submittedOn', { date: date!.toLocaleDateString() })}
+    </Typography>
+  ) : (
+    <Typography variant="body2" sx={{ color: statusTone.danger.solid, fontSize: '11px', fontWeight: 600 }}>
+      {t('student.groupDetails.statusNotSubmitted')}
+    </Typography>
+  );
+};
+
 
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
   const { children, value, index, ...other } = props;
@@ -194,7 +211,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             contestService.getMyProblems(Number(c.id)).catch(() => [] as Record<string, any>[]),
           ]).then(([info, problems]) => {
             if (cancelled) return;
-            const difficulty = problems.length
+            // The contest's own difficulty (set by its trainer); fall back to the
+            // average of its problems only if it couldn't be loaded.
+            const difficulty = info?.difficulty && DIFFICULTY_LABEL[info.difficulty]
+              ? DIFFICULTY_LABEL[info.difficulty]
+              : problems.length
               ? DIFFICULTY_LABEL[
               Math.round(
                 problems.reduce((sum, p) => sum + (Number(p.difficulty) || 2), 0) / problems.length,
@@ -375,11 +396,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                     <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '14px' }}>
                       {row.title}
                     </Typography>
-                    {row.status === 'submitted' && (
-                      <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
-                        {t('student.groupDetails.submittedOn', { date: new Date(row.submittedAt).toLocaleDateString() })}
-                      </Typography>
-                    )}
+                    <SubmissionDateLine status={row.status} submittedAt={row.submittedAt} />
                   </Box>
                 </Box>
               )
@@ -771,9 +788,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   <Typography sx={{ fontWeight: 700, color: neutral[800], fontSize: '14px' }}>
                     {row.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ color: neutral[400], fontSize: '11px' }}>
-                    {t('student.groupDetails.submittedOn', { date: new Date(row.submittedAt).toLocaleDateString() })}
-                  </Typography>
+                  <SubmissionDateLine status={row.status} submittedAt={row.submittedAt} />
                 </Box>
               )
             },

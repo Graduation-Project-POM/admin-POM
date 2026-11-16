@@ -13,6 +13,7 @@ import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
   getAllProblemSolutions,
+  getMyDraftsForProblem,
   difficultyIdToLabel,
   type MyProblemSolutions,
   type Submission,
@@ -36,8 +37,22 @@ export const StudentMySolutionDetailsPage = () => {
     setError(null);
     try {
       const id = Number(problemId);
-      const result = await getAllProblemSolutions(id);
-      setData(result);
+      // The community list only has published solutions, so the student's own
+      // drafts are loaded separately and added. Without them, a solution saved
+      // as a draft vanished from this page and couldn't be published again.
+      const [result, drafts] = await Promise.all([
+        getAllProblemSolutions(id),
+        getMyDraftsForProblem(id).catch(() => null),
+      ]);
+      const mergeById = (published: Submission[], own: Submission[] | undefined) => {
+        const seen = new Set(published.map((x) => x.id));
+        return [...(own ?? []).filter((x) => !seen.has(x.id)), ...published];
+      };
+      setData({
+        ...result,
+        bankSubmissions: mergeById(result.bankSubmissions, drafts?.bankSubmissions),
+        contestSubmissions: mergeById(result.contestSubmissions, drafts?.contestSubmissions),
+      });
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, t('student.mySolutionDetails.notFound')));
     } finally {
