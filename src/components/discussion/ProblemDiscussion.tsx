@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Alert, Box, CircularProgress, Paper, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, Pagination, Paper, Typography } from '@mui/material';
 import { MessagesSquare } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { getApiErrorMessage } from '../../utils/apiError';
@@ -18,6 +18,9 @@ interface ProblemDiscussionProps {
   problemId: number;
 }
 
+/** Top-level comments per page; replies always stay with their parent. */
+const PAGE_SIZE = 5;
+
 
 export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
   const { t } = useTranslation();
@@ -25,10 +28,12 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   const load = useCallback(async () => {
     setLoading(true);
     setLoadError(null);
+    setPage(1);
     try {
       setComments(await getDiscussion(problemId));
     } catch (err: unknown) {
@@ -47,11 +52,30 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
     [comments],
   );
 
-  const run = async (action: () => Promise<unknown>, fallbackKey: string) => {
+  const pageCount = Math.max(1, Math.ceil(comments.length / PAGE_SIZE));
+  const currentPage = Math.min(page, pageCount);
+  const pagedComments = useMemo(
+    () => comments.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+    [comments, currentPage],
+  );
+
+  const goToPage = (next: number) => {
+    setPage(next);
+    document.getElementById('problem-discussion')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const run = async (
+    action: () => Promise<unknown>,
+    fallbackKey: string,
+    jumpToLastPage = false,
+  ) => {
     setActionError(null);
     try {
       await action();
-      setComments(await getDiscussion(problemId));
+      const updated = await getDiscussion(problemId);
+      setComments(updated);
+      // Comments are oldest-first, so a new top-level comment lands on the last page.
+      if (jumpToLastPage) setPage(Math.max(1, Math.ceil(updated.length / PAGE_SIZE)));
     } catch (err: unknown) {
       setActionError(getApiErrorMessage(err, t(fallbackKey)));
     }
@@ -61,6 +85,7 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
     run(
       () => addComment(problemId, { body: body || undefined, photoFileKey: photo ?? undefined }),
       'discussion.postError',
+      true,
     );
 
   const handleReply = (parentId: number, body: string, photo: string | null) =>
@@ -84,7 +109,7 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
     run(() => deleteComment(commentId), 'discussion.deleteError');
 
   return (
-    <Box sx={{ mt: 5 }}>
+    <Box id="problem-discussion" sx={{ mt: 5, scrollMarginTop: 80 }}>
       <Typography
         variant="h5"
         sx={{ fontWeight: 800, color: '#1e293b', mb: 1, display: 'flex', alignItems: 'center', gap: 1.5 }}
@@ -139,7 +164,7 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
         </Paper>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {comments.map((comment) => (
+          {pagedComments.map((comment) => (
             <CommentCard
               key={comment.id}
               comment={comment}
@@ -148,6 +173,23 @@ export const ProblemDiscussion = ({ problemId }: ProblemDiscussionProps) => {
               onDelete={handleDelete}
             />
           ))}
+          {pageCount > 1 && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
+              <Pagination
+                count={pageCount}
+                page={currentPage}
+                onChange={(_, value) => goToPage(value)}
+                shape="rounded"
+                sx={{
+                  '& .MuiPaginationItem-root.Mui-selected': {
+                    bgcolor: '#8B1D23',
+                    color: '#fff',
+                    '&:hover': { bgcolor: '#6f171c' },
+                  },
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
     </Box>

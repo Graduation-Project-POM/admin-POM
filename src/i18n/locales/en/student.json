@@ -244,7 +244,12 @@
       "noSolution": "No solution text submitted.",
       "communitySolutions": "Community Solutions ({{count}})",
       "noSolutionsYet": "No solutions yet.",
-      "beFirst": "Be the first to submit a solution to this problem."
+      "beFirst": "Be the first to submit a solution to this problem.",
+      "showOthers": "Show Other Students' Solutions",
+      "hideOthers": "Hide Other Students' Solutions",
+      "noMySubmissionsYet": "You haven't submitted a solution to this problem yet.",
+      "noOtherSolutions": "No other students have shared a solution to this problem yet.",
+      "othersLoadError": "Failed to load other students' solutions."
     },
     "groups": {
       "title": "My Groups",

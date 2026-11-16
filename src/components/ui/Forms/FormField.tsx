@@ -23,6 +23,16 @@ interface FormFieldProps {
   error?: boolean;
   helperText?: string;
   autoComplete?: string;
+  /**
+   * When false, the field is still marked required (asterisk, aria-required)
+   * but the browser's native `required` check is skipped, so the form's own
+   * submit handler validates it and shows a visible message. Needed for MUI
+   * selects: their native input is hidden, so a native validation failure
+   * blocks the submit with no visible feedback.
+   */
+  nativeRequired?: boolean;
+  /** Selects only: render the label of the option whose value is '' (a placeholder). */
+  displayEmpty?: boolean;
   children?: React.ReactNode;
 }
 
@@ -41,6 +51,8 @@ export const FormField: React.FC<FormFieldProps> = ({
   error = false,
   helperText,
   autoComplete,
+  nativeRequired = true,
+  displayEmpty = false,
   children,
 }) => {
   const isSelect = select || type === 'select' || Boolean(options);
@@ -63,18 +75,28 @@ export const FormField: React.FC<FormFieldProps> = ({
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        required={required}
+        required={required && nativeRequired}
         error={error}
         helperText={helperText}
         multiline={multiline}
         rows={rows}
         select={isSelect}
         slotProps={{
-          ...(isSelect ? { select: {} } : {}),
+          ...(isSelect
+            ? {
+                select: {
+                  ...(displayEmpty ? { displayEmpty: true } : {}),
+                  ...(required && !nativeRequired
+                    ? { SelectDisplayProps: { 'aria-required': true } as React.HTMLAttributes<HTMLDivElement> }
+                    : {}),
+                },
+              }
+            : {}),
           formHelperText: helperId ? { id: helperId } : undefined,
           htmlInput: {
             'aria-describedby': helperId,
             'aria-invalid': error || undefined,
+            ...(required && !nativeRequired ? { 'aria-required': true } : {}),
             autoComplete,
           },
         }}

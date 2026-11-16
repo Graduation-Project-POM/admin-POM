@@ -8,6 +8,8 @@ import { getApiErrorMessage } from '../../../utils/apiError';
 import { resolveMediaUrl } from '../../../utils/media';
 import { getContestStatus } from '../../../utils/contestStatus';
 import { DIFFICULTY_LABEL } from '../../../types/problem';
+import type { ProblemExample } from '../../../services/problemService';
+import { ProblemConstraintsExamples } from '../../../components/problem/ProblemConstraintsExamples';
 import {
   Box,
   Typography,
@@ -68,6 +70,8 @@ interface StudentContestProblem {
   imageSolution: string;
   questionText: string;
   questionImage: string;
+  constraints: string | null;
+  examples: ProblemExample[] | null;
   grade: number;
   maxGrade: number;
   feedback: string;
@@ -106,6 +110,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           imageSolution: resolveMediaUrl(p.solutionPhotoUrl) ?? '',
           questionText: p.statement ?? '',
           questionImage: resolveMediaUrl(p.photoUrl) ?? '',
+          constraints: p.constraints ?? null,
+          examples: Array.isArray(p.examples) ? p.examples : null,
           grade: p.score ?? 0,
           maxGrade: 100,
           feedback: p.feedback ?? '',
@@ -501,6 +507,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               </Box>
             )}
 
+            <Box sx={{ mb: 3, '& > hr:first-of-type': { mt: 0 } }}>
+              <ProblemConstraintsExamples constraints={questionProblem?.constraints} examples={questionProblem?.examples} />
+            </Box>
+
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 3 }}>
               <Button variantType="outline" onClick={() => setQuestionModalOpen(false)}>
                 {t('buttons.close')}
@@ -888,6 +898,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                 </Paper>
               </Box>
             )}
+
+            <Box sx={{ mb: 3, '& > hr:first-of-type': { mt: 0 } }}>
+              <ProblemConstraintsExamples constraints={questionProblem?.constraints} examples={questionProblem?.examples} />
+            </Box>
 
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', textTransform: 'uppercase', letterSpacing: 0.5 }}>

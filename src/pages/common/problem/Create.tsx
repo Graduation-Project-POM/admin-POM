@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Stack, Alert } from '@mui/material';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
@@ -63,6 +63,12 @@ const CreateProblem = ({
   const [statusTouched, setStatusTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const errorRef = useRef<HTMLDivElement>(null);
+
+  // The form is long and the submit button sits at the bottom; bring a new error into view.
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [error]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -137,7 +143,7 @@ const CreateProblem = ({
     >
       <form onSubmit={handleSubmit}>
         {error && (
-          <Alert severity="error" sx={{ mb: 2 }}>
+          <Alert severity="error" sx={{ mb: 2 }} ref={errorRef}>
             {error}
           </Alert>
         )}
@@ -169,6 +175,8 @@ const CreateProblem = ({
               value={status}
               onChange={handleStatusChange}
               required
+              nativeRequired={false}
+              displayEmpty
               error={statusInvalid}
               helperText={statusInvalid ? t('problem.form.statusRequired') : undefined}
               options={[

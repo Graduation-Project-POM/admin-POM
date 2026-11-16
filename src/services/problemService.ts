@@ -158,6 +158,29 @@ export interface MyProblemSolutions {
   contestSubmissions: Submission[];
 }
 
+export interface SubmissionLists {
+  bankSubmissions: Submission[];
+  contestSubmissions: Submission[];
+}
+
+/** Student Problem Bank: own submissions, plus other students' published ones when requested. */
+export interface StudentProblemSolutions {
+  problemId: number;
+  mine: SubmissionLists;
+  /** null unless requested with includeOthers. */
+  others: SubmissionLists | null;
+}
+
+export const getStudentProblemSolutions = async (
+  problemId: number,
+  includeOthers: boolean,
+): Promise<StudentProblemSolutions> => {
+  const response = await api.get<StudentProblemSolutions>(`${BASE}/${problemId}/bank/solutions`, {
+    params: { includeOthers },
+  });
+  return response.data;
+};
+
 export const getMyProblemSolutions = async (
   problemId: number,
 ): Promise<MyProblemSolutions> => {

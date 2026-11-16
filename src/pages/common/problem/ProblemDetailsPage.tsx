@@ -23,6 +23,7 @@ import {
 import { problemsService, type ProblemSubmission } from '../../../services/problemsService';
 import { resolveMediaUrl } from '../../../utils/media';
 import { ProblemDiscussion } from '../../../components/discussion/ProblemDiscussion';
+import { ProblemConstraintsExamples } from '../../../components/problem/ProblemConstraintsExamples';
 import { brand, neutral, statusTone } from '../../../theme';
 import { LoadingState } from '../../../components/common/states';
 
@@ -288,8 +289,10 @@ export const ProblemDetailsPage = ({ problemId: problemIdProp, onBack, source = 
           {problem.statement || t('problem.details.noStatement')}
         </Typography>
 
+        <ProblemConstraintsExamples constraints={problem.constraints} examples={problem.examples} />
+
         {problem.photoUrl && (
-          <Box sx={{ mb: 2, borderRadius: '12px', overflow: 'hidden', border: `1px solid ${neutral[200]}` }}>
+          <Box sx={{ mt: 3, mb: 2, borderRadius: '12px', overflow: 'hidden', border: `1px solid ${neutral[200]}` }}>
             <img src={resolveMediaUrl(problem.photoUrl) ?? undefined} alt={problem.title} style={{ width: '100%', height: 'auto', display: 'block' }} />
           </Box>
         )}
