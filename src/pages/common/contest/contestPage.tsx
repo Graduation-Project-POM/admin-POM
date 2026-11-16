@@ -39,7 +39,7 @@ import CreateContest from "./Create";
 import ViewContest from "./View";
 import Leaderboard from "./Leaderboard";
 import CreateProblem, { type ProblemFormValues } from "../problem/Create";
-import EditProblem, { type ProblemEditValues } from "../problem/Edit";
+import EditProblem, { type EditProblemSource, type ProblemEditValues } from "../problem/Edit";
 import ProblemDetailModal from "../problem/ProblemDetailModal";
 import { StudentProgressModal } from "../../trainer/problems-solution/StudentProgressModeal";
 import { SolutionDetailModal } from "../../trainer/problems-solution/SolutionDetailsModal";
@@ -198,6 +198,8 @@ export const ContestsPage: React.FC = () => {
 
   const [isAddProblemOpen, setIsAddProblemOpen] = useState(false);
   const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
+  // Full saved data of the problem being edited (loaded when the form opens).
+  const [editProblemSource, setEditProblemSource] = useState<EditProblemSource | null>(null);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
 
   // Problem whose full details (statement, constraints, examples, image) are shown.
@@ -372,6 +374,32 @@ export const ContestsPage: React.FC = () => {
     }
   };
 
+  // Opens the edit form prefilled with the problem's full saved data, so saving
+  // doesn't blank fields the contest table doesn't hold (statement, constraints,
+  // examples, image, points, published state).
+  const handleOpenEditProblem = async (row: Problem) => {
+    setActionError(null);
+    try {
+      const detail = await problemsService.getById(Number(row.id));
+      setEditProblemSource({
+        id: String(detail.id),
+        title: detail.title,
+        statement: detail.statement ?? "",
+        constraints: detail.constraints ?? "",
+        examples: detail.examples ?? [],
+        topic: detail.topic,
+        difficulty: DIFFICULTY_LABEL[detail.difficulty] ?? "Medium",
+        photoUrl: detail.photoUrl ?? "",
+        isPublished: detail.isPublished,
+        points: detail.points,
+      });
+      setSelectedProblem(row);
+      setIsEditProblemOpen(true);
+    } catch (err) {
+      setActionError(getApiErrorMessage(err, t("group.details.loadProblemFailed", "Failed to load problem")));
+    }
+  };
+
   const handleUpdateProblem = async (form: ProblemEditValues) => {
     if (selectedContestId === null) return;
     if (selectedContestEnded) {
@@ -389,10 +417,11 @@ export const ContestsPage: React.FC = () => {
         isPublished: form.isPublished,
         points: form.points,
       });
-      await loadContestProblems(selectedContestId);
     } catch (err) {
-      throw toDisplayError(err, t("contest.errors.updateProblemFailed", "Failed to update problem"));
+      throw toDisplayError(err, t("group.details.updateProblemFailed", "Failed to update problem"));
     }
+    // Reload outside the try: a failed refresh after a successful save is not a failed update.
+    await loadContestProblems(selectedContestId);
   };
 
   const handleDeleteProblem = (id: string) => {
@@ -590,8 +619,7 @@ export const ContestsPage: React.FC = () => {
               selectedContestEnded
                 ? undefined
                 : (row) => {
-                    setSelectedProblem(row);
-                    setIsEditProblemOpen(true);
+                    void handleOpenEditProblem(row);
                   }
             }
             onSingleDelete={selectedContestEnded ? undefined : handleDeleteProblem}
@@ -614,18 +642,10 @@ export const ContestsPage: React.FC = () => {
           onClose={() => {
             setIsEditProblemOpen(false);
             setSelectedProblem(null);
+            setEditProblemSource(null);
           }}
           requireStatus={false}
-          problem={
-            selectedProblem
-              ? {
-                  id: selectedProblem.id,
-                  title: selectedProblem.name,
-                  category: "",
-                  difficulty: selectedProblem.difficulty,
-                }
-              : null
-          }
+          problem={editProblemSource}
           onSave={handleUpdateProblem}
         />
 

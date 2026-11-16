@@ -39,7 +39,7 @@ import type { ProblemSubmission } from '../../../services/problemsService';
 import { StudentProgressModal } from '../../trainer/problems-solution/StudentProgressModeal';
 import { SolutionDetailModal } from '../../trainer/problems-solution/SolutionDetailsModal';
 import { getApiErrorMessage, toDisplayError, DisplayError } from '../../../utils/apiError';
-import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL } from '../../../types/problem';
+import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL, type ProblemExample } from '../../../types/problem';
 import { getContestStatus, getContestStatusNumber } from '../../../utils/contestStatus';
 import { brand, neutral, statusTone } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
@@ -88,6 +88,9 @@ interface ProblemEditPrefill {
     id: string;
     title: string;
     description: string;
+    constraints: string;
+    examples: ProblemExample[];
+    isPublished: boolean;
     imageUrl: string;
     category: string;
     difficulty: string;
@@ -386,6 +389,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 id: String(detail.id),
                 title: detail.title,
                 description: detail.statement ?? '',
+                // Without these, saving would wipe constraints/examples and
+                // unpublish the problem (the form falls back to empty / draft).
+                constraints: detail.constraints ?? '',
+                examples: detail.examples ?? [],
+                isPublished: detail.isPublished,
                 imageUrl: detail.photoUrl ?? '',
                 category: detail.topic,
                 difficulty: DIFFICULTY_LABEL[detail.difficulty] ?? 'Medium',
