@@ -65,7 +65,9 @@
     "ACCOUNT_INACTIVE": "Your account has been deactivated. Please contact an administrator.",
     "RATE_LIMITED": "Too many login attempts. Please try again in a minute",
     "CONTEST_ENDED": "This contest has ended and can no longer be edited",
-    "GROUP_REQUIRED": "A contest must be assigned to a group"
+    "GROUP_REQUIRED": "A contest must be assigned to a group",
+    "PHONE_EXISTS": "This phone number is already registered to another account",
+    "INVALID_ROLE": "You can only sign up as a student or a trainer"
   },
   "success": {
     "saved": "Changes saved successfully",

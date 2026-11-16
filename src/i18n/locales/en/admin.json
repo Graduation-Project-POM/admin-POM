@@ -104,7 +104,8 @@
           "genderRequired": "Please select a gender.",
           "passwordRequired": "Password is required.",
           "passwordShort": "Password must be at least 8 characters.",
-          "confirmPasswordRequired": "Please confirm the password."
+          "confirmPasswordRequired": "Please confirm the password.",
+          "phoneTaken": "This phone number is already registered to another account."
         },
         "roles": {
           "student": "Student",
@@ -114,22 +115,33 @@
         "genders": {
           "male": "Male",
           "female": "Female"
+        },
+        "passwordGenerateHint": "Leave blank to generate a secure password automatically.",
+        "generatedPassword": {
+          "message": "User created. A secure password was generated. Copy it now and share it with the user — it won't be shown again.",
+          "label": "Generated password",
+          "copy": "Copy password",
+          "copied": "Copied",
+          "done": "Done"
         }
       }
     },
     "approvals": {
-      "title": "Trainer Approvals",
-      "subtitle": "Review and approve trainer registration requests",
+      "title": "Registration Requests",
+      "subtitle": "Review and approve registration requests",
       "pendingRequests": "Pending Requests",
-      "trainerApplication": "Trainer Application",
-      "noPending": "No pending trainer requests at the moment.",
+      "trainerApplication": "Trainer registration",
+      "noPending": "No pending requests at the moment.",
       "approvalHistory": "Approval History",
       "searchPlaceholder": "Search history...",
       "columns": {
         "name": "Name",
         "specialization": "Specialization",
         "submitted": "Submitted",
-        "status": "Status"
+        "status": "Status",
+        "role": "Role",
+        "details": "Details",
+        "email": "Email"
       },
       "actions": {
         "view": "View",
@@ -137,12 +149,12 @@
         "reject": "Reject"
       },
       "confirm": {
-        "approveTitle": "Approve Trainer",
+        "approveTitle": "Approve User",
         "rejectTitle": "Reject Application",
         "bulkDeleteTitle": "Delete History",
         "deleteTitle": "Delete Entry",
-        "approveMessage": "Are you sure you want to approve {{name}} as a trainer? They will be able to create and manage courses.",
-        "rejectMessage": "Are you sure you want to reject {{name}}'s application? They will be notified of the rejection.",
+        "approveMessage": "Are you sure you want to approve {{name}}? They will be able to log in as a {{role}}.",
+        "rejectMessage": "Are you sure you want to reject {{name}}'s request? Their account will be removed.",
         "bulkDeleteMessage": "Are you sure you want to delete {{count}} selected entries from history? This cannot be undone.",
         "deleteMessage": "Are you sure you want to delete this history entry? This cannot be undone.",
         "approveLabel": "Approve",
@@ -172,7 +184,10 @@
       },
       "loadFailed": "Failed to load approvals",
       "actionFailed": "Action failed",
-      "studentApplication": "Student registration"
+      "studentApplication": "Student registration",
+      "status": {
+        "approved": "Approved"
+      }
     }
   }
 }

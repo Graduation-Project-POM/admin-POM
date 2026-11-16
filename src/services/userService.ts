@@ -34,9 +34,17 @@ export interface CreateUserPayload {
   phoneNumber?: string;
   gender?: string;
   profileImageUrl?: string;
-  password: string;
+  // Omit to have the backend generate a secure random password.
+  password?: string;
   roleID: number;
   isActive?: boolean;
+}
+
+export interface CreateUserResponse {
+  message: string;
+  userId: number;
+  // Set only when no password was sent; returned this once, never stored.
+  generatedPassword?: string | null;
 }
 
 export interface UpdateUserPayload {
@@ -78,8 +86,8 @@ export const updateCurrentUser = async (data: UpdateUserPayload) => {
   return response.data;
 };
 
-export const createUser = async (data: CreateUserPayload) => {
-  const response = await api.post("/User", data);
+export const createUser = async (data: CreateUserPayload): Promise<CreateUserResponse> => {
+  const response = await api.post<CreateUserResponse>("/User", data);
   return response.data;
 };
 
@@ -119,4 +127,63 @@ export const roleNameToId = (roleName: string): number => {
     default:
       return RoleId.Student;
   }
+};
+
+// One sign-up request on the admin Approvals page (GET /User/approvals),
+// for any self-registering role.
+export interface ApprovalRequest {
+  userId: number;
+  // Student.Id or Trainer.Id — what accept and the profile page are keyed by.
+  profileId: number;
+  role: "Student" | "Trainer";
+  name: string;
+  email: string;
+  phoneNumber: string;
+  isAccepted: boolean;
+  createdAt: string;
+  // Grade level for students, specialization for trainers.
+  detail: string;
+}
+
+// Raw row from GET /User/approvals.
+interface ApprovalResponse {
+  userId: number;
+  profileId: number;
+  role: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phoneNumber?: string | null;
+  isAccepted: boolean;
+  createdAt?: string;
+  gradeLevel?: string | null;
+  specialization?: string | null;
+}
+
+export const approvalService = {
+  getAll: async (): Promise<ApprovalRequest[]> => {
+    const { data } = await api.get<ApprovalResponse[]>("/User/approvals");
+    return data.map((a) => ({
+      userId: Number(a.userId),
+      profileId: Number(a.profileId),
+      role: a.role === "Trainer" ? "Trainer" : "Student",
+      name: `${a.firstName ?? ""} ${a.lastName ?? ""}`.trim(),
+      email: a.email ?? "",
+      phoneNumber: a.phoneNumber ?? "",
+      isAccepted: Boolean(a.isAccepted),
+      createdAt: a.createdAt ?? "",
+      detail: (a.role === "Trainer" ? a.specialization : a.gradeLevel) ?? "",
+    }));
+  },
+
+  // PATCH /Student/{id}/accept or /Trainer/{id}/accept.
+  accept: async (request: ApprovalRequest): Promise<void> => {
+    await api.patch(`/${request.role}/${request.profileId}/accept`);
+  },
+
+  // Rejecting (or deleting from history) removes the user account and its
+  // role profile, whatever the role.
+  remove: async (userId: number): Promise<void> => {
+    await deleteUser(userId);
+  },
 };

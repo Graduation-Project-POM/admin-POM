@@ -5,8 +5,9 @@ import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Label } from "../../../components/ui/label/Label";
 import { useTranslation } from "react-i18next";
-import { updateUser, roleNameToId } from "../../../services/userService";
-import { getApiErrorMessage } from "../../../utils/apiError";
+import { updateUser, roleNameToId, type BackendUser } from "../../../services/userService";
+import { getApiErrorCode, getApiErrorMessage } from "../../../utils/apiError";
+import { isPhoneTaken, normalizePhone } from "../../../utils/phone";
 import { brand } from '../../../theme';
 
 interface UserFormData {
@@ -37,6 +38,8 @@ interface EditUserModalProps {
   onClose: () => void;
   userData: UserFormData | null;
   onSuccess?: () => void;
+  // Users already loaded on the page, for the duplicate phone check.
+  existingUsers?: BackendUser[];
 }
 
 type FieldConfig = {
@@ -67,7 +70,7 @@ const emptyPasswords: PasswordFields = { password: "", confirmPassword: "" };
 
 type FieldErrors = Partial<Record<FormKey, string>>;
 
-const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
+const Edit = ({ open, onClose, userData, onSuccess, existingUsers = [] }: EditUserModalProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<UserFormData>(userData || emptyForm);
   const [passwords, setPasswords] = useState<PasswordFields>(emptyPasswords);
@@ -132,6 +135,8 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
 
     if (v(formData.phone) && !/^[+0-9][0-9\s\-()]{6,}$/.test(v(formData.phone)))
       e.phone = t("admin.users.form.validation.phoneInvalid");
+    else if (isPhoneTaken(formData.phone, existingUsers, formData.id))
+      e.phone = t("admin.users.form.validation.phoneTaken");
 
     if (!formData.role) e.role = t("admin.users.form.validation.roleRequired");
 
@@ -162,7 +167,7 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
         lastName: formData.lastName,
         userName: formData.userName,
         email: formData.email,
-        phoneNumber: formData.phone || undefined,
+        phoneNumber: normalizePhone(formData.phone) ?? undefined,
         gender: formData.gender || undefined,
         profileImageUrl: formData.profileImageUrl || "",
         // Only send the role when it changed, so roles the dropdown can't
@@ -174,7 +179,9 @@ const Edit = ({ open, onClose, userData, onSuccess }: EditUserModalProps) => {
       onSuccess?.();
       handleClose();
     } catch (err) {
-      setError(getApiErrorMessage(err, t("admin.users.form.saveError")));
+      if (getApiErrorCode(err) === "PHONE_EXISTS")
+        setErrors((prev) => ({ ...prev, phone: t("admin.users.form.validation.phoneTaken") }));
+      else setError(getApiErrorMessage(err, t("admin.users.form.saveError")));
     } finally {
       setSubmitting(false);
     }

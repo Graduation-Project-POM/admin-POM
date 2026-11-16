@@ -242,6 +242,7 @@ export const AdminUsersPage = () => {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={loadUsers}
+        existingUsers={rawUsers}
       />
 
       {selectedUser && (
@@ -253,6 +254,7 @@ export const AdminUsersPage = () => {
           }}
           userData={selectedUser}
           onSuccess={loadUsers}
+          existingUsers={rawUsers}
         />
       )}
 

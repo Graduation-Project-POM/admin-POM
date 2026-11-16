@@ -20,6 +20,9 @@
     "accountCreated": "Account created successfully! Redirecting to login...",
     "invalidEmailError": "Please enter a valid email address",
     "nameShortError": "First and last name must be at least 2 characters",
-    "usernameShortError": "Username must be at least 4 characters"
+    "usernameShortError": "Username must be at least 4 characters",
+    "roleLabel": "Sign up as",
+    "roleStudent": "Student",
+    "roleTrainer": "Trainer"
   }
 }

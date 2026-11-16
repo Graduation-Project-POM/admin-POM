@@ -1,5 +1,12 @@
 import axios from "axios";
 
+// The backend's machine-readable error code (e.g. "PHONE_EXISTS"), if any.
+export function getApiErrorCode(err: unknown): string | undefined {
+  if (!axios.isAxiosError(err)) return undefined;
+  const data = err.response?.data as { code?: unknown } | undefined;
+  return typeof data?.code === "string" ? data.code : undefined;
+}
+
 export function getApiErrorMessage(err: unknown, fallback: string): string {
   if (axios.isAxiosError(err)) {
    

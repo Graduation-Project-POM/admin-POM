@@ -40,7 +40,8 @@ export const updateMyTrainerProfile = async (specialization: string) => {
 export const trainerService = {
   getAll: async (): Promise<TrainerOption[]> => {
     const { data } = await api.get<Record<string, any>[]>("/Trainer");
-    return data.map((tr) => {
+    // Self-registered trainers awaiting approval can't be assigned to groups.
+    return data.filter((tr) => tr.isAccepted !== false).map((tr) => {
       const u = tr.basicUser ?? {};
       const name = `${u.firstName ?? ""} ${u.lastName ?? ""}`.trim();
       return {

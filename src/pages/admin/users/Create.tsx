@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Box, Alert, Switch } from "@mui/material";
+import { Box, Alert, Switch, Typography } from "@mui/material";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { Button } from "../../../components/ui/button/Button";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Label } from "../../../components/ui/label/Label";
 import { useTranslation } from "react-i18next";
-import { createUser, roleNameToId } from "../../../services/userService";
-import { getApiErrorMessage } from "../../../utils/apiError";
-import { brand } from '../../../theme';
+import { createUser, roleNameToId, type BackendUser } from "../../../services/userService";
+import { getApiErrorCode, getApiErrorMessage } from "../../../utils/apiError";
+import { isPhoneTaken, normalizePhone } from "../../../utils/phone";
+import { brand, neutral } from '../../../theme';
 
 interface UserFormData {
   firstName: string;
@@ -26,6 +27,8 @@ interface CreateUserModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess?: () => void;
+  // Users already loaded on the page, for the duplicate phone check.
+  existingUsers?: BackendUser[];
 }
 
 type FieldConfig = {
@@ -33,6 +36,7 @@ type FieldConfig = {
   label: string;
   type: "text" | "email" | "password" | "select" | "switch";
   required?: boolean;
+  helperText?: string;
   options?: { label: string; value: string }[];
 };
 
@@ -51,12 +55,16 @@ const initialFormData: UserFormData = {
 
 type FieldErrors = Partial<Record<keyof UserFormData, string>>;
 
-const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
+const Create = ({ open, onClose, onSuccess, existingUsers = [] }: CreateUserModalProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState<UserFormData>(initialFormData);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
+  // Set when the password was left blank and the server generated one; the
+  // modal then shows it once so the admin can pass it on.
+  const [generatedPassword, setGeneratedPassword] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -81,7 +89,19 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
     setFormData(initialFormData);
     setError(null);
     setErrors({});
+    setGeneratedPassword(null);
+    setCopied(false);
     onClose();
+  };
+
+  const copyGeneratedPassword = async () => {
+    if (!generatedPassword) return;
+    try {
+      await navigator.clipboard.writeText(generatedPassword);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
   };
 
   // Per-field validation (mirrors the backend CreateUserDTO rules).
@@ -101,15 +121,18 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
 
     if (v(formData.phone) && !/^[+0-9][0-9\s\-()]{6,}$/.test(v(formData.phone)))
       e.phone = t("admin.users.form.validation.phoneInvalid");
+    else if (isPhoneTaken(formData.phone, existingUsers))
+      e.phone = t("admin.users.form.validation.phoneTaken");
 
     if (!formData.role) e.role = t("admin.users.form.validation.roleRequired");
 
-    if (!formData.password) e.password = t("admin.users.form.validation.passwordRequired");
-    else if (formData.password.length < 8) e.password = t("admin.users.form.validation.passwordShort");
-
-    if (!formData.confirmPassword) e.confirmPassword = t("admin.users.form.validation.confirmPasswordRequired");
-    else if (formData.confirmPassword !== formData.password)
-      e.confirmPassword = t("admin.users.form.passwordMismatch");
+    // Password is optional: left blank, the server generates a secure one.
+    if (formData.password || formData.confirmPassword) {
+      if (formData.password.length < 8) e.password = t("admin.users.form.validation.passwordShort");
+      if (!formData.confirmPassword) e.confirmPassword = t("admin.users.form.validation.confirmPasswordRequired");
+      else if (formData.confirmPassword !== formData.password)
+        e.confirmPassword = t("admin.users.form.passwordMismatch");
+    }
 
     return e;
   };
@@ -124,22 +147,25 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
 
     setSubmitting(true);
     try {
-      await createUser({
+      const result = await createUser({
         firstName: formData.firstName,
         middleName: formData.middleName,
         lastName: formData.lastName,
         email: formData.email,
-        phoneNumber: formData.phone || undefined,
+        phoneNumber: normalizePhone(formData.phone) ?? undefined,
         gender: formData.gender || undefined,
         roleID: roleNameToId(formData.role),
-        password: formData.password,
+        password: formData.password || undefined,
         isActive: formData.isActive,
         profileImageUrl: "",
       });
       onSuccess?.();
-      handleClose();
+      if (result.generatedPassword) setGeneratedPassword(result.generatedPassword);
+      else handleClose();
     } catch (err) {
-      setError(getApiErrorMessage(err, t("admin.users.form.saveError")));
+      if (getApiErrorCode(err) === "PHONE_EXISTS")
+        setErrors((prev) => ({ ...prev, phone: t("admin.users.form.validation.phoneTaken") }));
+      else setError(getApiErrorMessage(err, t("admin.users.form.saveError")));
     } finally {
       setSubmitting(false);
     }
@@ -171,8 +197,13 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
         { label: t("admin.users.form.genders.female"), value: "female" },
       ],
     },
-    { name: "password", label: t("form.labels.password"), type: "password", required: true },
-    { name: "confirmPassword", label: t("form.labels.confirmPassword"), type: "password", required: true },
+    {
+      name: "password",
+      label: t("form.labels.password"),
+      type: "password",
+      helperText: t("admin.users.form.passwordGenerateHint"),
+    },
+    { name: "confirmPassword", label: t("form.labels.confirmPassword"), type: "password" },
     { name: "isActive", label: t("admin.users.form.activeAccount"), type: "switch" },
   ];
 
@@ -183,6 +214,40 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
       title={t("admin.users.form.createTitle")}
       maxWidth="md"
     >
+      {generatedPassword ? (
+        <Box>
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {t("admin.users.form.generatedPassword.message")}
+          </Alert>
+          <Typography sx={{ fontSize: "13px", fontWeight: 600, color: neutral[600], mb: 1 }}>
+            {t("admin.users.form.generatedPassword.label")}
+          </Typography>
+          <Box
+            dir="ltr"
+            sx={{
+              p: 2,
+              borderRadius: "8px",
+              border: `1px solid ${neutral[200]}`,
+              bgcolor: neutral[50],
+              fontSize: "18px",
+              fontWeight: 600,
+              letterSpacing: "0.05em",
+              wordBreak: "break-all",
+              userSelect: "all",
+            }}
+          >
+            {generatedPassword}
+          </Box>
+          <Box sx={{ display: "flex", gap: 1.5, mt: 3 }}>
+            <Button variantType="outline" type="button" onClick={copyGeneratedPassword}>
+              {copied ? t("admin.users.form.generatedPassword.copied") : t("admin.users.form.generatedPassword.copy")}
+            </Button>
+            <Button variantType="default" type="button" onClick={handleClose}>
+              {t("admin.users.form.generatedPassword.done")}
+            </Button>
+          </Box>
+        </Box>
+      ) : (
       <form onSubmit={handleSubmit} noValidate>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
@@ -228,7 +293,7 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
                 options={field.options}
                 error={!!errors[field.name]}
                 autoComplete={field.type === "password" ? "new-password" : undefined}
-                helperText={errors[field.name]}
+                helperText={errors[field.name] ?? field.helperText}
               />
             ),
           )}
@@ -237,6 +302,7 @@ const Create = ({ open, onClose, onSuccess }: CreateUserModalProps) => {
           {submitting ? t("common.loading") : t("admin.users.createButton")}
         </Button>
       </form>
+      )}
     </ModalWrapper>
   );
 };

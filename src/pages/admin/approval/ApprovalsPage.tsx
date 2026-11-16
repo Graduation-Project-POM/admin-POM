@@ -15,7 +15,7 @@ import {
 import { ConfirmationModal } from "../../../components/common/modal/ConfirmationModal";
 import { SharedTable } from "../../../components/ui/table/tables";
 import { useTranslation } from "react-i18next";
-import { studentService, type StudentListItem } from "../../../services/studentService";
+import { approvalService, type ApprovalRequest } from "../../../services/userService";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { brand, neutral } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
@@ -23,24 +23,30 @@ import { ErrorState, LoadingState } from '../../../components/common/states';
 type ConfirmState = {
   open: boolean;
   type: "approve" | "reject" | "delete" | "bulk_delete" | null;
-  student?: StudentListItem;
+  request?: ApprovalRequest;
+  // User ids (reject and delete remove the user account).
   ids?: number[];
 };
 
 interface ApprovalHistoryRow {
+  // User id, so table selection maps straight onto delete.
   id: string;
   name: string;
   email: string;
-  gradeLevel: string;
-  joinYear: string;
+  role: ApprovalRequest["role"];
+  detail: string;
+  submitted: string;
   status: string;
 }
 
+const initials = (name: string) => name.split(" ").map((n) => n[0]).join("");
+const profilePath = (r: ApprovalRequest) => `/profile/${r.role.toLowerCase()}/${r.profileId}`;
+
 export const AdminApprovalsPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
-  const [students, setStudents] = useState<StudentListItem[]>([]);
+  const [requests, setRequests] = useState<ApprovalRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -49,9 +55,9 @@ export const AdminApprovalsPage = () => {
   const load = useCallback(() => {
     setLoading(true);
     setError(null);
-    studentService
-      .getAllDetailed()
-      .then(setStudents)
+    approvalService
+      .getAll()
+      .then(setRequests)
       .catch((err) => setError(getApiErrorMessage(err, t("admin.approvals.loadFailed", "Failed to load approvals"))))
       .finally(() => setLoading(false));
   }, [t]);
@@ -60,19 +66,24 @@ export const AdminApprovalsPage = () => {
     load();
   }, [load]);
 
-  const pending = students.filter((s) => !s.isAccepted);
-  const accepted = students.filter((s) => s.isAccepted);
+  const pending = requests.filter((r) => !r.isAccepted);
+  const accepted = requests.filter((r) => r.isAccepted);
+
+  const roleLabel = (role: ApprovalRequest["role"]) => t(`admin.users.form.roles.${role.toLowerCase()}`, role);
+  const registrationLabel = (role: ApprovalRequest["role"]) =>
+    role === "Trainer"
+      ? t("admin.approvals.trainerApplication", "Trainer registration")
+      : t("admin.approvals.studentApplication", "Student registration");
 
   const runConfirmedAction = async () => {
-    const { type, student, ids } = confirm;
+    const { type, request, ids } = confirm;
     setConfirm({ open: false, type: null });
     setBusy(true);
     setError(null);
     try {
-      if (type === "approve" && student) await studentService.accept(student.id);
-      else if (type === "reject" && student) await studentService.remove(student.id);
-      else if (type === "delete" && student) await studentService.remove(student.id);
-      else if (type === "bulk_delete" && ids) await Promise.all(ids.map((id) => studentService.remove(id)));
+      if (type === "approve" && request) await approvalService.accept(request);
+      else if ((type === "reject" || type === "delete") && request) await approvalService.remove(request.userId);
+      else if (type === "bulk_delete" && ids) await Promise.all(ids.map((id) => approvalService.remove(id)));
       load();
     } catch (err) {
       setError(getApiErrorMessage(err, t("admin.approvals.actionFailed", "Action failed")));
@@ -81,12 +92,13 @@ export const AdminApprovalsPage = () => {
     }
   };
 
-  const historyRows: ApprovalHistoryRow[] = accepted.map((s) => ({
-    id: String(s.id),
-    name: s.name,
-    email: s.email,
-    gradeLevel: s.gradeLevel,
-    joinYear: s.joinYear,
+  const historyRows: ApprovalHistoryRow[] = accepted.map((r) => ({
+    id: String(r.userId),
+    name: r.name,
+    email: r.email,
+    role: r.role,
+    detail: r.detail || "—",
+    submitted: r.createdAt ? new Date(r.createdAt).toLocaleDateString(i18n.language) : "—",
     status: "Approved",
   }));
 
@@ -97,7 +109,7 @@ export const AdminApprovalsPage = () => {
       render: (row: ApprovalHistoryRow) => (
         <UserCell>
           <Avatar sx={{ width: 36, height: 36, backgroundColor: brand[500], fontSize: "12px", fontWeight: 700 }}>
-            {row.name.split(" ").map((n: string) => n[0]).join("")}
+            {initials(row.name)}
           </Avatar>
           <Box>
             <Typography sx={{ fontWeight: 600, fontSize: "14px", color: neutral[800] }}>{row.name}</Typography>
@@ -106,12 +118,19 @@ export const AdminApprovalsPage = () => {
         </UserCell>
       ),
     },
-    { id: "gradeLevel", label: t("profile.view.gradeLevel") },
-    { id: "joinYear", label: t("profile.view.joinYear") },
+    {
+      id: "role",
+      label: t("admin.approvals.columns.role"),
+      render: (row: ApprovalHistoryRow) => roleLabel(row.role),
+    },
+    { id: "detail", label: t("admin.approvals.columns.details") },
+    { id: "submitted", label: t("admin.approvals.columns.submitted") },
     {
       id: "status",
       label: t("admin.approvals.columns.status"),
-      render: (row: ApprovalHistoryRow) => <StatusChip label={row.status} status={row.status} />,
+      render: (row: ApprovalHistoryRow) => (
+        <StatusChip label={t("admin.approvals.status.approved", "Approved")} status={row.status} />
+      ),
     },
   ];
 
@@ -150,28 +169,29 @@ export const AdminApprovalsPage = () => {
         </Box>
       ) : (
         <Stack spacing={2} sx={{ mb: 6 }}>
-          {pending.map((student) => (
-            <PendingCard key={student.id}>
+          {pending.map((request) => (
+            <PendingCard key={request.userId}>
               <Box sx={{ p: 3 }}>
                 <Stack direction={{ xs: "column", md: "row" }} spacing={3} sx={{ alignItems: "center", width: "100%" }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: "200px", flex: 1 }}>
-                    <UserAvatar>{student.name.split(" ").map((n) => n[0]).join("")}</UserAvatar>
+                    <UserAvatar>{initials(request.name)}</UserAvatar>
                     <Box>
-                      <Typography sx={{ fontSize: "18px", fontWeight: 700, color: neutral[800] }}>{student.name}</Typography>
+                      <Typography sx={{ fontSize: "18px", fontWeight: 700, color: neutral[800] }}>{request.name}</Typography>
                       <Typography sx={{ fontSize: "13px", color: neutral[400], mt: "2px", fontWeight: 600 }}>
-                        {student.email || t("admin.approvals.studentApplication", "Student registration")}
+                        {registrationLabel(request.role)}
+                        {request.email ? ` · ${request.email}` : ""}
                       </Typography>
                     </Box>
                   </Box>
 
                   <Stack direction="row" spacing={1.5} useFlexGap sx={{ flexWrap: "wrap" }}>
-                    <ActionButton variant="outlined" startIcon={<Eye size={16} />} onClick={() => navigate(`/profile/student/${student.id}`)}>
+                    <ActionButton variant="outlined" startIcon={<Eye size={16} />} onClick={() => navigate(profilePath(request))}>
                       {t("admin.approvals.actions.view")}
                     </ActionButton>
-                    <ActionButton variant="contained" startIcon={<CheckCircle size={16} />} disabled={busy} onClick={() => setConfirm({ open: true, type: "approve", student })}>
+                    <ActionButton variant="contained" startIcon={<CheckCircle size={16} />} disabled={busy} onClick={() => setConfirm({ open: true, type: "approve", request })}>
                       {t("admin.approvals.actions.approve")}
                     </ActionButton>
-                    <ActionButton variant="outlined" color="error" startIcon={<XCircle size={16} />} disabled={busy} onClick={() => setConfirm({ open: true, type: "reject", student })}>
+                    <ActionButton variant="outlined" color="error" startIcon={<XCircle size={16} />} disabled={busy} onClick={() => setConfirm({ open: true, type: "reject", request })}>
                       {t("admin.approvals.actions.reject")}
                     </ActionButton>
                   </Stack>
@@ -188,10 +208,13 @@ export const AdminApprovalsPage = () => {
       <SharedTable
         data={historyRows}
         columns={columns}
-        onEdit={(row: ApprovalHistoryRow) => navigate(`/profile/student/${row.id}`)}
+        onEdit={(row: ApprovalHistoryRow) => {
+          const request = accepted.find((r) => String(r.userId) === row.id);
+          if (request) navigate(profilePath(request));
+        }}
         onDelete={(ids: string[]) => setConfirm({ open: true, type: "bulk_delete", ids: ids.map(Number) })}
         onSingleDelete={(id: string) =>
-          setConfirm({ open: true, type: "delete", student: accepted.find((s) => String(s.id) === id) })
+          setConfirm({ open: true, type: "delete", request: accepted.find((r) => String(r.userId) === id) })
         }
         searchPlaceholder={t("admin.approvals.searchPlaceholder")}
       />
@@ -211,9 +234,12 @@ export const AdminApprovalsPage = () => {
         }
         message={
           confirm.type === "approve"
-            ? t("admin.approvals.confirm.approveMessage", { name: confirm.student?.name })
+            ? t("admin.approvals.confirm.approveMessage", {
+                name: confirm.request?.name,
+                role: confirm.request ? roleLabel(confirm.request.role) : "",
+              })
             : confirm.type === "reject"
-              ? t("admin.approvals.confirm.rejectMessage", { name: confirm.student?.name })
+              ? t("admin.approvals.confirm.rejectMessage", { name: confirm.request?.name })
               : confirm.type === "bulk_delete"
                 ? t("admin.approvals.confirm.bulkDeleteMessage", { count: confirm.ids?.length })
                 : t("admin.approvals.confirm.deleteMessage")

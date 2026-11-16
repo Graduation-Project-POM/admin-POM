@@ -104,7 +104,8 @@
           "genderRequired": "يرجى اختيار الجنس.",
           "passwordRequired": "كلمة المرور مطلوبة.",
           "passwordShort": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل.",
-          "confirmPasswordRequired": "يرجى تأكيد كلمة المرور."
+          "confirmPasswordRequired": "يرجى تأكيد كلمة المرور.",
+          "phoneTaken": "رقم الهاتف هذا مسجّل لحساب آخر."
         },
         "roles": {
           "student": "طالب",
@@ -114,49 +115,58 @@
         "genders": {
           "male": "ذكر",
           "female": "أنثى"
+        },
+        "passwordGenerateHint": "اتركها فارغة لإنشاء كلمة مرور آمنة تلقائيًا.",
+        "generatedPassword": {
+          "message": "تم إنشاء المستخدم وتوليد كلمة مرور آمنة. انسخها الآن وشاركها مع المستخدم، فلن تظهر مرة أخرى.",
+          "label": "كلمة المرور المولّدة",
+          "copy": "نسخ كلمة المرور",
+          "copied": "تم النسخ",
+          "done": "تم"
         }
       }
     },
     "approvals": {
-      "title": "موافقات المدربين",
-      "subtitle": "مراجعة طلبات تسجيل المدربين والموافقة عليها",
+      "title": "طلبات المستخدمين",
+      "subtitle": "مراجعة طلبات المستخدمين والموافقة عليها",
       "pendingRequests": "الطلبات المعلقة",
-      "trainerApplication": "طلب مدرب",
-      "noPending": "لا توجد طلبات مدربين معلقة في الوقت الحالي.",
+      "noPending": "لا توجد طلبات معلقة في الوقت الحالي.",
       "approvalHistory": "سجل الموافقات",
       "searchPlaceholder": "البحث في السجل...",
       "columns": {
         "name": "الاسم",
-        "specialization": "التخصص",
+        "role": "الدور",
+        "email": "البريد الإلكتروني",
         "submitted": "تاريخ التقديم",
-        "status": "الحالة"
+        "status": "الحالة",
+        "details": "التفاصيل"
       },
       "actions": {
-        "view": "عرض",
         "approve": "موافقة",
-        "reject": "رفض"
+        "reject": "رفض",
+        "view": "عرض"
       },
       "confirm": {
-        "approveTitle": "الموافقة على المدرب",
+        "approveTitle": "الموافقة على المستخدم",
         "rejectTitle": "رفض الطلب",
-        "bulkDeleteTitle": "حذف السجل",
-        "deleteTitle": "حذف الإدخال",
-        "approveMessage": "هل أنت متأكد أنك تريد الموافقة على {{name}} كمدرب؟ سيتمكن من إنشاء الدورات وإدارتها.",
-        "rejectMessage": "هل أنت متأكد أنك تريد رفض طلب {{name}}؟ سيتم إشعاره بالرفض.",
-        "bulkDeleteMessage": "هل أنت متأكد أنك تريد حذف {{count}} إدخالات محددة من السجل؟ لا يمكن التراجع عن ذلك.",
-        "deleteMessage": "هل أنت متأكد أنك تريد حذف هذا الإدخال من السجل؟ لا يمكن التراجع عن ذلك.",
+        "approveMessage": "هل أنت متأكد أنك تريد الموافقة على {{name}}؟",
+        "rejectMessage": "هل أنت متأكد أنك تريد رفض طلب {{name}}؟",
+        "bulkDeleteMessage": "هل أنت متأكد أنك تريد حذف {{count}} إدخالات محددة؟",
+        "deleteMessage": "هل أنت متأكد أنك تريد حذف هذا الإدخال؟",
         "approveLabel": "موافقة",
         "rejectLabel": "رفض",
-        "deleteLabel": "حذف"
+        "deleteLabel": "حذف",
+        "bulkDeleteTitle": "حذف السجل",
+        "deleteTitle": "حذف الإدخال"
       },
       "edit": {
-        "title": "تعديل طلب المدرب",
-        "fullName": "الاسم الكامل",
+        "title": "تعديل بيانات المستخدم",
+        "fullName": "الاسم",
         "email": "البريد الإلكتروني",
         "phone": "الهاتف",
-        "specialization": "التخصص",
+        "specialization": "المجال",
         "biography": "نبذة تعريفية",
-        "saveChanges": "حفظ التغييرات"
+        "saveChanges": "حفظ"
       },
       "view": {
         "title": "ملف المدرب",
@@ -172,7 +182,11 @@
       },
       "loadFailed": "فشل تحميل طلبات الموافقة",
       "actionFailed": "فشل تنفيذ الإجراء",
-      "studentApplication": "تسجيل طالب"
+      "studentApplication": "تسجيل طالب",
+      "trainerApplication": "تسجيل مدرب",
+      "status": {
+        "approved": "مقبول"
+      }
     }
   }
 }
