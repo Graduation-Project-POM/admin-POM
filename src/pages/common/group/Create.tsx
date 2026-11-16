@@ -8,7 +8,9 @@ import {
   InputAdornment,
   TextField,
   Autocomplete,
+  Alert,
 } from '@mui/material';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import { ShieldCheck } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { FormField } from '../../../components/ui/Forms/FormField';
@@ -29,7 +31,7 @@ interface CreateGroupProps {
     description: string;
     trainerId: number;
     studentIds: number[];
-  }) => void;
+  }) => void | Promise<unknown>;
 }
 
 const BRAND = brand[500];
@@ -54,6 +56,8 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
   const [studentIds, setStudentIds] = useState<number[]>([]);
   const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [students, setStudents] = useState<StudentOption[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -61,26 +65,44 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
     setDescription('');
     setTrainerId('');
     setStudentIds([]);
+    setError(null);
     if (isAdmin) {
       trainerService.getAll().then(setTrainers).catch(() => setTrainers([]));
     }
     studentService.getAccepted().then(setStudents).catch(() => setStudents([]));
   }, [open, isAdmin]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      title,
-      description,
-      trainerId: trainerId === '' ? 0 : trainerId,
-      studentIds,
-    });
-    onClose();
+    if (isAdmin && trainerId === '') {
+      setError(t('group.create.trainerRequired', 'Please choose a trainer for this group.'));
+      return;
+    }
+    setError(null);
+    setSubmitting(true);
+    try {
+      await onSave({
+        title,
+        description,
+        trainerId: trainerId === '' ? 0 : trainerId,
+        studentIds,
+      });
+      onClose();
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('group.errors.createFailed', 'Failed to create group')));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <ModalWrapper open={open} onClose={onClose} title={t('group.create.title')} maxWidth="sm">
       <form onSubmit={handleSubmit}>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
         <Stack spacing={3} sx={{ mt: 1 }}>
           <FormField
             label={t('group.create.groupTitle')}
@@ -106,7 +128,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
               size="small"
               options={trainers}
               value={trainers.find((tr) => tr.id === trainerId) ?? null}
-              onChange={(_, value) => setTrainerId(value ? value.id : '')}
+              onChange={(_, value) => { setTrainerId(value ? value.id : ''); setError(null); }}
               getOptionLabel={(tr) => tr.name}
               isOptionEqualToValue={(opt, val) => opt.id === val.id}
               noOptionsText={t('group.create.noTrainers', 'No trainers available')}
@@ -211,7 +233,7 @@ const CreateGroups = ({ open, onClose, onSave }: CreateGroupProps) => {
           />
         </Stack>
 
-        <Button sx={{ mt: 3 }} variantType="default" type="submit">
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting}>
           {t('group.list.createGroup')}
         </Button>
       </form>

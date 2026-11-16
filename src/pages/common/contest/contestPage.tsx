@@ -17,7 +17,7 @@ import type {
 } from "../../../types/contest";
 import { problemsService } from "../../../services/problemsService";
 import type { ProblemSubmission } from "../../../services/problemsService";
-import { getApiErrorMessage } from "../../../utils/apiError";
+import { getApiErrorMessage, toDisplayError, DisplayError } from "../../../utils/apiError";
 import { getContestStatus, getContestStatusNumber } from "../../../utils/contestStatus";
 import { DIFFICULTY_FROM_LABEL, DIFFICULTY_LABEL } from "../../../types/problem";
 
@@ -236,7 +236,6 @@ export const ContestsPage: React.FC = () => {
 
   const handleGradeSubmission = async (submissionId: number, score: number, feedback: string) => {
     setGradingSaving(true);
-    setActionError(null);
     try {
       await problemsService.gradeSubmission(submissionId, {
         score,
@@ -255,7 +254,7 @@ export const ContestsPage: React.FC = () => {
         }));
       }
     } catch (err) {
-      setActionError(getApiErrorMessage(err, t("contest.errors.gradeFailed", "Failed to save mark")));
+      throw toDisplayError(err, t("contest.errors.gradeFailed", "Failed to save mark"));
     } finally {
       setGradingSaving(false);
     }
@@ -273,7 +272,7 @@ export const ContestsPage: React.FC = () => {
     onConfirm: () => {},
   });
 
-  const handleCreateContest = async (newContest: any) => {
+  const handleCreateContest = async (newContest: ContestData & { groupId: number }) => {
     setActionError(null);
     const startAt = toIso(newContest.startDate);
     const endAt = toIso(newContest.endDate);
@@ -289,9 +288,7 @@ export const ContestsPage: React.FC = () => {
     try {
       await create(input);
     } catch (err) {
-      setActionError(
-        getApiErrorMessage(err, t("contest.errors.createFailed", "Failed to create contest")),
-      );
+      throw toDisplayError(err, t("contest.errors.createFailed", "Failed to create contest"));
     }
   };
 
@@ -307,9 +304,7 @@ export const ContestsPage: React.FC = () => {
         endAt,
       });
     } catch (err) {
-      setActionError(
-        getApiErrorMessage(err, t("contest.errors.updateFailed", "Failed to update contest")),
-      );
+      throw toDisplayError(err, t("contest.errors.updateFailed", "Failed to update contest"));
     }
   };
 
@@ -319,22 +314,20 @@ export const ContestsPage: React.FC = () => {
       title: t("contest.confirm.deleteContestTitle"),
       message: t("contest.confirm.deleteContestMessage"),
       onConfirm: async () => {
-        setConfirmConfig((prev) => ({ ...prev, open: false }));
-        setActionError(null);
         try {
           await remove(Number(id));
         } catch (err) {
-          setActionError(
-            getApiErrorMessage(err, t("contest.errors.deleteFailed", "Failed to delete contest")),
-          );
+          throw toDisplayError(err, t("contest.errors.deleteFailed", "Failed to delete contest"));
         }
       },
     });
   };
 
   const handleAddProblem = async (form: ProblemFormValues) => {
-    if (selectedContestId === null || selectedContestEnded) return;
-    setActionError(null);
+    if (selectedContestId === null) return;
+    if (selectedContestEnded) {
+      throw new DisplayError(t("common.contestEnded", "This contest has ended. Its problems can no longer be changed."));
+    }
     try {
       const newId = await problemsService.create({
         title: form.title,
@@ -367,14 +360,15 @@ export const ContestsPage: React.FC = () => {
         [selectedContestId]: [newProblem, ...(m[selectedContestId] || [])],
       }));
     } catch (err) {
-      setActionError(
-        getApiErrorMessage(err, t("contest.errors.addProblemFailed", "Failed to add problem to the contest")),
-      );
+      throw toDisplayError(err, t("contest.errors.addProblemFailed", "Failed to add problem to the contest"));
     }
   };
 
   const handleUpdateProblem = (form: ProblemEditValues) => {
-    if (selectedContestId === null || selectedContestEnded) return;
+    if (selectedContestId === null) return;
+    if (selectedContestEnded) {
+      throw new DisplayError(t("common.contestEnded", "This contest has ended. Its problems can no longer be changed."));
+    }
     setProblemsMap((m) => ({
       ...m,
       [selectedContestId]: (m[selectedContestId] || []).map((p) =>
@@ -396,9 +390,10 @@ export const ContestsPage: React.FC = () => {
       title: t("contest.confirm.removeProblemTitle"),
       message: t("contest.confirm.removeProblemMessage"),
       onConfirm: async () => {
-        setConfirmConfig((prev) => ({ ...prev, open: false }));
-        if (selectedContestId === null || selectedContestEnded) return;
-        setActionError(null);
+        if (selectedContestId === null) return;
+        if (selectedContestEnded) {
+          throw new DisplayError(t("common.contestEnded", "This contest has ended. Its problems can no longer be changed."));
+        }
         try {
           const ids = contestProblemIds.filter((x) => x !== Number(id));
           await update(Number(selectedContestId), { problemIds: ids });
@@ -410,9 +405,7 @@ export const ContestsPage: React.FC = () => {
             ),
           }));
         } catch (err) {
-          setActionError(
-            getApiErrorMessage(err, t("contest.errors.removeProblemFailed", "Failed to remove problem")),
-          );
+          throw toDisplayError(err, t("contest.errors.removeProblemFailed", "Failed to remove problem"));
         }
       },
     });
@@ -426,9 +419,10 @@ export const ContestsPage: React.FC = () => {
         count: ids.length,
       }),
       onConfirm: async () => {
-        setConfirmConfig((prev) => ({ ...prev, open: false }));
-        if (selectedContestId === null || selectedContestEnded) return;
-        setActionError(null);
+        if (selectedContestId === null) return;
+        if (selectedContestEnded) {
+          throw new DisplayError(t("common.contestEnded", "This contest has ended. Its problems can no longer be changed."));
+        }
         try {
           const numIds = ids.map(Number);
           const remaining = contestProblemIds.filter(
@@ -443,9 +437,7 @@ export const ContestsPage: React.FC = () => {
             ),
           }));
         } catch (err) {
-          setActionError(
-            getApiErrorMessage(err, t("contest.errors.removeProblemFailed", "Failed to remove problems")),
-          );
+          throw toDisplayError(err, t("contest.errors.removeProblemFailed", "Failed to remove problems"));
         }
       },
     });

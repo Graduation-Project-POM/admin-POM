@@ -20,7 +20,7 @@ import ViewGroups from './View';
 import { GroupDetailsPage } from './groupDetailsPage';
 import { useGroups } from '../../../hooks/useGroups';
 import { groupService } from '../../../services/groupService';
-import { getApiErrorMessage } from '../../../utils/apiError';
+import { toDisplayError } from '../../../utils/apiError';
 import { useAuth } from '../../../services/AuthContext';
 import type { Group } from '../../../types/group';
 import { neutral } from '../../../theme';
@@ -87,7 +87,7 @@ export const GroupsPage: React.FC = () => {
       }
       await reload();
     } catch (err) {
-      setActionError(getApiErrorMessage(err, t('group.errors.createFailed', 'Failed to create group')));
+      throw toDisplayError(err, t('group.errors.createFailed', 'Failed to create group'));
     }
   };
 
@@ -108,7 +108,7 @@ export const GroupsPage: React.FC = () => {
       await Promise.all(toRemove.map((x) => groupService.removeStudent(id, x)));
       await reload();
     } catch (err) {
-      setActionError(getApiErrorMessage(err, t('group.errors.updateFailed', 'Failed to update group')));
+      throw toDisplayError(err, t('group.errors.updateFailed', 'Failed to update group'));
     }
   };
 
@@ -118,12 +118,10 @@ export const GroupsPage: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     const id = confirmConfig.id;
-    setConfirmConfig({ open: false, id: '' });
-    setActionError(null);
     try {
       await remove(Number(id));
     } catch (err) {
-      setActionError(getApiErrorMessage(err, t('group.errors.deleteFailed', 'Failed to delete group')));
+      throw toDisplayError(err, t('group.errors.deleteFailed', 'Failed to delete group'));
     }
   };
 

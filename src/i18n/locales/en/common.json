@@ -79,6 +79,9 @@
   },
   "common": {
     "loading": "Loading...",
+    "actionFailed": "Action failed",
+    "endBeforeStart": "End date must be after the start date.",
+    "contestEnded": "This contest has ended. Its problems can no longer be changed.",
     "noData": "No data available",
     "actions": "Actions",
     "status": "Status",

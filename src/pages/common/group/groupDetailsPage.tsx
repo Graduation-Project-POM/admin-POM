@@ -37,7 +37,7 @@ import { problemsService } from '../../../services/problemsService';
 import type { ProblemSubmission } from '../../../services/problemsService';
 import { StudentProgressModal } from '../../trainer/problems-solution/StudentProgressModeal';
 import { SolutionDetailModal } from '../../trainer/problems-solution/SolutionDetailsModal';
-import { getApiErrorMessage } from '../../../utils/apiError';
+import { getApiErrorMessage, toDisplayError, DisplayError } from '../../../utils/apiError';
 import { DIFFICULTY_LABEL, DIFFICULTY_FROM_LABEL } from '../../../types/problem';
 import { getContestStatus, getContestStatusNumber } from '../../../utils/contestStatus';
 import { brand, neutral, statusTone } from '../../../theme';
@@ -201,7 +201,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                 );
             }
         } catch (err) {
-            setTabsError(getApiErrorMessage(err, t('group.details.gradeFailed', 'Failed to save mark')));
+            throw toDisplayError(err, t('group.details.gradeFailed', 'Failed to save mark'));
         } finally {
             setGradingSaving(false);
         }
@@ -328,7 +328,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     };
 
     const handleCreateProblem = async (form: ProblemFormValues) => {
-        if (!selectedContest || selectedContestEnded) return;
+        if (!selectedContest) return;
+        if (selectedContestEnded) throw new DisplayError(t('common.contestEnded', 'This contest has ended. Its problems can no longer be changed.'));
         try {
             const newId = await problemsService.create({
                 title: form.title,
@@ -348,12 +349,13 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             });
             await loadContestQuestions(selectedContest.id);
         } catch (err) {
-            setTabsError(getApiErrorMessage(err, t('group.details.addProblemFailed', 'Failed to add problem')));
+            throw toDisplayError(err, t('group.details.addProblemFailed', 'Failed to add problem'));
         }
     };
 
     const handleUpdateProblem = async (form: ProblemEditValues) => {
-        if (!selectedContest || selectedContestEnded) return;
+        if (!selectedContest) return;
+        if (selectedContestEnded) throw new DisplayError(t('common.contestEnded', 'This contest has ended. Its problems can no longer be changed.'));
         try {
             await problemsService.update(Number(form.id), {
                 title: form.title,
@@ -368,7 +370,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             });
             await loadContestQuestions(selectedContest.id);
         } catch (err) {
-            setTabsError(getApiErrorMessage(err, t('group.details.updateProblemFailed', 'Failed to update problem')));
+            throw toDisplayError(err, t('group.details.updateProblemFailed', 'Failed to update problem'));
         }
     };
 
@@ -399,14 +401,14 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             title: t('group.details.removeProblemTitle'),
             message: t('group.details.removeProblemMessage'),
             onConfirm: async () => {
-                setConfirmConfig(prev => ({ ...prev, open: false }));
-                if (!selectedContest || selectedContestEnded) return;
+                if (!selectedContest) return;
+        if (selectedContestEnded) throw new DisplayError(t('common.contestEnded', 'This contest has ended. Its problems can no longer be changed.'));
                 try {
                     const ids = contestProblemIds.filter((x) => x !== Number(id));
                     await contestService.update(Number(selectedContest.id), { problemIds: ids });
                     await loadContestQuestions(selectedContest.id);
                 } catch (err) {
-                    setTabsError(getApiErrorMessage(err, t('group.details.removeProblemFailed', 'Failed to remove problem')));
+                    throw toDisplayError(err, t('group.details.removeProblemFailed', 'Failed to remove problem'));
                 }
             }
         });
@@ -418,15 +420,15 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             title: t('group.details.removeProblemsTitle'),
             message: t('group.details.removeProblemsMessage', { count: ids.length }),
             onConfirm: async () => {
-                setConfirmConfig(prev => ({ ...prev, open: false }));
-                if (!selectedContest || selectedContestEnded) return;
+                if (!selectedContest) return;
+        if (selectedContestEnded) throw new DisplayError(t('common.contestEnded', 'This contest has ended. Its problems can no longer be changed.'));
                 try {
                     const numIds = ids.map(Number);
                     const remaining = contestProblemIds.filter((x) => !numIds.includes(x));
                     await contestService.update(Number(selectedContest.id), { problemIds: remaining });
                     await loadContestQuestions(selectedContest.id);
                 } catch (err) {
-                    setTabsError(getApiErrorMessage(err, t('group.details.removeProblemsFailed', 'Failed to remove problems')));
+                    throw toDisplayError(err, t('group.details.removeProblemsFailed', 'Failed to remove problems'));
                 }
             }
         });
@@ -444,7 +446,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
         contest.title.toLowerCase().includes(contestSearchQuery.toLowerCase())
     );
 
-    const handleCreateContest = async (newContest: any) => {
+    const handleCreateContest = async (newContest: ContestData) => {
         if (!group) return;
         setTabsError(null);
         try {
@@ -462,7 +464,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             });
             await loadGroupData();
         } catch (err) {
-            setTabsError(getApiErrorMessage(err, t('group.details.createContestFailed', 'Failed to create contest')));
+            throw toDisplayError(err, t('group.details.createContestFailed', 'Failed to create contest'));
         }
     };
 
@@ -479,7 +481,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             });
             await loadGroupData();
         } catch (err) {
-            setTabsError(getApiErrorMessage(err, t('group.details.updateContestFailed', 'Failed to update contest')));
+            throw toDisplayError(err, t('group.details.updateContestFailed', 'Failed to update contest'));
         }
     };
     const handleDeleteContest = (id: string) => {
@@ -488,12 +490,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             title: t('group.details.deleteContestTitle'),
             message: t('group.details.deleteContestMessage'),
             onConfirm: async () => {
-                setConfirmConfig(prev => ({ ...prev, open: false }));
                 try {
                     await groupService.removeContest(Number(group.id), Number(id));
                     setContests(prev => prev.filter(c => c.id !== id));
                 } catch (err) {
-                    setTabsError(getApiErrorMessage(err, t('group.details.removeContestFailed', 'Failed to remove contest from group')));
+                    throw toDisplayError(err, t('group.details.removeContestFailed', 'Failed to remove contest from group'));
                 }
             }
         });

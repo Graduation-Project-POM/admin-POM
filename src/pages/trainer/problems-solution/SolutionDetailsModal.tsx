@@ -5,7 +5,9 @@ import {
   Typography,
   Chip,
   TextField,
+  Alert,
 } from '@mui/material';
+import { getApiErrorMessage } from '../../../utils/apiError';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
@@ -18,7 +20,7 @@ interface SolutionDetailModalProps {
   onClose: () => void;
   submission: ProblemSubmission | null;
   problemTitle: string;
-  onSaveMark: (submissionId: number, score: number, feedback: string) => void;
+  onSaveMark: (submissionId: number, score: number, feedback: string) => void | Promise<unknown>;
   saving?: boolean;
 }
 
@@ -33,11 +35,23 @@ export const SolutionDetailModal = ({
   const { t } = useTranslation();
   const [score, setScore] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setScore(submission?.score ?? 0);
     setFeedback(submission?.feedback ?? '');
-  }, [submission]);
+    setError(null);
+  }, [submission, open]);
+
+  const handleSave = async () => {
+    if (!submission) return;
+    setError(null);
+    try {
+      await onSaveMark(submission.id, score, feedback);
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('trainer.solutionDetail.gradeFailed', 'Failed to save mark')));
+    }
+  };
 
   if (!submission) return null;
 
@@ -142,11 +156,17 @@ export const SolutionDetailModal = ({
           sx={{ mb: 3, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
         />
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }} onClose={() => setError(null)}>
+            {error}
+          </Alert>
+        )}
+
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
           <Button
             variantType="default"
             startIcon={<CheckCircle2 size={18} />}
-            onClick={() => onSaveMark(submission.id, score, feedback)}
+            onClick={() => void handleSave()}
             disabled={saving}
             sx={{ px: 3, bgcolor: statusTone.success.fg, '&:hover': { bgcolor: statusTone.success.fg } }}
           >

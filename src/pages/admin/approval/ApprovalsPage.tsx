@@ -16,7 +16,7 @@ import { ConfirmationModal } from "../../../components/common/modal/Confirmation
 import { SharedTable } from "../../../components/ui/table/tables";
 import { useTranslation } from "react-i18next";
 import { approvalService, type ApprovalRequest } from "../../../services/userService";
-import { getApiErrorMessage } from "../../../utils/apiError";
+import { getApiErrorMessage, toDisplayError } from "../../../utils/apiError";
 import { brand, neutral } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
 
@@ -77,7 +77,6 @@ export const AdminApprovalsPage = () => {
 
   const runConfirmedAction = async () => {
     const { type, request, ids } = confirm;
-    setConfirm({ open: false, type: null });
     setBusy(true);
     setError(null);
     try {
@@ -86,7 +85,7 @@ export const AdminApprovalsPage = () => {
       else if (type === "bulk_delete" && ids) await Promise.all(ids.map((id) => approvalService.remove(id)));
       load();
     } catch (err) {
-      setError(getApiErrorMessage(err, t("admin.approvals.actionFailed", "Action failed")));
+      throw toDisplayError(err, t("admin.approvals.actionFailed", "Action failed"));
     } finally {
       setBusy(false);
     }
