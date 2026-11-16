@@ -191,7 +191,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
             contestService.getMyProblems(Number(c.id)).catch(() => [] as Record<string, any>[]),
           ]).then(([info, problems]) => {
             if (cancelled) return;
-            const difficulty = problems.length
+            // The contest's own difficulty (set by its trainer); fall back to the
+            // average of its problems only if it couldn't be loaded.
+            const difficulty = info?.difficulty && DIFFICULTY_LABEL[info.difficulty]
+              ? DIFFICULTY_LABEL[info.difficulty]
+              : problems.length
               ? DIFFICULTY_LABEL[
               Math.round(
                 problems.reduce((sum, p) => sum + (Number(p.difficulty) || 2), 0) / problems.length,
