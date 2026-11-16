@@ -5,16 +5,20 @@ import { getApiErrorMessage } from "../../../utils/apiError";
 import { ModalWrapper } from "../../../components/common/modal/ModalWrapper";
 import { FormField } from "../../../components/ui/Forms/FormField";
 import { Button } from "../../../components/ui/button/Button";
+import { groupService } from "../../../services/groupService";
 import type { ContestData } from "../../../types";
+import type { Group } from "../../../types/group";
 
 interface EditContestProps {
   open: boolean;
   onClose: () => void;
   contest: ContestData | null;
   onSave: (contest: ContestData) => void | Promise<unknown>;
+  // When set (e.g. editing from a group's page) the group can't be changed here.
+  fixedGroupId?: number;
 }
 
-const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
+const EditContest = ({ open, onClose, contest, onSave, fixedGroupId }: EditContestProps) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
     title: "",
@@ -22,12 +26,10 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     startDate: "",
     endDate: "",
   });
+  const [groupId, setGroupId] = useState<number | "">("");
+  const [groups, setGroups] = useState<Group[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (open) setError(null);
-  }, [open]);
 
   // Shown as soon as both dates are filled in, not after pressing save.
   const dateError =
@@ -37,17 +39,30 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
       ? t("common.endBeforeStart", "End date must be after the start date.")
       : null;
 
+  // Refill from the contest every time the form opens, so changes that were
+  // cancelled last time don't show up again when the same contest is reopened.
   useEffect(() => {
-    if (contest) {
-      const toLocal = (v: string) => (v ? v.slice(0, 16) : "");
-      setFormData({
-        title: contest.title,
-        difficulty: contest.difficulty,
-        startDate: toLocal(contest.startDate),
-        endDate: toLocal(contest.endDate),
-      });
-    }
-  }, [contest]);
+    if (!open || !contest) return;
+    const toLocal = (v: string) => (v ? v.slice(0, 16) : "");
+    setFormData({
+      title: contest.title,
+      difficulty: contest.difficulty,
+      startDate: toLocal(contest.startDate),
+      endDate: toLocal(contest.endDate),
+    });
+    setGroupId(contest.groupId ?? "");
+    setError(null);
+  }, [open, contest]);
+
+  useEffect(() => {
+    if (!open || fixedGroupId != null) return;
+    let ignore = false;
+    groupService
+      .getAll()
+      .then((data) => { if (!ignore) setGroups(data); })
+      .catch(() => { if (!ignore) setGroups([]); });
+    return () => { ignore = true; };
+  }, [open, fixedGroupId]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -63,7 +78,11 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
     setError(null);
     setSubmitting(true);
     try {
-      await onSave({ ...contest, ...formData });
+      await onSave({
+        ...contest,
+        ...formData,
+        groupId: fixedGroupId ?? (groupId === "" ? undefined : groupId),
+      });
       onClose();
     } catch (err) {
       setError(getApiErrorMessage(err, t("contest.errors.updateFailed", "Failed to update contest")));
@@ -93,6 +112,29 @@ const EditContest = ({ open, onClose, contest, onSave }: EditContestProps) => {
             onChange={handleChange}
             required
           />
+
+          {fixedGroupId == null && (
+            <FormField
+              select
+              label={t("contest.fields.group", "Group")}
+              name="groupId"
+              value={groupId === "" ? "" : String(groupId)}
+              onChange={(e) => setGroupId(Number(e.target.value))}
+              required
+            >
+              {groups.length === 0 ? (
+                <MenuItem disabled value="">
+                  {t("contest.fields.noGroups", "No groups available")}
+                </MenuItem>
+              ) : (
+                groups.map((g) => (
+                  <MenuItem key={g.id} value={String(g.id)}>
+                    {g.name}
+                  </MenuItem>
+                ))
+              )}
+            </FormField>
+          )}
 
           <FormField
             select

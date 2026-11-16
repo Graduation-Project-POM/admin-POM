@@ -78,12 +78,14 @@ const Edit = ({ open, onClose, userData, onSuccess, existingUsers = [] }: EditUs
   const [error, setError] = useState<string | null>(null);
   const [errors, setErrors] = useState<FieldErrors>({});
 
+  // Refill every time the form opens, so cancelled changes don't come back.
   useEffect(() => {
+    if (!open) return;
     if (userData) setFormData(userData);
     setPasswords(emptyPasswords);
     setErrors({});
     setError(null);
-  }, [userData]);
+  }, [open, userData]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

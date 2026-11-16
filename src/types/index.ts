@@ -52,6 +52,8 @@ export interface ContestData {
   problemsCount: number;
   startDate: string;
   endDate: string;
+  // The group the contest is assigned to, when known.
+  groupId?: number;
 }
 export interface Contest {
   id: number;

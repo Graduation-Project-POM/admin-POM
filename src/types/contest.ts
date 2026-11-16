@@ -24,6 +24,9 @@ export interface Contest {
   trainerId: number;
   problemCount: number;
   studentCount: number;
+  // The group the contest is assigned to.
+  groupId?: number | null;
+  groupName?: string | null;
 }
 
 export interface CreateContestInput {

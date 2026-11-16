@@ -65,6 +65,7 @@ const toContestData = (c: Contest): ContestData => ({
   problemsCount: c.problemCount,
   startDate: c.startAt,
   endDate: c.endAt,
+  groupId: c.groupId ?? undefined,
 });
 
 const toIso = (value: string): string => {
@@ -308,6 +309,7 @@ export const ContestsPage: React.FC = () => {
         status: getContestStatusNumber(startAt, endAt),
         startAt,
         endAt,
+        groupId: updatedContest.groupId || undefined,
       });
     } catch (err) {
       throw toDisplayError(err, t("contest.errors.updateFailed", "Failed to update contest"));
@@ -416,6 +418,7 @@ export const ContestsPage: React.FC = () => {
     } catch (err) {
       throw toDisplayError(err, t("group.details.updateProblemFailed", "Failed to update problem"));
     }
+    // Reload outside the try: a failed refresh after a successful save is not a failed update.
     await loadContestProblems(selectedContestId);
   };
 

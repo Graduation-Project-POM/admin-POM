@@ -17,19 +17,28 @@ interface CreateContestProps {
   fixedGroupId?: number;
 }
 
+const EMPTY_FORM = {
+  title: "",
+  difficulty: "Medium",
+  startDate: "",
+  endDate: "",
+};
+
 const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestProps) => {
   const { t } = useTranslation();
-  const [formData, setFormData] = useState({
-    title: "",
-    difficulty: "Medium",
-    startDate: "",
-    endDate: "",
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [groupId, setGroupId] = useState<number | "">("");
+  const [groups, setGroups] = useState<Group[]>([]);
 
+  // The modal stays mounted between opens, so start every open with a blank form
+  // instead of showing the values of the contest that was just created.
   useEffect(() => {
-    if (open) setError(null);
+    if (!open) return;
+    setFormData(EMPTY_FORM);
+    setGroupId("");
+    setError(null);
   }, [open]);
 
   // Shown as soon as both dates are filled in, not after pressing save.
@@ -39,8 +48,6 @@ const CreateContest = ({ open, onClose, onSave, fixedGroupId }: CreateContestPro
     new Date(formData.endDate).getTime() <= new Date(formData.startDate).getTime()
       ? t("common.endBeforeStart", "End date must be after the start date.")
       : null;
-  const [groupId, setGroupId] = useState<number | "">("");
-  const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {
     if (!open || fixedGroupId != null) return;

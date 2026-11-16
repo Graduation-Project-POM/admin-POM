@@ -861,7 +861,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
 
             {/* Reuse Contest Modals */}
             <CreateContest open={isCreateOpen} onClose={() => setIsCreateOpen(false)} onSave={handleCreateContest} fixedGroupId={group ? Number(group.id) : undefined} />
-            <EditContest open={isEditOpen} onClose={() => setIsEditOpen(false)} contest={selectedContest} onSave={handleUpdateContest} />
+            <EditContest open={isEditOpen} onClose={() => setIsEditOpen(false)} contest={selectedContest} onSave={handleUpdateContest} fixedGroupId={Number(group.id)} />
             <ViewContest open={isViewOpen} onClose={() => setIsViewOpen(false)} contest={selectedContest} />
             
             <ConfirmationModal 
