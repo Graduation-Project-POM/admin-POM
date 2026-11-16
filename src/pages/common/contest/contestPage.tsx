@@ -8,7 +8,7 @@ import {
   Stack,
   Alert,
 } from "@mui/material";
-import { ArrowLeft, Plus, Trophy } from "lucide-react";
+import { ArrowLeft, Eye, Plus, Trophy } from "lucide-react";
 import { useContests } from "../../../hooks/useContests";
 import { contestService } from "../../../services/contestService";
 import type {
@@ -40,6 +40,7 @@ import ViewContest from "./View";
 import Leaderboard from "./Leaderboard";
 import CreateProblem, { type ProblemFormValues } from "../problem/Create";
 import EditProblem, { type ProblemEditValues } from "../problem/Edit";
+import ProblemDetailModal from "../problem/ProblemDetailModal";
 import { StudentProgressModal } from "../../trainer/problems-solution/StudentProgressModeal";
 import { SolutionDetailModal } from "../../trainer/problems-solution/SolutionDetailsModal";
 import { brand, neutral, statusTone } from '../../../theme';
@@ -198,6 +199,8 @@ export const ContestsPage: React.FC = () => {
   const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
   const [selectedProblem, setSelectedProblem] = useState<Problem | null>(null);
 
+  // Problem whose full details (statement, constraints, examples, image) are shown.
+  const [detailsProblemId, setDetailsProblemId] = useState<number | null>(null);
   const [isProgressModalOpen, setIsProgressModalOpen] = useState(false);
   const [isSolutionModalOpen, setIsSolutionModalOpen] = useState(false);
   const [isLeaderboardOpen, setIsLeaderboardOpen] = useState(false);
@@ -499,6 +502,22 @@ export const ContestsPage: React.FC = () => {
           <AcceptanceRateDisplay rate={row.acceptanceRate} />
         ),
       },
+      {
+        // Its own column (not the row menu) so it stays available after the contest ends.
+        id: "details",
+        label: t("contest.problems.columns.details"),
+        render: (row: Problem) => (
+          <Button
+            variantType="outline"
+            size="small"
+            startIcon={<Eye size={14} />}
+            onClick={() => setDetailsProblemId(Number(row.id))}
+            aria-label={t("contest.problems.viewDetailsFor", { name: row.name })}
+          >
+            {t("contest.problems.viewDetails")}
+          </Button>
+        ),
+      },
     ];
 
     return (
@@ -630,6 +649,12 @@ export const ContestsPage: React.FC = () => {
           problemTitle={selectedProblem?.name || ""}
           saving={gradingSaving}
           onSaveMark={handleGradeSubmission}
+        />
+
+        <ProblemDetailModal
+          open={detailsProblemId !== null}
+          onClose={() => setDetailsProblemId(null)}
+          problemId={detailsProblemId}
         />
 
         <Leaderboard

@@ -17,6 +17,7 @@ import { resolveMediaUrl } from "../../../utils/media";
 import { DIFFICULTY_LABEL } from "../../../types/problem";
 import type { ProblemDetail } from "../../../types/problem";
 import { brand, neutral, statusTone } from '../../../theme';
+import { ProblemConstraintsExamples } from '../../../components/problem/ProblemConstraintsExamples';
 
 interface ProblemDetailModalProps {
   open: boolean;
@@ -112,6 +113,11 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
                 size="small"
                 sx={{ fontWeight: 600, ...difficultyStyle(difficultyLabel) }}
               />
+              <Chip
+                label={t("problem.detail.points", { points: problem.points })}
+                size="small"
+                sx={{ fontWeight: 600, bgcolor: neutral[100], color: neutral[700] }}
+              />
             </Stack>
             <Typography
               variant="h6"
@@ -162,6 +168,7 @@ const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
                 ? problem.statement
                 : t("problem.detail.noDescription", "No description provided.")}
             </Typography>
+            <ProblemConstraintsExamples constraints={problem.constraints} examples={problem.examples} />
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>

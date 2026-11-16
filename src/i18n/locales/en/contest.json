@@ -13,7 +13,10 @@
       "description": "Manage the list of mathematical challenges for this specific contest event.",
       "addButton": "Add Problem",
       "searchPlaceholder": "Search problems within contest...",
+      "viewDetails": "View details",
+      "viewDetailsFor": "View details of {{name}}",
       "columns": {
+        "details": "Details",
         "name": "Problem Name",
         "difficulty": "Difficulty",
         "studentsSolved": "Students Solved",

@@ -120,6 +120,7 @@
       "description": "الوصف",
       "loadFailed": "فشل تحميل تفاصيل المسألة",
       "noDescription": "لا يوجد وصف.",
+      "points": "{{points}} نقطة",
       "title": "تفاصيل المسألة"
     }
   }

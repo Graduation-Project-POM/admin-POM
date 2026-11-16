@@ -12,7 +12,7 @@ import {
   Divider,
 } from '@mui/material';
 import { groupService } from '../../../services/groupService';
-import { ArrowLeft, Users, Award, BookOpen, Clock, Trophy } from 'lucide-react';
+import { ArrowLeft, Users, Award, BookOpen, Clock, Trophy, Eye } from 'lucide-react';
 import { ContestCard } from '../../../components/ui/card/contestCard';
 import {
   StyledContainer,
@@ -32,6 +32,7 @@ import { ConfirmationModal } from '../../../components/common/modal/Confirmation
 import CreateProblem, { type ProblemFormValues } from '../problem/Create';
 import EditProblem, { type ProblemEditValues } from '../problem/Edit';
 import { ProblemDetailsPage } from '../problem/ProblemDetailsPage';
+import ProblemDetailModal from '../problem/ProblemDetailModal';
 import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
 import type { ProblemSubmission } from '../../../services/problemsService';
@@ -147,6 +148,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [isEditProblemOpen, setIsEditProblemOpen] = useState(false);
     const [selectedProblem, setSelectedProblem] = useState<ProblemEditPrefill | null>(null);
     const [detailProblemId, setDetailProblemId] = useState<number | null>(null);
+    // Problem whose full details (statement, constraints, examples, image) are shown in a modal.
+    const [detailsModalProblemId, setDetailsModalProblemId] = useState<number | null>(null);
 
     // Mirror /admin/contests problem detail UX: clicking a problem opens the
     // submissions/progress modal, where a trainer can drill into a single
@@ -585,6 +588,22 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             id: 'acceptanceRate',
                             label: t('contest.problems.columns.acceptanceRate', t('group.details.successRate')),
                             render: (row) => <Typography sx={{ fontWeight: 700, color: brand[500] }}>{row.acceptanceRate}%</Typography>
+                        },
+                        {
+                            // Its own column (not the row menu) so it stays available after the contest ends.
+                            id: 'details',
+                            label: t('contest.problems.columns.details'),
+                            render: (row) => (
+                                <Button
+                                    variantType="outline"
+                                    size="small"
+                                    startIcon={<Eye size={14} />}
+                                    onClick={() => setDetailsModalProblemId(Number(row.id))}
+                                    aria-label={t('contest.problems.viewDetailsFor', { name: row.title })}
+                                >
+                                    {t('contest.problems.viewDetails')}
+                                </Button>
+                            )
                         }
                     ]}
                     onAdd={selectedContestEnded ? undefined : () => setIsCreateProblemOpen(true)}
@@ -640,6 +659,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     problemTitle={selectedProblemForProgress?.title || ''}
                     saving={gradingSaving}
                     onSaveMark={handleGradeSubmission}
+                />
+
+                <ProblemDetailModal
+                    open={detailsModalProblemId !== null}
+                    onClose={() => setDetailsModalProblemId(null)}
+                    problemId={detailsModalProblemId}
                 />
 
                 <Leaderboard

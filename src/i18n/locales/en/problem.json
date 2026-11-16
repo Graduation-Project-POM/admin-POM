@@ -120,6 +120,7 @@
       "description": "Description",
       "loadFailed": "Failed to load problem details",
       "noDescription": "No description provided.",
+      "points": "{{points}} points",
       "title": "Problem Details"
     }
   }

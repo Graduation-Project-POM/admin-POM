@@ -13,7 +13,10 @@
       "description": "أدر قائمة التحديات الرياضية لهذه المسابقة المحددة.",
       "addButton": "إضافة مسألة",
       "searchPlaceholder": "ابحث عن المسائل ضمن المسابقة...",
+      "viewDetails": "عرض التفاصيل",
+      "viewDetailsFor": "عرض تفاصيل {{name}}",
       "columns": {
+        "details": "التفاصيل",
         "name": "اسم المسألة",
         "difficulty": "الصعوبة",
         "studentsSolved": "الطلاب الذين حلّوا",
