@@ -65,6 +65,7 @@ const toContestData = (c: Contest): ContestData => ({
   problemsCount: c.problemCount,
   startDate: c.startAt,
   endDate: c.endAt,
+  groupId: c.groupId ?? undefined,
 });
 
 const toIso = (value: string): string => {
@@ -306,6 +307,7 @@ export const ContestsPage: React.FC = () => {
         status: getContestStatusNumber(startAt, endAt),
         startAt,
         endAt,
+        groupId: updatedContest.groupId || undefined,
       });
     } catch (err) {
       throw toDisplayError(err, t("contest.errors.updateFailed", "Failed to update contest"));
@@ -368,24 +370,27 @@ export const ContestsPage: React.FC = () => {
     }
   };
 
-  const handleUpdateProblem = (form: ProblemEditValues) => {
+  const handleUpdateProblem = async (form: ProblemEditValues) => {
     if (selectedContestId === null) return;
     if (selectedContestEnded) {
       throw new DisplayError(t("common.contestEnded", "This contest has ended. Its problems can no longer be changed."));
     }
-    setProblemsMap((m) => ({
-      ...m,
-      [selectedContestId]: (m[selectedContestId] || []).map((p) =>
-        p.id === String(form.id)
-          ? {
-              ...p,
-              name: form.title ?? p.name,
-              difficulty:
-                (form.difficulty as Problem["difficulty"]) ?? p.difficulty,
-            }
-          : p,
-      ),
-    }));
+    try {
+      await problemsService.update(Number(form.id), {
+        title: form.title,
+        statement: form.description || "",
+        constraints: form.constraints || null,
+        examples: form.examples.length > 0 ? form.examples : null,
+        difficulty: DIFFICULTY_FROM_LABEL[form.difficulty] ?? 1,
+        topic: form.category || "General",
+        photoFileKey: form.imageUrl || null,
+        isPublished: form.isPublished,
+        points: form.points,
+      });
+      await loadContestProblems(selectedContestId);
+    } catch (err) {
+      throw toDisplayError(err, t("contest.errors.updateProblemFailed", "Failed to update problem"));
+    }
   };
 
   const handleDeleteProblem = (id: string) => {

@@ -36,6 +36,7 @@ const toGroupData = (g: Group): GroupData => ({
   studentsCount: g.studentCount,
   trainerCount: g.trainerName ? 1 : 0,
   trainerName: g.trainerName ?? '',
+  trainerId: g.trainerId || undefined,
   createdDate: g.startDate,
 });
 
@@ -91,13 +92,14 @@ export const GroupsPage: React.FC = () => {
     }
   };
 
-  const handleUpdate = async (updatedGroup: GroupData & { studentIds: number[] }) => {
+  const handleUpdate = async (updatedGroup: GroupData & { studentIds: number[]; trainerId?: number }) => {
     setActionError(null);
     const id = Number(updatedGroup.id);
     try {
       await groupService.update(id, {
         name: updatedGroup.title,
         description: updatedGroup.description,
+        trainerId: updatedGroup.trainerId || undefined,
       });
       const current = await groupService.getStudents(id);
       const currentIds = current.map((s) => s.studentId);

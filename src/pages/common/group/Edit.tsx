@@ -10,17 +10,25 @@ import type { GroupData } from '../../../types';
 import { studentService } from '../../../services/studentService';
 import type { StudentOption } from '../../../services/studentService';
 import { groupService } from '../../../services/groupService';
+import { trainerService } from '../../../services/trainerService';
+import type { TrainerOption } from '../../../services/trainerService';
+import { useAuth } from '../../../services/AuthContext';
+import { TrainerPicker } from './TrainerPicker';
 
 interface EditGroupProps {
   open: boolean;
   onClose: () => void;
   group: GroupData | null;
-  onSave: (group: GroupData & { studentIds: number[] }) => void | Promise<unknown>;
+  onSave: (group: GroupData & { studentIds: number[]; trainerId?: number }) => void | Promise<unknown>;
 }
 
 const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
   const { t } = useTranslation();
+  const { role } = useAuth();
+  const isAdmin = role === 'Admin';
   const [title, setTitle] = useState('');
+  const [trainerId, setTrainerId] = useState<number | ''>('');
+  const [trainers, setTrainers] = useState<TrainerOption[]>([]);
   const [description, setDescription] = useState('');
   const [studentIds, setStudentIds] = useState<number[]>([]);
   const [students, setStudents] = useState<StudentOption[]>([]);
@@ -31,21 +39,35 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
     if (!open || !group) return;
     setTitle(group.title);
     setDescription(group.description);
+    setTrainerId(group.trainerId ? group.trainerId : '');
     setError(null);
+    if (isAdmin) {
+      trainerService.getAll().then(setTrainers).catch(() => setTrainers([]));
+    }
     studentService.getAccepted().then(setStudents).catch(() => setStudents([]));
     groupService
       .getStudents(Number(group.id))
       .then((m) => setStudentIds(m.map((x) => x.studentId)))
       .catch(() => setStudentIds([]));
-  }, [open, group]);
+  }, [open, group, isAdmin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!group) return;
+    if (isAdmin && trainerId === '') {
+      setError(t('group.create.trainerRequired', 'Please choose a trainer for this group.'));
+      return;
+    }
     setError(null);
     setSubmitting(true);
     try {
-      await onSave({ ...group, title, description, studentIds });
+      await onSave({
+        ...group,
+        title,
+        description,
+        studentIds,
+        trainerId: trainerId === '' ? undefined : trainerId,
+      });
       onClose();
     } catch (err) {
       setError(getApiErrorMessage(err, t('group.errors.updateFailed', 'Failed to update group')));
@@ -79,6 +101,14 @@ const EditGroups = ({ open, onClose, group, onSave }: EditGroupProps) => {
             rows={3}
             required
           />
+
+          {isAdmin && (
+            <TrainerPicker
+              trainers={trainers}
+              trainerId={trainerId}
+              onChange={(id) => { setTrainerId(id); setError(null); }}
+            />
+          )}
 
           <MemberPicker
             options={students}

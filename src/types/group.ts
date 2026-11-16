@@ -19,6 +19,8 @@ export interface CreateGroupInput {
 export interface UpdateGroupInput {
   name: string;
   description?: string;
+  // Admins only: reassigns the group to this trainer.
+  trainerId?: number;
 }
 export interface GroupStudent {
   studentId: number;

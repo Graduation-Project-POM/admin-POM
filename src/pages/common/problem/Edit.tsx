@@ -7,7 +7,9 @@ import { ImageUploadField } from '../../../components/ui/Forms/ImageUploadField'
 import { Button } from '../../../components/ui/button/Button';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { ProblemExamplesEditor } from './ProblemExamplesEditor';
+import { DIFFICULTY_LABEL } from '../../../types/problem';
 import type { ProblemExample } from '../../../types/problem';
+import { problemsService } from '../../../services/problemsService';
 
 export interface ProblemEditValues {
   id: number | string;
@@ -83,6 +85,12 @@ const EditProblem = ({
   const [statusTouched, setStatusTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Bumped on every open so the image field remounts and drops its own upload error.
+  const [openCount, setOpenCount] = useState(0);
+  // Pages only pass part of the problem, so the full record is loaded from the
+  // server on open. Saving waits for it so blank fields can't overwrite real data.
+  const [loading, setLoading] = useState(false);
+  const [loadFailed, setLoadFailed] = useState(false);
   const errorRef = useRef<HTMLDivElement>(null);
 
   // The form is long and the submit button sits at the bottom; bring a new error into view.
@@ -90,8 +98,12 @@ const EditProblem = ({
     if (error) errorRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, [error]);
 
+  // Refill from the problem every time the form opens, so changes that were
+  // cancelled last time don't show up again when the same problem is reopened.
   useEffect(() => {
-    if (problem) {
+    if (open && problem) {
+      setError(null);
+      setOpenCount((n) => n + 1);
       setFormData({
         id: problem.id ?? 0,
         title: problem.title ?? '',
@@ -108,7 +120,39 @@ const EditProblem = ({
       else setStatus('');
       setStatusTouched(false);
     }
-  }, [problem]);
+  }, [open, problem]);
+
+  const problemId = problem?.id != null ? Number(problem.id) : NaN;
+  useEffect(() => {
+    if (!open || !Number.isFinite(problemId) || problemId <= 0) return;
+    let ignore = false;
+    setLoading(true);
+    setLoadFailed(false);
+    problemsService
+      .getById(problemId)
+      .then((detail) => {
+        if (ignore) return;
+        setFormData({
+          id: detail.id,
+          title: detail.title,
+          category: detail.topic,
+          description: detail.statement ?? '',
+          constraints: detail.constraints ?? '',
+          examples: Array.isArray(detail.examples) ? detail.examples : [],
+          difficulty: DIFFICULTY_LABEL[detail.difficulty] ?? 'Easy',
+          imageUrl: detail.photoUrl ?? '',
+          points: detail.points,
+        });
+        setStatus(detail.isPublished ? 'published' : 'draft');
+      })
+      .catch((err: unknown) => {
+        if (ignore) return;
+        setLoadFailed(true);
+        setError(getApiErrorMessage(err, t('problem.form.loadError', 'Failed to load the problem. Close the form and try again.')));
+      })
+      .finally(() => { if (!ignore) setLoading(false); });
+    return () => { ignore = true; };
+  }, [open, problemId, t]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -231,13 +275,14 @@ const EditProblem = ({
             helperText={t("problem.form.pointsHelp", "Between 1 and 1000")}
           />
           <ImageUploadField
+            key={openCount}
             label={t("problem.form.image", "Problem image (optional)")}
             value={formData.imageUrl}
             onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
           />
         </Stack>
-        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting}>
-          {submitting ? t("common.loading") : t("problem.form.saveChanges")}
+        <Button sx={{ mt: 3 }} variantType="default" type="submit" disabled={submitting || loading || loadFailed}>
+          {submitting || loading ? t("common.loading") : t("problem.form.saveChanges")}
         </Button>
       </form>
     </ModalWrapper>

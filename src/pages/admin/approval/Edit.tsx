@@ -37,11 +37,12 @@ const EditTrainerRequest = ({
     bio: "",
   });
 
+  // Refill every time the form opens, so cancelled changes don't come back.
   useEffect(() => {
-    if (trainer) {
+    if (open && trainer) {
       setFormData(trainer);
     }
-  }, [trainer]);
+  }, [open, trainer]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,

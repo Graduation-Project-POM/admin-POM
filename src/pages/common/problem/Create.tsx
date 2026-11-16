@@ -63,6 +63,8 @@ const CreateProblem = ({
   const [statusTouched, setStatusTouched] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Bumped on every close so the image field remounts and drops its own upload error.
+  const [resetCount, setResetCount] = useState(0);
   const errorRef = useRef<HTMLDivElement>(null);
 
   // The form is long and the submit button sits at the bottom; bring a new error into view.
@@ -92,6 +94,7 @@ const CreateProblem = ({
     setStatus(requireStatus ? '' : 'published');
     setStatusTouched(false);
     setError(null);
+    setResetCount((n) => n + 1);
     onClose();
   };
 
@@ -199,6 +202,7 @@ const CreateProblem = ({
             helperText={t("problem.form.pointsHelp", "Between 1 and 1000")}
           />
           <ImageUploadField
+            key={resetCount}
             label={t("problem.form.image", "Problem image (optional)")}
             value={formData.imageUrl}
             onChange={(url) => setFormData((prev) => ({ ...prev, imageUrl: url }))}
