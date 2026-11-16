@@ -185,6 +185,7 @@ export const ContestsPage: React.FC = () => {
     null,
   );
   const [selectedContestTitle, setSelectedContestTitle] = useState<string>("");
+  const [selectedContestEnded, setSelectedContestEnded] = useState(false);
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
@@ -332,7 +333,7 @@ export const ContestsPage: React.FC = () => {
   };
 
   const handleAddProblem = async (form: ProblemFormValues) => {
-    if (selectedContestId === null) return;
+    if (selectedContestId === null || selectedContestEnded) return;
     setActionError(null);
     try {
       const newId = await problemsService.create({
@@ -373,7 +374,7 @@ export const ContestsPage: React.FC = () => {
   };
 
   const handleUpdateProblem = (form: ProblemEditValues) => {
-    if (selectedContestId === null) return;
+    if (selectedContestId === null || selectedContestEnded) return;
     setProblemsMap((m) => ({
       ...m,
       [selectedContestId]: (m[selectedContestId] || []).map((p) =>
@@ -396,7 +397,7 @@ export const ContestsPage: React.FC = () => {
       message: t("contest.confirm.removeProblemMessage"),
       onConfirm: async () => {
         setConfirmConfig((prev) => ({ ...prev, open: false }));
-        if (selectedContestId === null) return;
+        if (selectedContestId === null || selectedContestEnded) return;
         setActionError(null);
         try {
           const ids = contestProblemIds.filter((x) => x !== Number(id));
@@ -426,7 +427,7 @@ export const ContestsPage: React.FC = () => {
       }),
       onConfirm: async () => {
         setConfirmConfig((prev) => ({ ...prev, open: false }));
-        if (selectedContestId === null) return;
+        if (selectedContestId === null || selectedContestEnded) return;
         setActionError(null);
         try {
           const numIds = ids.map(Number);
@@ -566,13 +567,17 @@ export const ContestsPage: React.FC = () => {
           <SharedTable
             data={problems}
             columns={problemColumns}
-            onEdit={(row) => {
-              setSelectedProblem(row);
-              setIsEditProblemOpen(true);
-            }}
-            onSingleDelete={handleDeleteProblem}
-            onDelete={handleBulkDeleteProblems}
-            onAdd={() => setIsAddProblemOpen(true)}
+            onEdit={
+              selectedContestEnded
+                ? undefined
+                : (row) => {
+                    setSelectedProblem(row);
+                    setIsEditProblemOpen(true);
+                  }
+            }
+            onSingleDelete={selectedContestEnded ? undefined : handleDeleteProblem}
+            onDelete={selectedContestEnded ? undefined : handleBulkDeleteProblems}
+            onAdd={selectedContestEnded ? undefined : () => setIsAddProblemOpen(true)}
             addButtonLabel={t("contest.problems.addButton")}
             searchPlaceholder={t("contest.problems.searchPlaceholder")}
           />
@@ -710,6 +715,7 @@ export const ContestsPage: React.FC = () => {
               onProblems={() => {
                 setSelectedContestId(contest.id);
                 setSelectedContestTitle(contest.title);
+                setSelectedContestEnded(contest.status === "Ended");
                 void loadContestProblems(contest.id);
               }}
               onDelete={() => handleDeleteContest(contest.id)}

@@ -133,6 +133,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     const [tabsLoading, setTabsLoading] = useState(true);
     const [tabsError, setTabsError] = useState<string | null>(null);
     const [selectedContest, setSelectedContest] = useState<ContestData | null>(null);
+    const selectedContestEnded = selectedContest?.status === 'Ended';
     
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isEditOpen, setIsEditOpen] = useState(false);
@@ -327,7 +328,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     };
 
     const handleCreateProblem = async (form: ProblemFormValues) => {
-        if (!selectedContest) return;
+        if (!selectedContest || selectedContestEnded) return;
         try {
             const newId = await problemsService.create({
                 title: form.title,
@@ -352,7 +353,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
     };
 
     const handleUpdateProblem = async (form: ProblemEditValues) => {
-        if (!selectedContest) return;
+        if (!selectedContest || selectedContestEnded) return;
         try {
             await problemsService.update(Number(form.id), {
                 title: form.title,
@@ -399,7 +400,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             message: t('group.details.removeProblemMessage'),
             onConfirm: async () => {
                 setConfirmConfig(prev => ({ ...prev, open: false }));
-                if (!selectedContest) return;
+                if (!selectedContest || selectedContestEnded) return;
                 try {
                     const ids = contestProblemIds.filter((x) => x !== Number(id));
                     await contestService.update(Number(selectedContest.id), { problemIds: ids });
@@ -418,7 +419,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
             message: t('group.details.removeProblemsMessage', { count: ids.length }),
             onConfirm: async () => {
                 setConfirmConfig(prev => ({ ...prev, open: false }));
-                if (!selectedContest) return;
+                if (!selectedContest || selectedContestEnded) return;
                 try {
                     const numIds = ids.map(Number);
                     const remaining = contestProblemIds.filter((x) => !numIds.includes(x));
@@ -584,10 +585,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                             render: (row) => <Typography sx={{ fontWeight: 700, color: brand[500] }}>{row.acceptanceRate}%</Typography>
                         }
                     ]}
-                    onAdd={() => setIsCreateProblemOpen(true)}
-                    onEdit={(row) => { void handleOpenEditProblem(row); }}
-                    onSingleDelete={handleSingleDeleteProblem}
-                    onDelete={handleBulkDeleteProblems}
+                    onAdd={selectedContestEnded ? undefined : () => setIsCreateProblemOpen(true)}
+                    onEdit={selectedContestEnded ? undefined : (row) => { void handleOpenEditProblem(row); }}
+                    onSingleDelete={selectedContestEnded ? undefined : handleSingleDeleteProblem}
+                    onDelete={selectedContestEnded ? undefined : handleBulkDeleteProblems}
                     addButtonLabel={t('group.details.addProblem')}
                     searchPlaceholder={t('group.details.searchProblems')}
                 />

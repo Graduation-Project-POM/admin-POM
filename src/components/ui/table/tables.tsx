@@ -47,6 +47,8 @@ export function SharedTable<TRow extends TableRowBase>({
   const rowCanEdit = (row: TRow) => !!onEdit && (canEditRow ? canEditRow(row) : true);
   const rowCanDelete = (row: TRow) => !!onSingleDelete && (canDeleteRow ? canDeleteRow(row) : true);
   const rowSelectable = (row: TRow) => (canDeleteRow ? canDeleteRow(row) : true);
+  const showSelect = !!onDelete;
+  const showActions = !!onEdit || !!onSingleDelete;
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -163,6 +165,7 @@ export function SharedTable<TRow extends TableRowBase>({
           <Table>
             <StyledTableHead>
               <TableRow>
+                {showSelect && (
                 <StyledTableCell padding="checkbox">
                   <Checkbox
                     checked={
@@ -177,17 +180,20 @@ export function SharedTable<TRow extends TableRowBase>({
                     slotProps={{ input: { "aria-label": t("ui.table.selectAll") } }}
                   />
                 </StyledTableCell>
+                )}
                 {columns.map((col) => (
                   <StyledTableCell key={col.id}>{col.label}</StyledTableCell>
                 ))}
-                <StyledTableCell align="center">{t("common.actions")}</StyledTableCell>
+                {showActions && (
+                  <StyledTableCell align="center">{t("common.actions")}</StyledTableCell>
+                )}
               </TableRow>
             </StyledTableHead>
             <TableBody>
               {filteredData.length === 0 && (
                 <TableRow>
                   <StyledTableCell
-                    colSpan={columns.length + 2}
+                    colSpan={columns.length + (showSelect ? 1 : 0) + (showActions ? 1 : 0)}
                     sx={{ borderBottom: "none", p: 0 }}
                   >
                     <EmptyState
@@ -209,6 +215,7 @@ export function SharedTable<TRow extends TableRowBase>({
               )}
               {filteredData.map((row) => (
                 <StyledTableRow key={row.id}>
+                  {showSelect && (
                   <StyledTableCell padding="checkbox">
                     <Checkbox
                       checked={selectedRows.has(String(row.id))}
@@ -219,6 +226,7 @@ export function SharedTable<TRow extends TableRowBase>({
                       slotProps={{ input: { "aria-label": t("ui.table.selectRow") } }}
                     />
                   </StyledTableCell>
+                  )}
                   {columns.map((col) => (
                     <StyledTableCell key={col.id}>
                       {col.render
@@ -226,6 +234,7 @@ export function SharedTable<TRow extends TableRowBase>({
                         : ((row as Record<string, unknown>)[col.id] as React.ReactNode)}
                     </StyledTableCell>
                   ))}
+                  {showActions && (
                   <StyledTableCell align="center">
                     {(rowCanEdit(row) || rowCanDelete(row)) && (
                       <IconButton
@@ -237,6 +246,7 @@ export function SharedTable<TRow extends TableRowBase>({
                       </IconButton>
                     )}
                   </StyledTableCell>
+                  )}
                 </StyledTableRow>
               ))}
             </TableBody>
