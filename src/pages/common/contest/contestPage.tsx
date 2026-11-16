@@ -674,6 +674,8 @@ export const ContestsPage: React.FC = () => {
           problemTitle={selectedProblem?.name || ""}
           saving={gradingSaving}
           onSaveMark={handleGradeSubmission}
+          // Nobody (Admin included) grades before the contest ends; also enforced by the backend.
+          gradingLocked={!selectedContestEnded}
         />
 
         <ProblemDetailModal

@@ -73,6 +73,8 @@ interface StudentContestProblem {
   constraints: string | null;
   examples: ProblemExample[] | null;
   grade: number;
+  /** Graded solutions are final: the student can no longer edit them. */
+  graded: boolean;
   maxGrade: number;
   feedback: string;
 }
@@ -113,6 +115,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
           constraints: p.constraints ?? null,
           examples: Array.isArray(p.examples) ? p.examples : null,
           grade: p.score ?? 0,
+          graded: p.score != null,
           maxGrade: 100,
           feedback: p.feedback ?? '',
         })),
@@ -301,6 +304,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   };
 
   const openSubmitModal = (problem: StudentContestProblem) => {
+    if (problem.graded) return;
     setSelectedProblem(problem);
     setSolutionText(problem.textSolution || '');
     setSolutionImage(problem.imageSolution || null);
@@ -430,15 +434,18 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   >
                     {t('student.groupDetails.viewQuestion')}
                   </Button>
-                  <Button
-                    variantType={row.status === 'submitted' ? 'outline' : 'default'}
-                    size="small"
-                    startIcon={row.status === 'submitted' ? <Send size={14} /> : <Send size={14} />}
-                    onClick={() => openSubmitModal(row)}
-                    sx={{ py: 0.5, px: 1.5, fontSize: '12px' }}
-                  >
-                    {row.status === 'submitted' ? t('student.groupDetails.edit') : t('student.groupDetails.submit')}
-                  </Button>
+                  {/* A graded solution is final, so there is nothing to edit (enforced by the backend too). */}
+                  {!row.graded && (
+                    <Button
+                      variantType={row.status === 'submitted' ? 'outline' : 'default'}
+                      size="small"
+                      startIcon={row.status === 'submitted' ? <Send size={14} /> : <Send size={14} />}
+                      onClick={() => openSubmitModal(row)}
+                      sx={{ py: 0.5, px: 1.5, fontSize: '12px' }}
+                    >
+                      {row.status === 'submitted' ? t('student.groupDetails.edit') : t('student.groupDetails.submit')}
+                    </Button>
+                  )}
                 </Box>
               )
             }

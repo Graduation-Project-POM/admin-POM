@@ -667,6 +667,8 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     problemTitle={selectedProblemForProgress?.title || ''}
                     saving={gradingSaving}
                     onSaveMark={handleGradeSubmission}
+                    // Nobody (Admin included) grades before the contest ends; also enforced by the backend.
+                    gradingLocked={!selectedContestEnded}
                 />
 
                 <ProblemDetailModal

@@ -8,12 +8,12 @@ import {
   Alert,
 } from '@mui/material';
 import { getApiErrorMessage } from '../../../utils/apiError';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Clock } from 'lucide-react';
 import { ModalWrapper } from '../../../components/common/modal/ModalWrapper';
 import { Button } from '../../../components/ui/button/Button';
 import { resolveMediaUrl } from '../../../utils/media';
 import type { ProblemSubmission } from '../../../services/problemsService';
-import { neutral, statusTone } from '../../../theme';
+import { neutral, radius, statusTone } from '../../../theme';
 
 interface SolutionDetailModalProps {
   open: boolean;
@@ -22,6 +22,8 @@ interface SolutionDetailModalProps {
   problemTitle: string;
   onSaveMark: (submissionId: number, score: number, feedback: string) => void | Promise<unknown>;
   saving?: boolean;
+  /** True while the contest is still running: the solution can be read but not graded yet. */
+  gradingLocked?: boolean;
 }
 
 export const SolutionDetailModal = ({
@@ -31,23 +33,44 @@ export const SolutionDetailModal = ({
   problemTitle,
   onSaveMark,
   saving = false,
+  gradingLocked = false,
 }: SolutionDetailModalProps) => {
   const { t } = useTranslation();
-  const [score, setScore] = useState<number>(0);
+  // Kept as text so "no score yet" ('') is distinct from a real score of 0.
+  const [score, setScore] = useState<string>('');
   const [feedback, setFeedback] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
+  const [scoreInvalid, setScoreInvalid] = useState(false);
 
   useEffect(() => {
-    setScore(submission?.score ?? 0);
+    setScore(submission?.score != null ? String(submission.score) : '');
     setFeedback(submission?.feedback ?? '');
     setError(null);
+    setScoreInvalid(false);
   }, [submission, open]);
 
   const handleSave = async () => {
-    if (!submission) return;
+    if (!submission || gradingLocked) return;
     setError(null);
+    setScoreInvalid(false);
+    // A score is required to grade — in particular, feedback can't be saved without one.
+    if (score.trim() === '') {
+      setScoreInvalid(true);
+      setError(
+        feedback.trim()
+          ? t('trainer.solutionDetail.scoreRequiredWithFeedback', 'Enter a score before saving feedback.')
+          : t('trainer.solutionDetail.scoreRequired', 'Enter a score to grade this submission.'),
+      );
+      return;
+    }
+    const value = Number(score);
+    if (!Number.isInteger(value) || value < 0 || value > submission.problemPoints) {
+      setScoreInvalid(true);
+      setError(t('trainer.solutionDetail.scoreRange', { max: submission.problemPoints }));
+      return;
+    }
     try {
-      await onSaveMark(submission.id, score, feedback);
+      await onSaveMark(submission.id, value, feedback);
     } catch (err) {
       setError(getApiErrorMessage(err, t('trainer.solutionDetail.gradeFailed', 'Failed to save mark')));
     }
@@ -66,6 +89,55 @@ export const SolutionDetailModal = ({
       maxWidth="sm"
     >
       <Box sx={{ mt: 1 }}>
+        {gradingLocked && (
+          // Soft "not yet" notice. Flex + gap (no left/right offsets) so it
+          // mirrors correctly in RTL; wraps cleanly on narrow screens.
+          <Box
+            role="status"
+            aria-live="polite"
+            sx={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: { xs: 1.5, sm: 2 },
+              p: { xs: 1.75, sm: 2 },
+              mb: 3,
+              bgcolor: statusTone.warning.bg,
+              border: `1px solid ${statusTone.warning.border}`,
+              borderRadius: `${radius.lg}px`,
+            }}
+          >
+            <Box
+              aria-hidden
+              sx={{
+                flexShrink: 0,
+                display: 'grid',
+                placeItems: 'center',
+                width: { xs: 34, sm: 38 },
+                height: { xs: 34, sm: 38 },
+                borderRadius: '50%',
+                bgcolor: neutral[0],
+                border: `1px solid ${statusTone.warning.border}`,
+                color: statusTone.warning.solid,
+              }}
+            >
+              <Clock size={18} strokeWidth={2.25} />
+            </Box>
+            <Box sx={{ minWidth: 0 }}>
+              <Typography
+                component="p"
+                sx={{ fontWeight: 700, fontSize: { xs: '14px', sm: '15px' }, color: statusTone.warning.fg, lineHeight: 1.4, mb: 0.5 }}
+              >
+                {t('trainer.solutionDetail.gradingLockedTitle', 'Grading Not Available Yet')}
+              </Typography>
+              <Typography sx={{ fontSize: { xs: '13px', sm: '14px' }, color: neutral[700], lineHeight: 1.6 }}>
+                {t(
+                  'trainer.solutionDetail.gradingLockedMessage',
+                  'You can review this submission now, but grading will be available once the contest ends.',
+                )}
+              </Typography>
+            </Box>
+          </Box>
+        )}
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography sx={{ fontSize: '14px', fontWeight: 700, color: neutral[800] }}>{t('trainer.solutionDetail.status')}</Typography>
@@ -91,14 +163,22 @@ export const SolutionDetailModal = ({
               min={0}
               max={submission.problemPoints}
               value={score}
-              onChange={(e) =>
-                setScore(Math.min(Number(e.target.value), submission.problemPoints))
-              }
+              placeholder="—"
+              required
+              disabled={gradingLocked}
+              aria-label={t('trainer.solutionDetail.score')}
+              aria-invalid={scoreInvalid || undefined}
+              onChange={(e) => {
+                const raw = e.target.value;
+                setScoreInvalid(false);
+                // Keep '' (no score); otherwise cap at the problem's points as before.
+                setScore(raw === '' ? '' : String(Math.min(Number(raw), submission.problemPoints)));
+              }}
               style={{
                 width: '60px',
                 padding: '6px 8px',
                 borderRadius: '8px',
-                border: `1.5px solid ${neutral[200]}`,
+                border: `1.5px solid ${scoreInvalid ? statusTone.danger.solid : neutral[200]}`,
                 fontSize: '14px',
                 fontWeight: 700,
                 outline: 'none',
@@ -111,7 +191,9 @@ export const SolutionDetailModal = ({
         <Typography sx={{ fontSize: '14px', fontWeight: 700, color: neutral[800], mb: 1.5 }}>{t('trainer.solutionDetail.solution')}</Typography>
 
         {submission.solutionText ? (
-          <Box sx={{
+          // dir="auto" + plaintext bidi: each line follows its own language, so an
+          // English/maths solution isn't scrambled (e.g. ".Let x = 2") in the RTL UI.
+          <Box dir="auto" sx={{
             p: 2.5,
             bgcolor: neutral[50],
             borderRadius: '12px',
@@ -120,6 +202,8 @@ export const SolutionDetailModal = ({
             fontFamily: 'monospace',
             fontSize: '13px',
             whiteSpace: 'pre-wrap',
+            unicodeBidi: 'plaintext',
+            textAlign: 'start',
             lineHeight: 1.6,
             color: neutral[700],
           }}>
@@ -151,6 +235,7 @@ export const SolutionDetailModal = ({
           rows={3}
           fullWidth
           value={feedback}
+          disabled={gradingLocked}
           onChange={(e) => setFeedback(e.target.value)}
           placeholder={t('trainer.solutionDetail.feedbackPlaceholder', 'Optional feedback for the student')}
           sx={{ mb: 3, '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
@@ -167,7 +252,7 @@ export const SolutionDetailModal = ({
             variantType="default"
             startIcon={<CheckCircle2 size={18} />}
             onClick={() => void handleSave()}
-            disabled={saving}
+            disabled={saving || gradingLocked}
             sx={{ px: 3, bgcolor: statusTone.success.fg, '&:hover': { bgcolor: statusTone.success.fg } }}
           >
             {saving ? t('common.loading') : t('trainer.solutionDetail.markAsDone')}

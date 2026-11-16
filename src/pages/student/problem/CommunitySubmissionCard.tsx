@@ -158,16 +158,19 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
                   ? t('student.problemDetails.publishAction')
                   : t('student.problemDetails.saveAsDraftAction')}
               </Button>
-              <Button
-                variantType="outline"
-                size="small"
-                startIcon={<Trash2 size={14} />}
-                onClick={() => setConfirmOpen(true)}
-                disabled={busy}
-                sx={{ fontSize: '12px', color: statusTone.danger.solid, borderColor: statusTone.danger.border }}
-              >
-                {t('student.problemDetails.deleteAction')}
-              </Button>
+              {/* A graded contest solution is final (the backend rejects deleting it too). */}
+              {!hasPoints && (
+                <Button
+                  variantType="outline"
+                  size="small"
+                  startIcon={<Trash2 size={14} />}
+                  onClick={() => setConfirmOpen(true)}
+                  disabled={busy}
+                  sx={{ fontSize: '12px', color: statusTone.danger.solid, borderColor: statusTone.danger.border }}
+                >
+                  {t('student.problemDetails.deleteAction')}
+                </Button>
+              )}
             </Stack>
           )}
           {error && (

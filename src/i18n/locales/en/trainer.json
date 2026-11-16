@@ -65,7 +65,12 @@
       "result": "Result:",
       "markAsDone": "Mark as Done",
       "feedback": "Feedback",
-      "feedbackPlaceholder": "Optional feedback for the student"
+      "feedbackPlaceholder": "Optional feedback for the student",
+      "scoreRequired": "Enter a score to grade this submission.",
+      "scoreRequiredWithFeedback": "Enter a score before saving feedback.",
+      "scoreRange": "Score must be between 0 and {{max}}.",
+      "gradingLockedTitle": "Grading Not Available Yet",
+      "gradingLockedMessage": "You can review this submission now, but grading will be available once the contest ends."
     },
     "studentProgress": {
       "titleSuffix": "Student Progress",

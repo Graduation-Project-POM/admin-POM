@@ -65,7 +65,12 @@
       "result": "النتيجة:",
       "markAsDone": "وضع علامة كمنجز",
       "feedback": "ملاحظات",
-      "feedbackPlaceholder": "ملاحظات اختيارية للطالب"
+      "feedbackPlaceholder": "ملاحظات اختيارية للطالب",
+      "scoreRequired": "أدخل الدرجة لتقييم هذا الحل.",
+      "scoreRequiredWithFeedback": "أدخل الدرجة قبل حفظ الملاحظات.",
+      "scoreRange": "يجب أن تكون الدرجة بين 0 و{{max}}.",
+      "gradingLockedTitle": "التصحيح غير متاح حاليًا",
+      "gradingLockedMessage": "يمكنك مراجعة حل الطالب الآن، وسيصبح التصحيح متاحًا بعد انتهاء المسابقة."
     },
     "studentProgress": {
       "titleSuffix": "تقدم الطلاب",
