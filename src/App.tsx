@@ -24,6 +24,7 @@ import { StudentProblemDetailsPage } from "./pages/student/problem/StudentProble
 import { StudentMySolutionDetailsPage } from "./pages/student/problem/StudentMySolutionDetailsPage";
 import ProfilePage from "./pages/common/profile/profilePage";
 import UserProfilePage from "./pages/common/profile/UserProfilePage";
+import HelpCenterPage from "./pages/common/help/HelpCenterPage";
 import StudentGroupsPage from "./pages/student/group/GroupsPage";
 import StudentDashboardPage from "./pages/student/dashboard/dashboard";
 import Signup from "./components/Credentials/signup/signup";
@@ -78,6 +79,7 @@ function AppRoutes() {
                     element={<Page title="System Reports" />}
                   />
                   <Route path="/admin/profile" element={<ProfilePage />} />
+                  <Route path="/admin/help" element={<HelpCenterPage />} />
                 </Route>
 
                 {/* Trainer-only */}
@@ -94,6 +96,7 @@ function AppRoutes() {
                     element={<ProblemDetailsPage />}
                   />
                   <Route path="/trainer/profile" element={<ProfilePage />} />
+                  <Route path="/trainer/help" element={<HelpCenterPage />} />
                 </Route>
 
                 {/* Student-only */}

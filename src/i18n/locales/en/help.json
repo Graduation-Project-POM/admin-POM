@@ -1,0 +1,90 @@
+{
+  "navbar": {
+    "help": "Help Center"
+  },
+  "help": {
+    "title": "Help Center",
+    "subtitle": "A short guide to running your training on the platform: build a group, open a contest, add problems, then grade what your students submit.",
+    "stepsCount": "4 steps",
+    "stepLabel": "Step {{number}}",
+    "whereLabel": "Where",
+    "goToPage": "Open this page",
+    "tipLabel": "Tip",
+    "enlarge": "View larger",
+    "close": "Close",
+    "screenshotMissing": "Screenshot not available yet",
+    "flowTitle": "The main flow",
+    "steps": {
+      "group": {
+        "title": "Create a group",
+        "summary": "A group is your class: the students you train together.",
+        "where": "Sidebar › {{page}}",
+        "actions": [
+          "Open <b>{{myGroups}}</b> from the sidebar.",
+          "Click <b>{{createGroup}}</b>.",
+          "Enter the group title and a short description of its goals.",
+          "Under <b>{{members}}</b>, pick the students. Search by name or email, or select all.",
+          "Click <b>{{createGroup}}</b> to save. The new group appears in your list."
+        ],
+        "adminNote": "As an admin, you also choose the trainer who will run the group.",
+        "tip": "You can add or remove students at any time with the <b>{{membersButton}}</b> button on the group card.",
+        "shots": {
+          "list": "Your groups, with the Create Group button",
+          "form": "The Create Group form"
+        }
+      },
+      "contest": {
+        "title": "Create a contest",
+        "summary": "A contest is a timed set of problems for one group.",
+        "where": "Group page › {{tab}} tab",
+        "actions": [
+          "On the group card, click <b>{{view}}</b> to open the group.",
+          "In the <b>{{contestsTab}}</b> tab, click <b>{{createContest}}</b>.",
+          "Enter the contest title and choose its difficulty.",
+          "Set the start and end date and time. The end must be after the start.",
+          "Click <b>{{submit}}</b>. Every student in the group can now see the contest."
+        ],
+        "tip": "You can also create contests from <b>{{contestsPage}}</b> in the sidebar. There you choose which group the contest belongs to.",
+        "shots": {
+          "list": "A group's Contests tab",
+          "form": "The Create Contest form"
+        }
+      },
+      "problems": {
+        "title": "Add problems",
+        "summary": "Problems are the questions your students solve during the contest.",
+        "where": "Contest card › {{button}}",
+        "actions": [
+          "On the contest card, click <b>{{problems}}</b>.",
+          "Click <b>{{addProblem}}</b>.",
+          "Write the title, category and the problem statement.",
+          "Optionally add constraints, worked examples and an image.",
+          "Choose the difficulty and the points (1 to 1000). The points are the highest score a student can get.",
+          "Click <b>{{createProblem}}</b>. Repeat for each problem in the contest."
+        ],
+        "tip": "Problems can be edited or removed until the contest ends. After that the contest is locked.",
+        "shots": {
+          "list": "A contest's problem list",
+          "form": "The Create Problem form"
+        }
+      },
+      "grade": {
+        "title": "Grade student solutions",
+        "summary": "Review each answer, give a score and leave feedback.",
+        "where": "Contest problems › problem name",
+        "actions": [
+          "Open the contest's problems (see step 3).",
+          "Click a problem's name to open <b>{{progress}}</b>. It shows who submitted and who is still pending.",
+          "Next to a student, click <b>{{viewSolution}}</b>.",
+          "Read the solution, enter a score between 0 and the problem's points, and add feedback if you like.",
+          "Click <b>{{markAsDone}}</b>. The student sees the score and your feedback."
+        ],
+        "tip": "Grading opens once the contest has ended. Before that you can read submissions, but not score them.",
+        "shots": {
+          "list": "Student Progress for a problem",
+          "form": "Grading a student's solution"
+        }
+      }
+    }
+  }
+}

@@ -29,6 +29,7 @@ import {
   ChevronRight,
   Languages,
   LogOut,
+  CircleHelp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -67,6 +68,7 @@ const iconMap: Record<string, React.ReactNode> = {
   FileText: createIcon(FileText),
   LogOut: createIcon(LogOut),
   Languages: createIcon(Languages),
+  Help: createIcon(CircleHelp),
 };
 
 export const Sidebar: React.FC<SidebarProps> = ({

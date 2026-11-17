@@ -73,6 +73,13 @@ export const navigationConfig: NavSection[] = [
       //   roles: ["Admin"],
       // },
       {
+        title: "Help Center",
+        titleKey: "navbar.help",
+        path: "/admin/help",
+        icon: "Help",
+        roles: ["Admin"],
+      },
+      {
         title: "Profile",
         titleKey: "navbar.profile",
         path: "/admin/profile",
@@ -107,6 +114,13 @@ export const navigationConfig: NavSection[] = [
         titleKey: "navbar.problems",
         path: "/trainer/problems",
         icon: "BookOpen",
+        roles: ["Trainer"],
+      },
+      {
+        title: "Help Center",
+        titleKey: "navbar.help",
+        path: "/trainer/help",
+        icon: "Help",
         roles: ["Trainer"],
       },
       {
