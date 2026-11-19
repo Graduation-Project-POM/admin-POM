@@ -6,6 +6,7 @@
     "dashboard": "لوحة التحكم",
     "users": "المستخدمون",
     "approvals": "الموافقات",
+    "pendingApprovalsCount": "{{count}} طلبات بانتظار الموافقة",
     "groups": "المجموعات",
     "myGroups": "مجموعاتي",
     "contests": "المسابقات",

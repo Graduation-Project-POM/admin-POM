@@ -46,6 +46,9 @@ import {
 } from "./SidebarStyle";
 import { useAuth } from "../../../services/AuthContext";
 import { brand, neutral } from '../../../theme';
+import { usePendingApprovalsCount } from "../../../hooks/usePendingApprovals";
+
+const APPROVALS_PATH = "/admin/approvals";
 
 interface SidebarProps {
   role: UserRole;
@@ -109,6 +112,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const { logout } = useAuth();
+
+  // Pending sign-up requests, shown as a badge next to "Approvals" for admins.
+  const pendingApprovals = usePendingApprovalsCount(role === "Admin", location.pathname);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -262,6 +268,34 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               </Typography>
                             }
                           />
+                          {item.path === APPROVALS_PATH && pendingApprovals > 0 && (
+                            <Box
+                              component="span"
+                              aria-label={t("navbar.pendingApprovalsCount", {
+                                count: pendingApprovals,
+                                defaultValue: "{{count}} pending approvals",
+                              })}
+                              title={t("navbar.pendingApprovalsCount", {
+                                count: pendingApprovals,
+                                defaultValue: "{{count}} pending approvals",
+                              })}
+                              sx={{
+                                minWidth: 22,
+                                height: 22,
+                                px: 0.75,
+                                borderRadius: "11px",
+                                bgcolor: "#dc2626",
+                                color: "#fff",
+                                fontSize: "12px",
+                                fontWeight: 700,
+                                lineHeight: "22px",
+                                textAlign: "center",
+                                flexShrink: 0,
+                              }}
+                            >
+                              {pendingApprovals > 99 ? "99+" : pendingApprovals}
+                            </Box>
+                          )}
                           {hasChildren &&
                             !isLogoutItem &&
                             !isLanguageItem &&

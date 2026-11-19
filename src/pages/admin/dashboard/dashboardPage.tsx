@@ -44,6 +44,7 @@ import { dashboardService, type AdminDashboardData } from "../../../services/das
 import { studentService } from "../../../services/studentService";
 import { getApiErrorMessage } from "../../../utils/apiError";
 import { brand, neutral } from '../../../theme';
+import { notifyApprovalsChanged } from "../../../hooks/usePendingApprovals";
 
 const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -72,6 +73,7 @@ const AdminDashboard: React.FC = () => {
     setApproving(id);
     try {
       await studentService.accept(id);
+      notifyApprovalsChanged();
       setData((prev) =>
         prev ? { ...prev, pendingStudents: prev.pendingStudents.filter((s) => s.id !== id) } : prev,
       );

@@ -19,6 +19,7 @@ import { approvalService, type ApprovalRequest } from "../../../services/userSer
 import { getApiErrorMessage, toDisplayError } from "../../../utils/apiError";
 import { brand, neutral } from '../../../theme';
 import { ErrorState, LoadingState } from '../../../components/common/states';
+import { notifyApprovalsChanged } from "../../../hooks/usePendingApprovals";
 
 type ConfirmState = {
   open: boolean;
@@ -83,6 +84,7 @@ export const AdminApprovalsPage = () => {
       if (type === "approve" && request) await approvalService.accept(request);
       else if ((type === "reject" || type === "delete") && request) await approvalService.remove(request.userId);
       else if (type === "bulk_delete" && ids) await Promise.all(ids.map((id) => approvalService.remove(id)));
+      notifyApprovalsChanged();
       load();
     } catch (err) {
       throw toDisplayError(err, t("admin.approvals.actionFailed", "Action failed"));
