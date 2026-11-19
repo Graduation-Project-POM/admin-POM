@@ -67,7 +67,7 @@
     "CONTEST_ENDED": "This contest has ended and can no longer be edited",
     "GROUP_REQUIRED": "A contest must be assigned to a group",
     "PHONE_EXISTS": "This phone number is already registered to another account",
-    "INVALID_ROLE": "You can only sign up as a student or a trainer"
+    "INVALID_ROLE": "Only students can sign up"
   },
   "success": {
     "saved": "Changes saved successfully",

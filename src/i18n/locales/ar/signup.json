@@ -18,12 +18,9 @@
     "invalidEmailError": "يرجى إدخال بريد إلكتروني صحيح",
     "passwordShortError": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل",
     "passwordMismatchError": "كلمتا المرور غير متطابقتين",
-    "accountCreated": "تم إنشاء الحساب بنجاح! جارٍ التحويل إلى تسجيل الدخول...",
+    "accountCreated": "تم إنشاء الحساب! تم إرسال طلبك إلى المسؤول للموافقة عليه. يمكنك تسجيل الدخول بعد الموافقة.",
     "signupFailed": "فشل إنشاء الحساب",
-    "successMessage": "تم إنشاء الحساب بنجاح",
-    "roleLabel": "التسجيل بصفة",
-    "roleStudent": "طالب",
-    "roleTrainer": "مدرب"
+    "successMessage": "تم إنشاء الحساب بنجاح"
   },
   "errors": {
     "USERNAME_EXISTS": "اسم المستخدم مستخدم بالفعل",

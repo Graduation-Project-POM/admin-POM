@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {
   Box, Button, TextField, Typography, Paper, Container, Alert, Link,
-  InputAdornment, IconButton, MenuItem,
+  InputAdornment, IconButton,
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -44,8 +44,8 @@ export default function Signup() {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  // Self-sign-up is open to students and trainers; both wait for admin approval.
-  const [roleID, setRoleID] = useState<number>(RoleId.Student);
+  // Public sign-up is for students only (trainer accounts are created by an
+  // admin). New students wait for admin approval before they can log in.
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
@@ -100,11 +100,11 @@ export default function Signup() {
         gender: "female",
         profileImageUrl: "",
         password,
-        roleID,
+        roleID: RoleId.Student,
       });
 
-      setSuccess(t("signup.accountCreated", { defaultValue: "Account created successfully! Redirecting to login..." }));
-      setTimeout(() => navigate("/credentials/login"), 1500);
+      setSuccess(t("signup.accountCreated", { defaultValue: "Account created! Your request was sent to the admin for approval. You can log in once it is approved." }));
+      setTimeout(() => navigate("/credentials/login"), 3000);
     } catch (err: unknown) {
       setError(getApiErrorMessage(err, t, t("signup.signupFailed")));
     }
@@ -136,17 +136,6 @@ export default function Signup() {
           )}
 
           <Box component="form" onSubmit={handleSignup} sx={formStyles}>
-            <TextField
-              select margin="normal" required fullWidth
-              label={t("signup.roleLabel")}
-              value={roleID}
-              onChange={(e) => setRoleID(Number(e.target.value))}
-              sx={textFieldStyles}
-            >
-              <MenuItem value={RoleId.Student}>{t("signup.roleStudent")}</MenuItem>
-              <MenuItem value={RoleId.Trainer}>{t("signup.roleTrainer")}</MenuItem>
-            </TextField>
-
             <TextField
               margin="normal" required fullWidth
               label={t("signup.firstNameLabel")}
