@@ -54,6 +54,8 @@ interface Problem {
   studentsSolved: number;
   totalSubmissions: number;
   acceptanceRate: number;
+  /** False when a trainer is viewing a problem someone else created (read-only). */
+  canModify: boolean;
 }
 
 const toContestData = (c: Contest): ContestData => ({
@@ -142,6 +144,7 @@ export const ContestsPage: React.FC = () => {
           studentsSolved: 0,
           totalSubmissions: 0,
           acceptanceRate: 0,
+          canModify: Boolean(p.canModify ?? p.CanModify),
         };
       });
       setContestProblemIds(ids);
@@ -364,6 +367,7 @@ export const ContestsPage: React.FC = () => {
         studentsSolved: 0,
         totalSubmissions: 0,
         acceptanceRate: 0,
+        canModify: true, // the current user just created it
       };
       setProblemsMap((m) => ({
         ...m,
@@ -622,6 +626,7 @@ export const ContestsPage: React.FC = () => {
                     void handleOpenEditProblem(row);
                   }
             }
+            canEditRow={(row) => row.canModify}
             onSingleDelete={selectedContestEnded ? undefined : handleDeleteProblem}
             onDelete={selectedContestEnded ? undefined : handleBulkDeleteProblems}
             onAdd={selectedContestEnded ? undefined : () => setIsAddProblemOpen(true)}

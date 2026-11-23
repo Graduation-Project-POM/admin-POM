@@ -82,6 +82,8 @@ interface GroupContestProblem {
     studentsSolved: number;
     totalSubmissions: number;
     acceptanceRate: number;
+    /** False when a trainer is viewing a problem someone else created (read-only). */
+    canModify: boolean;
 }
 
 interface ProblemEditPrefill {
@@ -303,6 +305,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     studentsSolved: 0,
                     totalSubmissions: 0,
                     acceptanceRate: 0,
+                    canModify: Boolean(p.canModify ?? p.CanModify),
                 };
             });
             setContestProblemIds(ids);
@@ -618,6 +621,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group = mock
                     ]}
                     onAdd={selectedContestEnded ? undefined : () => setIsCreateProblemOpen(true)}
                     onEdit={selectedContestEnded ? undefined : (row) => { void handleOpenEditProblem(row); }}
+                    canEditRow={(row) => row.canModify}
                     onSingleDelete={selectedContestEnded ? undefined : handleSingleDeleteProblem}
                     onDelete={selectedContestEnded ? undefined : handleBulkDeleteProblems}
                     addButtonLabel={t('group.details.addProblem')}
