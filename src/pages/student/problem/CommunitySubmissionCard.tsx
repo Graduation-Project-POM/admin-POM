@@ -181,15 +181,23 @@ export const CommunitySubmissionCard = ({ submission, source, onChanged }: Props
         </Box>
 
         <Box sx={{ bgcolor: '#8b1d2325', p: 2, borderRadius: '12px', overflow: 'hidden' }}>
-          <Typography
-            component="pre"
-            sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
-          >
-            {submission.solutionText || t('student.problemDetails.noSolution')}
-          </Typography>
+          {(submission.solutionText || !submission.photoUrl) && (
+            <Typography
+              component="pre"
+              sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap', fontFamily: 'monospace' }}
+            >
+              {submission.solutionText || t('student.problemDetails.noSolution')}
+            </Typography>
+          )}
           {submission.photoUrl && (
-            <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
-              <img src={resolveMediaUrl(submission.photoUrl) ?? undefined} alt="solution" style={{ width: '100%', display: 'block' }} />
+            <Box sx={{ mt: submission.solutionText ? 2 : 0, textAlign: 'center' }}>
+              <a href={resolveMediaUrl(submission.photoUrl) ?? undefined} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={resolveMediaUrl(submission.photoUrl) ?? undefined}
+                  alt="solution"
+                  style={{ maxWidth: '100%', maxHeight: '480px', borderRadius: '8px', display: 'inline-block' }}
+                />
+              </a>
             </Box>
           )}
         </Box>

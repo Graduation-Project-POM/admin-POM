@@ -159,15 +159,23 @@ const SubmissionCard = ({
             </Typography>
             <FileCode size={16} />
           </Box>
-          <Typography
-            component="pre"
-            sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
-          >
-            {submission.solutionText || t('problem.details.noSolution')}
-          </Typography>
+          {(submission.solutionText || !submission.photoUrl) && (
+            <Typography
+              component="pre"
+              sx={{ color: brand[500], fontSize: '13px', lineHeight: 1.6, m: 0, overflowX: 'auto', whiteSpace: 'pre-wrap' }}
+            >
+              {submission.solutionText || t('problem.details.noSolution')}
+            </Typography>
+          )}
           {submission.photoUrl && (
-            <Box sx={{ mt: 2, borderRadius: '8px', overflow: 'hidden' }}>
-              <img src={resolveMediaUrl(submission.photoUrl) ?? undefined} alt="solution" style={{ width: '100%', display: 'block' }} />
+            <Box sx={{ mt: submission.solutionText ? 2 : 0, textAlign: 'center' }}>
+              <a href={resolveMediaUrl(submission.photoUrl) ?? undefined} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={resolveMediaUrl(submission.photoUrl) ?? undefined}
+                  alt="solution"
+                  style={{ maxWidth: '100%', maxHeight: '480px', borderRadius: '8px', display: 'inline-block' }}
+                />
+              </a>
             </Box>
           )}
         </Box>

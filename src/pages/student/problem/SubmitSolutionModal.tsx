@@ -12,7 +12,7 @@ import {
   type BackendProblem,
 } from '../../../services/problemService';
 import { problemsService } from '../../../services/problemsService';
-import { resolveMediaUrl } from '../../../utils/media';
+import { resolveMediaUrl, checkImageFile, IMAGE_ACCEPT } from '../../../utils/media';
 import { brand, neutral, statusTone } from '../../../theme';
 
 interface SubmitSolutionModalProps {
@@ -45,6 +45,11 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
+    const fileProblem = checkImageFile(file);
+    if (fileProblem) {
+      setError(fileProblem === 'size' ? t('student.groupDetails.imageTooLarge', 'The image must be 5 MB or smaller.') : t('student.groupDetails.imageTypeInvalid', 'Unsupported image type. Use PNG, JPG, GIF or WEBP.'));
+      return;
+    }
     setError(null);
     setUploading(true);
     try {
@@ -153,7 +158,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
           {t('student.problems.submit.imageSolutionHint')}
         </Typography>
 
-        <input type="file" ref={fileInputRef} accept="image/*" onChange={handleImageUpload} style={{ display: 'none' }} />
+        <input type="file" ref={fileInputRef} accept={IMAGE_ACCEPT} onChange={handleImageUpload} style={{ display: 'none' }} />
 
         {solutionImage ? (
           <Box>
@@ -186,7 +191,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
           >
             <Upload size={32} color={neutral[400]} style={{ marginBottom: 8 }} />
             <Typography sx={{ fontWeight: 600, color: neutral[500], mb: 0.5 }}>
-              {t('student.problems.submit.clickToUpload')}
+              {uploading ? t('student.groupDetails.uploadingImage', 'Uploading image...') : t('student.problems.submit.clickToUpload')}
             </Typography>
             <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
               {t('student.problems.submit.uploadHint')}

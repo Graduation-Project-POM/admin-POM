@@ -5,7 +5,7 @@ import { groupService } from '../../../services/groupService';
 import { contestService } from '../../../services/contestService';
 import { problemsService } from '../../../services/problemsService';
 import { getApiErrorMessage } from '../../../utils/apiError';
-import { resolveMediaUrl } from '../../../utils/media';
+import { resolveMediaUrl, checkImageFile, IMAGE_ACCEPT } from '../../../utils/media';
 import { getContestStatus } from '../../../utils/contestStatus';
 import { DIFFICULTY_LABEL } from '../../../types/problem';
 import type { ProblemExample } from '../../../services/problemService';
@@ -270,6 +270,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
   const [selectedProblem, setSelectedProblem] = useState<StudentContestProblem | null>(null);
   const [solutionText, setSolutionText] = useState('');
   const [solutionImage, setSolutionImage] = useState<string | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [submittingSolution, setSubmittingSolution] = useState(false);
+  // Shown inside the submit dialog; the page-level error sits behind it.
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [questionModalOpen, setQuestionModalOpen] = useState(false);
@@ -294,21 +298,32 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     const file = event.target.files?.[0];
     event.target.value = '';
     if (!file) return;
+    const fileProblem = checkImageFile(file);
+    if (fileProblem) {
+      setSubmitError(fileProblem === 'size' ? t('student.groupDetails.imageTooLarge', 'The image must be 5 MB or smaller.') : t('student.groupDetails.imageTypeInvalid', 'Unsupported image type. Use PNG, JPG, GIF or WEBP.'));
+      return;
+    }
+    setSubmitError(null);
+    setUploadingImage(true);
     try {
       const url = await problemsService.uploadImage(file);
       setSolutionImage(url);
     } catch (err) {
-      setProblemsError(getApiErrorMessage(err, t('student.groupDetails.imageUploadFailed', 'Failed to upload image')));
+      setSubmitError(getApiErrorMessage(err, t('student.groupDetails.imageUploadFailed', 'Failed to upload image')));
+    } finally {
+      setUploadingImage(false);
     }
   };
 
   const handleSubmitSolution = async () => {
     if (!selectedProblem) return;
+    if (uploadingImage || submittingSolution) return;
     if (!solutionText.trim() && !solutionImage) {
-      setProblemsError(t('student.groupDetails.solutionRequired', 'Provide a text solution or an image'));
+      setSubmitError(t('student.groupDetails.solutionRequired', 'Provide a text solution or an image'));
       return;
     }
-    setProblemsError(null);
+    setSubmitError(null);
+    setSubmittingSolution(true);
     try {
       await problemsService.submitSolution(Number(selectedProblem.id), {
         solutionText: solutionText.trim() || undefined,
@@ -320,7 +335,9 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
       setSelectedProblem(null);
       if (selectedContest) await loadContestProblems(selectedContest.id);
     } catch (err) {
-      setProblemsError(getApiErrorMessage(err, t('student.groupDetails.submitFailed', 'Failed to submit solution')));
+      setSubmitError(getApiErrorMessage(err, t('student.groupDetails.submitFailed', 'Failed to submit solution')));
+    } finally {
+      setSubmittingSolution(false);
     }
   };
 
@@ -329,6 +346,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
     setSelectedProblem(problem);
     setSolutionText(problem.textSolution || '');
     setSolutionImage(problem.imageSolution || null);
+    setSubmitError(null);
     setSubmitModalOpen(true);
   };
 
@@ -597,6 +615,12 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
 
             <Divider sx={{ mb: 3 }} />
 
+            {submitError && (
+              <Alert severity="error" onClose={() => setSubmitError(null)} sx={{ mb: 2 }}>
+                {submitError}
+              </Alert>
+            )}
+
             <Box sx={{ mb: 3 }}>
               <Typography sx={{ fontWeight: 700, color: neutral[800], mb: 1, fontSize: '14px', display: 'flex', alignItems: 'center', gap: 1 }}>
                 <FileText size={16} color={brand[500]} />
@@ -634,7 +658,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
               <input
                 type="file"
                 ref={fileInputRef}
-                accept="image/*"
+                accept={IMAGE_ACCEPT}
                 onChange={handleImageUpload}
                 style={{ display: 'none' }}
               />
@@ -654,9 +678,10 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                       size="small"
                       startIcon={<Upload size={14} />}
                       onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingImage}
                       sx={{ flex: 1 }}
                     >
-                      {t('student.groupDetails.replaceImage')}
+                      {uploadingImage ? t('student.groupDetails.uploadingImage', 'Uploading image...') : t('student.groupDetails.replaceImage')}
                     </Button>
                     <Button
                       variantType="danger"
@@ -685,11 +710,11 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                       bgcolor: '#fef2f2',
                     },
                   }}
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={() => { if (!uploadingImage) fileInputRef.current?.click(); }}
                 >
                   <Upload size={32} color={neutral[400]} style={{ marginBottom: 8 }} />
                   <Typography sx={{ fontWeight: 600, color: neutral[500], mb: 0.5 }}>
-                    {t('student.groupDetails.clickToUpload')}
+                    {uploadingImage ? t('student.groupDetails.uploadingImage', 'Uploading image...') : t('student.groupDetails.clickToUpload')}
                   </Typography>
                   <Typography variant="body2" sx={{ color: neutral[400], fontSize: '12px' }}>
                     {t('student.groupDetails.uploadHint')}
@@ -713,7 +738,7 @@ export const GroupDetailsPage: React.FC<GroupDetailsPageProps> = ({ group, onBac
                   variantType="default"
                   startIcon={<Send size={16} />}
                   onClick={handleSubmitSolution}
-                  disabled={!solutionText.trim() && !solutionImage}
+                  disabled={uploadingImage || submittingSolution || (!solutionText.trim() && !solutionImage)}
                   sx={{ py: 0.5, px: 2, fontSize: '12px', backgroundColor: neutral[0], color: brand[500], '&:hover': { backgroundColor: neutral[0], color: brand[500] } }}
                 >
                   {selectedProblem?.status === 'submitted' ? t('student.groupDetails.updateSolution') : t('student.groupDetails.submitSolution')}
