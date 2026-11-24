@@ -5,6 +5,7 @@ import { ImagePlus, Send, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { Button } from '../ui/button/Button';
 import { resolveMediaUrl } from '../../utils/media';
+import { problemsService } from '../../services/problemsService';
 import { neutral } from '../../theme';
 
 interface CommentComposerProps {
@@ -32,22 +33,31 @@ export const CommentComposer = ({
   const [body, setBody] = useState(initialBody);
   const [photo, setPhoto] = useState<string | null>(initialPhoto);
   const [busy, setBusy] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isEmpty = !body.trim() && !photo;
 
-  const handlePick = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePick = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => setPhoto(reader.result as string);
-    reader.readAsDataURL(file);
     event.target.value = '';
+    if (!file) return;
+    setError(null);
+    setUploading(true);
+    try {
+      // Upload to storage first; the comment only carries the returned URL.
+      const url = await problemsService.uploadImage(file);
+      setPhoto(url);
+    } catch (err) {
+      setError(getApiErrorMessage(err, t('common.actionFailed', 'Action failed')));
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async () => {
-    if (isEmpty || busy) return;
+    if (isEmpty || busy || uploading) return;
     setBusy(true);
     setError(null);
     try {
@@ -149,10 +159,10 @@ export const CommentComposer = ({
           size="small"
           startIcon={<Send size={14} />}
           onClick={() => void handleSubmit()}
-          disabled={isEmpty || busy}
+          disabled={isEmpty || busy || uploading}
           sx={{ fontSize: '12px' }}
         >
-          {busy ? t('discussion.sending') : submitLabel}
+          {busy || uploading ? t('discussion.sending') : submitLabel}
         </Button>
       </Box>
 

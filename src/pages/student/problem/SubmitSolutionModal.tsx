@@ -11,6 +11,8 @@ import {
   difficultyIdToLabel,
   type BackendProblem,
 } from '../../../services/problemService';
+import { problemsService } from '../../../services/problemsService';
+import { resolveMediaUrl } from '../../../utils/media';
 import { brand, neutral, statusTone } from '../../../theme';
 
 interface SubmitSolutionModalProps {
@@ -25,6 +27,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
   const [solutionText, setSolutionText] = useState('');
   const [solutionImage, setSolutionImage] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -38,12 +41,20 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
 
   if (!problem) return null;
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setSolutionImage(reader.result as string);
-      reader.readAsDataURL(file);
+    event.target.value = '';
+    if (!file) return;
+    setError(null);
+    setUploading(true);
+    try {
+      // Upload to storage first; the submission only carries the returned URL.
+      const url = await problemsService.uploadImage(file);
+      setSolutionImage(url);
+    } catch (err: unknown) {
+      setError(getApiErrorMessage(err, t('student.groupDetails.imageUploadFailed', 'Failed to upload image')));
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -147,7 +158,7 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
         {solutionImage ? (
           <Box>
             <Paper elevation={0} sx={{ p: 2, bgcolor: neutral[50], borderRadius: '12px', border: `1px solid ${neutral[200]}`, textAlign: 'center' }}>
-              <img src={solutionImage} alt={t('student.problems.submit.imageAlt')} style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '8px' }} />
+              <img src={resolveMediaUrl(solutionImage) ?? solutionImage} alt={t('student.problems.submit.imageAlt')} style={{ maxWidth: '100%', maxHeight: '250px', borderRadius: '8px' }} />
             </Paper>
             <Box sx={{ display: 'flex', gap: 1, mt: 1.5 }}>
               <Button variantType="outline" size="small" startIcon={<Upload size={14} />} onClick={() => fileInputRef.current?.click()} sx={{ flex: 1 }}>
@@ -201,9 +212,9 @@ export const SubmitSolutionModal = ({ open, onClose, problem, onSubmitted }: Sub
             variantType="default"
             startIcon={<Send size={16} />}
             onClick={handleSubmit}
-            disabled={submitting || (!solutionText.trim() && !solutionImage)}
+            disabled={submitting || uploading || (!solutionText.trim() && !solutionImage)}
           >
-            {submitting ? t('common.loading') : t('student.problems.submit.submitButton')}
+            {submitting || uploading ? t('common.loading') : t('student.problems.submit.submitButton')}
           </Button>
         </Box>
       </Box>
